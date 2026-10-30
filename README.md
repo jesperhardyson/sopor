@@ -141,7 +141,7 @@ Vercel (Hobby). `vercel.json` sätter `Content-Type: text/calendar` och cache-he
 - **Projekt:** `sopor` i Vercel-teamet `badvatten-s-projects`, kopplat till GitHub-repot. Varje push till `main` bygger och driftsätter en ny produktionsversion. Pull requests får en egen preview-deploy.
 - **Domän:** `sopor.hardyson.se`. DNS ligger hos Cloudflare: `A sopor 76.76.21.21`, satt till *DNS only* (grå moln, inte proxad).
 - **Öppen sajt:** Vercel Authentication är avstängd, så både `sopor.hardyson.se` och preview-adresserna för pull requests är publika. Bidragsgivare kan alltså testa sina ändringar live. Pull requests från forkar byggs inte förrän förvaltaren godkänt dem i Vercel (Git fork protection).
-- **Testdata:** så länge en kommun har `testData: true` i `src/municipalities/index.ts` visas en varningsbanderoll överst på alla sidor. Ta bort flaggan när riktig data finns.
+- **Testdata:** så länge en kommun har `testData: true` i `src/municipalities/index.ts` visas en allmän varningsbanderoll överst på alla sidor ("Testversion – datumen är påhittade …"). Ta bort flaggan när riktig data finns.
 
 ## Design
 
