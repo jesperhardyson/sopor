@@ -76,8 +76,10 @@ export function StartPage() {
         <SavedList />
       </div>
     </div>
-    <ServicesSection />
-    <ContributeSection />
+    <div data-testid="infoband" className="mt-12 border-t border-border bg-surface/45 lg:mt-4">
+      <ServicesSection />
+      <ContributeSection />
+    </div>
     </>
   )
 }

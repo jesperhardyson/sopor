@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router'
 import { describe, expect, it, vi } from 'vitest'
 import { AboutPage } from './AboutPage'
@@ -33,6 +34,22 @@ describe('AboutPage', () => {
     expect(screen.getByRole('heading', { name: 'Bidra' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Så bidrar du/ })).toHaveAttribute('href', '/bidra')
     expect(screen.getByRole('link', { name: /Sopor på GitHub/ })).toHaveAttribute('href', 'https://github.com/jesperhardyson/sopor')
+  })
+
+  it('kan glömma sparade adresser under Integritet', async () => {
+    localStorage.setItem(
+      'sopor.saved.v1',
+      JSON.stringify([{ municipalityId: 'avesta', addressId: 'a', name: 'Hemma', street: 'S 1', locality: 'A', savedAt: '' }]),
+    )
+    render(
+      <MemoryRouter>
+        <AboutPage />
+      </MemoryRouter>,
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Glöm sparade adresser (1)' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Ja, glöm alla' }))
+    expect(localStorage.getItem('sopor.saved.v1')).toBe('[]')
+    expect(screen.getByText('Inga adresser sparade på den här enheten.')).toBeInTheDocument()
   })
 })
 

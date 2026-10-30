@@ -1,6 +1,8 @@
 import { ArrowLeft, ArrowUpRight, Ban, Mail, MapPin, Smartphone, UserX, type LucideIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { clearSaved, loadSaved } from '@/lib/storage'
 import { GitHubMark } from '../components/GitHubMark'
+import { ForgetAll } from '../saved/ForgetAll'
 import { Link } from 'react-router'
 import { SITE } from '@/config'
 import { MUNICIPALITIES, type Municipality } from '@/municipalities'
@@ -50,6 +52,7 @@ function SourceCard({ m }: { m: Municipality }) {
 }
 
 export function AboutPage() {
+  const [savedCount, setSavedCount] = useState(() => loadSaved().length)
   return (
     <div className="mx-auto flex w-full max-w-[640px] flex-col gap-9 px-5 pt-1 pb-10 md:px-0 md:pt-6 md:pb-20">
       <div className="flex flex-col gap-3">
@@ -88,6 +91,14 @@ export function AboutPage() {
           personuppgifter. Rensar du webbläsaren försvinner de. Vi räknar besök anonymt med Vercel Web Analytics, utan
           cookies. Adresser du söker på skickas inte med.
         </p>
+        {savedCount > 0 ? (
+          <ForgetAll
+            label={`Glöm sparade adresser (${savedCount})`}
+            onConfirm={() => setSavedCount(clearSaved().length)}
+          />
+        ) : (
+          <p className="text-sm text-text-2">Inga adresser sparade på den här enheten.</p>
+        )}
       </section>
 
       <section className="flex flex-col items-start gap-3">

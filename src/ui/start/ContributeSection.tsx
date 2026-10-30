@@ -91,7 +91,7 @@ export function ContributeSection() {
   return (
     <section
       aria-labelledby="bidra-rubrik"
-      className="mx-auto w-full max-w-[960px] px-5 pt-10 pb-2 lg:px-0 lg:pt-0 lg:pb-24"
+      className="mx-auto w-full max-w-[960px] px-5 pt-10 pb-12 lg:px-0 lg:pt-0 lg:pb-24"
     >
       <div className="flex flex-col gap-7 rounded-[28px] bg-earth-soft p-6 lg:flex-row lg:gap-14 lg:rounded-[32px] lg:p-12">
         <div className="flex flex-1 flex-col gap-5">

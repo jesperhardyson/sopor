@@ -68,3 +68,13 @@ describe('utan skrivbar lagring', () => {
     expect(loadSaved()).toEqual([hemma])
   })
 })
+
+describe('clearSaved', () => {
+  it('glömmer alla sparade adresser', async () => {
+    const { clearSaved } = await import('./storage')
+    localStorage.clear()
+    upsertSaved(hemma)
+    expect(clearSaved()).toEqual([])
+    expect(loadSaved()).toEqual([])
+  })
+})
