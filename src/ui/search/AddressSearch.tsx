@@ -3,16 +3,18 @@ import { useEffect, useId, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { normalize } from '@/domain/search'
 import type { Address } from '@/domain/types'
-import { searchAll, suggestAll } from '@/providers/registry'
+import { searchAll, suggestAll, type SearchResult } from '@/providers/registry'
+import { getSource } from '@/sources'
 import { cn } from '@/lib/utils'
 import { NotFound } from './NotFound'
 
 type Lookup = (query: string, signal?: AbortSignal) => Promise<Address[]>
+type Search = (query: string, signal?: AbortSignal) => Promise<SearchResult>
 
 type State =
   | { kind: 'idle' }
-  | { kind: 'results'; query: string; results: Address[] }
-  | { kind: 'notFound'; suggestions: Address[] }
+  | { kind: 'results'; query: string; results: Address[]; failed: string[] }
+  | { kind: 'notFound'; suggestions: Address[]; failed: string[] }
   | { kind: 'error' }
 
 const DEBOUNCE_MS = 150
@@ -23,7 +25,7 @@ export function AddressSearch({
   onActivate,
   onDeactivate,
 }: {
-  search?: Lookup
+  search?: Search
   suggest?: Lookup
   /** Fältet fick fokus (startsidans fokusläge) */
   onActivate?: () => void
@@ -46,13 +48,13 @@ export function AddressSearch({
     const controller = new AbortController()
     const timer = setTimeout(async () => {
       try {
-        const results = await search(query, controller.signal)
+        const { addresses: results, failed } = await search(query, controller.signal)
         if (controller.signal.aborted) return
         if (results.length > 0) {
-          setState({ kind: 'results', query, results })
+          setState({ kind: 'results', query, results, failed })
         } else {
           const suggestions = await suggest(query, controller.signal)
-          if (!controller.signal.aborted) setState({ kind: 'notFound', suggestions })
+          if (!controller.signal.aborted) setState({ kind: 'notFound', suggestions, failed })
         }
         setActive(-1)
       } catch {
@@ -89,7 +91,7 @@ export function AddressSearch({
       setSubmitted(true)
       if (normalize(query).length < 2) return
       search(query).then(
-        (fresh) => fresh.length > 0 && go(fresh[0]),
+        (fresh) => fresh.addresses.length > 0 && go(fresh.addresses[0]),
         () => setState({ kind: 'error' }),
       )
     } else if (e.key === 'Escape') {
@@ -148,12 +150,8 @@ export function AddressSearch({
       </div>
 
       {open && (
-        <ul
-          id={listId}
-          role="listbox"
-          aria-label="Adresser"
-          className="absolute inset-x-0 top-full z-20 mt-3 flex flex-col rounded-[18px] border border-border bg-surface p-1.5 shadow-[0_12px_32px_#1B231F1F]"
-        >
+        <div className="absolute inset-x-0 top-full z-20 mt-3 rounded-[18px] border border-border bg-surface p-1.5 shadow-[0_12px_32px_#1B231F1F]">
+        <ul id={listId} role="listbox" aria-label="Adresser" className="flex flex-col">
           {results.map((r, i) => (
             <li
               key={`${r.sourceId}/${r.id}`}
@@ -181,6 +179,18 @@ export function AddressSearch({
             </li>
           ))}
         </ul>
+        {state.kind === 'results' && state.failed.length > 0 && (
+          <p className="px-3 pt-1 pb-2 text-sm font-semibold text-warn">
+            {state.failed.map((id) => getSource(id)?.name ?? id).join(', ')} svarar inte just nu.
+          </p>
+        )}
+        </div>
+      )}
+
+      {state.kind === 'notFound' && state.failed.length > 0 && (
+        <p className="px-1 text-sm font-semibold text-warn">
+          {state.failed.map((id) => getSource(id)?.name ?? id).join(', ')} svarar inte just nu.
+        </p>
       )}
 
       {state.kind === 'notFound' && (submitted || normalize(query).length >= 4) && (

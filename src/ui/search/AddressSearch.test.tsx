@@ -19,6 +19,8 @@ function Result() {
   return <p>Resultat {sourceId}/{addressId}</p>
 }
 
+let failed: string[] = []
+
 function setup() {
   render(
     <MemoryRouter>
@@ -27,7 +29,7 @@ function setup() {
           index
           element={
             <AddressSearch
-              search={async (q) => searchAddresses(q, ADDRESSES)}
+              search={async (q) => ({ addresses: searchAddresses(q, ADDRESSES), failed })}
               suggest={async (q) => suggest(q, ADDRESSES)}
             />
           }
@@ -85,13 +87,20 @@ describe('AddressSearch', () => {
   it('lägger träfflistan ovanpå innehållet så att inget under hoppar', async () => {
     await userEvent.type(setup(), 'storg')
     const listbox = await screen.findByRole('listbox')
-    expect(listbox).toHaveClass('absolute')
+    expect(listbox.closest('.absolute')).not.toBeNull()
   })
 
   it('ber lösenordshanterare att låta sökfältet vara', () => {
     const input = setup()
     expect(input).toHaveAttribute('data-1p-ignore')
     expect(input).toHaveAttribute('data-lpignore', 'true')
+  })
+
+  it('berättar när en källa inte svarar', async () => {
+    failed = ['uppsala']
+    await userEvent.type(setup(), 'storg')
+    expect(await screen.findByText('Uppsala Vatten svarar inte just nu.')).toBeInTheDocument()
+    failed = []
   })
 })
 

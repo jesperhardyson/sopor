@@ -12,7 +12,7 @@ interface LoadedIndex {
 }
 
 /** Läser filerna som scripts/build-data.ts genererar till public/. */
-export function createStaticProvider(source: Source, fetchFn: typeof fetch = fetch): WasteProvider {
+export function createStaticProvider(source: Source, fetchFn: typeof fetch = (...args) => fetch(...args)): WasteProvider {
   const base = `/data/${source.id}`
   let indexPromise: Promise<LoadedIndex> | undefined
 

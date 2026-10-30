@@ -27,7 +27,7 @@ let resolveSchedule: (() => void) | undefined
 vi.mock('@/providers/registry', () => ({
   providerFor: () => fake,
   getAddress: (_m: string, id: string) => fake.getAddress(id),
-  searchAll: async () => [],
+  searchAll: async () => ({ addresses: [], failed: [] }),
   suggestAll: async () => [],
 }))
 

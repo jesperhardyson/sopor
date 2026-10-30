@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { StartPage } from './StartPage'
 
 vi.mock('@/providers/registry', () => ({
-  searchAll: async () => [],
+  searchAll: async () => ({ addresses: [], failed: [] }),
   suggestAll: async () => [],
   providerFor: () => ({ getSchedule: async () => null }),
 }))
