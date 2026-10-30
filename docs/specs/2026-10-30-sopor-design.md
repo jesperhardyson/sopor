@@ -50,6 +50,8 @@ Källa: `docs/design/sopor-design.pen`. Läs den via Pencil MCP, inte direkt fr�
 - **Typsnitt:** `Nunito` (UI) och `Fredoka` (varumärke/logo).
 - **Komponenter:** Logo, Logo/Symbol 16–156 (används även som favicon), Chip/<fraktion>, Fraktionsikon/<fraktion>, Knapp/Primär, Knapp/Sekundär, Avvikelse, Sidhuvud, Sidfot och Sidhuvud/Desktop. Fraktionen visas alltid med färg, ikon och text tillsammans (se ramen "Varumärke · Sopor").
 - **Skärmar:** Mobil · Start (tom, sparade adresser, autocomplete), Resultat, Lägg till i kalender (ark), Spara adress (ark), Adressen hittades inte, Kommunen stöds inte, Laddar, Om. Varianter finns för tablet (768) och desktop (1280) samt mörkt läge.
+- **Levande bakgrund:** två mjuka fält i `--bg-2` glider långsamt över `--bg` (bara `transform`, avstängt vid `prefers-reduced-motion`). Avvikelse från designen på användarens begäran.
+- **Större startsida på desktop:** från 1024 px är kolumnen 720 px och hero och sökfält större och centrerade. Avvikelse från designen på användarens begäran.
 - **Tema:** Mörkt läge växlas med knappen i sidhuvudet. Valet sparas i localStorage, och utan sparat val följer temat systemet (*min bedömning*).
 
 ## Arkitektur
@@ -82,7 +84,7 @@ const FRACTIONS: Record<FractionId, FractionInfo>;
 interface Municipality {
   id: string;            // "avesta" – används i URL och sökvägar
   name: string;          // "Avesta kommun"
-  operator: { name: string; url: string };  // "Avesta Vatten och Avfall", länk i sidfot/Om
+  operator: { name: string; url: string };  // "Avesta Vatten och Avfall", länk på Om-sidan
   provider: ProviderConfig;
 }
 
@@ -212,7 +214,8 @@ När den riktiga trakt-tabellen finns: ett kontrollskript som jämför `addresse
 
 - Söker från 2 tecken, med debounce. Matchningen är skiftlägesokänslig och accentokänslig (å/ä/ö ska ändå matcha sig själva), och mellanslag inom gatunummer tolereras ("12b" = "12 B").
 - Varje träff visar gatuadress, ort och kommun tydligt separerade (kommun som chip, enligt designen). Tangentbordsnavigering och ARIA-combobox.
-- Ingen träff → tillståndet "Vi hittade inte adressen", med "Menade du:" från enkel fuzzy-matchning i webbläsaren och en länk till kommunens officiella hämtschema.
+- Ingen träff → tillståndet "Vi hittade inte adressen", med "Menade du:" från enkel fuzzy-matchning i webbläsaren. (Länken till kommunens officiella hämtschema är borttagen, beslut 2026-10-30.)
+- Fokusläge på startsidan: när sökfältet får fokus glider det upp mot fönstrets överkant och resten av sidan tonas ner. Läget avslutas med Esc eller klick på den tonade ytan, inte vid blur. Ingen animation vid `prefers-reduced-motion`.
 
 ### Resultatvy (`/avesta/{addressId}`)
 
@@ -269,7 +272,7 @@ När den riktiga trakt-tabellen finns: ett kontrollskript som jämför `addresse
 
 ### Sidfot
 
-"Sopor är en inofficiell tjänst. Vid avvikelser gäller information från din kommun." plus en länk till Avesta Vatten och Avfall (från `operator.url`) samt Om och Kontakt, enligt designen.
+"Inofficiell tjänst. Vid avvikelser gäller kommunens information." samt Om och Kontakt, enligt designen. Länken till avfallsbolaget finns på Om-sidan, inte i sidfoten (beslut 2026-10-30).
 
 ## vercel.json
 

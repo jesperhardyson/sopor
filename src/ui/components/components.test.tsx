@@ -39,7 +39,7 @@ describe('ThemeToggle', () => {
 })
 
 describe('Footer', () => {
-  it('har friskrivning, Om, Kontakt och länk till avfallsbolaget', () => {
+  it('har friskrivning, Om och Kontakt men inte avfallsbolaget (det står på Om-sidan)', () => {
     render(
       <MemoryRouter>
         <Footer />
@@ -48,9 +48,6 @@ describe('Footer', () => {
     expect(screen.getByText('Inofficiell tjänst. Vid avvikelser gäller kommunens information.')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Om' })).toHaveAttribute('href', '/om')
     expect(screen.getByRole('link', { name: 'Kontakt' })).toHaveAttribute('href', 'mailto:support@hardyson.se')
-    expect(screen.getByRole('link', { name: 'Avesta Vatten och Avfall' })).toHaveAttribute(
-      'href',
-      'https://www.avestavatten.se',
-    )
+    expect(screen.queryByText('Avesta Vatten och Avfall')).toBeNull()
   })
 })

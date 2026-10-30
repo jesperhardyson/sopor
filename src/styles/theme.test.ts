@@ -16,7 +16,7 @@ function value(selector: string, token: string): string | undefined {
 
 const FRACTIONS = ['rest', 'mat', 'papper', 'plast', 'glas', 'metall']
 const TOKENS = [
-  'bg', 'surface', 'surface-2', 'border', 'text', 'text-2', 'primary', 'on-primary',
+  'bg', 'bg-2', 'surface', 'surface-2', 'border', 'text', 'text-2', 'primary', 'on-primary',
   'brand', 'brand-soft', 'brand-text', 'earth', 'earth-soft', 'warn', 'warn-bg', 'card-overlay',
   ...FRACTIONS.flatMap((f) => [`frac-${f}`, `frac-${f}-bg`]),
 ]
@@ -30,5 +30,10 @@ describe('theme.css', () => {
   it('använder designens primärfärg', () => {
     expect(value(':root', 'primary')?.toUpperCase()).toBe('#157A46')
     expect(value('.dark', 'primary')?.toUpperCase()).toBe('#4CC384')
+  })
+
+  it('har en levande bakgrund som stängs av vid minskad rörelse', () => {
+    expect(css).toMatch(/\.bg-live::before\s*\{[^}]*animation:/)
+    expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\)[\s\S]*\.bg-live::before[\s\S]*animation: none/)
   })
 })

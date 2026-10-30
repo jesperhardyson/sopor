@@ -1,6 +1,5 @@
 import { Link } from 'react-router'
 import { SITE } from '@/config'
-import { MUNICIPALITIES } from '@/municipalities'
 
 const link = 'font-bold hover:text-text'
 
@@ -16,11 +15,6 @@ export function Footer() {
           <a href={`mailto:${SITE.contactEmail}`} className={link}>
             Kontakt
           </a>
-          {MUNICIPALITIES.map((m) => (
-            <a key={m.id} href={m.operator.url} className={link} rel="noopener">
-              {m.operator.name}
-            </a>
-          ))}
           <span>{SITE.host}</span>
         </div>
       </div>

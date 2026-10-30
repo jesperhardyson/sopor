@@ -5,7 +5,7 @@ import { ScrollManager } from './ScrollManager'
 
 export function Layout() {
   return (
-    <div className="flex min-h-dvh flex-col bg-bg">
+    <div className="bg-live flex min-h-dvh flex-col">
       <ScrollManager />
       <Header />
       <main className="flex-1">

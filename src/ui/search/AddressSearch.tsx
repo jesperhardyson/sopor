@@ -18,7 +18,19 @@ type State =
 
 const DEBOUNCE_MS = 150
 
-export function AddressSearch({ search = searchAll, suggest = suggestAll }: { search?: Lookup; suggest?: Lookup }) {
+export function AddressSearch({
+  search = searchAll,
+  suggest = suggestAll,
+  onActivate,
+  onDeactivate,
+}: {
+  search?: Lookup
+  suggest?: Lookup
+  /** Fältet fick fokus (startsidans fokusläge) */
+  onActivate?: () => void
+  /** Användaren tryckte Esc */
+  onDeactivate?: () => void
+}) {
   const navigate = useNavigate()
   const listId = useId()
   const inputRef = useRef<HTMLInputElement>(null)
@@ -83,6 +95,8 @@ export function AddressSearch({ search = searchAll, suggest = suggestAll }: { se
       )
     } else if (e.key === 'Escape') {
       setState({ kind: 'idle' })
+      inputRef.current?.blur()
+      onDeactivate?.()
     }
   }
 
@@ -113,6 +127,7 @@ export function AddressSearch({ search = searchAll, suggest = suggestAll }: { se
             setSubmitted(false)
           }}
           onKeyDown={onKeyDown}
+          onFocus={onActivate}
           className="min-w-0 flex-1 bg-transparent text-base font-bold text-text outline-none placeholder:font-normal placeholder:text-text-2 lg:text-xl"
         />
         {query && (

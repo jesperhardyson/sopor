@@ -1,4 +1,6 @@
 import { MapPin } from 'lucide-react'
+import { useRef, useState } from 'react'
+import { cn } from '@/lib/utils'
 import { MUNICIPALITIES } from '@/municipalities'
 import { FractionIcon } from '../components/FractionIcon'
 import { SavedList } from '../saved/SavedList'
@@ -12,7 +14,24 @@ function municipalityLine(): string {
   return `Just nu: ${list}. Fler kommuner kommer.`
 }
 
+/** Avstånd från fönstrets överkant till sökfältet i fokusläget: nära toppen på mobil, lugnare på desktop */
+const focusTop = () => (window.matchMedia?.('(min-width: 1024px)').matches ? 96 : 16)
+
 export function StartPage() {
+  const searchRef = useRef<HTMLDivElement>(null)
+  const [focus, setFocus] = useState<{ offset: number } | null>(null)
+
+  function activate() {
+    if (focus || !searchRef.current) return
+    const top = searchRef.current.getBoundingClientRect().top
+    setFocus({ offset: Math.max(0, top - focusTop()) })
+  }
+
+  function deactivate() {
+    setFocus(null)
+    ;(document.activeElement as HTMLElement | null)?.blur()
+  }
+
   return (
     <div className="mx-auto flex w-full max-w-[560px] flex-col gap-6 px-5 pt-10 pb-8 md:gap-7 md:px-0 md:pt-[72px] md:pb-24 lg:max-w-[720px] lg:gap-9 lg:pt-[14vh] lg:pb-32">
       <div className="flex gap-2 lg:justify-center lg:gap-3" aria-hidden>
@@ -29,7 +48,24 @@ export function StartPage() {
         </p>
       </div>
       <div className="flex flex-col gap-3">
-        <AddressSearch />
+        {focus && (
+          <div
+            data-testid="sok-fokus"
+            aria-hidden
+            onClick={deactivate}
+            className="fixed inset-0 z-30 animate-in bg-bg/75 backdrop-blur-[3px] duration-200 fade-in motion-reduce:animate-none"
+          />
+        )}
+        <div
+          ref={searchRef}
+          style={focus ? { transform: `translateY(-${focus.offset}px)` } : undefined}
+          className={cn(
+            'relative transition-transform duration-300 ease-out motion-reduce:transition-none',
+            focus && 'z-40',
+          )}
+        >
+          <AddressSearch onActivate={activate} onDeactivate={deactivate} />
+        </div>
         <p className="flex items-center gap-2 px-1 text-sm text-text-2 lg:justify-center lg:text-[15px]">
           <MapPin className="size-4 shrink-0 text-primary" aria-hidden />
           {municipalityLine()}

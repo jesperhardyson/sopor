@@ -64,6 +64,7 @@
 :root {
     /* Designens tokens (docs/design/sopor-design.pen) */
     --bg: #E8F2EA;
+    --bg-2: #D2EBD9; /* andra nyansen i den levande bakgrunden */
     --surface: #FFFFFF;
     --surface-2: #DCEBDF;
     --border: #CCDFD0;
@@ -114,6 +115,7 @@
 .dark {
     /* Designens tokens (docs/design/sopor-design.pen) */
     --bg: #0C1A12;
+    --bg-2: #15301F;
     --surface: #14241A;
     --surface-2: #1C2F23;
     --border: #28402F;
@@ -171,3 +173,39 @@
     @apply font-sans;
     }
 }
+
+/* Levande bakgrund: två mjuka fält i --bg-2 som glider över --bg. Bara transform
+   animeras, så det sker på GPU:n och kostar nästan inget. */
+.bg-live {
+  isolation: isolate;
+}
+
+.bg-live::before {
+  content: '';
+  position: fixed;
+  inset: -40%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(32% 28% at 28% 30%, var(--bg-2), transparent 70%),
+    radial-gradient(30% 34% at 72% 68%, var(--bg-2), transparent 70%),
+    var(--bg);
+  animation: bg-drift 26s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes bg-drift {
+  0% {
+    transform: translate3d(-6%, -4%, 0) rotate(0deg);
+  }
+  100% {
+    transform: translate3d(6%, 4%, 0) rotate(18deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg-live::before {
+    animation: none;
+  }
+}
+
