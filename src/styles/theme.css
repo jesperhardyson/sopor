@@ -1,0 +1,173 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+    --color-bg: var(--bg);
+    --color-surface: var(--surface);
+    --color-surface-2: var(--surface-2);
+    --color-text: var(--text);
+    --color-text-2: var(--text-2);
+    --color-on-primary: var(--on-primary);
+    --color-brand: var(--brand);
+    --color-brand-soft: var(--brand-soft);
+    --color-brand-text: var(--brand-text);
+    --color-earth: var(--earth);
+    --color-earth-soft: var(--earth-soft);
+    --color-warn: var(--warn);
+    --color-warn-bg: var(--warn-bg);
+    --color-card-overlay: var(--card-overlay);
+    --color-frac-rest: var(--frac-rest);
+    --color-frac-rest-bg: var(--frac-rest-bg);
+    --color-frac-mat: var(--frac-mat);
+    --color-frac-mat-bg: var(--frac-mat-bg);
+    --color-frac-papper: var(--frac-papper);
+    --color-frac-papper-bg: var(--frac-papper-bg);
+    --color-frac-plast: var(--frac-plast);
+    --color-frac-plast-bg: var(--frac-plast-bg);
+    --color-frac-glas: var(--frac-glas);
+    --color-frac-glas-bg: var(--frac-glas-bg);
+    --color-frac-metall: var(--frac-metall);
+    --color-frac-metall-bg: var(--frac-metall-bg);
+    --font-heading: 'Fredoka', var(--font-sans);
+    --font-brand: 'Fredoka', sans-serif;
+    --font-sans: 'Nunito', ui-sans-serif, system-ui, sans-serif;
+    --color-ring: var(--ring);
+    --color-input: var(--input);
+    --color-border: var(--border);
+    --color-destructive: var(--destructive);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-accent: var(--accent);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-muted: var(--muted);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-secondary: var(--secondary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-primary: var(--primary);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-popover: var(--popover);
+    --color-card-foreground: var(--card-foreground);
+    --color-card: var(--card);
+    --color-foreground: var(--foreground);
+    --color-background: var(--background);
+    --radius-sm: calc(var(--radius) * 0.6);
+    --radius-md: calc(var(--radius) * 0.8);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) * 1.4);
+    --radius-2xl: calc(var(--radius) * 1.8);
+    --radius-3xl: calc(var(--radius) * 2.2);
+    --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+    /* Designens tokens (docs/design/sopor-design.pen) */
+    --bg: #E8F2EA;
+    --surface: #FFFFFF;
+    --surface-2: #DCEBDF;
+    --border: #CCDFD0;
+    --text: #1B231F;
+    --text-2: #526158;
+    --primary: #157A46;
+    --on-primary: #FFFFFF;
+    --brand: #1FA35C;
+    --brand-soft: #CFEBD8;
+    --brand-text: #12673B;
+    --earth: #8A5A2B;
+    --earth-soft: #F3EADF;
+    --warn: #9A4A00;
+    --warn-bg: #FDEFD9;
+    --card-overlay: #FFFFFF26;
+    --frac-rest: #474C48;
+    --frac-rest-bg: #E9EAE7;
+    --frac-mat: #7A4A1E;
+    --frac-mat-bg: #F3E6D8;
+    --frac-papper: #2E5E86;
+    --frac-papper-bg: #E1EAF3;
+    --frac-plast: #A8431F;
+    --frac-plast-bg: #FAE6DD;
+    --frac-glas: #1F6A7A;
+    --frac-glas-bg: #DDEFF2;
+    --frac-metall: #6B4F7A;
+    --frac-metall-bg: #EEE6F1;
+    /* shadcn-variabler mappade till designens tokens */
+    --background: var(--bg);
+    --foreground: var(--text);
+    --card: var(--surface);
+    --card-foreground: var(--text);
+    --popover: var(--surface);
+    --popover-foreground: var(--text);
+    --primary-foreground: var(--on-primary);
+    --secondary: var(--surface-2);
+    --secondary-foreground: var(--text);
+    --muted: var(--surface-2);
+    --muted-foreground: var(--text-2);
+    --accent: var(--brand-soft);
+    --accent-foreground: var(--brand-text);
+    --destructive: var(--warn);
+    --input: var(--border);
+    --ring: var(--brand);
+    --radius: 0.875rem;
+}
+
+.dark {
+    /* Designens tokens (docs/design/sopor-design.pen) */
+    --bg: #0C1A12;
+    --surface: #14241A;
+    --surface-2: #1C2F23;
+    --border: #28402F;
+    --text: #EDF2EE;
+    --text-2: #A0B3A6;
+    --primary: #4CC384;
+    --on-primary: #0B2416;
+    --brand: #4CC384;
+    --brand-soft: #1A3D28;
+    --brand-text: #8FE0B2;
+    --earth: #D9A06A;
+    --earth-soft: #2E241A;
+    --warn: #F4B56A;
+    --warn-bg: #3A2914;
+    --card-overlay: #0B24161F;
+    --frac-rest: #C3C9C4;
+    --frac-rest-bg: #2A2F2C;
+    --frac-mat: #E0A873;
+    --frac-mat-bg: #3A2C1F;
+    --frac-papper: #8DB6DE;
+    --frac-papper-bg: #1C2A38;
+    --frac-plast: #F0906C;
+    --frac-plast-bg: #3D241B;
+    --frac-glas: #72C6D6;
+    --frac-glas-bg: #173238;
+    --frac-metall: #C6A9D6;
+    --frac-metall-bg: #2E2436;
+    /* shadcn-variabler mappade till designens tokens */
+    --background: var(--bg);
+    --foreground: var(--text);
+    --card: var(--surface);
+    --card-foreground: var(--text);
+    --popover: var(--surface);
+    --popover-foreground: var(--text);
+    --primary-foreground: var(--on-primary);
+    --secondary: var(--surface-2);
+    --secondary-foreground: var(--text);
+    --muted: var(--surface-2);
+    --muted-foreground: var(--text-2);
+    --accent: var(--brand-soft);
+    --accent-foreground: var(--brand-text);
+    --destructive: var(--warn);
+    --input: var(--border);
+    --ring: var(--brand);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    }
+  body {
+    @apply bg-bg text-text antialiased;
+    }
+  html {
+    @apply font-sans;
+    }
+}
