@@ -90,11 +90,11 @@ export function AddressSearch({ search = searchAll, suggest = suggestAll }: { se
     <div className="flex flex-col gap-3">
       <div
         className={cn(
-          'flex h-[62px] items-center gap-2.5 rounded-[18px] border-[1.5px] border-border bg-surface pr-4 pl-[18px] shadow-[0_4px_16px_#1B231F0D] transition-colors',
+          'flex h-[62px] items-center gap-2.5 rounded-[18px] border-[1.5px] border-border bg-surface pr-4 pl-[18px] shadow-[0_4px_16px_#1B231F0D] transition-colors lg:h-[76px] lg:gap-3.5 lg:rounded-[22px] lg:pr-5 lg:pl-6',
           'focus-within:border-2 focus-within:border-primary focus-within:shadow-[0_0_10px_color-mix(in_srgb,var(--primary)_20%,transparent)]',
         )}
       >
-        <Search className="size-5 shrink-0 text-text-2 [div:focus-within>&]:text-primary" aria-hidden />
+        <Search className="size-5 shrink-0 text-text-2 lg:size-6 [div:focus-within>&]:text-primary" aria-hidden />
         <input
           ref={inputRef}
           type="text"
@@ -113,7 +113,7 @@ export function AddressSearch({ search = searchAll, suggest = suggestAll }: { se
             setSubmitted(false)
           }}
           onKeyDown={onKeyDown}
-          className="min-w-0 flex-1 bg-transparent text-base font-bold text-text outline-none placeholder:font-normal placeholder:text-text-2"
+          className="min-w-0 flex-1 bg-transparent text-base font-bold text-text outline-none placeholder:font-normal placeholder:text-text-2 lg:text-xl"
         />
         {query && (
           <button

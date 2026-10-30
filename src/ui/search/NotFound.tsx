@@ -1,10 +1,8 @@
-import { ArrowUpRight, MapPin, SearchX } from 'lucide-react'
+import { MapPin, SearchX } from 'lucide-react'
 import { Link } from 'react-router'
 import type { Address } from '@/domain/types'
-import { MUNICIPALITIES } from '@/municipalities'
 
 export function NotFound({ suggestions }: { suggestions: Address[] }) {
-  const operator = MUNICIPALITIES[0]?.operator
   return (
     <div role="status" className="flex flex-col gap-3.5 rounded-[20px] border border-border bg-surface p-5">
       <span className="inline-flex size-12 items-center justify-center rounded-2xl bg-earth-soft text-earth">
@@ -30,16 +28,6 @@ export function NotFound({ suggestions }: { suggestions: Address[] }) {
             </Link>
           ))}
         </div>
-      )}
-      {operator && (
-        <a
-          href={operator.scheduleUrl}
-          rel="noopener"
-          className="flex items-center gap-1.5 border-t border-border pt-3 text-[15px] font-extrabold text-primary"
-        >
-          Se kommunens officiella hämtschema
-          <ArrowUpRight className="size-4" aria-hidden />
-        </a>
       )}
     </div>
   )

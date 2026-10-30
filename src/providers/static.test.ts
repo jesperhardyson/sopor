@@ -7,7 +7,7 @@ const avesta: Municipality = {
   id: 'avesta',
   name: 'Avesta kommun',
   shortName: 'Avesta',
-  operator: { name: 'AVA', url: 'https://x', scheduleUrl: 'https://x' },
+  operator: { name: 'AVA', url: 'https://x' },
   provider: { type: 'static' },
 }
 

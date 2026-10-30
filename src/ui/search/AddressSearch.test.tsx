@@ -63,10 +63,7 @@ describe('AddressSearch', () => {
     expect(screen.getByText('Menade du:')).toBeInTheDocument()
     const link = screen.getByRole('link', { name: 'Storgatan 12, Avesta' })
     expect(link).toHaveAttribute('href', '/avesta/avesta-storgatan-12')
-    expect(screen.getByRole('link', { name: /officiella hämtschema/ })).toHaveAttribute(
-      'href',
-      'https://www.avestavatten.se/avfall/',
-    )
+    expect(screen.queryByText(/officiella hämtschema/)).toBeNull()
   })
 
   it('rensar fältet med rensa-knappen', async () => {

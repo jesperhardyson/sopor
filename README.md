@@ -109,7 +109,7 @@ Påminnelsen kvällen innan (`VALARM`) följer med i filen, men Google ignorerar
 
 ## Lägga till en kommun
 
-1. Lägg till kommunen i `src/municipalities/index.ts` (id, namn, avfallsbolag, länk till hämtschemat, `provider: { type: 'static' }`).
+1. Lägg till kommunen i `src/municipalities/index.ts` (id, namn, avfallsbolag med länk, `provider: { type: 'static' }`).
 2. Skapa `data/<id>/<år>/` med de två filerna.
 3. Kör `npm test && npm run build`. Kommunens adresser dyker upp i sökningen och på Om-sidan.
 
