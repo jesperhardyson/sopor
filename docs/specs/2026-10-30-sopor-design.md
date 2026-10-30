@@ -200,6 +200,10 @@ Genererade filer checkas inte in (`.gitignore`). `npm run dev` kör build-data f
 - Adress-id för EDP: en stabil slug av den adressträng EDP returnerar. Mappningen RhServices → `Schedule` skrivs när formatet är känt.
 - ICS: `/api/ics/<kommun>/<id>.ics` genereras live med samma domänkod. Providerns `icsUrl` döljer skillnaden mot den statiska varianten.
 
+### Extern adresskälla (framtid, byggs inte i v1)
+
+När den riktiga trakt-tabellen finns: ett kontrollskript som jämför `addresses.csv` mot en oberoende adresskälla (stavning, saknade adresser, fel ort eller kommun). Skriptet läser bara datafilerna och påverkar inte arkitekturen. Kandidater i prioritetsordning: Lantmäteriet Belägenhetsadress (licens och ansökan oklar), OpenStreetMap (ODbL, kräver källangivelse och share-alike, glest på landsbygden) och kommunens egna öppna data. Valet görs när trakt-tabellen har kommit.
+
 ## Funktioner och beteende
 
 ### Sök / autocomplete
