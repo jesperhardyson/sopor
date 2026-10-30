@@ -1,0 +1,61 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`buildIcs > matchar snapshot 1`] = `
+"BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Sopor//sopor.hardyson.se//SV
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Sopor – Storgatan 12 B\\, Krylbo
+X-WR-CALDESC:Hämtschema för Storgatan 12 B\\, Krylbo (Avesta kommun). Inof
+ ficiell tjänst. Vid avvikelser gäller kommunens information.
+REFRESH-INTERVAL;VALUE=DURATION:P1D
+X-PUBLISHED-TTL:P1D
+BEGIN:VEVENT
+UID:krylbo-storgatan-12b-2026-11-11@sopor.hardyson.se
+DTSTAMP:20261029T000000Z
+DTSTART;VALUE=DATE:20261111
+DTEND;VALUE=DATE:20261112
+SUMMARY:Sopor: Restavfall + Matavfall
+DESCRIPTION:Inofficiell tjänst. Vid avvikelser gäller kommunens informati
+ on.
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:I morgon: Restavfall + Matavfall
+TRIGGER:-PT6H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:krylbo-storgatan-12b-2026-11-25@sopor.hardyson.se
+DTSTAMP:20261029T000000Z
+DTSTART;VALUE=DATE:20261125
+DTEND;VALUE=DATE:20261126
+SUMMARY:Sopor: Matavfall + Pappersförpackningar
+DESCRIPTION:Inofficiell tjänst. Vid avvikelser gäller kommunens informati
+ on.
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:I morgon: Matavfall + Pappersförpackningar
+TRIGGER:-PT6H
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:krylbo-storgatan-12b-2027-01-07@sopor.hardyson.se
+DTSTAMP:20261029T000000Z
+DTSTART;VALUE=DATE:20270107
+DTEND;VALUE=DATE:20270108
+SUMMARY:Sopor: Matavfall + Pappersförpackningar
+DESCRIPTION:Flyttad från onsdag 6 januari (trettondedag jul).\\nInofficiell
+  tjänst. Vid avvikelser gäller kommunens information.
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:I morgon: Matavfall + Pappersförpackningar
+TRIGGER:-PT6H
+END:VALARM
+END:VEVENT
+END:VCALENDAR
+"
+`;
