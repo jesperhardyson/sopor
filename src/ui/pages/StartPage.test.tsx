@@ -75,6 +75,7 @@ describe('StartPage innehåll', () => {
       'href',
       'https://github.com/jesperhardyson/sopor/blob/main/CONTRIBUTING.md',
     )
+    expect(within(bidra).getByRole('link', { name: /Så går det till/ })).toHaveAttribute('href', '/bidra')
     expect(within(bidra).getByRole('link', { name: 'support@hardyson.se' })).toHaveAttribute(
       'href',
       'mailto:support@hardyson.se',

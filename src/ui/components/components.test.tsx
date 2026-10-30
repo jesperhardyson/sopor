@@ -50,6 +50,7 @@ describe('Footer', () => {
     expect(screen.getByRole('link', { name: 'Om' })).toHaveAttribute('href', '/om')
     expect(screen.getByRole('link', { name: 'Kontakt' })).toHaveAttribute('href', 'mailto:support@hardyson.se')
     expect(screen.queryByText('Avesta Vatten och Avfall')).toBeNull()
+    expect(screen.getByRole('link', { name: 'Bidra' })).toHaveAttribute('href', '/bidra')
   })
 })
 

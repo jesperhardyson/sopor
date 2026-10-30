@@ -267,6 +267,7 @@ När den riktiga trakt-tabellen finns: ett kontrollskript som jämför `addresse
 
 - `/`: start.
 - `/:kommun/:addressId`: resultat.
+- `/bidra`: hur man hjälper till att få in en kommun, utan teknik (steg, exempeltext för att begära ut adresslistan, sätt att bidra, kommunstatus). Den tekniska guiden ligger i `docs/kommuner/hitta-kommunens-data.md`.
 - `/om`: Om-sidan enligt designen. Kontakt är `mailto:support@hardyson.se` (även länken "Kontakt" i sidfoten), och källorna kommer från kommunregistret.
 - SPA-rewrite i `vercel.json`: allt utom `/data/*`, `/ics/*` och statiska filer → `index.html`.
 
