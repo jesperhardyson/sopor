@@ -76,3 +76,7 @@ export function renameSaved(municipalityId: string, addressId: string, name: str
 export function findSaved(municipalityId: string, addressId: string): SavedAddress | undefined {
   return loadSaved().find((a) => same(a, municipalityId, addressId))
 }
+
+export function clearSaved(): SavedAddress[] {
+  return store([])
+}

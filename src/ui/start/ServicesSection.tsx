@@ -43,7 +43,7 @@ export function ServicesSection() {
   return (
     <section
       aria-labelledby="tjanster-rubrik"
-      className="mx-auto flex w-full max-w-[960px] flex-col gap-6 px-5 pt-12 lg:gap-10 lg:px-0 lg:pt-6 lg:pb-24"
+      className="mx-auto flex w-full max-w-[960px] flex-col gap-6 px-5 pt-12 lg:gap-10 lg:px-0 lg:pt-20 lg:pb-24"
     >
       <div className="flex flex-col gap-2 lg:gap-2.5">
         <p className="text-[13px] font-extrabold tracking-[1.4px] text-primary uppercase">Det här får du</p>

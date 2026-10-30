@@ -3,9 +3,10 @@ import { useState } from 'react'
 import { Link } from 'react-router'
 import { daysBetween, formatShort, relativeDayLabel, todayInStockholm } from '@/domain/dates'
 import { nextPickup } from '@/domain/schedule'
-import { loadSaved, removeSaved, renameSaved, type SavedAddress } from '@/lib/storage'
+import { clearSaved, loadSaved, removeSaved, renameSaved, type SavedAddress } from '@/lib/storage'
 import { FractionIcon } from '../components/FractionIcon'
 import { useSchedule } from '../hooks/useSchedule'
+import { ForgetAll } from './ForgetAll'
 import { NameIcon } from './NameIcon'
 
 function SavedCard({ saved, today }: { saved: SavedAddress; today: string }) {
@@ -56,7 +57,7 @@ export function SavedList({ today = todayInStockholm() }: { today?: string }) {
           Mina adresser
         </h2>
         <button type="button" onClick={() => setEditing((e) => !e)} className="text-sm font-bold text-primary">
-          {editing ? 'Klar' : 'Ändra'}
+          {editing ? 'Klar' : 'Hantera'}
         </button>
       </div>
 
@@ -78,17 +79,20 @@ export function SavedList({ today = todayInStockholm() }: { today?: string }) {
               </label>
               <button
                 type="button"
-                aria-label={`Ta bort ${s.name}`}
+                aria-label={`Glöm ${s.name}`}
                 onClick={() => setSaved(removeSaved(s.municipalityId, s.addressId))}
-                className="inline-flex size-10 items-center justify-center rounded-full text-warn hover:bg-warn-bg"
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-bold text-warn hover:bg-warn-bg"
               >
-                <Trash2 className="size-5" aria-hidden />
+                <Trash2 className="size-4" aria-hidden />
+                Glöm
               </button>
             </div>
           )
         }
         return <SavedCard key={key} saved={s} today={today} />
       })}
+
+      {editing && <ForgetAll label="Glöm alla adresser på den här enheten" onConfirm={() => setSaved(clearSaved())} />}
 
       <p className="flex items-center gap-1.5 px-1 py-0.5 text-[13px] text-text-2">
         <Smartphone className="size-3.5" aria-hidden />

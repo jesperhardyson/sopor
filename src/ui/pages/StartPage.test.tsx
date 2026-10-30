@@ -53,6 +53,14 @@ describe('StartPage innehåll', () => {
     }
   })
 
+  it('lägger informationen om tjänsten i ett eget band, skilt från sök och sparade adresser', () => {
+    setup()
+    const band = screen.getByTestId('infoband')
+    expect(within(band).getByRole('heading', { name: 'Koll på sopdagen, utan att behöva tänka på den' })).toBeInTheDocument()
+    expect(within(band).getByRole('heading', { name: 'Saknas din kommun? Hjälp till att få in den.' })).toBeInTheDocument()
+    expect(within(band).queryByRole('combobox')).toBeNull()
+  })
+
   it('visar exempelkortet bara visuellt, inte för skärmläsare', () => {
     setup()
     expect(screen.getByTestId('forhandsvisning')).toHaveAttribute('aria-hidden', 'true')
