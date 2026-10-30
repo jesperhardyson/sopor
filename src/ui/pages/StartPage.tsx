@@ -1,7 +1,7 @@
 import { MapPin } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { cn } from '@/lib/utils'
-import { MUNICIPALITIES } from '@/municipalities'
+import { supportedKommuner } from '@/sources'
 import { FractionIcon } from '../components/FractionIcon'
 import { SavedList } from '../saved/SavedList'
 import { ContributeSection } from '../start/ContributeSection'
@@ -10,8 +10,9 @@ import { AddressSearch } from '../search/AddressSearch'
 
 const HERO_FRACTIONS = ['rest', 'mat', 'papper', 'plast'] as const
 
-function municipalityLine(): string {
-  const names = MUNICIPALITIES.map((m) => m.name)
+function kommunLine(): string {
+  const names = supportedKommuner().map((k) => k.name)
+  if (names.length > 3) return `Just nu: ${names.length} kommuner. Fler kommer.`
   const list = names.length > 1 ? `${names.slice(0, -1).join(', ')} och ${names.at(-1)}` : names[0]
   return `Just nu: ${list}. Fler kommuner kommer.`
 }
@@ -71,7 +72,7 @@ export function StartPage() {
         </div>
         <p className="flex items-center gap-2 px-1 text-sm text-text-2 lg:justify-center lg:text-[15px]">
           <MapPin className="size-4 shrink-0 text-primary" aria-hidden />
-          {municipalityLine()}
+          {kommunLine()}
         </p>
         <SavedList />
       </div>

@@ -6,7 +6,7 @@ import { searchAddresses, suggest } from '@/domain/search'
 import type { Address } from '@/domain/types'
 import { AddressSearch } from './AddressSearch'
 
-const a = (id: string, street: string, locality: string): Address => ({ id, street, locality, municipalityId: 'avesta' })
+const a = (id: string, street: string, locality: string): Address => ({ id, street, locality, sourceId: 'avesta', kommun: 'Avesta kommun' })
 const ADDRESSES = [
   a('krylbo-storgatan-12b', 'Storgatan 12 B', 'Krylbo'),
   a('avesta-storgatan-12', 'Storgatan 12', 'Avesta'),
@@ -15,8 +15,8 @@ const ADDRESSES = [
 ]
 
 function Result() {
-  const { municipalityId, addressId } = useParams()
-  return <p>Resultat {municipalityId}/{addressId}</p>
+  const { sourceId, addressId } = useParams()
+  return <p>Resultat {sourceId}/{addressId}</p>
 }
 
 function setup() {
@@ -32,7 +32,7 @@ function setup() {
             />
           }
         />
-        <Route path=":municipalityId/:addressId" element={<Result />} />
+        <Route path=":sourceId/:addressId" element={<Result />} />
       </Routes>
     </MemoryRouter>,
   )

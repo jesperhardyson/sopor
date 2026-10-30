@@ -19,8 +19,8 @@ export function NotFound({ suggestions }: { suggestions: Address[] }) {
           <p className="text-sm font-bold text-text-2">Menade du:</p>
           {suggestions.map((s) => (
             <Link
-              key={`${s.municipalityId}/${s.id}`}
-              to={`/${s.municipalityId}/${s.id}`}
+              key={`${s.sourceId}/${s.id}`}
+              to={`/${s.sourceId}/${s.id}`}
               className="inline-flex items-center gap-2 rounded-xl bg-brand-soft px-3.5 py-2.5 text-[15px] font-extrabold text-brand-text"
             >
               <MapPin className="size-4" aria-hidden />

@@ -41,11 +41,11 @@ export function deviationText(event: PickupEvent): string | undefined {
 
 export function buildIcs(input: {
   address: Address
-  municipalityName: string
+  kommunName: string
   schedule: Schedule
   host?: string
 }): string {
-  const { address, municipalityName, schedule, host = 'sopor.hardyson.se' } = input
+  const { address, kommunName, schedule, host = 'sopor.hardyson.se' } = input
   const stamp = `${compact(schedule.updatedAt)}T000000Z`
 
   const lines = [
@@ -55,7 +55,7 @@ export function buildIcs(input: {
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
     `X-WR-CALNAME:${escapeText(`Sopor – ${address.street}, ${address.locality}`)}`,
-    `X-WR-CALDESC:${escapeText(`Hämtschema för ${address.street}, ${address.locality} (${municipalityName}). ${DISCLAIMER}`)}`,
+    `X-WR-CALDESC:${escapeText(`Hämtschema för ${address.street}, ${address.locality} (${kommunName}). ${DISCLAIMER}`)}`,
     'REFRESH-INTERVAL;VALUE=DURATION:P1D',
     'X-PUBLISHED-TTL:P1D',
   ]

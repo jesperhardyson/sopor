@@ -3,7 +3,6 @@ import { useEffect, useId, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { normalize } from '@/domain/search'
 import type { Address } from '@/domain/types'
-import { getMunicipality } from '@/municipalities'
 import { searchAll, suggestAll } from '@/providers/registry'
 import { cn } from '@/lib/utils'
 import { NotFound } from './NotFound'
@@ -70,7 +69,7 @@ export function AddressSearch({
   const open = results.length > 0
 
   function go(address: Address) {
-    navigate(`/${address.municipalityId}/${address.id}`)
+    navigate(`/${address.sourceId}/${address.id}`)
   }
 
   function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -157,7 +156,7 @@ export function AddressSearch({
         >
           {results.map((r, i) => (
             <li
-              key={`${r.municipalityId}/${r.id}`}
+              key={`${r.sourceId}/${r.id}`}
               id={`${listId}-${i}`}
               role="option"
               aria-selected={i === active}
@@ -175,7 +174,7 @@ export function AddressSearch({
                   <span>{r.locality}</span>
                   <span aria-hidden>·</span>
                   <span className="rounded-md bg-brand-soft px-2 py-0.5 text-[13px] font-extrabold text-brand-text">
-                    {getMunicipality(r.municipalityId)?.name ?? r.municipalityId}
+                    {r.kommun}
                   </span>
                 </span>
               </span>

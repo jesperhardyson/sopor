@@ -1,26 +1,26 @@
 import { describe, expect, it } from 'vitest'
 import type { Address } from '@/domain/types'
-import type { Municipality } from '@/municipalities'
-import { getMunicipality, MUNICIPALITIES } from '@/municipalities'
+import type { Source } from '@/sources'
+import { getSource, SOURCES } from '@/sources'
 import { mergeResults, providerFor } from './registry'
 
-const a = (id: string, municipalityId: string): Address => ({ id, street: id, locality: 'x', municipalityId })
+const a = (id: string, sourceId: string): Address => ({ id, street: id, locality: 'x', sourceId, kommun: 'x' })
 
 describe('kommunregistret', () => {
   it('har Avesta med statisk provider', () => {
-    expect(getMunicipality('avesta')?.provider).toEqual({ type: 'static' })
-    expect(getMunicipality('hedemora')).toBeUndefined()
-    expect(MUNICIPALITIES.map((m) => m.id)).toEqual(['avesta'])
+    expect(getSource('avesta')?.config).toEqual({ system: 'static' })
+    expect(getSource('hedemora')).toBeUndefined()
+    expect(SOURCES.map((m) => m.id)).toEqual(['avesta'])
   })
 })
 
 describe('providerFor', () => {
   it('ger en provider för statiska kommuner', () => {
-    expect(providerFor(getMunicipality('avesta')!).icsUrl('x')).toBe('/ics/avesta/x.ics')
+    expect(providerFor(getSource('avesta')!).icsUrl('x')).toBe('/ics/avesta/x.ics')
   })
 
   it('säger tydligt att EDP inte är byggd än', () => {
-    const edp: Municipality = { ...getMunicipality('avesta')!, provider: { type: 'edp', baseUrl: 'https://x' } }
+    const edp: Source = { ...getSource('avesta')!, config: { system: 'edp', baseUrl: 'https://x' } }
     expect(() => providerFor(edp)).toThrow('EDP-provider ej implementerad')
   })
 })

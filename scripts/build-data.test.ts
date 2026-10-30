@@ -1,12 +1,12 @@
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { buildMunicipality } from '@/data/static-format'
-import { getMunicipality } from '@/municipalities'
+import { getSource } from '@/sources'
 import { readYears } from './build-data'
 
 describe('seed-datan för Avesta', () => {
   const years = readYears(path.resolve(import.meta.dirname, '../data/avesta'))
-  const out = buildMunicipality(years, getMunicipality('avesta')!)
+  const out = buildMunicipality(years, getSource('avesta')!)
 
   it('ger 11 adresser, 4 scheman och en .ics per adress', () => {
     expect(out.index.addresses).toHaveLength(11)

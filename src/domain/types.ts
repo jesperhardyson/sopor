@@ -4,7 +4,9 @@ export interface Address {
   id: string
   street: string
   locality: string
-  municipalityId: string
+  sourceId: string
+  /** Kommunens namn, t.ex. "Avesta kommun" */
+  kommun: string
 }
 
 export interface Bin {

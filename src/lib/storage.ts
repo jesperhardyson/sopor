@@ -1,5 +1,5 @@
 export interface SavedAddress {
-  municipalityId: string
+  sourceId: string
   addressId: string
   name: string
   street: string
@@ -26,10 +26,17 @@ function isSaved(value: unknown): value is SavedAddress {
   return (
     typeof v === 'object' &&
     v !== null &&
-    ['municipalityId', 'addressId', 'name', 'street', 'locality'].every(
+    ['sourceId', 'addressId', 'name', 'street', 'locality'].every(
       (k) => typeof v[k as keyof SavedAddress] === 'string',
     )
   )
+}
+
+/** Adresser sparade före källregistret hade fältet municipalityId i stället för sourceId. */
+function migrate(value: unknown): unknown {
+  if (typeof value !== 'object' || value === null || 'sourceId' in value || !('municipalityId' in value)) return value
+  const { municipalityId, ...rest } = value as Record<string, unknown>
+  return { sourceId: municipalityId, ...rest }
 }
 
 /** Läser sparade adresser. Trasig eller otillgänglig lagring ger en tom lista. */
@@ -39,7 +46,7 @@ export function loadSaved(): SavedAddress[] {
   pending = null
   try {
     const parsed: unknown = JSON.parse(raw ?? '[]')
-    return Array.isArray(parsed) ? parsed.filter(isSaved) : []
+    return Array.isArray(parsed) ? parsed.map(migrate).filter(isSaved) : []
   } catch {
     return []
   }
@@ -56,25 +63,25 @@ function store(list: SavedAddress[]): SavedAddress[] {
   return list
 }
 
-const same = (a: SavedAddress, municipalityId: string, addressId: string) =>
-  a.municipalityId === municipalityId && a.addressId === addressId
+const same = (a: SavedAddress, sourceId: string, addressId: string) =>
+  a.sourceId === sourceId && a.addressId === addressId
 
 export function upsertSaved(address: SavedAddress): SavedAddress[] {
   const list = loadSaved()
-  const i = list.findIndex((a) => same(a, address.municipalityId, address.addressId))
+  const i = list.findIndex((a) => same(a, address.sourceId, address.addressId))
   return store(i === -1 ? [...list, address] : list.map((a, j) => (j === i ? address : a)))
 }
 
-export function removeSaved(municipalityId: string, addressId: string): SavedAddress[] {
-  return store(loadSaved().filter((a) => !same(a, municipalityId, addressId)))
+export function removeSaved(sourceId: string, addressId: string): SavedAddress[] {
+  return store(loadSaved().filter((a) => !same(a, sourceId, addressId)))
 }
 
-export function renameSaved(municipalityId: string, addressId: string, name: string): SavedAddress[] {
-  return store(loadSaved().map((a) => (same(a, municipalityId, addressId) ? { ...a, name } : a)))
+export function renameSaved(sourceId: string, addressId: string, name: string): SavedAddress[] {
+  return store(loadSaved().map((a) => (same(a, sourceId, addressId) ? { ...a, name } : a)))
 }
 
-export function findSaved(municipalityId: string, addressId: string): SavedAddress | undefined {
-  return loadSaved().find((a) => same(a, municipalityId, addressId))
+export function findSaved(sourceId: string, addressId: string): SavedAddress | undefined {
+  return loadSaved().find((a) => same(a, sourceId, addressId))
 }
 
 export function clearSaved(): SavedAddress[] {

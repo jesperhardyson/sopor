@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { normalize, searchAddresses, suggest } from './search'
 import type { Address } from './types'
 
-const a = (id: string, street: string, locality: string): Address => ({ id, street, locality, municipalityId: 'avesta' })
+const a = (id: string, street: string, locality: string): Address => ({ id, street, locality, sourceId: 'avesta', kommun: 'Avesta kommun' })
 
 const ADDRESSES: Address[] = [
   a('krylbo-storgatan-12b', 'Storgatan 12 B', 'Krylbo'),

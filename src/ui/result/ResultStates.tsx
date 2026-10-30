@@ -1,11 +1,10 @@
 import { LoaderCircle, Map, TriangleAlert } from 'lucide-react'
-import { MUNICIPALITIES } from '@/municipalities'
 
 const Skeleton = ({ className }: { className: string }) => (
   <span className={`block animate-pulse rounded-lg bg-surface-2 ${className}`} aria-hidden />
 )
 
-export function LoadingState({ municipalityName }: { municipalityName: string }) {
+export function LoadingState({ sourceName }: { sourceName: string }) {
   return (
     <div className="flex flex-col gap-5">
       <div className="flex flex-col gap-3.5 rounded-3xl bg-surface p-5" aria-hidden>
@@ -23,7 +22,7 @@ export function LoadingState({ municipalityName }: { municipalityName: string })
       <Skeleton className="h-14 w-full rounded-[14px]" />
       <p role="status" className="flex items-center justify-center gap-2 text-sm font-semibold text-text-2">
         <LoaderCircle className="size-[18px] animate-spin text-primary" aria-hidden />
-        Hämtar schemat från {municipalityName}…
+        Hämtar schemat från {sourceName}…
       </p>
       <div className="flex flex-col gap-3" aria-hidden>
         {[0, 1, 2].map((i) => (
@@ -62,17 +61,15 @@ export function ErrorState({ onRetry }: { onRetry: () => void }) {
 }
 
 export function UnsupportedState() {
-  const names = MUNICIPALITIES.map((m) => m.shortName)
-  const list = names.length > 1 ? `${names.slice(0, -1).join(', ')} och ${names.at(-1)}` : names[0]
   return (
     <div className="flex flex-col gap-3.5 rounded-[20px] border border-border bg-surface p-5">
       <span className="inline-flex size-12 items-center justify-center rounded-2xl bg-brand-soft text-brand-text">
         <Map className="size-6" aria-hidden />
       </span>
       <div className="flex flex-col gap-1.5">
-        <h2 className="text-xl font-extrabold tracking-[-0.3px] text-text">Vi finns bara i {list} just nu</h2>
+        <h2 className="text-xl font-extrabold tracking-[-0.3px] text-text">Den här adressen finns inte hos Sopor</h2>
         <p className="text-[15px] leading-[1.45] text-text-2">
-          Länken gäller en kommun som Sopor inte stöder än. Fler kommuner kommer.
+          Länken pekar på en kommun eller ett avfallsbolag som Sopor inte har än. Sök på din adress nedan.
         </p>
       </div>
     </div>

@@ -5,7 +5,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { buildMunicipality, DataError, parseAddressesCsv, parseSchedulesFile } from '../src/data/static-format'
-import { MUNICIPALITIES } from '../src/municipalities'
+import { SOURCES } from '../src/sources'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 
@@ -31,8 +31,8 @@ function writeFile(file: string, content: string) {
 }
 
 function main() {
-  for (const municipality of MUNICIPALITIES) {
-    if (municipality.provider.type !== 'static') continue
+  for (const municipality of SOURCES) {
+    if (municipality.config.system !== 'static') continue
     const dataDir = path.join(root, 'data', municipality.id)
     const dataOut = path.join(root, 'public', 'data', municipality.id)
     const icsOut = path.join(root, 'public', 'ics', municipality.id)

@@ -10,11 +10,11 @@ import { ForgetAll } from './ForgetAll'
 import { NameIcon } from './NameIcon'
 
 function SavedCard({ saved, today }: { saved: SavedAddress; today: string }) {
-  const [state] = useSchedule(saved.municipalityId, saved.addressId)
+  const [state] = useSchedule(saved.sourceId, saved.addressId)
   const next = state.status === 'ok' ? nextPickup(state.schedule, today) : null
   return (
     <Link
-      to={`/${saved.municipalityId}/${saved.addressId}`}
+      to={`/${saved.sourceId}/${saved.addressId}`}
       className="flex items-center gap-3.5 rounded-[18px] border border-border bg-surface p-4 hover:border-primary"
     >
       <span className="flex min-w-0 flex-1 flex-col gap-1">
@@ -62,7 +62,7 @@ export function SavedList({ today = todayInStockholm() }: { today?: string }) {
       </div>
 
       {saved.map((s) => {
-        const key = `${s.municipalityId}/${s.addressId}`
+        const key = `${s.sourceId}/${s.addressId}`
         if (editing) {
           return (
             <div key={key} className="flex items-center gap-3 rounded-[18px] border border-border bg-surface p-4">
@@ -70,7 +70,7 @@ export function SavedList({ today = todayInStockholm() }: { today?: string }) {
                 <span className="sr-only">Namn för {s.street}</span>
                 <input
                   defaultValue={s.name}
-                  onBlur={(e) => e.target.value.trim() && setSaved(renameSaved(s.municipalityId, s.addressId, e.target.value.trim()))}
+                  onBlur={(e) => e.target.value.trim() && setSaved(renameSaved(s.sourceId, s.addressId, e.target.value.trim()))}
                   className="rounded-lg border border-border bg-bg px-2.5 py-1.5 text-base font-extrabold text-text"
                 />
                 <span className="text-sm text-text-2">
@@ -80,7 +80,7 @@ export function SavedList({ today = todayInStockholm() }: { today?: string }) {
               <button
                 type="button"
                 aria-label={`Glöm ${s.name}`}
-                onClick={() => setSaved(removeSaved(s.municipalityId, s.addressId))}
+                onClick={() => setSaved(removeSaved(s.sourceId, s.addressId))}
                 className="inline-flex shrink-0 items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-bold text-warn hover:bg-warn-bg"
               >
                 <Trash2 className="size-4" aria-hidden />

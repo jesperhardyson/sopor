@@ -6,7 +6,8 @@ const address: Address = {
   id: 'krylbo-storgatan-12b',
   street: 'Storgatan 12 B',
   locality: 'Krylbo',
-  municipalityId: 'avesta',
+  sourceId: 'avesta',
+  kommun: 'Avesta kommun',
 }
 
 const schedule: Schedule = {
@@ -23,7 +24,7 @@ const schedule: Schedule = {
   ],
 }
 
-const ics = () => buildIcs({ address, municipalityName: 'Avesta kommun', schedule })
+const ics = () => buildIcs({ address, kommunName: 'Avesta kommun', schedule })
 
 /** Avvikta rader (RFC 5545 3.1) */
 function unfold(text: string): string[] {
@@ -94,7 +95,7 @@ describe('buildIcs', () => {
       ...schedule,
       events: [{ date: '2026-12-01', fractions: ['rest'], deviation: { reason: 'a,b;c\\d\nny rad' } }],
     }
-    const text = buildIcs({ address, municipalityName: 'Avesta kommun', schedule: odd })
+    const text = buildIcs({ address, kommunName: 'Avesta kommun', schedule: odd })
     const desc = unfold(text).find((l) => l.startsWith('DESCRIPTION:'))
     expect(desc).toContain('a\\,b\\;c\\\\d\\nny rad')
   })

@@ -1,20 +1,20 @@
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
-import type { Municipality } from '@/municipalities'
+import type { Source } from '@/sources'
 import { TestDataBanner } from './TestDataBanner'
 
-const m = (testData: boolean): Municipality => ({
+const m = (testData: boolean): Source => ({
   id: 'avesta',
-  name: 'Avesta kommun',
-  shortName: 'Avesta',
-  operator: { name: 'Avesta Vatten och Avfall', url: 'https://www.avestavatten.se' },
-  provider: { type: 'static' },
+  name: 'Avesta Vatten och Avfall',
+  url: 'https://www.avestavatten.se',
+  kommuner: [{ code: '2084', name: 'Avesta kommun' }],
+  config: { system: 'static' },
   testData,
 })
 
 describe('TestDataBanner', () => {
   it('varnar när en kommun har påhittade data', () => {
-    render(<TestDataBanner municipalities={[m(true)]} />)
+    render(<TestDataBanner sources={[m(true)]} />)
     expect(screen.getByRole('status')).toHaveTextContent(
       'Testversion – datumen är påhittade och gäller inte. Kolla alltid din kommuns hämtschema.',
     )
@@ -22,7 +22,7 @@ describe('TestDataBanner', () => {
   })
 
   it('syns inte när datan är riktig', () => {
-    const { container } = render(<TestDataBanner municipalities={[m(false)]} />)
+    const { container } = render(<TestDataBanner sources={[m(false)]} />)
     expect(container).toBeEmptyDOMElement()
   })
 })

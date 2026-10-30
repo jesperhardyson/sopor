@@ -5,7 +5,7 @@ import { todayInStockholm } from '@/domain/dates'
 import { nextPickup, upcoming } from '@/domain/schedule'
 import type { Address } from '@/domain/types'
 import { findSaved } from '@/lib/storage'
-import { getMunicipality, type Municipality } from '@/municipalities'
+import { getSource, type Source } from '@/sources'
 import { providerFor } from '@/providers/registry'
 import { useSchedule } from '../hooks/useSchedule'
 import { MonthCalendar } from '../result/MonthCalendar'
@@ -29,7 +29,7 @@ function BackLink() {
   )
 }
 
-function useAddress(m: Municipality | undefined, addressId: string, attempt: number) {
+function useAddress(m: Source | undefined, addressId: string, attempt: number) {
   const [address, setAddress] = useState<Address | null | undefined>(undefined)
   useEffect(() => {
     if (!m) return
@@ -50,19 +50,19 @@ function useAddress(m: Municipality | undefined, addressId: string, attempt: num
 
 /** Ny instans per adress, så att lokalt tillstånd (sparat namn, månad) inte följer med. */
 export function ResultRoute({ today }: { today?: string }) {
-  const { municipalityId, addressId } = useParams()
-  return <ResultPage key={`${municipalityId}/${addressId}`} today={today} />
+  const { sourceId, addressId } = useParams()
+  return <ResultPage key={`${sourceId}/${addressId}`} today={today} />
 }
 
 export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
-  const { municipalityId = '', addressId = '' } = useParams()
-  const municipality = getMunicipality(municipalityId)
-  const [state, retry, attempt] = useSchedule(municipalityId, addressId)
-  const address = useAddress(municipality, addressId, attempt)
+  const { sourceId = '', addressId = '' } = useParams()
+  const source = getSource(sourceId)
+  const [state, retry, attempt] = useSchedule(sourceId, addressId)
+  const address = useAddress(source, addressId, attempt)
   const [sheet, setSheet] = useState<'calendar' | 'save' | null>(null)
-  const [savedName, setSavedName] = useState(() => findSaved(municipalityId, addressId)?.name)
+  const [savedName, setSavedName] = useState(() => findSaved(sourceId, addressId)?.name)
 
-  if (!municipality) {
+  if (!source) {
     return (
       <div className={page}>
         <BackLink />
@@ -95,7 +95,7 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
               <span>{address.locality}</span>
               <span aria-hidden>·</span>
               <span className="rounded-md bg-brand-soft px-2 py-0.5 text-[13px] font-extrabold text-brand-text">
-                {municipality.name}
+                {address.kommun}
               </span>
             </p>
           )}
@@ -118,7 +118,7 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
     return (
       <div className={page}>
         {header}
-        <LoadingState municipalityName={municipality.name} />
+        <LoadingState sourceName={source.name} />
       </div>
     )
   }
@@ -166,15 +166,15 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
             open={sheet === 'calendar'}
             onOpenChange={(o) => setSheet(o ? 'calendar' : null)}
             address={address}
-            icsPath={providerFor(municipality).icsUrl(address.id)}
+            icsPath={providerFor(source).icsUrl(address.id)}
           />
           <SaveSheet
             key={savedName ?? ''}
             open={sheet === 'save'}
             onOpenChange={(o) => setSheet(o ? 'save' : null)}
             address={address}
-            municipalityName={municipality.name}
-            onSaved={() => setSavedName(findSaved(municipality.id, address.id)?.name)}
+            kommunName={address.kommun}
+            onSaved={() => setSavedName(findSaved(source.id, address.id)?.name)}
           />
         </>
       )}

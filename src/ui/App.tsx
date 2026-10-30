@@ -15,7 +15,7 @@ export function App() {
           <Route index element={<StartPage />} />
           <Route path="om" element={<AboutPage />} />
           <Route path="bidra" element={<BidraPage />} />
-          <Route path=":municipalityId/:addressId" element={<ResultRoute />} />
+          <Route path=":sourceId/:addressId" element={<ResultRoute />} />
           <Route path="*" element={<StartPage />} />
         </Route>
       </Routes>

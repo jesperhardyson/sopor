@@ -39,7 +39,7 @@ describe('AboutPage', () => {
   it('kan glömma sparade adresser under Integritet', async () => {
     localStorage.setItem(
       'sopor.saved.v1',
-      JSON.stringify([{ municipalityId: 'avesta', addressId: 'a', name: 'Hemma', street: 'S 1', locality: 'A', savedAt: '' }]),
+      JSON.stringify([{ sourceId: 'avesta', addressId: 'a', name: 'Hemma', street: 'S 1', locality: 'A', savedAt: '' }]),
     )
     render(
       <MemoryRouter>

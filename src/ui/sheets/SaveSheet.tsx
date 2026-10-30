@@ -12,23 +12,23 @@ export function SaveSheet({
   open,
   onOpenChange,
   address,
-  municipalityName,
+  kommunName,
   onSaved,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
   address: Address
-  municipalityName: string
+  kommunName: string
   onSaved?: () => void
 }) {
   const inputId = useId()
-  const [name, setName] = useState(() => findSaved(address.municipalityId, address.id)?.name ?? 'Hemma')
+  const [name, setName] = useState(() => findSaved(address.sourceId, address.id)?.name ?? 'Hemma')
   const trimmed = name.trim()
 
   function save() {
     if (!trimmed) return
     upsertSaved({
-      municipalityId: address.municipalityId,
+      sourceId: address.sourceId,
       addressId: address.id,
       name: trimmed,
       street: address.street,
@@ -44,7 +44,7 @@ export function SaveSheet({
       open={open}
       onOpenChange={onOpenChange}
       title="Spara adress"
-      description={`${address.street}, ${address.locality} · ${municipalityName}`}
+      description={`${address.street}, ${address.locality} · ${kommunName}`}
     >
       <form
         className="flex flex-col gap-[18px]"
