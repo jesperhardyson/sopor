@@ -1,7 +1,7 @@
 # Sopor – hela Sverige (v2)
 
 Datum: 2026-10-30
-Status: utkast för godkännande
+Status: godkänd 2026-10-30 (med NVDB/OSM i stället för Lantmäteriet)
 Bygger på: `docs/specs/2026-10-30-sopor-design.md` (v1) och `docs/kommuner/undersokning-2026-10-adresser-och-hamtschema.md`
 
 ## Syfte
@@ -14,7 +14,7 @@ Sopor ska fungera för så många svenskar som möjligt. Målet är de cirka 120
 - **Alla publika källor utan inloggning får användas**, även webbplatsernas odokumenterade bakomliggande tjänster, med cache och låg volym. Källor bakom inloggning eller apptoken används aldrig.
 - **Kommande datum räknas fram** när källan bara ger nästa tömning och en frekvens (EDP), och märks **"beräknat"**.
 - **Röda dagar och helgdagsaftnar visas i månadskalendern.**
-- **Lantmäteriet:** användaren kontaktar Lantmäteriet om villkoren för Belägenhetsadress.
+- **Inget beroende till Lantmäteriet.** Adresser med husnummer kommer från källorna själva. Det nationella indexet behöver bara gatunamn.
 
 ## Mål
 
@@ -42,7 +42,8 @@ Sopor ska fungera för så många svenskar som möjligt. Målet är de cirka 120
 
 Utan kommunväljare måste sökningen veta vilka kommuner som kan ha adressen. Det löses med ett **statiskt index över gatunamn per kommun**:
 
-- **Källa:** OpenStreetMap. Gatorna är väl kartlagda i Sverige, även där adresspunkterna saknas. Kommun bestäms med kommungränser (OSM `admin_level=7`), och kommunkoder kommer från SCB.
+- **Källa:** OpenStreetMap via Overpass (gatunamn och ortnamn per kommun, `admin_level=7` och `ref:se:kommun:kod`). Vägnätet i OSM bygger till stor del på Trafikverkets NVDB (CC0) och kan hämtas utan konto. NVDB från Lastkajen kräver konto och manuell nedladdning, så den är bara reserv.
+- **Ortnamn → kommun:** samma hämtning ger orter (`place=*`) per kommun. Den används för att ange kommun när en källa bara returnerar ort.
 - **Innehåll:** normaliserat gatunamn → lista av kommunkoder. Bara kommuner som Sopor har en källa för tas med. Ortnamn tas också med, så att "Storgatan Krylbo" kan avgränsa.
 - **Format:** delfiler per de två första bokstäverna (`/data/gator/st.json` med flera), några kB var, med lång cache på CDN:en.
 - **Licens:** ODbL. Källan anges på Om-sidan och i README, och indexet ligger i repot och delas under samma licens.
@@ -67,19 +68,22 @@ Utan kommunväljare måste sökningen veta vilka kommuner som kan ha adressen. D
 | `edp` | Cirka 25 värdar, 45–55 kommuner | Nästa datum + frekvens, så **beräkning** krävs |
 | `vasyd`, `nsr`, `srv`, `sysav`, `svoa`, `telge`, `msva`, … | Cirka 70–85 kommuner | Varierar: datumlistor, ICS eller frekvens |
 
-- **Kommunregistret** får fältet `system` och providerkonfiguration (värd med mera). En ny EDP-kommun blir då bara en rad i registret.
+- **Källregistret** (nytt) beskriver varje datakälla: id (används i URL:en, till exempel `vafab`), namn (till exempel "Vafab Miljö"), system (`static`, `edp` med flera), konfiguration (värd med mera) och vilka kommuner (SCB-koder) källan täcker. En källa kan täcka flera kommuner. En ny EDP-källa blir då bara en rad i registret.
+- **Kommun i svaret:** EDP svarar med ort ("Storgatan 1, Grillby"). Kommunen slås upp från ortnamnet med indexets ort→kommun-tabell, avgränsat till källans kommuner. Går det inte att avgöra visas källans namn i stället.
 - **Webbläsaren** pratar med en enda generisk provider, `api`, som anropar `/api/sok` och `/api/schema`. Gränssnittet mot UI:t är oförändrat.
 - **Kalenderfiler** för kommuner med en live-källa genereras av `/api/ics/<kommun>/<id>.ics` och cachas i 12 timmar. Statiska kommuner behåller sina förgenererade filer.
 - **Ordning:** först en generisk `edp`, därefter de största övriga i den prioritetsordning undersökningen gav (VA Syd, Stockholm, NSR, SRV …). Varje ny källtyp är en egen uppgift med tester mot sparade svar.
 
 ### 4. Adress-id och matchning
 
-- **Id för en live-adress:** `<kommun>-<slug av källans adresssträng>`, till exempel `uppsala-storgatan-11`. Slugen är stabil så länge källan inte stavar om adressen, och kalenderprenumerationer bygger på den.
+- **Id för en EDP-adress:** EDP:s svar innehåller ett byggnads-id i parentes, till exempel `"Storgatan 1, Grillby (909273)"`. Id:t blir `<slug>-<byggnads-id>`, till exempel `storgatan-1-grillby-909273`, och URL:en `/vafab/storgatan-1-grillby-909273`. Det byggnads-id som slutar id:t avgör vilken adress det är, så adressen hittas även om stavningen ändras. Samma gatuadress kan ha flera byggnads-id (flerbostadshus), och då visas de som separata träffar med byggnads-id:t som särskiljare.
 - **Matchning** behövs bara när index och schema kommer från olika källor, alltså när Lantmäteriet kopplas in. Nyckeln är då kommunkod, normaliserat gatunamn, nummer och bokstav. Lantmäteriets UUID sparas i en översättningstabell.
 
 ### 5. Beräknade datum
 
-- Med en frekvens (`Varje vecka`, `Varannan vecka`, `Var 4:e vecka` …) och ett känt nästa datum räknas datum framåt i 12 månader.
+- Frekvenstexten är fritext som skiljer sig mellan bolagen ("Torsdag varje vecka", "14-dag onsdag jämn vecka", "enligt körlista" …). Beräkningen bygger därför på `WastePickupsPerYear`: 52 ger varje vecka, 26 varannan, 13 var 4:e och 104 två gånger i veckan. Vid 104 tas veckodagarna ur texten ("Måndag, Torsdag"). Står det 0, ett okänt antal eller "körlista" visas bara nästa datum, utan beräkning.
+- Datum räknas framåt i 12 månader från `NextWastePickup`. Tjänster med ogiltigt datum (`0001-01-01`, till exempel slam) hoppas över.
+- **Avfallstyper** mappas till fraktionsregistret med en tabell över källornas texter: "Restavfall"/"RESTAVFALL" blir rest, "Pappersförp." blir papper, "Glasförp.färg"/"Glasförp.ofärg" blir glas, "Tidningar" blir den nya fraktionen tidningar, och så vidare. Kärl med flera fraktioner ("Fyrfack 1", "Kärl 2", "FNI Kärl 1") får fraktionen `kärl` och visar källans egen text.
 - Varje händelse får `estimated: true`.
   - **I UI:t** står det "beräknat" vid datumet, och kortet för nästa tömning visar "Nästa tömning (bekräftad)" när datumet kommer direkt från källan.
   - **I ICS-filen** står "(beräknat)" i titeln, och beskrivningen säger "Beräknat datum – helgdagar kan flytta tömningen. Kolla kommunens besked."
