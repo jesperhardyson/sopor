@@ -15,8 +15,10 @@ const m = (testData: boolean): Municipality => ({
 describe('TestDataBanner', () => {
   it('varnar när en kommun har påhittade data', () => {
     render(<TestDataBanner municipalities={[m(true)]} />)
-    expect(screen.getByRole('status')).toHaveTextContent('Testversion – datumen är påhittade och gäller inte.')
-    expect(screen.getByRole('link', { name: /Avesta Vatten och Avfall/ })).toHaveAttribute('href', 'https://www.avestavatten.se')
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Testversion – datumen är påhittade och gäller inte. Kolla alltid din kommuns hämtschema.',
+    )
+    expect(screen.queryByText(/Avesta Vatten och Avfall/)).toBeNull()
   })
 
   it('syns inte när datan är riktig', () => {
