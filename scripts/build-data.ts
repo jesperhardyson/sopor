@@ -5,7 +5,8 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { buildMunicipality, DataError, parseAddressesCsv, parseSchedulesFile } from '../src/data/static-format'
-import { SOURCES } from '../src/sources'
+import { buildStreetIndex, type OsmKommun } from '../src/data/street-index'
+import { SOURCES } from '../src/sources/index.js'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 
@@ -30,7 +31,24 @@ function writeFile(file: string, content: string) {
   fs.writeFileSync(file, content)
 }
 
+/** Gatuindex från data/osm/*.json → public/data/gator/<två tecken>.json och public/data/orter.json */
+function writeStreetIndex() {
+  const osmDir = path.join(root, 'data', 'osm')
+  if (!fs.existsSync(osmDir)) return
+  const osm = fs
+    .readdirSync(osmDir)
+    .filter((f) => f.endsWith('.json'))
+    .map((f) => JSON.parse(fs.readFileSync(path.join(osmDir, f), 'utf8')) as OsmKommun)
+  const { shards, places } = buildStreetIndex(osm, SOURCES)
+  const out = path.join(root, 'public', 'data', 'gator')
+  fs.rmSync(out, { recursive: true, force: true })
+  for (const [key, shard] of Object.entries(shards)) writeFile(path.join(out, `${key}.json`), JSON.stringify(shard))
+  writeFile(path.join(root, 'public', 'data', 'orter.json'), JSON.stringify(places))
+  console.log(`build-data: gatuindex: ${Object.keys(shards).length} delfiler från ${osm.length} kommuner`)
+}
+
 function main() {
+  writeStreetIndex()
   for (const municipality of SOURCES) {
     if (municipality.config.system !== 'static') continue
     const dataDir = path.join(root, 'data', municipality.id)
