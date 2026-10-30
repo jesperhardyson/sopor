@@ -6,6 +6,7 @@ import type { Municipality } from '@/municipalities'
 import type { WasteProvider } from './types'
 
 interface LoadedIndex {
+  updatedAt: string
   addresses: Address[]
   refs: Map<string, string[]>
 }
@@ -25,6 +26,7 @@ export function createStaticProvider(municipality: Municipality, fetchFn: typeof
     // Indexet delas mellan anrop och avbryts därför inte av enskilda signaler.
     indexPromise ??= getJson<AddressIndexFile>(`${base}/addresses.json`).then(
       (file) => ({
+        updatedAt: file.updatedAt,
         addresses: file.addresses.map(([id, street, locality]) => ({
           id,
           street,
@@ -58,6 +60,9 @@ export function createStaticProvider(municipality: Municipality, fetchFn: typeof
         refs.map((ref) => getJson<ScheduleFile>(`${base}/schedules/${encodeURIComponent(ref)}.json`, signal)),
       )
       return mergeParts(parts)
+    },
+    async dataUpdatedAt() {
+      return (await loadIndex()).updatedAt || null
     },
     icsUrl(addressId) {
       return `/ics/${municipality.id}/${encodeURIComponent(addressId)}.ics`

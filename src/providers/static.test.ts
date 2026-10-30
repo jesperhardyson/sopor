@@ -89,3 +89,9 @@ describe('createStaticProvider', () => {
     expect(createStaticProvider(avesta, fakeFetch()).icsUrl('x')).toBe('/ics/avesta/x.ics')
   })
 })
+
+describe('dataUpdatedAt', () => {
+  it('ger datum för senaste datauppdateringen', async () => {
+    expect(await createStaticProvider(avesta, fakeFetch()).dataUpdatedAt()).toBe('2026-10-29')
+  })
+})

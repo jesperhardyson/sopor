@@ -40,6 +40,7 @@ function makeProvider(over: Partial<WasteProvider> = {}): WasteProvider {
       new Promise((resolve) => {
         resolveSchedule = () => resolve(id === villa.id ? schedule : null)
       }),
+    dataUpdatedAt: async () => '2026-10-29',
     icsUrl: (id) => `/ics/avesta/${id}.ics`,
     ...over,
   }

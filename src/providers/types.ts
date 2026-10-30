@@ -10,6 +10,8 @@ export interface WasteProvider {
   suggestAddresses(query: string, signal?: AbortSignal): Promise<Address[]>
   getAddress(addressId: string, signal?: AbortSignal): Promise<Address | null>
   getSchedule(addressId: string, signal?: AbortSignal): Promise<Schedule | null>
+  /** När kommunens data senast uppdaterades (YYYY-MM-DD), om det är känt */
+  dataUpdatedAt(signal?: AbortSignal): Promise<string | null>
   /** Sökväg till adressens kalenderfil, relativ till sajten */
   icsUrl(addressId: string): string
 }
