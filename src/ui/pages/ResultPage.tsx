@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router'
 import { todayInStockholm } from '@/domain/dates'
 import { displayBins, nextPickup, upcoming } from '@/domain/schedule'
 import type { Address } from '@/domain/types'
+import { findSaved } from '@/lib/storage'
 import { getMunicipality, type Municipality } from '@/municipalities'
 import { providerFor } from '@/providers/registry'
 import { useSchedule } from '../hooks/useSchedule'
@@ -14,6 +15,8 @@ import { RemindersSoon } from '../result/RemindersSoon'
 import { EmptyState, ErrorState, LoadingState, UnsupportedState } from '../result/ResultStates'
 import { UpcomingList } from '../result/UpcomingList'
 import { AddressSearch } from '../search/AddressSearch'
+import { CalendarSheet } from '../sheets/CalendarSheet'
+import { SaveSheet } from '../sheets/SaveSheet'
 import { NotFound } from '../search/NotFound'
 
 const page = 'mx-auto flex w-full max-w-[920px] flex-col gap-5 px-5 pt-1 pb-8 md:px-8 md:pt-4 lg:gap-7 lg:px-0 lg:pb-20'
@@ -51,6 +54,8 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
   const municipality = getMunicipality(municipalityId)
   const address = useAddress(municipality, addressId)
   const [state, retry] = useSchedule(municipalityId, addressId)
+  const [sheet, setSheet] = useState<'calendar' | 'save' | null>(null)
+  const [savedName, setSavedName] = useState(() => findSaved(municipalityId, addressId)?.name)
 
   if (!municipality) {
     return (
@@ -92,10 +97,13 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
         </div>
         <button
           type="button"
-          className="inline-flex items-center gap-2 rounded-[14px] border border-border bg-surface px-4 py-3 text-[15px] font-bold text-text"
+          disabled={!address}
+          onClick={() => setSheet('save')}
+          aria-label={savedName ? `Sparad som ${savedName}` : 'Spara'}
+          className="inline-flex shrink-0 items-center gap-2 rounded-[14px] border border-border bg-surface px-4 py-3 text-[15px] font-bold text-text"
         >
-          <Bookmark className="size-[18px]" aria-hidden />
-          Spara
+          <Bookmark className={savedName ? 'size-[18px] fill-primary text-primary' : 'size-[18px]'} aria-hidden />
+          {savedName ?? 'Spara'}
         </button>
       </div>
     </div>
@@ -131,6 +139,8 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
           {next ? <NextPickup event={next} today={today} note={schedule.note} /> : <EmptyState />}
           <button
             type="button"
+            disabled={!address}
+            onClick={() => setSheet('calendar')}
             className="inline-flex h-14 items-center justify-center gap-2 rounded-[14px] bg-primary px-5 text-base font-extrabold text-on-primary"
           >
             <CalendarPlus className="size-5" aria-hidden />
@@ -146,6 +156,24 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
           <RemindersSoon />
         </div>
       </div>
+      {address && (
+        <>
+          <CalendarSheet
+            open={sheet === 'calendar'}
+            onOpenChange={(o) => setSheet(o ? 'calendar' : null)}
+            address={address}
+            icsPath={providerFor(municipality).icsUrl(address.id)}
+          />
+          <SaveSheet
+            key={savedName ?? ''}
+            open={sheet === 'save'}
+            onOpenChange={(o) => setSheet(o ? 'save' : null)}
+            address={address}
+            municipalityName={municipality.name}
+            onSaved={() => setSavedName(findSaved(municipality.id, address.id)?.name)}
+          />
+        </>
+      )}
     </div>
   )
 }

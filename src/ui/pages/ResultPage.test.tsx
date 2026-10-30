@@ -140,4 +140,14 @@ describe('ResultPage', () => {
     await vi.waitFor(() => resolveSchedule!())
     expect(await screen.findByText('Inga kommande tömningar i schemat än')).toBeInTheDocument()
   })
+
+  it('öppnar kalenderarket och spara-arket', async () => {
+    renderAt('/avesta/krylbo-storgatan-12b')
+    await vi.waitFor(() => resolveSchedule!())
+    await userEvent.click(await screen.findByRole('button', { name: 'Lägg till i kalender' }))
+    expect(await screen.findByRole('dialog', { name: 'Lägg till i kalender' })).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Stäng' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Spara' }))
+    expect(await screen.findByRole('dialog', { name: 'Spara adress' })).toBeInTheDocument()
+  })
 })
