@@ -2,6 +2,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useId, useState } from 'react'
 import { MONTHS, toUtc } from '@/domain/dates'
 import { FRACTIONS } from '@/domain/fractions'
+import { holidayOn } from '@/domain/holidays'
 import { eventsInMonth } from '@/domain/schedule'
 import type { FractionId, Schedule } from '@/domain/types'
 import { cn } from '@/lib/utils'
@@ -62,17 +63,20 @@ export function MonthCalendar({ schedule, initial, today }: { schedule: Schedule
             if (day === null) return <span key={i} className="h-[46px]" />
             const date = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
             const fractions = events.get(date)
-            const label = fractions
-              ? `${day} ${MONTHS[month - 1]}: ${fractions.map((f) => FRACTIONS[f].name).join(', ')}`
-              : undefined
+            const holiday = holidayOn(date)
+            const parts = [...(fractions?.map((f) => FRACTIONS[f].name) ?? []), ...(holiday ? [holiday.name] : [])]
+            const label = parts.length > 0 ? `${day} ${MONTHS[month - 1]}: ${parts.join(', ')}` : undefined
             return (
               <span
                 key={i}
                 aria-label={label}
+                title={holiday ? holiday.name[0].toUpperCase() + holiday.name.slice(1) : undefined}
+                data-holiday={holiday?.kind}
                 role={label ? 'img' : undefined}
                 className={cn(
-                  'flex h-[46px] flex-col items-center justify-center gap-1 rounded-xl text-[15px] text-text',
+                  'flex h-[46px] flex-col items-center justify-center gap-1 rounded-xl text-[15px]',
                   fractions ? 'bg-brand-soft font-extrabold' : 'font-medium',
+                  holiday?.kind === 'röd' ? 'font-extrabold text-warn' : holiday ? 'text-warn/70' : 'text-text',
                   date === today && 'ring-2 ring-primary ring-inset',
                 )}
               >
