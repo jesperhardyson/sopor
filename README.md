@@ -16,7 +16,7 @@ Sopor är öppen källkod, och bidrag är välkomna, särskilt **fler kommuner**
 
 - Saknar du din kommun? Lägg in den enligt [Lägga till en kommun](#lägga-till-en-kommun). Använd bara publika källor, som kommunens hämtschema eller en publik söktjänst.
 - Hittat ett fel i schemat? Öppna ett issue med adress, datum och länk till kommunens uppgift.
-- Kör `npm test && npm run build` innan du skickar en pull request.
+- Kör `npm test && npm run build` innan du skickar en pull request. GitHub Actions kör samma kontroller på varje pull request.
 
 Instruktioner för AI-agenter finns i [`AGENTS.md`](AGENTS.md).
 
@@ -137,7 +137,7 @@ Inget utanför `src/providers/` och `scripts/` får känna till trakter, EDP ell
 
 Vercel (Hobby). `vercel.json` sätter `Content-Type: text/calendar` och cache-headers för `/ics/*`, kort cache för `/data/*` och SPA-rewrite för övriga sökvägar. Varje deploy tömmer CDN-cachen.
 
-- **Projekt:** `sopor` i Vercel-teamet `badvatten-s-projects`. Deploy görs med `vercel deploy --prod` från repot, eftersom projektet inte har någon Git-koppling än.
+- **Projekt:** `sopor` i Vercel-teamet `badvatten-s-projects`, kopplat till GitHub-repot. Varje push till `main` bygger och driftsätter en ny produktionsversion. Pull requests får en egen preview-deploy.
 - **Domän:** `sopor.hardyson.se`. DNS ligger hos Cloudflare: `A sopor 76.76.21.21`, satt till *DNS only* (grå moln, inte proxad).
 - **Låst tills riktig data finns:** Vercel Authentication med scopet *All Deployments*. Bara inloggade medlemmar i teamet når sajten. Webcal-prenumerationer fungerar därför inte medan sajten är låst, eftersom kalenderappar inte kan logga in. Testa med "Ladda ner .ics" eller `vercel curl`.
 - **Öppna vid lansering:** Project Settings → Deployment Protection → välj *Standard Protection* (eller stäng av Vercel Authentication). Prenumerera sedan på `webcal://sopor.hardyson.se/ics/avesta/<adress-id>.ics` i Apple Kalender som slutkontroll.
@@ -145,3 +145,7 @@ Vercel (Hobby). `vercel.json` sätter `Content-Type: text/calendar` och cache-he
 ## Design
 
 Designen finns i `docs/design/sopor-design.pen` (Pencil) och är facit för färger, typsnitt, komponenter och tillstånd. Färgerna ligger som CSS-variabler i `src/styles/theme.css`, med ljust och mörkt läge.
+
+## Licens
+
+[MIT](LICENSE). Datan om tömningar kommer från respektive kommun.
