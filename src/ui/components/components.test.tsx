@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router'
 import { beforeEach, describe, expect, it } from 'vitest'
@@ -62,8 +62,20 @@ describe('Header', () => {
       </MemoryRouter>,
     )
     const links = screen.getAllByRole('link', { name: /GitHub/ })
-    expect(links.length).toBeGreaterThan(0)
-    for (const l of links) expect(l).toHaveAttribute('href', 'https://github.com/jesperhardyson/sopor')
+    expect(links).toHaveLength(1)
+    expect(links[0]).toHaveAttribute('href', 'https://github.com/jesperhardyson/sopor')
+  })
+
+  it('har Bidra i huvudmenyn, mellan Om och Kontakt', () => {
+    render(
+      <MemoryRouter>
+        <Header />
+      </MemoryRouter>,
+    )
+    const nav = screen.getByRole('navigation', { name: 'Huvudmeny' })
+    const names = within(nav).getAllByRole('link').map((l) => l.textContent?.trim() || l.getAttribute('aria-label'))
+    expect(names).toEqual(['Mina adresser', 'Om', 'Bidra', 'Kontakt', 'Sopor på GitHub'])
+    expect(within(nav).getByRole('link', { name: 'Bidra' })).toHaveAttribute('href', '/bidra')
   })
 })
 

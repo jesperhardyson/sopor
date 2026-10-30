@@ -23,12 +23,11 @@ export function Header() {
             <Link to="/om" className={navItem}>
               Om
             </Link>
+            <Link to="/bidra" className={navItem}>
+              Bidra
+            </Link>
             <a href={`mailto:${SITE.contactEmail}`} className={navItem}>
               Kontakt
-            </a>
-            <a href={SITE.repoUrl} rel="noopener" className={navItem}>
-              <GitHubMark className="size-[18px]" />
-              GitHub
             </a>
             <span className="h-6 w-px bg-border" aria-hidden />
           </div>
@@ -36,7 +35,7 @@ export function Header() {
             href={SITE.repoUrl}
             rel="noopener"
             aria-label="Sopor på GitHub"
-            className="inline-flex size-11 items-center justify-center rounded-full border border-border text-text-2 hover:bg-surface md:hidden"
+            className="inline-flex size-11 items-center justify-center rounded-full border border-border text-text-2 hover:bg-surface"
           >
             <GitHubMark />
           </a>
