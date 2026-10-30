@@ -31,3 +31,11 @@ describe('formatLong / weekdayShort', () => {
     expect(weekdayShort('2027-01-07')).toBe('TOR')
   })
 })
+
+describe('formatShort', () => {
+  it('ger kort datum som i designen', async () => {
+    const { formatShort } = await import('./dates')
+    expect(formatShort('2026-11-11')).toBe('Ons 11 nov')
+    expect(formatShort('2026-11-03')).toBe('Tis 3 nov')
+  })
+})

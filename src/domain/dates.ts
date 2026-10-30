@@ -62,3 +62,9 @@ export function weekdayShort(date: string): string {
 export function monthShort(date: string): string {
   return MONTHS[toUtc(date).getUTCMonth()].slice(0, 3)
 }
+
+/** "Ons 11 nov" */
+export function formatShort(date: string): string {
+  const { weekday, day, month } = formatLong(date)
+  return `${weekday[0].toUpperCase()}${weekday.slice(1, 3)} ${day} ${month.slice(0, 3)}`
+}
