@@ -3,7 +3,7 @@ import { useId, useState } from 'react'
 import type { Address } from '@/domain/types'
 import { findSaved, upsertSaved } from '@/lib/storage'
 import { cn } from '@/lib/utils'
-import { nameIcon } from '../saved/name-icon'
+import { NameIcon } from '../saved/NameIcon'
 import { ResponsiveSheet } from './ResponsiveSheet'
 
 const QUICK_NAMES = ['Hemma', 'Stugan', 'Jobbet']
@@ -23,7 +23,6 @@ export function SaveSheet({
 }) {
   const inputId = useId()
   const [name, setName] = useState(() => findSaved(address.municipalityId, address.id)?.name ?? 'Hemma')
-  const Icon = nameIcon(name)
   const trimmed = name.trim()
 
   function save() {
@@ -59,7 +58,7 @@ export function SaveSheet({
             Ge adressen ett namn
           </label>
           <div className="flex h-14 items-center gap-2.5 rounded-[14px] border-2 border-border bg-surface px-4 focus-within:border-primary">
-            <Icon className="size-5 shrink-0 text-primary" aria-hidden />
+            <NameIcon name={name} className="size-5 shrink-0 text-primary" />
             <input
               id={inputId}
               value={name}
@@ -70,7 +69,6 @@ export function SaveSheet({
           </div>
           <div className="flex flex-wrap gap-2 pt-1">
             {QUICK_NAMES.map((q) => {
-              const QIcon = nameIcon(q)
               const active = trimmed === q
               return (
                 <button
@@ -82,7 +80,7 @@ export function SaveSheet({
                     active ? 'border-primary bg-brand-soft text-brand-text' : 'border-border bg-surface text-text',
                   )}
                 >
-                  <QIcon className={cn('size-3.5', !active && 'text-text-2')} aria-hidden />
+                  <NameIcon name={q} className={cn('size-3.5', !active && 'text-text-2')} />
                   {q}
                 </button>
               )

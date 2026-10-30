@@ -97,11 +97,16 @@ export function parseSchedulesFile(json: unknown, file: string): SchedulesFile {
     if (typeof data[key] !== 'string' || !isValidDate(data[key])) fail(file, `"${key}" saknas eller är inget giltigt datum`)
   }
   if (typeof data.schedules !== 'object' || data.schedules === null) fail(file, '"schedules" saknas')
+  if (data.validFrom > data.validTo) fail(file, `validFrom (${data.validFrom}) ligger efter validTo (${data.validTo})`)
 
   for (const [name, schedule] of Object.entries(data.schedules)) {
     if (!Array.isArray(schedule.events)) fail(file, `schema "${name}" saknar "events"`)
+    if (schedule.events.length === 0) fail(file, `schema "${name}" har inga tömningar`)
     for (const event of schedule.events) {
       if (!isValidDate(event.date)) fail(file, `schema "${name}": ogiltigt datum "${event.date}"`)
+      if (event.date < data.validFrom || event.date > data.validTo) {
+        fail(file, `schema "${name}": ${event.date} ligger utanför giltighetsperioden ${data.validFrom}–${data.validTo}`)
+      }
       if (!Array.isArray(event.fractions) || event.fractions.length === 0) {
         fail(file, `schema "${name}" ${event.date}: inga fraktioner`)
       }

@@ -10,6 +10,7 @@ export function normalize(s: string, joinHouseLetter = true): string {
     .replace(/[åäö]/g, (c) => KEEP[c])
     .normalize('NFD')
     .replace(/\p{M}/gu, '')
+    // eslint-disable-next-line no-control-regex -- platshållarna för å/ä/ö är avsiktliga styrtecken
     .replace(/[\u0001-\u0003]/g, (c) => RESTORE[c])
     .replace(/[^\p{L}\p{N}]+/gu, ' ')
     .trim()

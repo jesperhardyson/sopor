@@ -16,7 +16,8 @@ Sopor är öppen källkod, och bidrag är välkomna, särskilt **fler kommuner**
 
 - Saknar du din kommun? Lägg in den enligt [Lägga till en kommun](#lägga-till-en-kommun). Använd bara publika källor, som kommunens hämtschema eller en publik söktjänst.
 - Hittat ett fel i schemat? Öppna ett issue med adress, datum och länk till kommunens uppgift.
-- Kör `npm test && npm run build` innan du skickar en pull request. GitHub Actions kör samma kontroller på varje pull request.
+- Kör `npm run lint && npm test && npm run build` innan du skickar en pull request. GitHub Actions kör samma kontroller på varje pull request, och stoppar även ändringar som tar bort eller byter namn på ett befintligt adress-id (`npm run check:ids`).
+- Vercel kör testerna före varje bygge, så röda tester når aldrig produktion.
 
 Mer i [`CONTRIBUTING.md`](CONTRIBUTING.md). Säkerhetsbrister rapporteras enligt [`SECURITY.md`](SECURITY.md). Instruktioner för AI-agenter finns i [`AGENTS.md`](AGENTS.md).
 

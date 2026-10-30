@@ -19,7 +19,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "typecheck": "tsc -b",
-    "lint": "oxlint"
+    "lint": "oxlint",
+    "check:ids": "tsx scripts/check-address-ids.ts"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
