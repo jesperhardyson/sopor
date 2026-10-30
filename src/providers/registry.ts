@@ -55,13 +55,13 @@ async function liveSourcesFor(query: string): Promise<string[]> {
 }
 
 async function searchLive(query: string, signal?: AbortSignal): Promise<SearchResult> {
+  const placesPromise = loadPlaces() // parallellt med sökningen
   const sources = await liveSourcesFor(query)
   if (sources.length === 0) return { addresses: [], failed: [] }
   try {
     const res = await fetch(`/api/sok?${new URLSearchParams({ q: query, sources: sources.join(',') })}`, { signal })
     if (!res.ok) return { addresses: [], failed: sources }
-    const body = (await res.json()) as SearchResult
-    const places = await loadPlaces()
+    const [body, places] = await Promise.all([res.json() as Promise<SearchResult>, placesPromise])
     const addresses = body.addresses.map((a) => {
       const source = getSource(a.sourceId)
       return source ? { ...a, kommun: kommunForLocality(source, a.locality, places[source.id]) } : a
@@ -73,15 +73,28 @@ async function searchLive(query: string, signal?: AbortSignal): Promise<SearchRe
   }
 }
 
-/** Sök i alla källor: statiska lokalt, live-källor via /api/sok. */
-export async function searchAll(query: string, signal?: AbortSignal): Promise<SearchResult> {
+/** Väcker sökfunktionen och laddar ort-tabellen i förväg, t.ex. när sökfältet får fokus. */
+export function warmUpSearch(): void {
+  void loadPlaces()
+  if (SOURCES.some((s) => s.config.system !== 'static')) void fetch('/api/sok?q=').catch(() => {})
+}
+
+/**
+ * Sök i alla källor: statiska lokalt, live-källor via /api/sok. De lokala träffarna lämnas direkt
+ * via `onPartial`, så att användaren ser något medan live-källorna svarar.
+ */
+export async function searchAll(
+  query: string,
+  signal?: AbortSignal,
+  onPartial?: (partial: SearchResult) => void,
+): Promise<SearchResult> {
+  const live = searchLive(query, signal)
   const local = SOURCES.filter((m) => m.config.system === 'static')
-  const [localResults, live] = await Promise.all([
-    Promise.allSettled(local.map((m) => providerFor(m).searchAddresses(query, signal))),
-    searchLive(query, signal),
-  ])
+  const localResults = await Promise.allSettled(local.map((m) => providerFor(m).searchAddresses(query, signal)))
   const localAddresses = localResults.some((r) => r.status === 'fulfilled') ? mergeResults(localResults, 8) : []
-  return { addresses: [...localAddresses, ...live.addresses].slice(0, 12), failed: live.failed }
+  if (!signal?.aborted) onPartial?.({ addresses: localAddresses, failed: [] })
+  const { addresses, failed } = await live
+  return { addresses: [...localAddresses, ...addresses].slice(0, 12), failed }
 }
 
 /** Förslag för "Menade du:" (bara statiska källor har listan lokalt). */

@@ -1,7 +1,7 @@
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes, useParams } from 'react-router'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { searchAddresses, suggest } from '@/domain/search'
 import type { Address } from '@/domain/types'
 import { AddressSearch } from './AddressSearch'
@@ -101,6 +101,26 @@ describe('AddressSearch', () => {
     await userEvent.type(setup(), 'storg')
     expect(await screen.findByText('Uppsala Vatten svarar inte just nu.')).toBeInTheDocument()
     failed = []
+  })
+
+  it('visar lokala träffar direkt och att fler källor söks', async () => {
+    let finish: () => void = () => {}
+    render(
+      <MemoryRouter>
+        <AddressSearch
+          search={(q, _signal, onPartial) => {
+            onPartial?.({ addresses: searchAddresses(q, ADDRESSES), failed: [] })
+            return new Promise((resolve) => (finish = () => resolve({ addresses: searchAddresses(q, ADDRESSES), failed: [] })))
+          }}
+          suggest={async () => []}
+        />
+      </MemoryRouter>,
+    )
+    await userEvent.type(screen.getByRole('combobox'), 'storg')
+    expect(await screen.findAllByRole('option')).toHaveLength(3)
+    expect(screen.getByText('Söker hos fler källor…')).toBeInTheDocument()
+    finish()
+    await vi.waitFor(() => expect(screen.queryByText('Söker hos fler källor…')).toBeNull())
   })
 })
 

@@ -1,19 +1,19 @@
-import { MapPin, Search, X } from 'lucide-react'
+import { LoaderCircle, MapPin, Search, X } from 'lucide-react'
 import { useEffect, useId, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { normalize } from '@/domain/search'
 import type { Address } from '@/domain/types'
-import { searchAll, suggestAll, type SearchResult } from '@/providers/registry'
+import { searchAll, suggestAll, warmUpSearch, type SearchResult } from '@/providers/registry'
 import { getSource } from '@/sources'
 import { cn } from '@/lib/utils'
 import { NotFound } from './NotFound'
 
 type Lookup = (query: string, signal?: AbortSignal) => Promise<Address[]>
-type Search = (query: string, signal?: AbortSignal) => Promise<SearchResult>
+type Search = (query: string, signal?: AbortSignal, onPartial?: (partial: SearchResult) => void) => Promise<SearchResult>
 
 type State =
   | { kind: 'idle' }
-  | { kind: 'results'; query: string; results: Address[]; failed: string[] }
+  | { kind: 'results'; query: string; results: Address[]; failed: string[]; pending?: boolean }
   | { kind: 'notFound'; suggestions: Address[]; failed: string[] }
   | { kind: 'error' }
 
@@ -39,16 +39,23 @@ export function AddressSearch({
   const [state, setState] = useState<State>({ kind: 'idle' })
   const [active, setActive] = useState(-1)
   const [submitted, setSubmitted] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     if (normalize(query).length < 2) {
       setState({ kind: 'idle' })
+      setLoading(false)
       return
     }
     const controller = new AbortController()
     const timer = setTimeout(async () => {
       try {
-        const { addresses: results, failed } = await search(query, controller.signal)
+        setLoading(true)
+        const { addresses: results, failed } = await search(query, controller.signal, (partial) => {
+          if (!controller.signal.aborted && partial.addresses.length > 0) {
+            setState({ kind: 'results', query, results: partial.addresses, failed: [], pending: true })
+          }
+        })
         if (controller.signal.aborted) return
         if (results.length > 0) {
           setState({ kind: 'results', query, results, failed })
@@ -59,6 +66,8 @@ export function AddressSearch({
         setActive(-1)
       } catch {
         if (!controller.signal.aborted) setState({ kind: 'error' })
+      } finally {
+        if (!controller.signal.aborted) setLoading(false)
       }
     }, DEBOUNCE_MS)
     return () => {
@@ -109,7 +118,11 @@ export function AddressSearch({
           'focus-within:border-2 focus-within:border-primary focus-within:shadow-[0_0_10px_color-mix(in_srgb,var(--primary)_20%,transparent)]',
         )}
       >
-        <Search className="size-5 shrink-0 text-text-2 lg:size-6 [div:focus-within>&]:text-primary" aria-hidden />
+        {loading ? (
+          <LoaderCircle className="size-5 shrink-0 animate-spin text-primary lg:size-6" aria-hidden />
+        ) : (
+          <Search className="size-5 shrink-0 text-text-2 lg:size-6 [div:focus-within>&]:text-primary" aria-hidden />
+        )}
         <input
           ref={inputRef}
           type="text"
@@ -131,7 +144,10 @@ export function AddressSearch({
             setSubmitted(false)
           }}
           onKeyDown={onKeyDown}
-          onFocus={onActivate}
+          onFocus={() => {
+            warmUpSearch()
+            onActivate?.()
+          }}
           className="min-w-0 flex-1 bg-transparent text-base font-bold text-text outline-none placeholder:font-normal placeholder:text-text-2 lg:text-xl"
         />
         {query && (
@@ -179,6 +195,12 @@ export function AddressSearch({
             </li>
           ))}
         </ul>
+        {state.kind === 'results' && state.pending && (
+          <p role="status" className="flex items-center gap-2 px-3 pt-1 pb-2 text-sm text-text-2">
+            <LoaderCircle className="size-4 animate-spin text-primary" aria-hidden />
+            Söker hos fler källor…
+          </p>
+        )}
         {state.kind === 'results' && state.failed.length > 0 && (
           <p className="px-3 pt-1 pb-2 text-sm font-semibold text-warn">
             {state.failed.map((id) => getSource(id)?.name ?? id).join(', ')} svarar inte just nu.

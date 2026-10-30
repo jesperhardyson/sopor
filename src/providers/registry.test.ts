@@ -81,4 +81,26 @@ describe('searchAll', () => {
     expect(f.mock.calls.map(([u]) => u)).toContain('/api/sok?q=Ok%C3%A4ndgatan+3&sources=uppsala')
     expect(result.failed).toEqual(['uppsala'])
   })
+
+  it('lämnar de lokala träffarna direkt, innan live-källorna svarat', async () => {
+    let releaseLive: () => void = () => {}
+    const f = vi.fn(async (url: string) => {
+      if (url === '/data/avesta/addresses.json') return Response.json(avestaIndex)
+      if (url === '/data/gator/st.json') return Response.json({ storgatan: ['avesta', 'uppsala'] })
+      if (url === '/data/orter.json') return Response.json({})
+      if (url.startsWith('/api/sok')) {
+        await new Promise<void>((r) => (releaseLive = r))
+        return Response.json({ addresses: [], failed: [] })
+      }
+      return new Response('', { status: 404 })
+    })
+    vi.stubGlobal('fetch', f)
+    const { searchAll } = await import('./registry')
+    const partials: string[][] = []
+    const done = searchAll('Storgatan', undefined, (r) => partials.push(r.addresses.map((x) => x.id)))
+    await vi.waitFor(() => expect(partials).toEqual([['avesta-storgatan-12']]))
+    releaseLive()
+    await done
+  })
 })
+

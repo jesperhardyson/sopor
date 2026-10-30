@@ -28,6 +28,7 @@ vi.mock('@/providers/registry', () => ({
   providerFor: () => fake,
   getAddress: (_m: string, id: string) => fake.getAddress(id),
   searchAll: async () => ({ addresses: [], failed: [] }),
+  warmUpSearch: () => {},
   suggestAll: async () => [],
 }))
 
