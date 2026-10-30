@@ -3,6 +3,7 @@ import { daysBetween, formatLong, relativeDayLabel } from '@/domain/dates'
 import type { PickupEvent } from '@/domain/types'
 import { FractionChip } from '../components/FractionChip'
 import { Deviation } from '../components/Deviation'
+import { EstimatedPill } from './UpcomingList'
 
 export function NextPickup({ event, today, note }: { event: PickupEvent; today: string; note?: string }) {
   const { weekday, day, month } = formatLong(event.date)
@@ -26,11 +27,13 @@ export function NextPickup({ event, today, note }: { event: PickupEvent; today: 
             <Deviation />
           </div>
         )}
-        <div className="flex flex-wrap gap-2 pt-0.5 pb-1">
+        <div className="flex flex-wrap items-center gap-2 pt-0.5 pb-1">
           {event.fractions.map((f) => (
-            <FractionChip key={f} fraction={f} />
+            <FractionChip key={f} fraction={f} label={event.labels?.[f]} />
           ))}
+          {event.estimated && <EstimatedPill onDark />}
         </div>
+        {event.warning && <p className="text-sm font-semibold">{event.warning}</p>}
       </div>
       {note && (
         <p className="flex items-center gap-2.5 bg-black/15 px-5 py-3.5 text-sm leading-[1.4] font-semibold">
