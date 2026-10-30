@@ -12,6 +12,9 @@ export function Footer() {
           <Link to="/om" className={link}>
             Om
           </Link>
+          <Link to="/bidra" className={link}>
+            Bidra
+          </Link>
           <a href={`mailto:${SITE.contactEmail}`} className={link}>
             Kontakt
           </a>

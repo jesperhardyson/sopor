@@ -96,14 +96,22 @@ export function AboutPage() {
           Sopor är öppen källkod. Saknar du din kommun kan du hjälpa till att lägga in den, rätta fel eller föreslå
           förbättringar på GitHub.
         </p>
-        <a
-          href={SITE.repoUrl}
-          rel="noopener"
-          className="inline-flex items-center gap-2 rounded-[14px] border border-border bg-surface px-4 py-3 text-[15px] font-bold text-text"
-        >
-          <GitHubMark className="size-[18px]" />
-          Sopor på GitHub
-        </a>
+        <div className="flex flex-wrap gap-2">
+          <Link
+            to="/bidra"
+            className="inline-flex items-center gap-2 rounded-[14px] bg-primary px-4 py-3 text-[15px] font-bold text-on-primary"
+          >
+            Så bidrar du
+          </Link>
+          <a
+            href={SITE.repoUrl}
+            rel="noopener"
+            className="inline-flex items-center gap-2 rounded-[14px] border border-border bg-surface px-4 py-3 text-[15px] font-bold text-text"
+          >
+            <GitHubMark className="size-[18px]" />
+            Sopor på GitHub
+          </a>
+        </div>
       </section>
 
       <section className="flex flex-col items-start gap-3">

@@ -31,6 +31,7 @@ describe('AboutPage', () => {
     expect(screen.getByText('Ingen reklam och inga spårningscookies')).toBeInTheDocument()
     expect(screen.getByText(/Vi räknar besök anonymt med Vercel Web Analytics, utan cookies\. Adresser du söker på skickas inte med\./)).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Bidra' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Så bidrar du/ })).toHaveAttribute('href', '/bidra')
     expect(screen.getByRole('link', { name: /Sopor på GitHub/ })).toHaveAttribute('href', 'https://github.com/jesperhardyson/sopor')
   })
 })
