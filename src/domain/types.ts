@@ -1,4 +1,4 @@
-export type FractionId = 'rest' | 'mat' | 'papper' | 'plast' | 'glas' | 'metall'
+export type FractionId = 'rest' | 'mat' | 'papper' | 'plast' | 'glas' | 'metall' | 'tidningar' | 'karl'
 
 export interface Address {
   id: string
@@ -21,6 +21,12 @@ export interface PickupEvent {
   date: string
   fractions: FractionId[]
   deviation?: { originalDate?: string; reason: string }
+  /** Källans egen text per fraktion, t.ex. "Fyrfack 1" för kärl med flera fraktioner */
+  labels?: Partial<Record<FractionId, string>>
+  /** Framräknat ur källans frekvens, inte bekräftat av källan */
+  estimated?: boolean
+  /** T.ex. "Infaller på julafton – kan flyttas." */
+  warning?: string
 }
 
 export interface Schedule {
