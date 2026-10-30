@@ -3,6 +3,7 @@
   "framework": "vite",
   "regions": ["arn1"],
   "buildCommand": "npm test && npm run build",
+  "ignoreCommand": "case \"$VERCEL_GIT_COMMIT_REF\" in dependabot/*) exit 0;; *) exit 1;; esac",
   "outputDirectory": "dist",
   "headers": [
     {
