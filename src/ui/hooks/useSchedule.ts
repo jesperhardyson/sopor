@@ -28,5 +28,5 @@ export function useSchedule(municipalityId: string, addressId: string) {
   }, [municipalityId, addressId, attempt])
 
   const retry = useCallback(() => setAttempt((a) => a + 1), [])
-  return [state, retry] as const
+  return [state, retry, attempt] as const
 }

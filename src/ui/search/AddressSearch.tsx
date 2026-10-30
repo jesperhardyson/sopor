@@ -70,8 +70,17 @@ export function AddressSearch({ search = searchAll, suggest = suggestAll }: { se
       setActive((i) => Math.max(i - 1, -1))
     } else if (e.key === 'Enter') {
       e.preventDefault()
-      if (open) go(results[Math.max(active, 0)])
-      else setSubmitted(true)
+      // Listan kan höra till en äldre fråga om man trycker Enter innan debouncen hunnit köra.
+      if (open && state.kind === 'results' && state.query === query) {
+        go(results[Math.max(active, 0)])
+        return
+      }
+      setSubmitted(true)
+      if (normalize(query).length < 2) return
+      search(query).then(
+        (fresh) => fresh.length > 0 && go(fresh[0]),
+        () => setState({ kind: 'error' }),
+      )
     } else if (e.key === 'Escape') {
       setState({ kind: 'idle' })
     }

@@ -30,7 +30,7 @@ function BackLink() {
   )
 }
 
-function useAddress(m: Municipality | undefined, addressId: string) {
+function useAddress(m: Municipality | undefined, addressId: string, attempt: number) {
   const [address, setAddress] = useState<Address | null | undefined>(undefined)
   useEffect(() => {
     if (!m) return
@@ -45,15 +45,21 @@ function useAddress(m: Municipality | undefined, addressId: string) {
     return () => {
       active = false
     }
-  }, [m, addressId])
+  }, [m, addressId, attempt])
   return address
+}
+
+/** Ny instans per adress, så att lokalt tillstånd (sparat namn, månad) inte följer med. */
+export function ResultRoute({ today }: { today?: string }) {
+  const { municipalityId, addressId } = useParams()
+  return <ResultPage key={`${municipalityId}/${addressId}`} today={today} />
 }
 
 export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
   const { municipalityId = '', addressId = '' } = useParams()
   const municipality = getMunicipality(municipalityId)
-  const address = useAddress(municipality, addressId)
-  const [state, retry] = useSchedule(municipalityId, addressId)
+  const [state, retry, attempt] = useSchedule(municipalityId, addressId)
+  const address = useAddress(municipality, addressId, attempt)
   const [sheet, setSheet] = useState<'calendar' | 'save' | null>(null)
   const [savedName, setSavedName] = useState(() => findSaved(municipalityId, addressId)?.name)
 

@@ -76,4 +76,12 @@ describe('AddressSearch', () => {
     expect(input).toHaveValue('')
     expect(screen.queryByRole('option')).toBeNull()
   })
+
+  it('öppnar rätt adress när man trycker Enter innan sökningen hunnit uppdateras', async () => {
+    const input = setup()
+    await userEvent.type(input, 'storgatan 12')
+    await screen.findAllByRole('option')
+    await userEvent.type(input, ' b{Enter}')
+    expect(await screen.findByText('Resultat avesta/krylbo-storgatan-12b')).toBeInTheDocument()
+  })
 })

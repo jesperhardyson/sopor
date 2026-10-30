@@ -1,10 +1,10 @@
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter, Route, Routes } from 'react-router'
+import { Link, MemoryRouter, Route, Routes } from 'react-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Address, Schedule } from '@/domain/types'
 import type { WasteProvider } from '@/providers/types'
-import { ResultPage } from './ResultPage'
+import { ResultPage, ResultRoute } from './ResultPage'
 
 const villa: Address = { id: 'krylbo-storgatan-12b', street: 'Storgatan 12 B', locality: 'Krylbo', municipalityId: 'avesta' }
 const schedule: Schedule = {
@@ -150,5 +150,51 @@ describe('ResultPage', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Stäng' }))
     await userEvent.click(screen.getByRole('button', { name: 'Spara' }))
     expect(await screen.findByRole('dialog', { name: 'Spara adress' })).toBeInTheDocument()
+  })
+
+  it('hämtar adressen igen när man försöker igen', async () => {
+    let addressCalls = 0
+    let scheduleCalls = 0
+    fake = makeProvider({
+      getAddress: async () => {
+        addressCalls++
+        if (addressCalls === 1) throw new Error('nere')
+        return villa
+      },
+      getSchedule: async () => {
+        scheduleCalls++
+        if (scheduleCalls === 1) throw new Error('nere')
+        return schedule
+      },
+    })
+    renderAt('/avesta/krylbo-storgatan-12b')
+    await userEvent.click(await screen.findByRole('button', { name: 'Försök igen' }))
+    expect(await screen.findByRole('heading', { name: 'Storgatan 12 B', level: 1 })).toBeInTheDocument()
+    expect(await screen.findByRole('button', { name: 'Lägg till i kalender' })).toBeEnabled()
+  })
+
+  it('nollställer sparat namn när man byter adress', async () => {
+    const other: Address = { id: 'avesta-storgatan-12', street: 'Storgatan 12', locality: 'Avesta', municipalityId: 'avesta' }
+    fake = makeProvider({
+      getAddress: async (id) => (id === villa.id ? villa : id === other.id ? other : null),
+      getSchedule: async () => schedule,
+    })
+    localStorage.setItem(
+      'sopor.saved.v1',
+      JSON.stringify([{ municipalityId: 'avesta', addressId: villa.id, name: 'Hemma', street: villa.street, locality: villa.locality, savedAt: '' }]),
+    )
+    render(
+      <MemoryRouter initialEntries={['/avesta/krylbo-storgatan-12b']}>
+        <Link to="/avesta/avesta-storgatan-12">byt</Link>
+        <Routes>
+          <Route path=":municipalityId/:addressId" element={<ResultRoute today="2026-10-30" />} />
+        </Routes>
+      </MemoryRouter>,
+    )
+    expect(await screen.findByRole('button', { name: 'Sparad som Hemma' })).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('link', { name: 'byt' }))
+    expect(await screen.findByRole('heading', { name: 'Storgatan 12', level: 1 })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Spara' })).toBeInTheDocument()
+    localStorage.clear()
   })
 })

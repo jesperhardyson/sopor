@@ -55,3 +55,16 @@ describe('sparade adresser', () => {
     expect(loadSaved()).toEqual([hemma])
   })
 })
+
+describe('utan skrivbar lagring', () => {
+  afterEach(() => vi.restoreAllMocks())
+
+  it('kommer ihåg sparade adresser under sidvisningen', () => {
+    localStorage.clear()
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('QuotaExceeded')
+    })
+    upsertSaved(hemma)
+    expect(loadSaved()).toEqual([hemma])
+  })
+})

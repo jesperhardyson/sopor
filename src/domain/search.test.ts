@@ -81,3 +81,9 @@ describe('suggest', () => {
     expect(suggest('xyzvägen 1', ADDRESSES)).toEqual([])
   })
 })
+
+describe('searchAddresses medan man skriver orten', () => {
+  it('hittar adressen när en ensam bokstav efter numret är början på orten', () => {
+    expect(ids(searchAddresses('storgatan 12 k', ADDRESSES))).toEqual(['krylbo-storgatan-12b'])
+  })
+})

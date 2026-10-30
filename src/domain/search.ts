@@ -4,16 +4,16 @@ const KEEP: Record<string, string> = { å: '\u0001', ä: '\u0002', ö: '\u0003' 
 const RESTORE = Object.fromEntries(Object.entries(KEEP).map(([k, v]) => [v, k]))
 
 /** Gemener, ett mellanslag, "12 b" → "12b", diakriter bort utom å/ä/ö. */
-export function normalize(s: string): string {
-  return s
+export function normalize(s: string, joinHouseLetter = true): string {
+  const base = s
     .toLowerCase()
     .replace(/[åäö]/g, (c) => KEEP[c])
     .normalize('NFD')
     .replace(/\p{M}/gu, '')
     .replace(/[\u0001-\u0003]/g, (c) => RESTORE[c])
     .replace(/[^\p{L}\p{N}]+/gu, ' ')
-    .replace(/(\d) (\p{L})\b/gu, '$1$2')
     .trim()
+  return joinHouseLetter ? base.replace(/(\d) (\p{L})\b/gu, '$1$2') : base
 }
 
 function haystack(a: Address): string[] {
@@ -23,6 +23,13 @@ function haystack(a: Address): string[] {
 export function searchAddresses(query: string, addresses: Address[], limit = 8): Address[] {
   const q = normalize(query)
   if (q.length < 2) return []
+  const hits = match(q, addresses, limit)
+  // "storgatan 12 k" kan vara husbokstav eller början på orten (Krylbo).
+  const split = normalize(query, false)
+  return hits.length === 0 && split !== q ? match(split, addresses, limit) : hits
+}
+
+function match(q: string, addresses: Address[], limit: number): Address[] {
   const tokens = q.split(' ')
   return addresses
     .filter((a) => {

@@ -9,6 +9,18 @@ export interface SavedAddress {
 
 const KEY = 'sopor.saved.v1'
 
+// Om skrivningen misslyckas (privat läge, full lagring) gäller listan i minnet så länge
+// lagringen ser ut som när skrivningen misslyckades.
+let pending: { raw: string | null; list: SavedAddress[] } | null = null
+
+function readRaw(): string | null {
+  try {
+    return localStorage.getItem(KEY)
+  } catch {
+    return null
+  }
+}
+
 function isSaved(value: unknown): value is SavedAddress {
   const v = value as SavedAddress
   return (
@@ -22,8 +34,11 @@ function isSaved(value: unknown): value is SavedAddress {
 
 /** Läser sparade adresser. Trasig eller otillgänglig lagring ger en tom lista. */
 export function loadSaved(): SavedAddress[] {
+  const raw = readRaw()
+  if (pending && pending.raw === raw) return pending.list
+  pending = null
   try {
-    const parsed: unknown = JSON.parse(localStorage.getItem(KEY) ?? '[]')
+    const parsed: unknown = JSON.parse(raw ?? '[]')
     return Array.isArray(parsed) ? parsed.filter(isSaved) : []
   } catch {
     return []
@@ -31,10 +46,12 @@ export function loadSaved(): SavedAddress[] {
 }
 
 function store(list: SavedAddress[]): SavedAddress[] {
+  const before = readRaw()
   try {
     localStorage.setItem(KEY, JSON.stringify(list))
+    pending = null
   } catch {
-    // Privat läge eller full lagring: listan gäller bara den här sidvisningen.
+    pending = { raw: before, list }
   }
   return list
 }
