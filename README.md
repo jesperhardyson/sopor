@@ -127,7 +127,10 @@ Inget utanför `src/providers/` och `scripts/` får känna till trakter, EDP ell
 
 Vercel (Hobby). `vercel.json` sätter `Content-Type: text/calendar` och cache-headers för `/ics/*`, kort cache för `/data/*` och SPA-rewrite för övriga sökvägar. Varje deploy tömmer CDN-cachen.
 
-<!-- Detaljer om projektet och skyddet fylls i när projektet är skapat. -->
+- **Projekt:** `sopor` i Vercel-teamet `badvatten-s-projects`. Deploy görs med `vercel deploy --prod` från repot, eftersom projektet inte har någon Git-koppling än.
+- **Domän:** `sopor.hardyson.se`. DNS ligger hos Cloudflare: `A sopor 76.76.21.21`, satt till *DNS only* (grå moln, inte proxad).
+- **Låst tills riktig data finns:** Vercel Authentication med scopet *All Deployments*. Bara inloggade medlemmar i teamet når sajten. Webcal-prenumerationer fungerar därför inte medan sajten är låst, eftersom kalenderappar inte kan logga in. Testa med "Ladda ner .ics" eller `vercel curl`.
+- **Öppna vid lansering:** Project Settings → Deployment Protection → välj *Standard Protection* (eller stäng av Vercel Authentication). Prenumerera sedan på `webcal://sopor.hardyson.se/ics/avesta/<adress-id>.ics` i Apple Kalender som slutkontroll.
 
 ## Design
 

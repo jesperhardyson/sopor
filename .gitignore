@@ -29,3 +29,4 @@ public/ics/
 .superpowers/
 .vercel
 .DS_Store
+.env*
