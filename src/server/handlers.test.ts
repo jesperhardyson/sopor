@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
 import type { Source } from '@/sources'
-import { handleIcs, handleSchedule, handleSearch } from './handlers'
+import { handleIcs, handleSchedule, handleSearch, searchCandidates } from './handlers'
 
 const dir = path.resolve(import.meta.dirname, '__fixtures__')
 const fixture = (name: string) => readFileSync(path.join(dir, name), 'utf8')
@@ -93,3 +93,41 @@ describe('handleIcs', () => {
     expect(text).toContain('(beräknat)')
   })
 })
+
+describe('när källan stavar om adressen', () => {
+  /** Orten heter nu något annat, så den exakta sökningen ger inget, men gatan finns kvar. */
+  const renamed = vi.fn(async (input: string | URL | Request, init?: RequestInit) => {
+    const url = new URL(String(input))
+    if (url.pathname.endsWith('SearchAdress')) {
+      const q = JSON.parse(String(init?.body)).searchText as string
+      return json(q.includes(',') ? '{"Succeeded":true,"Buildings":[]}' : fixture('uppsala-search.json'))
+    }
+    return json(fixture('uppsala-schedule.json'))
+  }) as unknown as typeof fetch
+
+  it('hittar adressen på byggnads-id:t med en bredare sökning', async () => {
+    const res = await handleSchedule(new URL('https://x/api/schema?source=uppsala&id=storgatan-2_gamla-uppsala-4004688'), {
+      ...opts,
+      fetchFn: renamed,
+    })
+    expect(res.status).toBe(200)
+    expect((await res.json()).address.locality).toBe('Uppsala')
+  })
+
+  it('ger en kalenderhändelse om att söka upp adressen igen när den inte går att hitta', async () => {
+    const res = await handleIcs(new URL('https://x/api/ics?source=uppsala&file=nygatan-9_uppsala-123.ics'), opts)
+    expect(res.status).toBe(200)
+    expect(res.headers.get('Content-Type')).toBe('text/calendar; charset=utf-8')
+    expect(res.headers.get('Cache-Control')).toBe('public, s-maxage=3600')
+    const text = (await res.text()).replace(/\r\n /g, '')
+    expect(text).toContain('SUMMARY:Sopor: adressen hittades inte – sök upp den igen på sopor.hardyson.se')
+  })
+})
+
+describe('searchCandidates', () => {
+  it('prövar exakt adress, gata med nummer och sist bara gatunamnet', () => {
+    expect(searchCandidates('storgatan 1, grillby')).toEqual(['storgatan 1, grillby', 'storgatan 1', 'storgatan'])
+    expect(searchCandidates('storgatan, byske')).toEqual(['storgatan, byske', 'storgatan'])
+  })
+})
+

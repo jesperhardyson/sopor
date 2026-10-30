@@ -88,3 +88,33 @@ export function buildIcs(input: {
   lines.push('END:VCALENDAR')
   return lines.map(fold).join('\r\n') + '\r\n'
 }
+
+/**
+ * Kalender med en enda händelse som ber prenumeranten söka upp adressen igen. Används när en
+ * live-källa inte längre hittar adressen, så att kalendern inte bara tyst slutar uppdateras.
+ */
+export function buildNoticeIcs(input: { addressId: string; today: string; host?: string }): string {
+  const { addressId, today, host = 'sopor.hardyson.se' } = input
+  const lines = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    `PRODID:-//Sopor//${host}//SV`,
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    'X-WR-CALNAME:Sopor',
+    'REFRESH-INTERVAL;VALUE=DURATION:P1D',
+    'X-PUBLISHED-TTL:P1D',
+    'BEGIN:VEVENT',
+    `UID:${addressId}-saknas@${host}`,
+    `DTSTAMP:${compact(today)}T000000Z`,
+    `DTSTART;VALUE=DATE:${compact(today)}`,
+    `DTEND;VALUE=DATE:${compact(addDays(today, 1))}`,
+    `SUMMARY:${escapeText(`Sopor: adressen hittades inte – sök upp den igen på ${host}`)}`,
+    `DESCRIPTION:${escapeText(`Avfallsbolaget hittar inte längre adressen som den här kalendern gäller. Sök upp den igen på https://${host} och lägg till kalendern på nytt.`)}`,
+    'TRANSP:TRANSPARENT',
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ]
+  return lines.map(fold).join('\r\n') + '\r\n'
+}
+

@@ -76,7 +76,7 @@ Utan kommunväljare måste sökningen veta vilka kommuner som kan ha adressen. D
 
 ### 4. Adress-id och matchning
 
-- **Id för en EDP-adress:** EDP:s svar innehåller ett byggnads-id i parentes, till exempel `"Storgatan 1, Grillby (909273)"`. Id:t blir `<slug>-<byggnads-id>`, till exempel `storgatan-1-grillby-909273`, och URL:en `/vafab/storgatan-1-grillby-909273`. Det byggnads-id som slutar id:t avgör vilken adress det är, så adressen hittas även om stavningen ändras. Samma gatuadress kan ha flera byggnads-id (flerbostadshus), och då visas de som separata träffar med byggnads-id:t som särskiljare.
+- **Id för en EDP-adress:** EDP:s svar innehåller ett byggnads-id i parentes, till exempel `"Storgatan 1, Grillby (909273)"`. Id:t blir till exempel `storgatan-1_grillby-909273`, och URL:en `/vafab/storgatan-1_grillby-909273`. Id:t går att översätta tillbaka till en sökning (mellanslag → `-`, `, ` → `_`, bindestreck → `~`, å/ä/ö behålls), och träffen med rätt byggnads-id väljs. Byggnads-id:t går inte att söka på direkt hos EDP. Om källan stavat om adressen prövas därför bredare sökningar i tur och ordning: gata med nummer, sedan bara gatunamnet. Hittas adressen ändå inte, till exempel för att gatan bytt namn, får kalenderfilen en händelse om att söka upp adressen igen, så att prenumerationen inte tyst slutar uppdateras. Samma gatuadress kan ha flera byggnads-id (flerbostadshus), och då visas de som separata träffar med byggnads-id:t som särskiljare.
 - **Matchning** behövs bara när index och schema kommer från olika källor, alltså när Lantmäteriet kopplas in. Nyckeln är då kommunkod, normaliserat gatunamn, nummer och bokstav. Lantmäteriets UUID sparas i en översättningstabell.
 
 ### 5. Beräknade datum
