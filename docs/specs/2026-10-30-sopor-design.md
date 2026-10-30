@@ -1,7 +1,7 @@
 # Sopor – design (v1)
 
 Datum: 2026-10-30
-Status: granskad, väntar på godkännande
+Status: godkänd 2026-10-30
 
 ## Syfte och varför
 
@@ -100,10 +100,14 @@ interface Address {
 
 interface Bin {
   fraction: FractionId;
-  sizeLiters: number;
+  sizeLiters?: number;      // okänt i praktiken – visas bara om det finns
   pickupsPerYear?: number;
   frequencyText?: string;   // "Varannan vecka · onsdagar", visas i "Mina kärl"
 }
+// "Mina kärl" kan härledas ur händelserna om bins saknas i datan:
+// en rad per fraktion som förekommer, frekvens räknad från intervallen
+// mellan datum (t.ex. 14 dagar → "Varannan vecka") och veckodag.
+// Storlek i liter visas bara om den finns i datan.
 
 interface PickupEvent {
   date: string;              // "2026-11-11" (lokalt datum, ingen tid)
@@ -209,7 +213,7 @@ Genererade filer checkas inte in (`.gitignore`). `npm run dev` kör build-data f
 - Nästa tömning: veckodag, datum, "om N dagar"/"i morgon"/"i dag", fraktionschips, schemats `note` och knappen "Lägg till i kalender".
 - Kommande tömningar grupperade per datum, med etiketten "Nästa" och avvikelser ("Flyttad · helgdag" plus förklaringstext).
 - Månadskalender med fraktionsprickar och bläddring mellan månader (*min bedömning*: inom de månader som har data).
-- Mina kärl: fraktion, frekvens, storlek.
+- Mina kärl: fraktion och frekvens, härledda ur schemat om `bins` saknas. Storlek visas bara om den finns i datan. Kärlstorlek per adress kommer troligen aldrig att vara känd.
 - "Påminnelser – Kommer snart".
 - "Spara" öppnar arket "Spara adress".
 - "Byt adress" går tillbaka till start.
@@ -231,6 +235,7 @@ Genererade filer checkas inte in (`.gitignore`). `npm run dev` kör build-data f
 - VALARM kl. 18:00 kvällen innan (`TRIGGER:-PT6H`).
 - `X-WR-CALNAME: Sopor – Storgatan 12 B, Krylbo`, `REFRESH-INTERVAL`/`X-PUBLISHED-TTL` på 1 dygn, CRLF och radvikning enligt RFC 5545.
 - `DTSTAMP` sätts från datans `updatedAt`, inte från byggtiden, så att filen bara ändras när datan ändras.
+- **Uppdateringar:** Prenumerationer (webcal, Google, Apple) hämtar om filen själva. Ändrad data når användaren vid nästa hämtning. Apple hämtar enligt användarens inställning, Google bestämmer själv, ofta inom ett dygn men ibland längre. `REFRESH-INTERVAL` är bara ett önskemål som Google ignorerar. Varje deploy på Vercel tömmer CDN-cachen, så inget gammalt ligger kvar hos oss. En nedladdad .ics uppdateras aldrig, och arket säger det redan ("Uppdateras inte").
 
 ### Sparade adresser
 
