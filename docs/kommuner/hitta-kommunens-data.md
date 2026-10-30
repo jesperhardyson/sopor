@@ -86,4 +86,6 @@ Lärdomar så här långt:
 - **En publik söktjänst är en bonus, inte regel.** Även när EDP:s modul finns kan den vara tom.
 - **Lantmäteriets adressregister** säger vilka adresser som finns, men inte vilket område de tillhör. Licensen är dessutom oklar för återpublicering. Det ersätter alltså inte kommunens tabell.
 
+En större genomgång av adresskällor och vilka kommuner som har publika källor för hämtschema finns i [undersökningen från oktober 2026](undersokning-2026-10-adresser-och-hamtschema.md).
+
 *Uppdatera tabellen när du undersöker en ny kommun. Senast uppdaterad oktober 2026.*
