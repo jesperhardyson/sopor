@@ -14,7 +14,7 @@ Sopor är en **inofficiell** hobbytjänst. Den är inte kopplad till någon komm
 
 Sopor är öppen källkod, och bidrag är välkomna, särskilt **fler kommuner**:
 
-- Saknar du din kommun? Lägg in den enligt [Lägga till en kommun](#lägga-till-en-kommun). Använd bara publika källor, som kommunens hämtschema eller en publik söktjänst.
+- Saknar du din kommun? Börja med [guiden om att hitta kommunens data](docs/kommuner/hitta-kommunens-data.md), och lägg sedan in den enligt [Lägga till en kommun](#lägga-till-en-kommun). Använd bara publika källor, som kommunens hämtschema eller en publik söktjänst.
 - Hittat ett fel i schemat? Öppna ett issue med adress, datum och länk till kommunens uppgift.
 - Kör `npm run lint && npm test && npm run build` innan du skickar en pull request. GitHub Actions kör samma kontroller på varje pull request, och stoppar även ändringar som tar bort eller byter namn på ett befintligt adress-id (`npm run check:ids`).
 - Vercel kör testerna före varje bygge, så röda tester når aldrig produktion.
