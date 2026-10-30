@@ -31,13 +31,13 @@ UID:krylbo-storgatan-12b-2026-11-25@sopor.hardyson.se
 DTSTAMP:20261029T000000Z
 DTSTART;VALUE=DATE:20261125
 DTEND;VALUE=DATE:20261126
-SUMMARY:Sopor: Matavfall + Pappersförpackningar
+SUMMARY:Sopor: Pappersförpackningar + Matavfall
 DESCRIPTION:Inofficiell tjänst. Vid avvikelser gäller kommunens informati
  on.
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:I morgon: Matavfall + Pappersförpackningar
+DESCRIPTION:I morgon: Pappersförpackningar + Matavfall
 TRIGGER:-PT6H
 END:VALARM
 END:VEVENT
@@ -46,13 +46,13 @@ UID:krylbo-storgatan-12b-2027-01-07@sopor.hardyson.se
 DTSTAMP:20261029T000000Z
 DTSTART;VALUE=DATE:20270107
 DTEND;VALUE=DATE:20270108
-SUMMARY:Sopor: Matavfall + Pappersförpackningar
+SUMMARY:Sopor: Pappersförpackningar + Matavfall
 DESCRIPTION:Flyttad från onsdag 6 januari (trettondedag jul).\\nInofficiell
   tjänst. Vid avvikelser gäller kommunens information.
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:I morgon: Matavfall + Pappersförpackningar
+DESCRIPTION:I morgon: Pappersförpackningar + Matavfall
 TRIGGER:-PT6H
 END:VALARM
 END:VEVENT

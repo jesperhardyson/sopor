@@ -70,7 +70,7 @@ describe('buildIcs', () => {
   })
 
   it('sorterar fraktionerna i titeln enligt registret', () => {
-    expect(vevent(ics(), '2026-11-25')).toContain('SUMMARY:Sopor: Matavfall + Pappersförpackningar')
+    expect(vevent(ics(), '2026-11-25')).toContain('SUMMARY:Sopor: Pappersförpackningar + Matavfall')
   })
 
   it('beskriver avvikelser och friskrivning', () => {
