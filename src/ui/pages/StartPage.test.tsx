@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router'
 import { describe, expect, it, vi } from 'vitest'
@@ -42,3 +42,14 @@ describe('StartPage fokusläge', () => {
     expect(screen.queryByTestId('sok-fokus')).toBeNull()
   })
 })
+
+describe('StartPage innehåll', () => {
+  it('berättar vad man får se efter sökningen', () => {
+    setup()
+    const points = screen.getByRole('list', { name: 'Det här får du' })
+    for (const title of ['Nästa tömning', 'Alla kommande tömningar', 'Direkt i din kalender', 'Spara dina adresser']) {
+      expect(within(points).getByRole('heading', { name: title })).toBeInTheDocument()
+    }
+  })
+})
+

@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { Footer } from '../layout/Footer'
+import { Header } from '../layout/Header'
 import { Deviation } from './Deviation'
 import { FractionChip } from './FractionChip'
 import { ThemeToggle } from './ThemeToggle'
@@ -51,3 +52,17 @@ describe('Footer', () => {
     expect(screen.queryByText('Avesta Vatten och Avfall')).toBeNull()
   })
 })
+
+describe('Header', () => {
+  it('länkar till källkoden på GitHub', () => {
+    render(
+      <MemoryRouter>
+        <Header />
+      </MemoryRouter>,
+    )
+    const links = screen.getAllByRole('link', { name: /GitHub/ })
+    expect(links.length).toBeGreaterThan(0)
+    for (const l of links) expect(l).toHaveAttribute('href', 'https://github.com/jesperhardyson/sopor')
+  })
+})
+

@@ -1,5 +1,6 @@
 import { ArrowLeft, ArrowUpRight, Ban, Mail, MapPin, Smartphone, UserX, type LucideIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { GitHubMark } from '../components/GitHubMark'
 import { Link } from 'react-router'
 import { SITE } from '@/config'
 import { MUNICIPALITIES, type Municipality } from '@/municipalities'
@@ -9,7 +10,7 @@ import { formatLong } from '@/domain/dates'
 const FACTS: [LucideIcon, string][] = [
   [UserX, 'Inget konto eller inloggning'],
   [Smartphone, 'Adresser sparas bara på din enhet'],
-  [Ban, 'Ingen reklam och ingen spårning'],
+  [Ban, 'Ingen reklam och inga spårningscookies'],
 ]
 
 const h2 = 'text-xl font-extrabold tracking-[-0.3px] text-text'
@@ -84,8 +85,25 @@ export function AboutPage() {
         <h2 className={h2}>Integritet</h2>
         <p className={body}>
           Sparade adresser och namn som ”Hemma” lagras bara i din webbläsare. Vi har inga konton och samlar inte in
-          personuppgifter. Rensar du webbläsaren försvinner de.
+          personuppgifter. Rensar du webbläsaren försvinner de. Vi räknar besök anonymt med Vercel Web Analytics, utan
+          cookies. Adresser du söker på skickas inte med.
         </p>
+      </section>
+
+      <section className="flex flex-col items-start gap-3">
+        <h2 className={h2}>Bidra</h2>
+        <p className={body}>
+          Sopor är öppen källkod. Saknar du din kommun kan du hjälpa till att lägga in den, rätta fel eller föreslå
+          förbättringar på GitHub.
+        </p>
+        <a
+          href={SITE.repoUrl}
+          rel="noopener"
+          className="inline-flex items-center gap-2 rounded-[14px] border border-border bg-surface px-4 py-3 text-[15px] font-bold text-text"
+        >
+          <GitHubMark className="size-[18px]" />
+          Sopor på GitHub
+        </a>
       </section>
 
       <section className="flex flex-col items-start gap-3">

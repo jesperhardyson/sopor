@@ -10,6 +10,16 @@ Sopor är en **inofficiell** hobbytjänst. Den är inte kopplad till någon komm
 
 > **Obs:** Datan i `data/avesta/2026/` är **FAKE** och finns bara för utveckling. Den ersätts när den riktiga adress→trakt-tabellen har kommit från Avesta Vatten och Avfall.
 
+## Bidra
+
+Sopor är öppen källkod, och bidrag är välkomna, särskilt **fler kommuner**:
+
+- Saknar du din kommun? Lägg in den enligt [Lägga till en kommun](#lägga-till-en-kommun). Använd bara publika källor, som kommunens hämtschema eller en publik söktjänst.
+- Hittat ett fel i schemat? Öppna ett issue med adress, datum och länk till kommunens uppgift.
+- Kör `npm test && npm run build` innan du skickar en pull request.
+
+Instruktioner för AI-agenter finns i [`AGENTS.md`](AGENTS.md).
+
 ## Kom igång
 
 Kräver Node 22 eller senare.

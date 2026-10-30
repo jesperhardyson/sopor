@@ -21,4 +21,17 @@ describe('AboutPage', () => {
     expect(screen.getByRole('link', { name: 'Skriv till oss' })).toHaveAttribute('href', 'mailto:support@hardyson.se')
     expect(screen.getByText(/Sopor är en inofficiell tjänst och är inte kopplad till någon kommun/)).toBeInTheDocument()
   })
+
+  it('berättar om analysen och att man kan bidra på GitHub', () => {
+    render(
+      <MemoryRouter>
+        <AboutPage />
+      </MemoryRouter>,
+    )
+    expect(screen.getByText('Ingen reklam och inga spårningscookies')).toBeInTheDocument()
+    expect(screen.getByText(/Vi räknar besök anonymt med Vercel Web Analytics, utan cookies\. Adresser du söker på skickas inte med\./)).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Bidra' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Sopor på GitHub/ })).toHaveAttribute('href', 'https://github.com/jesperhardyson/sopor')
+  })
 })
+

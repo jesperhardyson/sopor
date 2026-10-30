@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils'
 import { MUNICIPALITIES } from '@/municipalities'
 import { FractionIcon } from '../components/FractionIcon'
 import { SavedList } from '../saved/SavedList'
+import { SellingPoints } from '../start/SellingPoints'
 import { AddressSearch } from '../search/AddressSearch'
 
 const HERO_FRACTIONS = ['rest', 'mat', 'papper', 'plast'] as const
@@ -71,6 +72,7 @@ export function StartPage() {
           {municipalityLine()}
         </p>
         <SavedList />
+        <SellingPoints />
       </div>
     </div>
   )

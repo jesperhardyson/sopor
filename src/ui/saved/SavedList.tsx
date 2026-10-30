@@ -8,23 +8,39 @@ import { FractionIcon } from '../components/FractionIcon'
 import { useSchedule } from '../hooks/useSchedule'
 import { nameIcon } from './name-icon'
 
-function NextLine({ saved, today }: { saved: SavedAddress; today: string }) {
+function SavedCard({ saved, today }: { saved: SavedAddress; today: string }) {
   const [state] = useSchedule(saved.municipalityId, saved.addressId)
-  if (state.status !== 'ok') return null
-  const next = nextPickup(state.schedule, today)
-  if (!next) return null
+  const next = state.status === 'ok' ? nextPickup(state.schedule, today) : null
+  const Icon = nameIcon(saved.name)
   return (
-    <>
-      <span className="flex items-center gap-1.5 pt-1 text-sm">
-        <span className="font-extrabold text-brand-text">{formatShort(next.date)}</span>
-        <span className="text-text-2">· {relativeDayLabel(daysBetween(today, next.date))}</span>
+    <Link
+      to={`/${saved.municipalityId}/${saved.addressId}`}
+      className="flex items-center gap-3.5 rounded-[18px] border border-border bg-surface p-4 hover:border-primary"
+    >
+      <span className="flex min-w-0 flex-1 flex-col gap-1">
+        <span className="flex items-center gap-1.5">
+          <Icon className="size-4 shrink-0 text-primary" aria-hidden />
+          <span className="truncate text-base font-extrabold text-text">{saved.name}</span>
+        </span>
+        <span className="truncate text-sm text-text-2">
+          {saved.street}, {saved.locality}
+        </span>
+        {next && (
+          <span className="flex flex-wrap items-center gap-x-1.5 pt-1 text-sm">
+            <span className="font-extrabold text-brand-text">{formatShort(next.date)}</span>
+            <span className="text-text-2">· {relativeDayLabel(daysBetween(today, next.date))}</span>
+          </span>
+        )}
       </span>
-      <span className="absolute top-1/2 right-12 flex -translate-y-1/2 items-center -space-x-2" aria-hidden>
-        {next.fractions.map((f) => (
-          <FractionIcon key={f} fraction={f} className="size-[34px] rounded-full border-2 border-surface [&_svg]:size-4" />
-        ))}
-      </span>
-    </>
+      {next && (
+        <span className="flex shrink-0 items-center -space-x-2" aria-hidden>
+          {next.fractions.map((f) => (
+            <FractionIcon key={f} fraction={f} className="size-[34px] rounded-full border-2 border-surface [&_svg]:size-4" />
+          ))}
+        </span>
+      )}
+      <ChevronRight className="size-5 shrink-0 text-text-2" aria-hidden />
+    </Link>
   )
 }
 
@@ -46,7 +62,6 @@ export function SavedList({ today = todayInStockholm() }: { today?: string }) {
       </div>
 
       {saved.map((s) => {
-        const Icon = nameIcon(s.name)
         const key = `${s.municipalityId}/${s.addressId}`
         if (editing) {
           return (
@@ -73,25 +88,7 @@ export function SavedList({ today = todayInStockholm() }: { today?: string }) {
             </div>
           )
         }
-        return (
-          <Link
-            key={key}
-            to={`/${key}`}
-            className="relative flex items-center gap-3.5 rounded-[18px] border border-border bg-surface p-4 hover:border-primary"
-          >
-            <span className="flex min-w-0 flex-1 flex-col gap-1">
-              <span className="flex items-center gap-1.5">
-                <Icon className="size-4 text-primary" aria-hidden />
-                <span className="text-base font-extrabold text-text">{s.name}</span>
-              </span>
-              <span className="text-sm text-text-2">
-                {s.street}, {s.locality}
-              </span>
-              <NextLine saved={s} today={today} />
-            </span>
-            <ChevronRight className="size-5 shrink-0 text-text-2" aria-hidden />
-          </Link>
-        )
+        return <SavedCard key={key} saved={s} today={today} />
       })}
 
       <p className="flex items-center gap-1.5 px-1 py-0.5 text-[13px] text-text-2">

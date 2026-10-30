@@ -1,6 +1,7 @@
 import { Bookmark } from 'lucide-react'
 import { Link } from 'react-router'
 import { SITE } from '@/config'
+import { GitHubMark } from '../components/GitHubMark'
 import { Logo } from '../components/Logo'
 import { ThemeToggle } from '../components/ThemeToggle'
 
@@ -25,8 +26,20 @@ export function Header() {
             <a href={`mailto:${SITE.contactEmail}`} className={navItem}>
               Kontakt
             </a>
+            <a href={SITE.repoUrl} rel="noopener" className={navItem}>
+              <GitHubMark className="size-[18px]" />
+              GitHub
+            </a>
             <span className="h-6 w-px bg-border" aria-hidden />
           </div>
+          <a
+            href={SITE.repoUrl}
+            rel="noopener"
+            aria-label="Sopor på GitHub"
+            className="inline-flex size-11 items-center justify-center rounded-full border border-border text-text-2 hover:bg-surface md:hidden"
+          >
+            <GitHubMark />
+          </a>
           <ThemeToggle />
         </nav>
       </div>
