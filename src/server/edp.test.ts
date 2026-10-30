@@ -47,6 +47,12 @@ describe('parseBuilding', () => {
     expect(parseBuilding('Storgatan 1, KÅGE (124165)')?.locality).toBe('Kåge')
   })
 
+  it('klarar tom ort, gator i versaler och extra mellanslag', () => {
+    expect(parseBuilding('KYRKOGATAN 2,  (590510011)')).toMatchObject({ street: 'Kyrkogatan 2', locality: '', buildingId: '590510011' })
+    expect(parseBuilding('SKOLVÄGEN 1, HENÅN (50000493)')).toMatchObject({ street: 'Skolvägen 1', locality: 'Henån' })
+    expect(parseBuilding('STORGATAN   efter nr 103, LYCKSELE (865101)')).toMatchObject({ street: 'STORGATAN efter nr 103', locality: 'Lycksele' })
+  })
+
   it('ger null för text utan byggnads-id', () => {
     expect(parseBuilding('Storgatan 1')).toBeNull()
   })
@@ -57,6 +63,7 @@ describe('edpAddressId', () => {
     expect(edpAddressId(parseBuilding('Storgatan 1, Grillby (909273)')!)).toBe('storgatan-1_grillby-909273')
     expect(edpAddressId(parseBuilding('Storgatan 1, Slite (0200505709)')!)).toBe('storgatan-1_slite-0200505709')
     expect(edpAddressId(parseBuilding('Älvvägen 3 B, Örebro (1)')!)).toBe('älvvägen-3-b_örebro-1')
+    expect(edpAddressId(parseBuilding('KYRKOGATAN 2,  (590510011)')!)).toBe('kyrkogatan-2-590510011')
     expect(edpAddressId(parseBuilding('Storgatan 2 -4, Tormenåsgatan 1, Huskvarna (28970)')!)).toBe(
       'storgatan-2-~4_tormenåsgatan-1_huskvarna-28970',
     )

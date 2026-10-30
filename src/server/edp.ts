@@ -30,9 +30,10 @@ const titleCase = (s: string) =>
 
 /** "Storgatan 2 -4, Tormenåsgatan 1, Huskvarna (28970)" → gata, ort och byggnads-id. */
 export function parseBuilding(raw: string): EdpBuilding | null {
-  const m = raw.match(/^(.*),\s*([^,]+?)\s*\((\w+)\)\s*$/)
+  const m = raw.match(/^(.*),\s*([^,]*?)\s*\((\w+)\)\s*$/)
   if (!m) return null
-  return { raw, street: m[1].trim(), locality: titleCase(m[2].trim()), buildingId: m[3] }
+  const clean = (t: string) => titleCase(t.trim().replace(/\s+/g, ' '))
+  return { raw, street: clean(m[1]), locality: clean(m[2]), buildingId: m[3] }
 }
 
 /**
@@ -52,7 +53,7 @@ function encode(text: string): string {
 
 /** "storgatan-1_grillby-909273". Byggnads-id:t sist gör id:t unikt och stabilt. */
 export function edpAddressId(b: EdpBuilding): string {
-  return `${encode(`${b.street}, ${b.locality}`)}-${b.buildingId}`
+  return `${encode(b.locality ? `${b.street}, ${b.locality}` : b.street)}-${b.buildingId}`
 }
 
 /** Tillbaka från id till söksträng ("storgatan 1, grillby") och byggnads-id. */
