@@ -17,6 +17,10 @@ const header = (source: string, key: string) =>
   config.headers.find((h) => h.source === source)?.headers?.find((h) => h.key === key)?.value
 
 describe('vercel.json', () => {
+  it('kör testerna innan bygget så att röda tester aldrig når produktion', () => {
+    expect((config as unknown as { buildCommand: string }).buildCommand).toBe('npm test && npm run build')
+  })
+
   it('serverar kalenderfiler som text/calendar med cache', () => {
     expect(header('/ics/(.*)', 'Content-Type')).toBe('text/calendar; charset=utf-8')
     expect(header('/ics/(.*)', 'Cache-Control')).toBe('public, max-age=3600, s-maxage=86400')

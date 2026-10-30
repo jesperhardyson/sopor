@@ -6,12 +6,11 @@ import { nextPickup } from '@/domain/schedule'
 import { loadSaved, removeSaved, renameSaved, type SavedAddress } from '@/lib/storage'
 import { FractionIcon } from '../components/FractionIcon'
 import { useSchedule } from '../hooks/useSchedule'
-import { nameIcon } from './name-icon'
+import { NameIcon } from './NameIcon'
 
 function SavedCard({ saved, today }: { saved: SavedAddress; today: string }) {
   const [state] = useSchedule(saved.municipalityId, saved.addressId)
   const next = state.status === 'ok' ? nextPickup(state.schedule, today) : null
-  const Icon = nameIcon(saved.name)
   return (
     <Link
       to={`/${saved.municipalityId}/${saved.addressId}`}
@@ -19,7 +18,7 @@ function SavedCard({ saved, today }: { saved: SavedAddress; today: string }) {
     >
       <span className="flex min-w-0 flex-1 flex-col gap-1">
         <span className="flex items-center gap-1.5">
-          <Icon className="size-4 shrink-0 text-primary" aria-hidden />
+          <NameIcon name={saved.name} className="size-4 shrink-0 text-primary" />
           <span className="truncate text-base font-extrabold text-text">{saved.name}</span>
         </span>
         <span className="truncate text-sm text-text-2">

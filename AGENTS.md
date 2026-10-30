@@ -15,7 +15,9 @@ npm run build        # build:data + tsc -b + vite build
 npm run build:data   # bara datagenereringen (scripts/build-data.ts)
 ```
 
-Kör `npm test && npm run build` innan varje commit. Båda ska vara gröna.
+Kör `npm run lint && npm test && npm run build` innan varje commit. Allt ska vara grönt.
+
+`main` är skyddad: ändringar går via pull request och kräver grön CI. Arbeta på en gren.
 
 ## Arkitekturregler (bryt inte dessa)
 

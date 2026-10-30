@@ -57,6 +57,19 @@ describe('parseSchedulesFile', () => {
     const bad = schedulesJson({ schedules: { t: { name: 'x', events: [{ date: '2026-02-30', fractions: ['rest'] }] } } })
     expect(() => parseSchedulesFile(bad, 's.json')).toThrow(DataError)
   })
+  it('stoppar när validFrom ligger efter validTo', () => {
+    expect(() => parseSchedulesFile(schedulesJson({ validFrom: '2027-02-01' }), 's.json')).toThrow(/validFrom.*validTo/)
+  })
+
+  it('stoppar när en tömning ligger utanför giltighetsperioden', () => {
+    const bad = schedulesJson({ schedules: { t: { name: 'x', events: [{ date: '2027-03-01', fractions: ['rest'] }] } } })
+    expect(() => parseSchedulesFile(bad, 's.json')).toThrow(/2027-03-01.*utanför/)
+  })
+
+  it('stoppar när ett schema saknar tömningar', () => {
+    const bad = schedulesJson({ schedules: { t: { name: 'x', events: [] } } })
+    expect(() => parseSchedulesFile(bad, 's.json')).toThrow(/"t".*inga tömningar/)
+  })
 })
 
 describe('buildMunicipality', () => {
