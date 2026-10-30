@@ -124,6 +124,8 @@ interface Schedule {
 
 interface WasteProvider {
   searchAddresses(query: string, signal?: AbortSignal): Promise<Address[]>;
+  suggestAddresses(query: string, signal?: AbortSignal): Promise<Address[]>;  // "Menade du:"
+  getAddress(addressId: string, signal?: AbortSignal): Promise<Address | null>; // delad länk
   getSchedule(addressId: string, signal?: AbortSignal): Promise<Schedule | null>;
   icsUrl(addressId: string): string;   // static: /ics/<kommun>/<id>.ics; edp: /api/...
 }

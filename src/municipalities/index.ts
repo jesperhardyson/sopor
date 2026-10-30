@@ -18,7 +18,7 @@ export const MUNICIPALITIES: Municipality[] = [
     operator: {
       name: 'Avesta Vatten och Avfall',
       url: 'https://www.avestavatten.se',
-      scheduleUrl: 'https://www.avestavatten.se',
+      scheduleUrl: 'https://www.avestavatten.se/avfall/',
     },
     provider: { type: 'static' },
   },
