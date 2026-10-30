@@ -2,6 +2,8 @@
 
 Tack för att du vill hjälpa till! Det viktigaste bidraget är **fler kommuner**.
 
+Börja med [guiden om att hitta kommunens data](docs/kommuner/hitta-kommunens-data.md). Den visar hur du ser om schemat finns publikt, testar om kommunen har en söktjänst och begär ut det som saknas. Där finns också vad vi vet om kommunerna hittills.
+
 1. Forka repot och skapa en gren.
 2. Följ [Lägga till en kommun](README.md#lägga-till-en-kommun) eller
    [Uppdatera årets schema](README.md#uppdatera-årets-schema) i README.

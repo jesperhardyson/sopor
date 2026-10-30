@@ -40,6 +40,7 @@ Kör `npm run lint && npm test && npm run build` innan varje commit. Allt ska va
 
 - Specifikationer: `docs/specs/`
 - Implementationsplaner: `docs/plans/`
+- Kommunernas datakällor och lärdomar: `docs/kommuner/hitta-kommunens-data.md` (uppdatera tabellen när en kommun undersöks)
 
 Nya design- och plandokument läggs där, inte någon annanstans.
 
