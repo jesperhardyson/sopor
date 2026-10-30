@@ -1,4 +1,6 @@
+import { Analytics } from '@vercel/analytics/react'
 import { BrowserRouter, Route, Routes } from 'react-router'
+import { beforeSend } from '@/lib/analytics'
 import { Layout } from './layout/Layout'
 import { AboutPage } from './pages/AboutPage'
 import { ResultPage } from './pages/ResultPage'
@@ -15,6 +17,7 @@ export function App() {
           <Route path="*" element={<StartPage />} />
         </Route>
       </Routes>
+      <Analytics beforeSend={beforeSend} />
     </BrowserRouter>
   )
 }
