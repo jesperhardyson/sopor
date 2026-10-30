@@ -1,4 +1,4 @@
-import type { Address } from './types'
+import type { Address } from './types.js'
 
 const KEEP: Record<string, string> = { å: '\u0001', ä: '\u0002', ö: '\u0003' }
 const RESTORE = Object.fromEntries(Object.entries(KEEP).map(([k, v]) => [v, k]))

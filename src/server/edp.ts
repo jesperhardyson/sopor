@@ -1,12 +1,12 @@
 // Klient för EDP Futures publika modul SimpleWastePickup. Körs på servern (Vercel Functions),
 // eftersom källorna saknar CORS-headers.
 
-import { isValidDate, todayInStockholm } from '../domain/dates'
-import { sortFractions } from '../domain/fractions'
-import { expandPickups } from '../domain/recurrence'
-import type { FractionId, PickupEvent, Schedule } from '../domain/types'
-import { fetchJson } from './http'
-import { mapWasteType } from './fractions-map'
+import { isValidDate, todayInStockholm } from '../domain/dates.js'
+import { sortFractions } from '../domain/fractions.js'
+import { expandPickups } from '../domain/recurrence.js'
+import type { FractionId, PickupEvent, Schedule } from '../domain/types.js'
+import { fetchJson } from './http.js'
+import { mapWasteType } from './fractions-map.js'
 
 export interface EdpBuilding {
   /** Adresssträngen exakt som källan skrev den, krävs för att hämta schemat */

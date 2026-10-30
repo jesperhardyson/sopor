@@ -1,5 +1,5 @@
-import { addDays } from './dates'
-import { holidayOn } from './holidays'
+import { addDays } from './dates.js'
+import { holidayOn } from './holidays.js'
 
 /** Antal tömningar per år → dagar mellan tömningarna. Övriga värden räknas inte fram. */
 const STEP_DAYS: Record<number, number> = { 52: 7, 26: 14, 13: 28 }

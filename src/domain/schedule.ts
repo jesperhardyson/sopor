@@ -1,5 +1,5 @@
-import { sortFractions } from './fractions'
-import type { FractionId, PickupEvent, Schedule, SchedulePart } from './types'
+import { sortFractions } from './fractions.js'
+import type { FractionId, PickupEvent, Schedule, SchedulePart } from './types.js'
 
 /**
  * Slår ihop flera års scheman. Ett nyare år gäller från sitt validFrom; det

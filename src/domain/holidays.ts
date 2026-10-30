@@ -1,4 +1,4 @@
-import { addDays, fromUtc } from './dates'
+import { addDays, fromUtc } from './dates.js'
 
 export interface Holiday {
   date: string

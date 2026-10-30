@@ -1,4 +1,4 @@
-import type { FractionId } from '../domain/types'
+import type { FractionId } from '../domain/types.js'
 
 /** Ordningen spelar roll: "matavfall" ska inte fångas av något bredare mönster först. */
 const PATTERNS: [RegExp, FractionId][] = [

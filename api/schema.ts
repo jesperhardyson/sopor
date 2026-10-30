@@ -1,4 +1,4 @@
-import { handleSchedule } from '../src/server/handlers'
+import { handleSchedule } from '../src/server/handlers.js'
 
 export default {
   fetch(request: Request) {

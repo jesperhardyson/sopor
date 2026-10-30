@@ -1,4 +1,4 @@
-import { handleSearch } from '../src/server/handlers'
+import { handleSearch } from '../src/server/handlers.js'
 
 export default {
   fetch(request: Request) {

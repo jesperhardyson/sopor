@@ -1,4 +1,4 @@
-import { handleIcs } from '../src/server/handlers'
+import { handleIcs } from '../src/server/handlers.js'
 
 export default {
   fetch(request: Request) {

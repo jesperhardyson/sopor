@@ -1,4 +1,4 @@
-import type { FractionId } from './types'
+import type { FractionId } from './types.js'
 
 export interface FractionInfo {
   id: FractionId

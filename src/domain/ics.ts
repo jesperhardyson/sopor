@@ -1,6 +1,6 @@
-import { addDays, formatLong } from './dates'
-import { FRACTIONS, sortFractions } from './fractions'
-import type { Address, PickupEvent, Schedule } from './types'
+import { addDays, formatLong } from './dates.js'
+import { FRACTIONS, sortFractions } from './fractions.js'
+import type { Address, PickupEvent, Schedule } from './types.js'
 
 export const DISCLAIMER = 'Inofficiell tjänst. Vid avvikelser gäller kommunens information.'
 export const ESTIMATE_NOTE = 'Beräknat datum – helgdagar kan flytta tömningen. Kolla kommunens besked.'

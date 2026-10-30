@@ -1,11 +1,11 @@
 // Logiken bakom Vercel-funktionerna i api/. Hålls fri från Vercel-specifika typer så att den kan
 // testas direkt och köras av Vites dev-server.
 
-import { buildIcs } from '../domain/ics'
-import { normalize } from '../domain/search'
-import type { Address } from '../domain/types'
-import { kommunForLocality, SOURCES, type Source } from '../sources'
-import { edpAddressId, edpSchedule, edpSearch, queryFromAddressId, type EdpBuilding } from './edp'
+import { buildIcs } from '../domain/ics.js'
+import { normalize } from '../domain/search.js'
+import type { Address } from '../domain/types.js'
+import { kommunForLocality, SOURCES, type Source } from '../sources/index.js'
+import { edpAddressId, edpSchedule, edpSearch, queryFromAddressId, type EdpBuilding } from './edp.js'
 
 export interface HandlerOptions {
   fetchFn?: typeof fetch

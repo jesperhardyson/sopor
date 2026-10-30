@@ -58,4 +58,21 @@ describe('Vercel-funktionernas importer', () => {
     )
     expect(offenders).toEqual([])
   })
+
+  it('har filändelsen .js på relativa importer (Node ESM på Vercel kräver det)', async () => {
+    const { readdirSync } = await import('node:fs')
+    const root = path.resolve(import.meta.dirname, '..')
+    const dirs = ['api', 'src/server', 'src/domain', 'src/sources']
+    const offenders = dirs.flatMap((d) =>
+      readdirSync(path.join(root, d))
+        .filter((f) => f.endsWith('.ts') && !f.endsWith('.test.ts'))
+        .flatMap((f) =>
+          [...readFileSync(path.join(root, d, f), 'utf8').matchAll(/from '(\.{1,2}\/[^']+)'/g)]
+            .map((m) => m[1])
+            .filter((spec) => !spec.endsWith('.js'))
+            .map((spec) => `${d}/${f}: ${spec}`),
+        ),
+    )
+    expect(offenders).toEqual([])
+  })
 })
