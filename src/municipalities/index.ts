@@ -8,6 +8,8 @@ export interface Municipality {
   shortName: string
   operator: { name: string; url: string }
   provider: ProviderConfig
+  /** Påhittad data (seed). Visar en varningsbanderoll på hela sajten. Ta bort när riktig data finns. */
+  testData?: boolean
 }
 
 export const MUNICIPALITIES: Municipality[] = [
@@ -20,6 +22,7 @@ export const MUNICIPALITIES: Municipality[] = [
       url: 'https://www.avestavatten.se',
     },
     provider: { type: 'static' },
+    testData: true,
   },
 ]
 
