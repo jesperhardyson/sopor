@@ -17,7 +17,7 @@ describe('AboutPage', () => {
     )
     expect(screen.getByRole('heading', { name: 'Om Sopor', level: 1 })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Avesta Vatten och Avfall/ })).toHaveAttribute('href', 'https://www.avestavatten.se')
-    expect(await screen.findByText('Hämtat 29 okt')).toBeInTheDocument()
+    expect(await screen.findAllByText('Hämtat 29 okt')).toHaveLength(1)
     expect(screen.queryByText('Lantmäteriet')).toBeNull()
     expect(screen.getByRole('link', { name: 'Skriv till oss' })).toHaveAttribute('href', 'mailto:support@hardyson.se')
     expect(screen.getByText(/Sopor är en inofficiell tjänst och är inte kopplad till någon kommun/)).toBeInTheDocument()

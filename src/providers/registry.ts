@@ -23,7 +23,9 @@ export function mergeResults(results: PromiseSettledResult<Address[]>[], limit: 
 }
 
 async function fromAll(fn: (p: WasteProvider) => Promise<Address[]>, limit: number): Promise<Address[]> {
-  return mergeResults(await Promise.allSettled(SOURCES.map((m) => fn(providerFor(m)))), limit)
+  // EDP-källor söks via /api/sok (kopplas in i sökrutan i ett senare steg)
+  const local = SOURCES.filter((m) => m.config.system === 'static')
+  return mergeResults(await Promise.allSettled(local.map((m) => fn(providerFor(m)))), limit)
 }
 
 export function searchAll(query: string, signal?: AbortSignal): Promise<Address[]> {

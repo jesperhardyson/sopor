@@ -21,6 +21,8 @@ const body = 'text-[15px] leading-normal text-text-2'
 function SourceCard({ m }: { m: Source }) {
   const [updatedAt, setUpdatedAt] = useState<string | null>(null)
   useEffect(() => {
+    // Live-källor (EDP) har inget datadatum: de hämtas direkt från källan.
+    if (m.config.system !== 'static') return
     let active = true
     providerFor(m)
       .dataUpdatedAt()

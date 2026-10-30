@@ -10,7 +10,7 @@ describe('kommunregistret', () => {
   it('har Avesta med statisk provider', () => {
     expect(getSource('avesta')?.config).toEqual({ system: 'static' })
     expect(getSource('hedemora')).toBeUndefined()
-    expect(SOURCES.map((m) => m.id)).toEqual(['avesta'])
+    expect(SOURCES.map((m) => m.id)).toContain('avesta')
   })
 })
 

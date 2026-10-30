@@ -30,6 +30,13 @@ export const SOURCES: Source[] = [
     config: { system: 'static' },
     testData: true,
   },
+  {
+    id: 'uppsala',
+    name: 'Uppsala Vatten',
+    url: 'https://www.uppsalavatten.se',
+    kommuner: [{ code: '0380', name: 'Uppsala kommun' }],
+    config: { system: 'edp', baseUrl: 'https://futureweb.uppsalavatten.se/Uppsala/FutureWeb' },
+  },
 ]
 
 export function getSource(id: string): Source | undefined {
