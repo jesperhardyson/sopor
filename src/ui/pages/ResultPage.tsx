@@ -2,14 +2,13 @@ import { ArrowLeft, Bookmark, CalendarPlus } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router'
 import { todayInStockholm } from '@/domain/dates'
-import { displayBins, nextPickup, upcoming } from '@/domain/schedule'
+import { nextPickup, upcoming } from '@/domain/schedule'
 import type { Address } from '@/domain/types'
 import { findSaved } from '@/lib/storage'
 import { getMunicipality, type Municipality } from '@/municipalities'
 import { providerFor } from '@/providers/registry'
 import { useSchedule } from '../hooks/useSchedule'
 import { MonthCalendar } from '../result/MonthCalendar'
-import { MyBins } from '../result/MyBins'
 import { NextPickup } from '../result/NextPickup'
 import { RemindersSoon } from '../result/RemindersSoon'
 import { EmptyState, ErrorState, LoadingState, UnsupportedState } from '../result/ResultStates'
@@ -158,7 +157,6 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
           {schedule.events.length > 0 && (
             <MonthCalendar schedule={schedule} initial={next?.date ?? today} today={today} />
           )}
-          <MyBins bins={displayBins(schedule)} />
           <RemindersSoon />
         </div>
       </div>

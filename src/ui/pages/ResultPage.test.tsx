@@ -82,14 +82,19 @@ describe('ResultPage', () => {
     expect(within(list).getByText('Flyttad från ons 6 jan på grund av trettondedag jul.')).toBeInTheDocument()
   })
 
-  it('visar kärl med storlek bara när den finns', async () => {
+  it('visar inte "Mina kärl", eftersom vi inte vet användarens abonnemang', async () => {
     renderAt('/avesta/krylbo-storgatan-12b')
-    resolveSchedule?.()
     await vi.waitFor(() => resolveSchedule!())
-    const bins = await screen.findByRole('region', { name: 'Mina kärl' })
-    expect(within(bins).getByText('190 l')).toBeInTheDocument()
-    expect(within(bins).getAllByText(/ l$/)).toHaveLength(1)
-    expect(within(bins).getByText('Var 6:e vecka · onsdagar')).toBeInTheDocument()
+    await screen.findByRole('region', { name: 'Nästa tömning' })
+    expect(screen.queryByRole('region', { name: 'Mina kärl' })).toBeNull()
+    expect(screen.queryByText('190 l')).toBeNull()
+  })
+
+  it('linjerar kalendern med kortet för nästa tömning', async () => {
+    renderAt('/avesta/krylbo-storgatan-12b')
+    await vi.waitFor(() => resolveSchedule!())
+    const cal = await screen.findByRole('region', { name: /November 2026/ })
+    expect(cal.className).not.toMatch(/\bpt-/)
   })
 
   it('har månadskalender med prickar och bläddring', async () => {

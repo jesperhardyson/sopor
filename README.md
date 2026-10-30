@@ -89,7 +89,7 @@ UI:t pratar bara med `WasteProvider` (`src/providers/types.ts`). Det vet aldrig 
 ```
 
 - `fractions` får vara `rest`, `mat`, `papper`, `plast`, `glas` eller `metall` (`src/domain/fractions.ts`).
-- `bins` är valfritt. Om det saknas räknas "Mina kärl" ut ur datumen. `sizeLiters` visas bara när det finns.
+- `bins` är valfritt och visas inte på sajten i dag, eftersom vi inte vet vilket abonnemang varje hushåll har.
 - Avvikelser, till exempel helgdagar, skrivs in som de står i kommunens schema. Sopor räknar inte ut helgdagar.
 - `validFrom` och `validTo` anger vilka datum filen gäller. Ett schema kan gå över årsskiftet.
 

@@ -222,7 +222,7 @@ När den riktiga trakt-tabellen finns: ett kontrollskript som jämför `addresse
 - Nästa tömning: veckodag, datum, "om N dagar"/"i morgon"/"i dag", fraktionschips, schemats `note` och knappen "Lägg till i kalender".
 - Kommande tömningar grupperade per datum, med etiketten "Nästa" och avvikelser ("Flyttad · helgdag" plus förklaringstext).
 - Månadskalender med fraktionsprickar och bläddring mellan månader (*min bedömning*: inom de månader som har data).
-- Mina kärl: fraktion och frekvens, härledda ur schemat om `bins` saknas. Storlek visas bara om den finns i datan. Kärlstorlek per adress kommer troligen aldrig att vara känd.
+- ~~Mina kärl~~: borttaget (beslut 2026-10-30). Vi vet inte hushållets abonnemang, så sajten visar bara tömningar per datum.
 - "Påminnelser – Kommer snart".
 - "Spara" öppnar arket "Spara adress".
 - "Byt adress" går tillbaka till start.

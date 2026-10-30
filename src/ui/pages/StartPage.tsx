@@ -4,7 +4,8 @@ import { cn } from '@/lib/utils'
 import { MUNICIPALITIES } from '@/municipalities'
 import { FractionIcon } from '../components/FractionIcon'
 import { SavedList } from '../saved/SavedList'
-import { SellingPoints } from '../start/SellingPoints'
+import { ContributeSection } from '../start/ContributeSection'
+import { ServicesSection } from '../start/ServicesSection'
 import { AddressSearch } from '../search/AddressSearch'
 
 const HERO_FRACTIONS = ['rest', 'mat', 'papper', 'plast'] as const
@@ -34,7 +35,8 @@ export function StartPage() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-[560px] flex-col gap-6 px-5 pt-10 pb-8 md:gap-7 md:px-0 md:pt-[72px] md:pb-24 lg:max-w-[720px] lg:gap-9 lg:pt-[14vh] lg:pb-32">
+    <>
+    <div className="mx-auto flex w-full max-w-[560px] flex-col gap-6 px-5 pt-10 md:gap-7 md:px-0 md:pt-[72px] lg:max-w-[720px] lg:gap-9 lg:pt-[14vh] lg:pb-20">
       <div className="flex gap-2 lg:justify-center lg:gap-3" aria-hidden>
         {HERO_FRACTIONS.map((f) => (
           <FractionIcon key={f} fraction={f} className="size-9 rounded-[11px] [&_svg]:size-[18px] lg:size-12 lg:rounded-[14px] lg:[&_svg]:size-6" />
@@ -72,8 +74,10 @@ export function StartPage() {
           {municipalityLine()}
         </p>
         <SavedList />
-        <SellingPoints />
       </div>
     </div>
+    <ServicesSection />
+    <ContributeSection />
+    </>
   )
 }

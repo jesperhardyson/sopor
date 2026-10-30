@@ -37,7 +37,7 @@ export function MonthCalendar({ schedule, initial, today }: { schedule: Schedule
     'inline-flex size-9 items-center justify-center rounded-full border border-border text-text disabled:opacity-35'
 
   return (
-    <section aria-labelledby={headingId} className="flex flex-col gap-3 pt-3">
+    <section aria-labelledby={headingId} className="flex flex-col gap-3">
       <div className="flex items-center justify-between">
         <h2 id={headingId} className="text-xl font-extrabold tracking-[-0.3px] text-text">
           {capitalize(MONTHS[month - 1])} {year}
