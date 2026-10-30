@@ -18,7 +18,7 @@ Sopor är öppen källkod, och bidrag är välkomna, särskilt **fler kommuner**
 - Hittat ett fel i schemat? Öppna ett issue med adress, datum och länk till kommunens uppgift.
 - Kör `npm test && npm run build` innan du skickar en pull request. GitHub Actions kör samma kontroller på varje pull request.
 
-Instruktioner för AI-agenter finns i [`AGENTS.md`](AGENTS.md).
+Mer i [`CONTRIBUTING.md`](CONTRIBUTING.md). Säkerhetsbrister rapporteras enligt [`SECURITY.md`](SECURITY.md). Instruktioner för AI-agenter finns i [`AGENTS.md`](AGENTS.md).
 
 ## Kom igång
 
