@@ -1,0 +1,14 @@
+# FAKE – seed-data för utveckling. Ersätts med adress→trakt-tabellen från Avesta Vatten och Avfall.
+# Adress-id får aldrig ändras eller återanvändas (kalenderprenumerationer hänger på dem).
+id,street,locality,schedule
+krylbo-storgatan-12b,Storgatan 12 B,Krylbo,onsdag-jamn
+avesta-storgatan-12,Storgatan 12,Avesta,onsdag-jamn
+fors-storgatan-21,Storgatan 21,Fors,fredag-jamn
+horndal-bergsvagen-4,Bergsvägen 4,Horndal,tisdag-udda
+avesta-kyrkogatan-3,Kyrkogatan 3,Avesta,onsdag-jamn
+avesta-kungsgatan-15,Kungsgatan 15,Avesta,tisdag-udda
+krylbo-brogatan-7,Brogatan 7,Krylbo,fredag-jamn
+horndal-bruksgatan-2,Bruksgatan 2,Horndal,tisdag-udda
+fors-asgatan-9,Åsgatan 9,Fors,fredag-jamn
+fors-alvvagen-11,Älvvägen 11,Fors,onsdag-jamn
+horndal-smedjebacksvagen-30,Smedjebacksvägen 30,Horndal,sommarstuga
