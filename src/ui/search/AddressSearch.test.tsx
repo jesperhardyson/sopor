@@ -81,4 +81,17 @@ describe('AddressSearch', () => {
     await userEvent.type(input, ' b{Enter}')
     expect(await screen.findByText('Resultat avesta/krylbo-storgatan-12b')).toBeInTheDocument()
   })
+
+  it('lägger träfflistan ovanpå innehållet så att inget under hoppar', async () => {
+    await userEvent.type(setup(), 'storg')
+    const listbox = await screen.findByRole('listbox')
+    expect(listbox).toHaveClass('absolute')
+  })
+
+  it('ber lösenordshanterare att låta sökfältet vara', () => {
+    const input = setup()
+    expect(input).toHaveAttribute('data-1p-ignore')
+    expect(input).toHaveAttribute('data-lpignore', 'true')
+  })
 })
+

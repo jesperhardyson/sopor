@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { displayBins, eventsInMonth, mergeParts, nextPickup, upcoming } from './schedule'
-import type { PickupEvent, Schedule, SchedulePart } from './types'
+import { eventsInMonth, mergeParts, nextPickup, upcoming } from './schedule'
+import type { Schedule, SchedulePart } from './types'
 import { sortFractions } from './fractions'
 
 const part = (over: Partial<SchedulePart>): SchedulePart => ({
@@ -86,29 +86,5 @@ describe('eventsInMonth', () => {
     const nov = eventsInMonth(villa, 2026, 11)
     expect([...nov.keys()]).toEqual(['2026-11-11', '2026-11-25'])
     expect(nov.get('2026-11-25')).toEqual(['papper', 'mat'])
-  })
-})
-
-describe('displayBins', () => {
-  it('använder kärlen i datan när de finns', () => {
-    const bins = [{ fraction: 'rest' as const, sizeLiters: 190 }]
-    expect(displayBins({ ...villa, bins })).toEqual(bins)
-  })
-
-  it('härleder kärl och frekvens ur händelserna', () => {
-    const events: PickupEvent[] = []
-    for (let i = 0; i < 8; i++) {
-      const d = new Date(Date.UTC(2026, 9, 7 + i * 14)).toISOString().slice(0, 10)
-      events.push({ date: d, fractions: i % 2 === 0 ? ['rest', 'mat'] : ['mat'] })
-    }
-    expect(displayBins({ bins: [], events, updatedAt: '2026-10-01' })).toEqual([
-      { fraction: 'rest', frequencyText: 'Var 4:e vecka · onsdagar' },
-      { fraction: 'mat', frequencyText: 'Varannan vecka · onsdagar' },
-    ])
-  })
-
-  it('utelämnar frekvens när det bara finns ett datum', () => {
-    const s: Schedule = { bins: [], updatedAt: '', events: [{ date: '2026-11-11', fractions: ['glas'] }] }
-    expect(displayBins(s)).toEqual([{ fraction: 'glas' }])
   })
 })

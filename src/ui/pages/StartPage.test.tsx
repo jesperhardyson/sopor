@@ -46,10 +46,38 @@ describe('StartPage fokusläge', () => {
 describe('StartPage innehåll', () => {
   it('berättar vad man får se efter sökningen', () => {
     setup()
+    expect(screen.getByRole('heading', { name: 'Koll på sopdagen, utan att behöva tänka på den' })).toBeInTheDocument()
     const points = screen.getByRole('list', { name: 'Det här får du' })
-    for (const title of ['Nästa tömning', 'Alla kommande tömningar', 'Direkt i din kalender', 'Spara dina adresser']) {
+    for (const title of ['Nästa tömning direkt', 'Alla tömningar framåt', 'Schemat i din kalender', 'Spara adresser']) {
       expect(within(points).getByRole('heading', { name: title })).toBeInTheDocument()
     }
   })
-})
 
+  it('visar exempelkortet bara visuellt, inte för skärmläsare', () => {
+    setup()
+    expect(screen.getByTestId('forhandsvisning')).toHaveAttribute('aria-hidden', 'true')
+  })
+
+  it('bjuder in till att bidra med kommuner', () => {
+    setup()
+    const bidra = screen.getByRole('region', { name: 'Saknas din kommun? Hjälp till att få in den.' })
+    expect(within(bidra).getByText('Avesta kommun')).toBeInTheDocument()
+    expect(within(bidra).getByText('Testdata')).toBeInTheDocument()
+    expect(within(bidra).getByRole('link', { name: /Tipsa om din kommun/ })).toHaveAttribute(
+      'href',
+      'https://github.com/jesperhardyson/sopor/issues/new?template=ny-kommun.md',
+    )
+    expect(within(bidra).getByRole('link', { name: /Rapportera ett fel/ })).toHaveAttribute(
+      'href',
+      'https://github.com/jesperhardyson/sopor/issues/new?template=fel-i-schemat.md',
+    )
+    expect(within(bidra).getByRole('link', { name: /Lägg in schemat själv/ })).toHaveAttribute(
+      'href',
+      'https://github.com/jesperhardyson/sopor/blob/main/CONTRIBUTING.md',
+    )
+    expect(within(bidra).getByRole('link', { name: 'support@hardyson.se' })).toHaveAttribute(
+      'href',
+      'mailto:support@hardyson.se',
+    )
+  })
+})

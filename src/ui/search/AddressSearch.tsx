@@ -101,7 +101,7 @@ export function AddressSearch({
   }
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="relative flex flex-col gap-3">
       <div
         className={cn(
           'flex h-[62px] items-center gap-2.5 rounded-[18px] border-[1.5px] border-border bg-surface pr-4 pl-[18px] shadow-[0_4px_16px_#1B231F0D] transition-colors lg:h-[76px] lg:gap-3.5 lg:rounded-[22px] lg:pr-5 lg:pl-6',
@@ -119,6 +119,9 @@ export function AddressSearch({
           aria-autocomplete="list"
           aria-activedescendant={open && active >= 0 ? `${listId}-${active}` : undefined}
           autoComplete="off"
+          data-1p-ignore
+          data-lpignore="true"
+          data-form-type="other"
           spellCheck={false}
           placeholder="Skriv din adress, t.ex. Storgatan 12"
           value={query}
@@ -150,7 +153,7 @@ export function AddressSearch({
           id={listId}
           role="listbox"
           aria-label="Adresser"
-          className="flex flex-col rounded-[18px] border border-border bg-surface p-1.5 shadow-[0_12px_32px_#1B231F1F]"
+          className="absolute inset-x-0 top-full z-20 mt-3 flex flex-col rounded-[18px] border border-border bg-surface p-1.5 shadow-[0_12px_32px_#1B231F1F]"
         >
           {results.map((r, i) => (
             <li
