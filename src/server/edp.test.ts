@@ -1,7 +1,7 @@
 import { readFileSync, readdirSync } from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
-import { edpAddressId, edpSchedule, edpSearch, parseBuilding } from './edp'
+import { edpAddressId, edpSchedule, edpSearch, parseBuilding, queryFromAddressId } from './edp'
 import { SourceError } from './http'
 
 const dir = path.resolve(import.meta.dirname, '__fixtures__')
@@ -53,10 +53,23 @@ describe('parseBuilding', () => {
 })
 
 describe('edpAddressId', () => {
-  it('bygger ett läsbart och stabilt id', () => {
-    expect(edpAddressId(parseBuilding('Storgatan 1, Grillby (909273)')!)).toBe('storgatan-1-grillby-909273')
-    expect(edpAddressId(parseBuilding('Storgatan 1, Slite (0200505709)')!)).toBe('storgatan-1-slite-0200505709')
-    expect(edpAddressId(parseBuilding('Älvvägen 3 B, Örebro (1)')!)).toBe('alvvagen-3-b-orebro-1')
+  it('bygger ett läsbart id som går att översätta tillbaka till en sökning', () => {
+    expect(edpAddressId(parseBuilding('Storgatan 1, Grillby (909273)')!)).toBe('storgatan-1_grillby-909273')
+    expect(edpAddressId(parseBuilding('Storgatan 1, Slite (0200505709)')!)).toBe('storgatan-1_slite-0200505709')
+    expect(edpAddressId(parseBuilding('Älvvägen 3 B, Örebro (1)')!)).toBe('älvvägen-3-b_örebro-1')
+    expect(edpAddressId(parseBuilding('Storgatan 2 -4, Tormenåsgatan 1, Huskvarna (28970)')!)).toBe(
+      'storgatan-2-~4_tormenåsgatan-1_huskvarna-28970',
+    )
+  })
+
+  it('översätter id:t till söksträng och byggnads-id', () => {
+    expect(queryFromAddressId('storgatan-1_grillby-909273')).toEqual({ query: 'storgatan 1, grillby', buildingId: '909273' })
+    expect(queryFromAddressId('storgatan-2-~4_tormenåsgatan-1_huskvarna-28970')).toEqual({
+      query: 'storgatan 2 -4, tormenåsgatan 1, huskvarna',
+      buildingId: '28970',
+    })
+    expect(queryFromAddressId('utan-byggnadsid')).toEqual({ query: 'utan', buildingId: 'byggnadsid' })
+    expect(queryFromAddressId('')).toBeNull()
   })
 })
 

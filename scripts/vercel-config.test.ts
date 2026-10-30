@@ -34,6 +34,28 @@ describe('vercel.json', () => {
     const rewrite = config.rewrites.find((r) => r.destination === '/index.html')!
     const re = new RegExp(`^${rewrite.source}$`)
     for (const p of ['/avesta/krylbo-storgatan-12b', '/om', '/']) expect(re.test(p)).toBe(true)
-    for (const p of ['/ics/avesta/x.ics', '/data/avesta/addresses.json', '/assets/x.js']) expect(re.test(p)).toBe(false)
+    for (const p of ['/ics/avesta/x.ics', '/data/avesta/addresses.json', '/assets/x.js', '/api/sok']) {
+      expect(re.test(p)).toBe(false)
+    }
+  })
+
+  it('skickar kalenderfiler som inte finns statiskt till api/ics', () => {
+    const rewrite = config.rewrites.find((r) => r.source === '/ics/:source/:file')
+    expect(rewrite?.destination).toBe('/api/ics?source=:source&file=:file')
+  })
+})
+
+describe('Vercel-funktionernas importer', () => {
+  it('använder bara relativa sökvägar i kod som funktionerna når (Vercel känner inte till @/)', async () => {
+    const { readdirSync } = await import('node:fs')
+    const root = path.resolve(import.meta.dirname, '..')
+    const dirs = ['api', 'src/server', 'src/domain', 'src/sources']
+    const offenders = dirs.flatMap((d) =>
+      readdirSync(path.join(root, d))
+        .filter((f) => f.endsWith('.ts') && !f.endsWith('.test.ts'))
+        .filter((f) => readFileSync(path.join(root, d, f), 'utf8').includes("from '@/"))
+        .map((f) => `${d}/${f}`),
+    )
+    expect(offenders).toEqual([])
   })
 })

@@ -1,10 +1,10 @@
 // Klient för EDP Futures publika modul SimpleWastePickup. Körs på servern (Vercel Functions),
 // eftersom källorna saknar CORS-headers.
 
-import { isValidDate, todayInStockholm } from '@/domain/dates'
-import { sortFractions } from '@/domain/fractions'
-import { expandPickups } from '@/domain/recurrence'
-import type { FractionId, PickupEvent, Schedule } from '@/domain/types'
+import { isValidDate, todayInStockholm } from '../domain/dates'
+import { sortFractions } from '../domain/fractions'
+import { expandPickups } from '../domain/recurrence'
+import type { FractionId, PickupEvent, Schedule } from '../domain/types'
 import { fetchJson } from './http'
 import { mapWasteType } from './fractions-map'
 
@@ -35,28 +35,40 @@ export function parseBuilding(raw: string): EdpBuilding | null {
   return { raw, street: m[1].trim(), locality: titleCase(m[2].trim()), buildingId: m[3] }
 }
 
-function slug(s: string): string {
-  return s
+/**
+ * Kodar adressen reversibelt så att den kan sökas fram igen från en delad länk eller en
+ * kalenderprenumeration: mellanslag → "-", ", " → "_", bindestreck → "~". Å, ä och ö behålls,
+ * eftersom källornas sökning skiljer på dem.
+ */
+function encode(text: string): string {
+  return text
     .toLowerCase()
-    .replace(/[åä]/g, 'a')
-    .replace(/ö/g, 'o')
-    .normalize('NFD')
-    .replace(/\p{M}/gu, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '')
+    .trim()
+    .replace(/-/g, '~')
+    .replace(/\s*,\s*/g, '_')
+    .replace(/\s+/g, '-')
+    .replace(/[^\p{L}\p{N}~_-]/gu, '')
 }
 
-/** "storgatan-1-grillby-909273". Byggnads-id:t sist gör id:t unikt och stabilt. */
+/** "storgatan-1_grillby-909273". Byggnads-id:t sist gör id:t unikt och stabilt. */
 export function edpAddressId(b: EdpBuilding): string {
-  return `${slug(`${b.street} ${b.locality}`)}-${b.buildingId}`
+  return `${encode(`${b.street}, ${b.locality}`)}-${b.buildingId}`
 }
 
-/** Byggnads-id:t ur ett adress-id från edpAddressId. */
-export function buildingIdFromAddressId(id: string): string | undefined {
-  return id.match(/-(\w+)$/)?.[1]
+/** Tillbaka från id till söksträng ("storgatan 1, grillby") och byggnads-id. */
+export function queryFromAddressId(id: string): { query: string; buildingId: string } | null {
+  const m = id.match(/^(.+)-(\w+)$/)
+  if (!m) return null
+  const query = m[1].replace(/-/g, ' ').replace(/_/g, ', ').replace(/~/g, '-')
+  return { query, buildingId: m[2] }
 }
 
-export async function edpSearch(baseUrl: string, q: string, fetchFn?: typeof fetch): Promise<EdpBuilding[]> {
+export async function edpSearch(
+  baseUrl: string,
+  q: string,
+  fetchFn?: typeof fetch,
+  timeoutMs?: number,
+): Promise<EdpBuilding[]> {
   const res = await fetchJson<{ Succeeded?: boolean; Buildings?: string[] }>(
     `${baseUrl}/SimpleWastePickup/SearchAdress`,
     {
@@ -64,7 +76,7 @@ export async function edpSearch(baseUrl: string, q: string, fetchFn?: typeof fet
       headers: { 'Content-Type': 'application/json; charset=utf-8' },
       body: JSON.stringify({ searchText: q }),
     },
-    { fetchFn },
+    { fetchFn, timeoutMs },
   )
   return (res.Buildings ?? []).map(parseBuilding).filter((b): b is EdpBuilding => b !== null)
 }
@@ -74,11 +86,17 @@ function weekdaysIn(text: string): number[] {
   return WEEKDAYS.flatMap((day, i) => (t.includes(day) ? [i + 1] : []))
 }
 
-export async function edpSchedule(baseUrl: string, raw: string, fetchFn?: typeof fetch, now = new Date()): Promise<Schedule> {
+export async function edpSchedule(
+  baseUrl: string,
+  raw: string,
+  fetchFn?: typeof fetch,
+  now = new Date(),
+  timeoutMs?: number,
+): Promise<Schedule> {
   const res = await fetchJson<{ RhServices?: EdpService[] }>(
     `${baseUrl}/SimpleWastePickup/GetWastePickupSchedule?${new URLSearchParams({ address: raw })}`,
     {},
-    { fetchFn },
+    { fetchFn, timeoutMs },
   )
 
   const byDate = new Map<string, PickupEvent>()

@@ -3,6 +3,7 @@ import { FRACTIONS, sortFractions } from './fractions'
 import type { Address, PickupEvent, Schedule } from './types'
 
 export const DISCLAIMER = 'Inofficiell tjänst. Vid avvikelser gäller kommunens information.'
+export const ESTIMATE_NOTE = 'Beräknat datum – helgdagar kan flytta tömningen. Kolla kommunens besked.'
 
 function escapeText(value: string): string {
   return value.replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n')
@@ -61,9 +62,11 @@ export function buildIcs(input: {
   ]
 
   for (const event of schedule.events) {
-    const names = sortFractions(event.fractions).map((f) => FRACTIONS[f].name)
-    const summary = `Sopor: ${names.join(' + ')}`
-    const description = [deviationText(event), DISCLAIMER].filter(Boolean).join('\n')
+    const names = sortFractions(event.fractions).map((f) => event.labels?.[f] ?? FRACTIONS[f].name)
+    const summary = `Sopor: ${names.join(' + ')}${event.estimated ? ' (beräknat)' : ''}`
+    const description = [event.warning, deviationText(event), event.estimated ? ESTIMATE_NOTE : undefined, DISCLAIMER]
+      .filter(Boolean)
+      .join('\n')
     lines.push(
       'BEGIN:VEVENT',
       `UID:${address.id}-${event.date}@${host}`,

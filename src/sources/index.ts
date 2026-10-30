@@ -46,3 +46,13 @@ export function supportedKommuner(): Kommun[] {
 export function sourceLabel(source: Source): string {
   return source.kommuner.length === 1 ? source.kommuner[0].name : source.name
 }
+
+/**
+ * Kommunen för en adress hos källan. Källor med en kommun ger den direkt. För källor med flera
+ * kommuner slås orten upp i gatuindexets ort→kommun-tabell (se scripts/build-street-index.ts).
+ */
+export function kommunForLocality(source: Source, locality: string, places: Record<string, string> = {}): string {
+  if (source.kommuner.length === 1) return source.kommuner[0].name
+  return places[locality.toLowerCase()] ?? source.name
+}
+
