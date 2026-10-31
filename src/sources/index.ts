@@ -218,9 +218,10 @@ export function supportedKommuner(): Kommun[] {
   return [...byCode.values()].sort((a, b) => a.name.localeCompare(b.name, 'sv'))
 }
 
-/** "Avesta kommun" för en källa med en kommun, annars källans namn. */
+/** Kommunerna som källan täcker: "Avesta kommun", "Herrljunga kommun och Vårgårda kommun". */
 export function sourceLabel(source: Source): string {
-  return source.kommuner.length === 1 ? source.kommuner[0].name : source.name
+  const names = source.kommuner.map((k) => k.name)
+  return names.length > 1 ? `${names.slice(0, -1).join(', ')} och ${names.at(-1)}` : names[0]
 }
 
 /**

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { ALL_SOURCES, getSource, SOURCES, supportedKommuner } from './index'
+import { ALL_SOURCES, getSource, SOURCES, sourceLabel, supportedKommuner } from './index'
 
 describe('källregistret', () => {
   it('har unika och URL-säkra id', () => {
@@ -25,5 +25,10 @@ describe('källregistret', () => {
     const names = supportedKommuner().map((k) => k.name)
     expect(names).toEqual([...new Set(names)].sort((a, b) => a.localeCompare(b, 'sv')))
     expect(names).toContain('Uppsala kommun')
+  })
+
+  it('namnger en källa efter kommunerna, inte efter bolaget', () => {
+    expect(sourceLabel(getSource('uppsala')!)).toBe('Uppsala kommun')
+    expect(sourceLabel(getSource('herrljunga-vargarda')!)).toBe('Herrljunga kommun och Vårgårda kommun')
   })
 })
