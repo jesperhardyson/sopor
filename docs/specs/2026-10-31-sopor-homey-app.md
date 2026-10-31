@@ -3,6 +3,7 @@
 Status: utkast, 2026-10-31. Bygger på undersökningen `2026-10-31-integrationer-homey-home-assistant.md`.
 
 Beslut:
+- I appens texter heter det **avfallstyp** ("Något avfall" för vilken som helst), inte "fraktion", som är fackspråk. Id och kod säger fortfarande `fraktion`, så att befintliga flöden inte går sönder (från 0.4.1).
 - Villkoren gör att användaren kan välja tiden själv i sitt flöde.
 - Från 0.2.0 finns också triggern "Sopor hämtas i morgon" vid en inställd tid per enhet. Utan den gick det inte att få fraktionernas namn i en notis i ett vanligt flöde, eftersom tokens från handlingskort bara finns i Advanced Flow.
 - 0.4.0 lägger till inställningen för att dölja fraktioner och widgeten "Nästa hämtning".

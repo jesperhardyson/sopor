@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "se.hardyson.sopor",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "compatibility": ">=12.3.0",
   "sdk": 3,
   "platforms": [
@@ -60,12 +60,12 @@
             "name": "fraktion",
             "type": "autocomplete",
             "title": {
-              "en": "Fraction",
-              "sv": "Fraktion"
+              "en": "Waste type",
+              "sv": "Avfallstyp"
             },
             "placeholder": {
-              "en": "Any fraction",
-              "sv": "Någon fraktion"
+              "en": "Any waste",
+              "sv": "Något avfall"
             }
           }
         ],
@@ -74,8 +74,8 @@
             "name": "fraktioner",
             "type": "string",
             "title": {
-              "en": "Fractions",
-              "sv": "Fraktioner"
+              "en": "Waste types",
+              "sv": "Avfallstyper"
             },
             "example": {
               "en": "Plastic packaging, Metal",
@@ -86,8 +86,8 @@
             "name": "antal",
             "type": "number",
             "title": {
-              "en": "Number of fractions",
-              "sv": "Antal fraktioner"
+              "en": "Number of waste types",
+              "sv": "Antal avfallstyper"
             },
             "example": 2
           },
@@ -129,12 +129,12 @@
             "name": "fraktion",
             "type": "autocomplete",
             "title": {
-              "en": "Fraction",
-              "sv": "Fraktion"
+              "en": "Waste type",
+              "sv": "Avfallstyp"
             },
             "placeholder": {
-              "en": "Any fraction",
-              "sv": "Någon fraktion"
+              "en": "Any waste",
+              "sv": "Något avfall"
             }
           }
         ],
@@ -143,8 +143,8 @@
             "name": "fraktioner",
             "type": "string",
             "title": {
-              "en": "Fractions",
-              "sv": "Fraktioner"
+              "en": "Waste types",
+              "sv": "Avfallstyper"
             },
             "example": {
               "en": "Plastic packaging, Metal",
@@ -155,8 +155,8 @@
             "name": "antal",
             "type": "number",
             "title": {
-              "en": "Number of fractions",
-              "sv": "Antal fraktioner"
+              "en": "Number of waste types",
+              "sv": "Antal avfallstyper"
             },
             "example": 2
           },
@@ -181,12 +181,12 @@
           "sv": "Hämtschemat ändrades"
         },
         "titleFormatted": {
-          "en": "The schedule for [[fraktion]] changed",
-          "sv": "Schemat för [[fraktion]] ändrades"
+          "en": "The schedule changed for [[fraktion]]",
+          "sv": "Hämtschemat ändrades för [[fraktion]]"
         },
         "hint": {
-          "en": "Runs when the next collection of a fraction is moved, cancelled or added, for example around holidays.",
-          "sv": "Går när nästa hämtning av en fraktion flyttas, ställs in eller tillkommer, till exempel kring helgdagar."
+          "en": "Runs when the next collection of a waste type is moved, cancelled or added, for example around holidays.",
+          "sv": "Går när nästa hämtning av en avfallstyp flyttas, ställs in eller tillkommer, till exempel kring helgdagar."
         },
         "args": [
           {
@@ -198,12 +198,12 @@
             "name": "fraktion",
             "type": "autocomplete",
             "title": {
-              "en": "Fraction",
-              "sv": "Fraktion"
+              "en": "Waste type",
+              "sv": "Avfallstyp"
             },
             "placeholder": {
-              "en": "Any fraction",
-              "sv": "Någon fraktion"
+              "en": "Any waste",
+              "sv": "Något avfall"
             }
           }
         ],
@@ -212,8 +212,8 @@
             "name": "fraktion",
             "type": "string",
             "title": {
-              "en": "Fraction",
-              "sv": "Fraktion"
+              "en": "Waste type",
+              "sv": "Avfallstyp"
             },
             "example": {
               "en": "Plastic packaging",
@@ -296,12 +296,12 @@
             "name": "fraktion",
             "type": "autocomplete",
             "title": {
-              "en": "Fraction",
-              "sv": "Fraktion"
+              "en": "Waste type",
+              "sv": "Avfallstyp"
             },
             "placeholder": {
-              "en": "Any fraction",
-              "sv": "Någon fraktion"
+              "en": "Any waste",
+              "sv": "Något avfall"
             }
           },
           {
@@ -361,12 +361,12 @@
             "name": "fraktion",
             "type": "autocomplete",
             "title": {
-              "en": "Fraction",
-              "sv": "Fraktion"
+              "en": "Waste type",
+              "sv": "Avfallstyp"
             },
             "placeholder": {
-              "en": "Any fraction",
-              "sv": "Någon fraktion"
+              "en": "Any waste",
+              "sv": "Något avfall"
             }
           },
           {
@@ -459,8 +459,8 @@
             "name": "fraktioner",
             "type": "string",
             "title": {
-              "en": "Fractions",
-              "sv": "Fraktioner"
+              "en": "Waste types",
+              "sv": "Avfallstyper"
             },
             "example": {
               "en": "Plastic packaging, Metal",
@@ -471,8 +471,8 @@
             "name": "antal",
             "type": "number",
             "title": {
-              "en": "Number of fractions",
-              "sv": "Antal fraktioner"
+              "en": "Number of waste types",
+              "sv": "Antal avfallstyper"
             },
             "example": 2
           }
@@ -553,12 +553,12 @@
         {
           "type": "group",
           "label": {
-            "en": "Fractions",
-            "sv": "Fraktioner"
+            "en": "Waste types",
+            "sv": "Avfallstyper"
           },
           "hint": {
-            "en": "Untick fractions you don't have. They are hidden on the device and ignored by the flow cards.",
-            "sv": "Avmarkera fraktioner du inte har. De döljs på enheten och ignoreras av flödeskorten."
+            "en": "Untick waste you don't have. It is hidden on the device and ignored by the flow cards.",
+            "sv": "Avmarkera det du inte har. Det döljs på enheten och ignoreras av flödeskorten."
           },
           "children": [
             {
@@ -629,7 +629,7 @@
               "type": "checkbox",
               "label": {
                 "en": "Multi-compartment bin",
-                "sv": "Kärl (flera fraktioner)"
+                "sv": "Kärl (flera avfallstyper)"
               },
               "value": true
             }

@@ -70,12 +70,12 @@
     {
       "type": "group",
       "label": {
-        "en": "Fractions",
-        "sv": "Fraktioner"
+        "en": "Waste types",
+        "sv": "Avfallstyper"
       },
       "hint": {
-        "en": "Untick fractions you don't have. They are hidden on the device and ignored by the flow cards.",
-        "sv": "Avmarkera fraktioner du inte har. De döljs på enheten och ignoreras av flödeskorten."
+        "en": "Untick waste you don't have. It is hidden on the device and ignored by the flow cards.",
+        "sv": "Avmarkera det du inte har. Det döljs på enheten och ignoreras av flödeskorten."
       },
       "children": [
         {
@@ -146,7 +146,7 @@
           "type": "checkbox",
           "label": {
             "en": "Multi-compartment bin",
-            "sv": "Kärl (flera fraktioner)"
+            "sv": "Kärl (flera avfallstyper)"
           },
           "value": true
         }

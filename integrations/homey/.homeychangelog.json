@@ -2,5 +2,9 @@
   "0.4.0": {
     "en": "First test version: address search, collection reminders, schedule changes, hidden fractions and the Next collection widget.",
     "sv": "Första testversionen: adressökning, påminnelser om hämtning, ändrat schema, dolda fraktioner och widgeten Nästa hämtning."
+  },
+  "0.4.1": {
+    "en": "Clearer wording: \"waste type\" instead of \"fraction\", and \"Any waste\" in the flow cards.",
+    "sv": "Tydligare ord: \"avfallstyp\" i stället för \"fraktion\", och \"Något avfall\" i flödeskorten."
   }
 }

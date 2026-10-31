@@ -157,7 +157,7 @@ Integrationer ligger i `integrations/`. De är egna paket som bara använder det
 ### Homey: `integrations/homey/`
 
 Appen **Sophämtning** för Homey Pro (SDK v3, TypeScript).
-- **Enhet:** en enhet per adress, som man lägger till genom att söka på adressen. Den visar nästa hämtning, "Dagar kvar", "I morgon" och en rad per fraktion. Fraktioner man inte har kan döljas.
+- **Enhet:** en enhet per adress, som man lägger till genom att söka på adressen. Den visar nästa hämtning, "Dagar kvar", "I morgon" och en rad per avfallstyp. Avfallstyper man inte har kan döljas.
 - **När:** sopor hämtas i morgon (vid enhetens påminnelsetid), sopor hämtas i dag (vid morgontiden), hämtschemat ändrades.
 - **Och:** [fraktion] hämtas (inte) i dag, i morgon eller i övermorgon, eller om N dagar.
 - **Då:** uppdatera hämtschemat, och "vilka sopor hämtas …?" (Advanced Flow).

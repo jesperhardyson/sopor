@@ -16,7 +16,7 @@
     "waiting": "Waiting for the schedule from Sopor.",
     "badTime": "Write the time as HH:MM, for example 18:00."
   },
-  "anyFraction": "Any fraction",
+  "anyFraction": "Any waste",
   "widget": {
     "noAddress": "Add an address in Sophämtning first.",
     "nothing": "No upcoming collections"
