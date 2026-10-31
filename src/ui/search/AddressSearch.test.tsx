@@ -90,6 +90,18 @@ describe('AddressSearch', () => {
     expect(listbox.closest('.absolute')).not.toBeNull()
   })
 
+  it('lägger hittades inte ovanpå innehållet så att inget under hoppar', async () => {
+    await userEvent.type(setup(), 'Storgtan 12{Enter}')
+    const card = await screen.findByText('Vi hittade inte adressen')
+    expect(card.closest('.absolute')).not.toBeNull()
+  })
+
+  it('ger fältet fokus vid klick var som helst i rutan', async () => {
+    const input = setup()
+    await userEvent.click(input.parentElement!)
+    expect(input).toHaveFocus()
+  })
+
   it('ber lösenordshanterare att låta sökfältet vara', () => {
     const input = setup()
     expect(input).toHaveAttribute('data-1p-ignore')

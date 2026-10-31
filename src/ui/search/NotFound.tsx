@@ -1,10 +1,11 @@
 import { MapPin, SearchX } from 'lucide-react'
 import { Link } from 'react-router'
 import type { Address } from '@/domain/types'
+import { cn } from '@/lib/utils'
 
-export function NotFound({ suggestions }: { suggestions: Address[] }) {
+export function NotFound({ suggestions, className }: { suggestions: Address[]; className?: string }) {
   return (
-    <div role="status" className="flex flex-col gap-3.5 rounded-[20px] border border-border bg-surface p-5">
+    <div role="status" className={cn('flex flex-col gap-3.5 rounded-[20px] border border-border bg-surface p-5', className)}>
       <span className="inline-flex size-12 items-center justify-center rounded-2xl bg-earth-soft text-earth">
         <SearchX className="size-6" aria-hidden />
       </span>

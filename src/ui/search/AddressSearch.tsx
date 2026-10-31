@@ -78,6 +78,7 @@ export function AddressSearch({
 
   const results = state.kind === 'results' ? state.results : []
   const open = results.length > 0
+  const showNotFound = state.kind === 'notFound' && (submitted || normalize(query).length >= 4)
 
   function go(address: Address) {
     navigate(`/${address.sourceId}/${address.id}`)
@@ -113,8 +114,14 @@ export function AddressSearch({
   return (
     <div className="relative flex flex-col gap-3">
       <div
+        // Hela rutan är klickbar, inte bara själva textfältet. Rensa-knappen sköter sig själv.
+        onMouseDown={(e) => {
+          if (e.target === inputRef.current || (e.target as HTMLElement).closest('button')) return
+          e.preventDefault()
+          inputRef.current?.focus()
+        }}
         className={cn(
-          'flex h-[62px] items-center gap-2.5 rounded-[18px] border-[1.5px] border-border bg-surface pr-4 pl-[18px] shadow-[0_4px_16px_#1B231F0D] transition-colors lg:h-[76px] lg:gap-3.5 lg:rounded-[22px] lg:pr-5 lg:pl-6',
+          'flex h-[62px] cursor-text items-center gap-2.5 rounded-[18px] border-[1.5px] border-border bg-surface pr-4 pl-[18px] shadow-[0_4px_16px_#1B231F0D] transition-colors lg:h-[76px] lg:gap-3.5 lg:rounded-[22px] lg:pr-5 lg:pl-6',
           'focus-within:border-2 focus-within:border-primary focus-within:shadow-[0_0_10px_color-mix(in_srgb,var(--primary)_20%,transparent)]',
         )}
       >
@@ -209,19 +216,21 @@ export function AddressSearch({
         </div>
       )}
 
-      {state.kind === 'notFound' && state.failed.length > 0 && (
-        <p className="px-1 text-sm font-semibold text-warn">
-          {state.failed.map((id) => getSource(id)?.name ?? id).join(', ')} svarar inte just nu.
-        </p>
-      )}
-
-      {state.kind === 'notFound' && (submitted || normalize(query).length >= 4) && (
-        <NotFound suggestions={state.suggestions} />
-      )}
-      {state.kind === 'error' && (
-        <p role="alert" className="rounded-2xl bg-warn-bg px-4 py-3 text-[15px] font-bold text-warn">
-          Det gick inte att söka just nu. Kontrollera anslutningen och försök igen.
-        </p>
+      {/* Som träfflistan: ovanpå innehållet, så att sidan under inte hoppar. */}
+      {(showNotFound || state.kind === 'error') && (
+        <div className="absolute inset-x-0 top-full z-20 mt-3 flex flex-col gap-3">
+          {showNotFound && state.failed.length > 0 && (
+            <p className="rounded-2xl border border-border bg-surface px-4 py-3 text-sm font-semibold text-warn shadow-[0_12px_32px_#1B231F1F]">
+              {state.failed.map((id) => getSource(id)?.name ?? id).join(', ')} svarar inte just nu.
+            </p>
+          )}
+          {showNotFound && <NotFound suggestions={state.suggestions} className="shadow-[0_12px_32px_#1B231F1F]" />}
+          {state.kind === 'error' && (
+            <p role="alert" className="rounded-2xl bg-warn-bg px-4 py-3 text-[15px] font-bold text-warn shadow-[0_12px_32px_#1B231F1F]">
+              Det gick inte att söka just nu. Kontrollera anslutningen och försök igen.
+            </p>
+          )}
+        </div>
       )}
     </div>
   )
