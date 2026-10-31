@@ -1,7 +1,7 @@
 # Sopor – publikt API (v1)
 
 Datum: 2026-10-31
-Status: utkast, avsnitten godkända i chatt 2026-10-31
+Status: godkänd 2026-10-31
 Bygger på: `docs/specs/2026-10-30-sopor-hela-sverige-design.md` (v2)
 
 ## Syfte
@@ -77,7 +77,7 @@ Sökvägarna är på svenska som de befintliga (`/api/sok`). JSON-nycklarna är 
       "text": "Matavfall – i morgon, torsdag 5 november"
     }
   ],
-  "summary": "Mat & rest – i morgon",
+  "summary": "Rest & mat – i morgon",
   "events": [
     {
       "date": "2026-11-05",
@@ -105,7 +105,7 @@ Sökvägarna är på svenska som de befintliga (`/api/sok`). JSON-nycklarna är 
 - `today` är dagens datum i `Europe/Stockholm` (`todayInStockholm`). Alla relativa fält räknas mot det.
 - `next` har en post per fraktion som förekommer i `events`: fraktionens närmaste hämtning från och med `today`, sorterad på datum och sedan på fraktionens `order`. Fraktioner utan kommande hämtning utelämnas.
 - `daysUntil` är `daysBetween(today, date)`. `isToday` är `daysUntil === 0` och `isTomorrow` är `daysUntil === 1`.
-- `text` och `summary` byggs med de befintliga hjälpfunktionerna i `src/domain/dates.ts` (`relativeDayLabel`, `formatLong`) och `FRACTIONS[..].short`. `summary` beskriver den närmaste hämtningen, med fraktionerna som hämtas samma dag (t.ex. "Mat & rest – i morgon"). Saknas kommande hämtning är `summary` `"Inga kommande hämtningar"` och `next` en tom lista.
+- `text` och `summary` byggs med de befintliga hjälpfunktionerna i `src/domain/dates.ts` (`relativeDayLabel`, `formatLong`) och `FRACTIONS[..].short`. `summary` beskriver den närmaste hämtningen, med fraktionerna som hämtas samma dag (t.ex. "Rest & mat – i morgon"), i fraktionernas `order` (matavfall sist). Saknas kommande hämtning är `summary` `"Inga kommande hämtningar"` och `next` en tom lista.
 - `color` är den färg som sajten visar fraktionen med i ljust tema, som hex. Det är samma token som `FRACTION_CLASS` använder: `tidningar` har pappers färg (`--frac-papper`) och `karl` har `--text-2`.
 
 **Rådatalagret**
@@ -187,13 +187,13 @@ Alla fel har samma form:
 
 | Svar | `Cache-Control` |
 |---|---|
-| Adress | `public, s-maxage=<min(21600, sekunder till midnatt i Stockholm)>, stale-while-revalidate=3600` |
+| Adress | `public, s-maxage=<S>` där S = min(21600, sekunder till midnatt i Stockholm), plus `stale-while-revalidate=<min(3600, kvar − S)>` bara när det blir mer än 0 |
 | Sök, komplett | Som `/api/sok` i dag (ett dygn) |
 | Sök med `failed`, 404 | `public, s-maxage=60` |
 | Källor | `public, s-maxage=86400` |
 | 400, 502 | `no-store` |
 
-- Adressens cachetid slutar vid midnatt så att `isToday`, `isTomorrow` och `daysUntil` aldrig är från igår. `stale-while-revalidate` får inte heller sträcka sig över midnatt, så den sätts till det kortaste av 3600 och tiden kvar till midnatt.
+- Adressens cachetid slutar vid midnatt så att `isToday`, `isTomorrow` och `daysUntil` aldrig är från igår. `stale-while-revalidate` räknas från när `s-maxage` gått ut och får inte heller nå över midnatt. Slutar `s-maxage` vid midnatt skickas den inte alls.
 - Alla `v1`-svar har `Access-Control-Allow-Origin: *`. Dashboard-kort i Home Assistant hämtar från webbläsaren. `OPTIONS` svarar 204 med samma header.
 - Inga nycklar. Skyddet mot för många anrop är CDN-cachen. Dokumentationen säger att man ska fråga högst en gång i timmen per adress. Blir det problem läggs en regel i Vercel Firewall till, utan att kontraktet ändras.
 
