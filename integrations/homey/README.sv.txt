@@ -1,0 +1,3 @@
+Sophämtning visar när soporna hämtas på din adress och låter dig använda det i dina flöden. Lägg till adressen genom att söka på den, så visar enheten nästa hämtning, dagar kvar, vad som hämtas i morgon och en rad per fraktion. Få en påminnelse kvällen innan eller på morgonen samma dag, kolla om en fraktion hämtas i dag, i morgon eller om ett antal dagar, och få veta när schemat ändras, till exempel kring helgdagar. En widget på din dashboard visar de närmaste hämtningarna i fraktionernas färger.
+
+Datan kommer från Sopor, en gratis och inofficiell tjänst som läser kommunernas publika hämtscheman. Den är inte knuten till någon kommun eller något avfallsbolag. Vid avvikelser gäller alltid kommunens information.
