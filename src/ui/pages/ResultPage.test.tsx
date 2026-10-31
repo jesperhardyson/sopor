@@ -64,6 +64,12 @@ describe('ResultPage', () => {
     resolveSchedule = undefined
   })
 
+  it('visar särskiljaren under adressen', async () => {
+    fake = makeProvider({ getAddress: async () => ({ ...villa, detail: 'Byggnad 81674' }) })
+    renderAt('/avesta/krylbo-storgatan-12b')
+    expect(await screen.findByText('Byggnad 81674')).toBeInTheDocument()
+  })
+
   it('visar laddning och sedan nästa tömning, lista och avvikelse', async () => {
     renderAt('/avesta/krylbo-storgatan-12b')
     expect(await screen.findByText('Hämtar schemat från Avesta Vatten och Avfall…')).toBeInTheDocument()

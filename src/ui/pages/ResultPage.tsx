@@ -93,6 +93,12 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
           {address && (
             <p className="flex flex-wrap items-center gap-2 text-[15px] text-text-2">
               <span>{address.locality}</span>
+              {address.detail && (
+                <>
+                  <span aria-hidden>·</span>
+                  <span>{address.detail}</span>
+                </>
+              )}
               <span aria-hidden>·</span>
               <span className="rounded-md bg-brand-soft px-2 py-0.5 text-[13px] font-extrabold text-brand-text">
                 {address.kommun}

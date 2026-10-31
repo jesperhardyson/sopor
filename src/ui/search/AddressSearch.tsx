@@ -198,6 +198,12 @@ export function AddressSearch({
                 <span className="text-base font-extrabold text-text">{r.street}</span>
                 <span className="flex flex-wrap items-center gap-2 text-sm text-text-2">
                   <span>{r.locality}</span>
+                  {r.detail && (
+                    <>
+                      <span aria-hidden>·</span>
+                      <span>{r.detail}</span>
+                    </>
+                  )}
                   <span aria-hidden>·</span>
                   <span className="rounded-md bg-brand-soft px-2 py-0.5 text-[13px] font-extrabold text-brand-text">
                     {r.kommun}

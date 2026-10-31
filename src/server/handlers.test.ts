@@ -54,6 +54,14 @@ describe('handleSearch', () => {
     expect(res.headers.get('Cache-Control')).toBe('public, s-maxage=60')
   })
 
+  it('särskiljer flera byggnader med samma adress med byggnads-id:t', async () => {
+    const orebro = (async () => json(fixture('orebro-search.json'))) as unknown as typeof fetch
+    const res = await handleSearch(new URL('https://x/api/sok?q=Storgatan&sources=uppsala'), { ...opts, fetchFn: orebro })
+    const { addresses } = (await res.json()) as { addresses: { street: string; detail?: string }[] }
+    expect(addresses.filter((a) => a.street === 'Storgatan 8').map((a) => a.detail)).toEqual(['Byggnad 78838', 'Byggnad 81674'])
+    expect(addresses.find((a) => a.street === 'Storgatan 3')).not.toHaveProperty('detail')
+  })
+
   it('cachar fulla svar länge', async () => {
     const res = await handleSearch(new URL('https://x/api/sok?q=Storgatan&sources=uppsala'), opts)
     expect(res.headers.get('Cache-Control')).toContain('s-maxage=86400')
@@ -72,6 +80,13 @@ describe('handleSchedule', () => {
     const body = await res.json()
     expect(body.address).toMatchObject({ street: 'Storgatan 2', kommun: 'Uppsala kommun' })
     expect(body.schedule.events[0]).toMatchObject({ date: '2026-11-04', estimated: false })
+  })
+
+  it('tar med särskiljaren när flera byggnader har samma adress', async () => {
+    const orebro = (async (input: string | URL | Request) =>
+      String(input).includes('SearchAdress') ? json(fixture('orebro-search.json')) : json(fixture('uppsala-schedule.json'))) as unknown as typeof fetch
+    const res = await handleSchedule(new URL('https://x/api/schema?source=uppsala&id=storgatan-8_örebro-81674'), { ...opts, fetchFn: orebro })
+    expect((await res.json()).address).toMatchObject({ street: 'Storgatan 8', detail: 'Byggnad 81674' })
   })
 
   it('ger 404 för okänd källa och för byggnads-id som inte finns', async () => {

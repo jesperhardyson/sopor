@@ -145,4 +145,20 @@ describe('AddressSearch', () => {
     await userEvent.type(screen.getByRole('combobox'), 'Okändgatan{Enter}')
     expect(search).toHaveBeenCalledWith('Okändgatan', undefined, undefined, { submitted: true })
   })
+
+  it('visar särskiljaren när flera träffar har samma adress', async () => {
+    const twins = [
+      { ...a('vasagatan-20_vasteras-1', 'Vasagatan 20', 'Västerås'), detail: 'Byggnad 1' },
+      { ...a('vasagatan-20_vasteras-2', 'Vasagatan 20', 'Västerås'), detail: 'Byggnad 2' },
+    ]
+    render(
+      <MemoryRouter>
+        <AddressSearch search={async () => ({ addresses: twins, failed: [] })} suggest={async () => []} />
+      </MemoryRouter>,
+    )
+    await userEvent.type(screen.getByRole('combobox'), 'vasagatan 20')
+    const options = await screen.findAllByRole('option')
+    expect(within(options[0]).getByText('Byggnad 1')).toBeInTheDocument()
+    expect(within(options[1]).getByText('Byggnad 2')).toBeInTheDocument()
+  })
 })

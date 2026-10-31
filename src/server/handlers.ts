@@ -30,14 +30,23 @@ function edpSources(ids: string[], sources: Source[]) {
     .filter((s): s is Source & { config: { system: 'edp'; baseUrl: string } } => s?.config.system === 'edp')
 }
 
-function toAddress(source: Source, b: EdpBuilding, places: HandlerOptions['places']): Address {
+function toAddress(source: Source, b: EdpBuilding, places: HandlerOptions['places'], detail?: string): Address {
   return {
     id: edpAddressId(b),
     street: b.street,
     locality: b.locality,
     sourceId: source.id,
     kommun: kommunForLocality(source, b.locality, places?.[source.id]),
+    ...(detail && { detail }),
   }
+}
+
+/** Flera byggnader med samma gata och ort (flerbostadshus) får byggnads-id:t som särskiljare. */
+function withDetails(buildings: EdpBuilding[]): [EdpBuilding, string | undefined][] {
+  const key = (b: EdpBuilding) => `${b.street}|${b.locality}`
+  const count = new Map<string, number>()
+  for (const b of buildings) count.set(key(b), (count.get(key(b)) ?? 0) + 1)
+  return buildings.map((b) => [b, count.get(key(b))! > 1 ? `Byggnad ${b.buildingId}` : undefined])
 }
 
 /** GET /api/sok?q=storgatan 1&sources=uppsala,vafab */
@@ -48,7 +57,9 @@ export async function handleSearch(url: URL, opts: HandlerOptions = {}): Promise
 
   const results = await Promise.allSettled(
     sources.map(async (s) =>
-      (await edpSearch(s.config.baseUrl, q, opts.fetchFn, opts.timeoutMs ?? 3000)).map((b) => toAddress(s, b, opts.places)),
+      withDetails(await edpSearch(s.config.baseUrl, q, opts.fetchFn, opts.timeoutMs ?? 3000)).map(([b, detail]) =>
+        toAddress(s, b, opts.places, detail),
+      ),
     ),
   )
   const failed = sources.filter((_, i) => results[i].status === 'rejected').map((s) => s.id)
@@ -72,15 +83,16 @@ async function resolve(url: URL, opts: HandlerOptions, id: string) {
   const parsed = queryFromAddressId(id)
   if (!source || source.config.system !== 'edp' || !parsed) return { status: 404 as const }
   try {
-    let building: EdpBuilding | undefined
+    let found: [EdpBuilding, string | undefined] | undefined
     for (const q of searchCandidates(parsed.query)) {
-      const hits = await edpSearch(source.config.baseUrl, q, opts.fetchFn, opts.timeoutMs ?? 3000)
-      building = hits.find((b) => b.buildingId === parsed.buildingId)
-      if (building) break
+      const hits = withDetails(await edpSearch(source.config.baseUrl, q, opts.fetchFn, opts.timeoutMs ?? 3000))
+      found = hits.find(([b]) => b.buildingId === parsed.buildingId)
+      if (found) break
     }
-    if (!building) return { status: 404 as const }
+    if (!found) return { status: 404 as const }
+    const [building, detail] = found
     const schedule = await edpSchedule(source.config.baseUrl, building.raw, opts.fetchFn, opts.now, opts.timeoutMs ?? 5000)
-    return { status: 200 as const, address: toAddress(source, building, opts.places), schedule }
+    return { status: 200 as const, address: toAddress(source, building, opts.places, detail), schedule }
   } catch {
     return { status: 502 as const }
   }

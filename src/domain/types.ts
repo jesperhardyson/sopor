@@ -7,6 +7,8 @@ export interface Address {
   sourceId: string
   /** Kommunens namn, t.ex. "Avesta kommun" */
   kommun: string
+  /** Skiljer träffar med samma gata och ort åt, t.ex. "Byggnad 78838" i ett flerbostadshus */
+  detail?: string
 }
 
 export interface Bin {
