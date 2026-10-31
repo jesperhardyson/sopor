@@ -21,17 +21,32 @@ function Result() {
 
 let failed: string[] = []
 
-function setup() {
+const s = (id: string, street: string, kommun: string, sourceId = 'sater'): Address => ({ id, street, locality: 'Säter', sourceId, kommun })
+const MANY_KOMMUNER = [
+  ...ADDRESSES,
+  a('avesta-storgatan-30', 'Storgatan 30', 'Avesta'),
+  a('avesta-storgatan-31', 'Storgatan 31', 'Avesta'),
+  s('sater-storgatan-40', 'Storgatan 40', 'Säters kommun'),
+]
+
+let onDeactivate = vi.fn()
+
+function setup(addresses = ADDRESSES) {
+  onDeactivate = vi.fn()
   render(
     <MemoryRouter>
       <Routes>
         <Route
           index
           element={
-            <AddressSearch
-              search={async (q) => ({ addresses: searchAddresses(q, ADDRESSES), failed })}
-              suggest={async (q) => suggest(q, ADDRESSES)}
-            />
+            <>
+              <AddressSearch
+                search={async (q) => ({ addresses: searchAddresses(q, addresses, 12), failed })}
+                suggest={async (q) => suggest(q, addresses)}
+                onDeactivate={onDeactivate}
+              />
+              <p>Utanför</p>
+            </>
           }
         />
         <Route path=":sourceId/:addressId" element={<Result />} />
@@ -49,6 +64,59 @@ describe('AddressSearch', () => {
     expect(within(options[0]).getByText('Storgatan 12')).toBeInTheDocument()
     expect(within(options[0]).getByText('Avesta')).toBeInTheDocument()
     expect(within(options[0]).getByText('Avesta kommun')).toBeInTheDocument()
+  })
+
+  it('avbryter sökningen och rensar när man klickar utanför', async () => {
+    const input = setup()
+    await userEvent.type(input, 'storg')
+    await screen.findAllByRole('option')
+    await userEvent.click(screen.getByText('Utanför'))
+    expect(screen.queryByRole('option')).toBeNull()
+    expect(input).toHaveValue('')
+    expect(onDeactivate).toHaveBeenCalledOnce()
+  })
+
+  it('rör inte sökningen vid klick utanför när den inte används', async () => {
+    setup()
+    await userEvent.click(screen.getByText('Utanför'))
+    expect(onDeactivate).not.toHaveBeenCalled()
+  })
+
+  it('visar ingen grupprubrik när alla träffar ligger i en kommun', async () => {
+    await userEvent.type(setup(), 'storg')
+    await screen.findAllByRole('option')
+    expect(screen.queryByRole('group')).toBeNull()
+  })
+
+  it('grupperar träffarna per kommun när de ligger i flera', async () => {
+    await userEvent.type(setup(MANY_KOMMUNER), 'storg')
+    const groups = await screen.findAllByRole('group')
+    expect(groups.map((g) => g.getAttribute('aria-label'))).toEqual(['Avesta kommun', 'Säters kommun'])
+    const avesta = within(groups[0]).getAllByRole('option')
+    // Tre adresser och en rad för resten. Kommunen står i rubriken, inte på varje rad.
+    expect(avesta).toHaveLength(4)
+    expect(within(avesta[0]).queryByText('Avesta kommun')).toBeNull()
+    expect(avesta[3]).toHaveTextContent('Visa 2 till i Avesta kommun')
+    expect(within(groups[1]).getByText('Storgatan 40')).toBeInTheDocument()
+  })
+
+  it('fäller ut resten av en kommuns träffar', async () => {
+    await userEvent.type(setup(MANY_KOMMUNER), 'storg')
+    await userEvent.click(await screen.findByRole('option', { name: 'Visa 2 till i Avesta kommun' }))
+    const avesta = within(screen.getAllByRole('group')[0]).getAllByRole('option')
+    expect(avesta).toHaveLength(5)
+    expect(screen.queryByText(/Visa 2 till/)).toBeNull()
+    expect(screen.getByRole('combobox')).toHaveFocus()
+  })
+
+  it('stegar mellan grupperna med tangentbordet och fäller ut med Enter', async () => {
+    const input = setup(MANY_KOMMUNER)
+    await userEvent.type(input, 'storg')
+    await screen.findAllByRole('group')
+    await userEvent.keyboard('{ArrowDown>4/}{Enter}')
+    expect(within(screen.getAllByRole('group')[0]).getAllByRole('option')).toHaveLength(5)
+    await userEvent.keyboard('{ArrowDown}{ArrowDown}{Enter}')
+    expect(await screen.findByText('Resultat sater/sater-storgatan-40')).toBeInTheDocument()
   })
 
   it('navigerar till vald adress med tangentbordet', async () => {

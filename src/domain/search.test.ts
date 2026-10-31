@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { normalize, searchAddresses, suggest } from './search'
+import { groupByKommun, normalize, searchAddresses, suggest } from './search'
 import type { Address } from './types'
 
 const a = (id: string, street: string, locality: string): Address => ({ id, street, locality, sourceId: 'avesta', kommun: 'Avesta kommun' })
@@ -85,5 +85,21 @@ describe('suggest', () => {
 describe('searchAddresses medan man skriver orten', () => {
   it('hittar adressen när en ensam bokstav efter numret är början på orten', () => {
     expect(ids(searchAddresses('storgatan 12 k', ADDRESSES))).toEqual(['krylbo-storgatan-12b'])
+  })
+})
+
+describe('groupByKommun', () => {
+  const k = (id: string, kommun: string): Address => ({ ...a(id, id, id), kommun })
+
+  it('grupperar i den ordning kommunerna först dyker upp och behåller träffarnas ordning', () => {
+    const groups = groupByKommun([k('1', 'Avesta kommun'), k('2', 'Säters kommun'), k('3', 'Avesta kommun')])
+    expect(groups.map((g) => [g.kommun, ids(g.addresses)])).toEqual([
+      ['Avesta kommun', ['1', '3']],
+      ['Säters kommun', ['2']],
+    ])
+  })
+
+  it('ger inga grupper för en tom lista', () => {
+    expect(groupByKommun([])).toEqual([])
   })
 })

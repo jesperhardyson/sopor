@@ -1,12 +1,16 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useId, useState } from 'react'
-import { MONTHS, toUtc } from '@/domain/dates'
+import { formatLong, formatShort, MONTHS, toUtc } from '@/domain/dates'
 import { FRACTIONS } from '@/domain/fractions'
 import { holidayOn } from '@/domain/holidays'
 import { eventsInMonth } from '@/domain/schedule'
-import type { FractionId, Schedule } from '@/domain/types'
+import type { FractionId, PickupEvent, Schedule } from '@/domain/types'
 import { cn } from '@/lib/utils'
+import { Deviation } from '../components/Deviation'
+import { FractionChip } from '../components/FractionChip'
 import { FRACTION_CLASS, FRACTION_ICON } from '../components/fraction-style'
+import { ResponsiveSheet } from '../sheets/ResponsiveSheet'
+import { deviationExplanation, EstimatedPill } from './UpcomingList'
 
 type YearMonth = { year: number; month: number } // month 1–12
 
@@ -23,6 +27,10 @@ export function MonthCalendar({ schedule, initial, today }: { schedule: Schedule
   const [index, setIndex] = useState(() => Math.min(Math.max(toIndex(ofDate(initial)), first), last))
   const { year, month } = fromIndex(index)
   const events = eventsInMonth(schedule, year, month)
+  const byDate = new Map(schedule.events.map((e) => [e.date, e]))
+  // Dagen ligger kvar när arket stängs, så att innehållet inte försvinner under animationen.
+  const [selected, setSelected] = useState<PickupEvent | null>(null)
+  const [sheetOpen, setSheetOpen] = useState(false)
 
   const firstWeekday = (toUtc(`${year}-${String(month).padStart(2, '0')}-01`).getUTCDay() + 6) % 7 // måndag = 0
   const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate()
@@ -66,24 +74,51 @@ export function MonthCalendar({ schedule, initial, today }: { schedule: Schedule
             const holiday = holidayOn(date)
             const parts = [...(fractions?.map((f) => FRACTIONS[f].name) ?? []), ...(holiday ? [holiday.name] : [])]
             const label = parts.length > 0 ? `${day} ${MONTHS[month - 1]}: ${parts.join(', ')}` : undefined
-            return (
-              <span
-                key={i}
-                aria-label={label}
-                title={holiday ? holiday.name[0].toUpperCase() + holiday.name.slice(1) : undefined}
-                data-holiday={holiday?.kind}
-                role={label ? 'img' : undefined}
-                className={cn(
-                  'flex h-[46px] flex-col items-center justify-center gap-1 rounded-xl text-[15px]',
-                  fractions ? 'bg-brand-soft font-extrabold' : 'font-medium',
-                  holiday?.kind === 'röd' ? 'font-extrabold text-warn' : holiday ? 'text-warn/70' : 'text-text',
-                  date === today && 'ring-2 ring-primary ring-inset',
-                )}
-              >
+            const cell = cn(
+              'flex h-[46px] flex-col items-center justify-center gap-1 rounded-xl text-[15px]',
+              fractions ? 'bg-brand-soft font-extrabold' : 'font-medium',
+              holiday?.kind === 'röd' ? 'font-extrabold text-warn' : holiday ? 'text-warn/70' : 'text-text',
+              date === today && 'ring-2 ring-primary ring-inset',
+            )
+            const content = (
+              <>
                 <span aria-hidden={Boolean(label)}>{day}</span>
                 <span className="flex h-3 items-center gap-0.5" aria-hidden>
                   {fractions && <DayIcons fractions={fractions} />}
                 </span>
+              </>
+            )
+            const event = byDate.get(date)
+            if (!event) {
+              return (
+                <span
+                  key={i}
+                  aria-label={label}
+                  title={holiday ? capitalize(holiday.name) : undefined}
+                  data-holiday={holiday?.kind}
+                  role={label ? 'img' : undefined}
+                  className={cell}
+                >
+                  {content}
+                </span>
+              )
+            }
+            return (
+              <span key={i} className="group relative">
+                <button
+                  type="button"
+                  aria-label={label}
+                  aria-haspopup="dialog"
+                  data-holiday={holiday?.kind}
+                  onClick={() => {
+                    setSelected(event)
+                    setSheetOpen(true)
+                  }}
+                  className={cn(cell, 'w-full cursor-pointer outline-none hover:brightness-110 focus-visible:ring-2 focus-visible:ring-primary')}
+                >
+                  {content}
+                </button>
+                <DayCard event={event} holiday={holiday?.name} column={i % 7} />
               </span>
             )
           })}
@@ -100,7 +135,78 @@ export function MonthCalendar({ schedule, initial, today }: { schedule: Schedule
           })}
         </div>
       </div>
+      {selected && (
+        <DaySheet event={selected} holiday={holidayOn(selected.date)?.name} open={sheetOpen} onOpenChange={setSheetOpen} />
+      )}
     </section>
+  )
+}
+
+/** Allt som töms en dag, som kort när man hovrar eller tabbar till dagen (desktop). */
+function DayCard({ event, holiday, column }: { event: PickupEvent; holiday?: string; column: number }) {
+  return (
+    <span
+      aria-hidden
+      className={cn(
+        'pointer-events-none absolute bottom-full z-10 mb-2 hidden w-max max-w-[260px] flex-col gap-2 rounded-2xl border border-border bg-surface-2 p-3 text-left shadow-[0_12px_32px_#1B231F1F]',
+        'group-hover:flex group-has-focus-visible:flex',
+        // Kanterna i veckan: lägg kortet inåt så att det inte sticker ut ur kalendern.
+        column < 2 ? 'left-0' : column > 4 ? 'right-0' : 'left-1/2 -translate-x-1/2',
+      )}
+    >
+      <span className="text-[13px] font-extrabold text-text-2">
+        {formatShort(event.date)}
+        {holiday && ` · ${holiday}`}
+      </span>
+      <span className="flex flex-wrap gap-1.5">
+        {event.fractions.map((f) => (
+          <FractionChip key={f} fraction={f} size="sm" label={event.labels?.[f]} />
+        ))}
+      </span>
+    </span>
+  )
+}
+
+/** Samma dag som ark, för den som trycker (mobil) eller klickar. */
+function DaySheet({
+  event,
+  holiday,
+  open,
+  onOpenChange,
+}: {
+  event: PickupEvent
+  holiday?: string
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}) {
+  const { weekday, day, month } = formatLong(event.date)
+  const explanation = deviationExplanation(event)
+  return (
+    <ResponsiveSheet
+      open={open}
+      onOpenChange={onOpenChange}
+      title={`${capitalize(weekday)} ${day} ${month}`}
+      description={holiday ? `${capitalize(holiday)}. Det här töms den dagen.` : 'Det här töms den dagen.'}
+    >
+      <div className="flex flex-col items-start gap-2">
+        {event.deviation && <Deviation />}
+        <div className="flex flex-wrap gap-2">
+          {event.fractions.map((f) => (
+            <FractionChip key={f} fraction={f} label={event.labels?.[f]} />
+          ))}
+        </div>
+        {event.estimated && <EstimatedPill />}
+        {explanation && <p className="text-[13px] leading-[1.4] text-text-2">{explanation}</p>}
+        {event.warning && <p className="text-[13px] leading-[1.4] font-semibold text-warn">{event.warning}</p>}
+      </div>
+      <button
+        type="button"
+        onClick={() => onOpenChange(false)}
+        className="h-[52px] rounded-[14px] bg-surface-2 text-base font-extrabold text-text"
+      >
+        Stäng
+      </button>
+    </ResponsiveSheet>
   )
 }
 

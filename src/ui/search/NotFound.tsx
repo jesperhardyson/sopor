@@ -6,14 +6,16 @@ import { cn } from '@/lib/utils'
 export function NotFound({ suggestions, className }: { suggestions: Address[]; className?: string }) {
   return (
     <div role="status" className={cn('flex flex-col gap-3.5 rounded-[20px] border border-border bg-surface p-5', className)}>
-      <span className="inline-flex size-12 items-center justify-center rounded-2xl bg-earth-soft text-earth">
-        <SearchX className="size-6" aria-hidden />
-      </span>
-      <div className="flex flex-col gap-1.5">
-        <h2 className="text-xl font-extrabold tracking-[-0.3px] text-text">Vi hittade inte adressen</h2>
-        <p className="text-[15px] leading-[1.45] text-text-2">
-          Kolla stavningen och prova utan port eller lägenhetsnummer, till exempel ”Storgatan 12”.
-        </p>
+      <div className="flex items-start gap-3.5">
+        <span className="inline-flex size-12 shrink-0 items-center justify-center rounded-2xl bg-earth-soft text-earth">
+          <SearchX className="size-6" aria-hidden />
+        </span>
+        <div className="flex min-w-0 flex-col gap-1.5">
+          <h2 className="text-xl font-extrabold tracking-[-0.3px] text-text">Vi hittade inte adressen</h2>
+          <p className="text-[15px] leading-[1.45] text-text-2">
+            Kolla stavningen och prova utan port eller lägenhetsnummer, till exempel ”Storgatan 12”.
+          </p>
+        </div>
       </div>
       {suggestions.length > 0 && (
         <div className="flex flex-col items-start gap-2">
