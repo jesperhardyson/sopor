@@ -1,6 +1,6 @@
 import { BellRing, Calendar, CalendarDays, ChevronRight, Download, RefreshCw, type LucideIcon } from 'lucide-react'
 import type { Address } from '@/domain/types'
-import { absoluteIcsUrl, defaultOrigin, googleCalendarUrl, webcalUrl } from '@/lib/calendar-links'
+import { absoluteIcsUrl, defaultOrigin, googleCalendarUrl, isAndroid, webcalUrl } from '@/lib/calendar-links'
 import { cn } from '@/lib/utils'
 import { ResponsiveSheet } from './ResponsiveSheet'
 
@@ -10,19 +10,16 @@ function Option({
   title,
   description,
   best,
-  download,
 }: {
   href: string
   icon: LucideIcon
   title: string
   description: string
   best?: boolean
-  download?: string
 }) {
   return (
     <a
       href={href}
-      download={download}
       target={href.startsWith('https://calendar.google.com') ? '_blank' : undefined}
       rel="noopener"
       className={cn(
@@ -66,6 +63,8 @@ export function CalendarSheet({
   origin?: string
 }) {
   const webcal = webcalUrl(absoluteIcsUrl(icsPath, origin))
+  // Android har ingen app för webcal, så där går prenumerationen via Google Kalender.
+  const subscribe = isAndroid() ? googleCalendarUrl(webcal) : webcal
   return (
     <ResponsiveSheet
       open={open}
@@ -74,7 +73,7 @@ export function CalendarSheet({
       description={`Få alla tömningar för ${address.street} direkt i din kalender.`}
     >
       <div className="flex flex-col gap-2">
-        <Option href={webcal} icon={RefreshCw} title="Prenumerera" description="Uppdateras automatiskt vid ändringar (webcal)" best />
+        <Option href={subscribe} icon={RefreshCw} title="Prenumerera" description="Uppdateras automatiskt vid ändringar (webcal)" best />
         <Option href={googleCalendarUrl(webcal)} icon={Calendar} title="Google Kalender" description="Prenumerera via ditt Google-konto" />
         <Option href={webcal} icon={CalendarDays} title="Apple Kalender" description="iPhone, iPad och Mac" />
         <Option
@@ -82,7 +81,6 @@ export function CalendarSheet({
           icon={Download}
           title="Ladda ner .ics"
           description="En fil med kommande tömningar. Uppdateras inte."
-          download={`sopor-${address.id}.ics`}
         />
       </div>
       <p className="flex items-start gap-2.5 rounded-[14px] bg-surface-2 px-3.5 py-3 text-sm leading-[1.4] text-text-2">

@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes, useParams } from 'react-router'
 import { describe, expect, it, vi } from 'vitest'
@@ -74,6 +74,36 @@ describe('AddressSearch', () => {
     expect(screen.queryByRole('option')).toBeNull()
     expect(input).toHaveValue('')
     expect(onDeactivate).toHaveBeenCalledOnce()
+  })
+
+  // På mobil börjar en scrollgest med pointerdown men slutar utan klick.
+  it('rör inte sökningen när man drar för att scrolla utanför listan', async () => {
+    const input = setup()
+    await userEvent.type(input, 'storg')
+    await screen.findAllByRole('option')
+    fireEvent.pointerDown(screen.getByText('Utanför'))
+    fireEvent.pointerCancel(screen.getByText('Utanför'))
+    expect(screen.getAllByRole('option')).toHaveLength(3)
+    expect(input).toHaveValue('storg')
+    expect(onDeactivate).not.toHaveBeenCalled()
+  })
+
+  it('lämnar fokusläget vid klick utanför även när fältet är tomt', async () => {
+    await userEvent.click(setup())
+    await userEvent.click(screen.getByText('Utanför'))
+    expect(onDeactivate).toHaveBeenCalledOnce()
+  })
+
+  it('ber om ett söktangentbord utan autokorrigering', () => {
+    const input = setup()
+    expect(input).toHaveAttribute('enterkeyhint', 'search')
+    expect(input).toHaveAttribute('autocorrect', 'off')
+    expect(input).toHaveAttribute('autocapitalize', 'off')
+  })
+
+  it('har en rensa-knapp som är stor nog att träffa med fingret', async () => {
+    await userEvent.type(setup(), 'st')
+    expect(screen.getByRole('button', { name: 'Rensa' })).toHaveClass('size-11')
   })
 
   it('rör inte sökningen vid klick utanför när den inte används', async () => {

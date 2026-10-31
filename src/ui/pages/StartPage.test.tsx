@@ -1,7 +1,7 @@
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { StartPage } from './StartPage'
 
 vi.mock('@/providers/registry', () => ({
@@ -21,6 +21,8 @@ function setup() {
 }
 
 describe('StartPage fokusläge', () => {
+  afterEach(() => vi.restoreAllMocks())
+
   it('tonar ner resten av sidan när man klickar i sökfältet', async () => {
     const input = setup()
     expect(screen.queryByTestId('sok-fokus')).toBeNull()
@@ -34,6 +36,25 @@ describe('StartPage fokusläge', () => {
     await userEvent.keyboard('{Escape}')
     expect(screen.queryByTestId('sok-fokus')).toBeNull()
     expect(input).not.toHaveFocus()
+  })
+
+  it('scrollar sidan så att sökfältet hamnar nära toppen', async () => {
+    const scrollTo = vi.spyOn(window, 'scrollTo').mockImplementation(() => {})
+    vi.spyOn(window, 'scrollY', 'get').mockReturnValue(100)
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({ top: 372 } as DOMRect)
+    const input = setup()
+    await userEvent.click(input)
+    expect(scrollTo).toHaveBeenCalledWith(expect.objectContaining({ top: 456 }))
+  })
+
+  // Telefonen scrollar själv när tangentbordet öppnas. En transform ovanpå den scrollen
+  // flyttade fältet ovanför skärmen.
+  it('flyttar inte sökfältet med transform', async () => {
+    const input = setup()
+    await userEvent.click(input)
+    for (let el: HTMLElement | null = input; el; el = el.parentElement) {
+      expect(el.style.transform).toBe('')
+    }
   })
 
   it('avslutas när man klickar på den tonade ytan', async () => {

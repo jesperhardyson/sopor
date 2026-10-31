@@ -1,7 +1,8 @@
 import { Link } from 'react-router'
 import { SITE } from '@/config'
 
-const link = 'font-bold hover:text-text'
+// Tryckytan växer osynligt till 44 px utan att sidfoten blir högre.
+const link = 'relative font-bold after:absolute after:-inset-x-2 after:-inset-y-3 hover:text-text'
 
 export function Footer() {
   return (

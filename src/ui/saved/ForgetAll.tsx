@@ -28,14 +28,14 @@ export function ForgetAll({ label, onConfirm }: { label: string; onConfirm: () =
             onConfirm()
             setConfirming(false)
           }}
-          className="rounded-xl bg-warn px-3.5 py-2 text-sm font-extrabold text-surface"
+          className="relative rounded-xl bg-warn px-3.5 py-2 after:absolute after:-inset-1 text-sm font-extrabold text-surface"
         >
           Ja, glöm alla
         </button>
         <button
           type="button"
           onClick={() => setConfirming(false)}
-          className="rounded-xl border border-border bg-surface px-3.5 py-2 text-sm font-bold text-text"
+          className="relative rounded-xl border border-border bg-surface px-3.5 py-2 after:absolute after:-inset-1 text-sm font-bold text-text"
         >
           Avbryt
         </button>

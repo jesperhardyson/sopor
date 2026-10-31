@@ -2,7 +2,7 @@ import '@/test/show-hidden-sources'
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { BidraPage, REQUEST_TEXT } from './BidraPage'
 
 function setup() {
@@ -37,6 +37,16 @@ describe('BidraPage', () => {
     await user.click(screen.getByRole('button', { name: 'Kopiera texten' }))
     expect(await navigator.clipboard.readText()).toBe(REQUEST_TEXT)
     expect(screen.getByRole('button', { name: 'Kopierad!' })).toBeInTheDocument()
+  })
+
+  it('markerar texten så att man kan kopiera själv när urklipp inte går', async () => {
+    const user = userEvent.setup()
+    setup()
+    vi.spyOn(navigator.clipboard, 'writeText').mockRejectedValue(new Error('nekad'))
+    await user.click(screen.getByRole('button', { name: 'Kopiera texten' }))
+    expect(window.getSelection()?.toString()).toBe(REQUEST_TEXT)
+    expect(screen.getByRole('button', { name: 'Markerad, kopiera själv' })).toBeInTheDocument()
+    vi.restoreAllMocks()
   })
 
   it('länkar till den tekniska guiden för utvecklare', () => {
