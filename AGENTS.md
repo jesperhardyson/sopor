@@ -18,6 +18,8 @@ npm run build:data   # bara datagenereringen (scripts/build-data.ts)
 Kör `npm run lint && npm test && npm run build` innan varje commit. Allt ska vara grönt.
 
 Homey-appen (`integrations/homey/`) är ett eget paket: `cd integrations/homey && npm test && npm run typecheck && npm run validate`. `npx homey app install` installerar den på vald Homey. Kör `homey select current` först, eftersom CLI:t kan peka på fel Homey.
+- **Versioner:** ändra aldrig appens version för hand. Använd `npm run release` (se `integrations/homey/README.md`).
+- **Jobbnamn:** inga CI-jobb får heta `test`, utom det i `ci.yml`, eftersom det är den obligatoriska checken för `main`.
 
 `main` är skyddad: ändringar går via pull request och kräver grön CI. Arbeta på en gren.
 

@@ -6,16 +6,23 @@ on:
     paths: ['integrations/homey/**', '.github/workflows/homey.yml']
   pull_request:
     paths: ['integrations/homey/**', '.github/workflows/homey.yml']
+  # Rökprov mot produktions-API:t varje natt, så att en API-ändring som bryter appen märks direkt
+  schedule:
+    - cron: '30 3 * * *'
+  workflow_dispatch:
 
 permissions:
   contents: read
 
+defaults:
+  run:
+    working-directory: integrations/homey
+
 jobs:
-  test:
+  # Heter inte "test": det namnet är den obligatoriska checken för main i ci.yml
+  homey:
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: integrations/homey
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -24,6 +31,20 @@ jobs:
           cache: npm
           cache-dependency-path: integrations/homey/package-lock.json
       - run: npm ci
+      - run: npm run check:version
       - run: npm test
       - run: npm run typecheck
-      - run: npm run validate
+      - run: npx homey app validate --level publish
+
+  smoke:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: integrations/homey/package-lock.json
+      - run: npm ci
+      - run: npm run smoke

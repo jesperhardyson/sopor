@@ -1,0 +1,46 @@
+name: Homey-appen, release
+
+# Startas av en tagg från `npm run release` i integrations/homey, till exempel homey-v0.4.2.
+# Laddar upp ett utkast till Athom. Testversion och publicering görs sedan för hand
+# på tools.developer.homey.app, så att inget når användarna utan ett aktivt beslut.
+
+on:
+  push:
+    tags: ['homey-v*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: homey-release
+  cancel-in-progress: false
+
+defaults:
+  run:
+    working-directory: integrations/homey
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: integrations/homey/package-lock.json
+      - run: npm ci
+      - run: npm run check:version -- --tag "${{ github.ref_name }}"
+      - run: npm test
+      - run: npm run typecheck
+      - run: npx homey app validate --level publish
+      - name: Ladda upp till Athom
+        env:
+          HOMEY_HEADLESS: '1'
+          HOMEY_PAT: ${{ secrets.HOMEY_PAT }}
+        run: |
+          if [ -z "$HOMEY_PAT" ]; then
+            echo "::error::Secret HOMEY_PAT saknas. Skapa en token på https://tools.developer.homey.app/me och lägg in den under Settings → Secrets → Actions."
+            exit 1
+          fi
+          npx homey app publish

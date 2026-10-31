@@ -173,11 +173,23 @@ cd integrations/homey && npm install && npx homey app install
 - **Utveckling:** se `integrations/homey/README.md`.
 - **Spec:** `docs/specs/2026-10-31-sopor-homey-app.md`.
 - **Undersökning och jämförelse med liknande appar:** `docs/specs/2026-10-31-integrationer-homey-home-assistant.md`.
-- **CI:** arbetsflödet `homey.yml` körs bara när `integrations/homey/` ändras.
+- **CI och releaser:**
+  - `homey.yml` körs när `integrations/homey/` ändras, och varje natt som rökprov mot produktions-API:t.
+  - Versioner släpps med `npm run release` och en tagg `homey-v<version>`, som laddar upp ett utkast till Athom.
+  - Se `integrations/homey/README.md`.
 
 ### Home Assistant
 
 Planerad. HACS kräver ett eget repo, så integrationen kommer att ligga i ett separat repo, se undersökningen. Tills dess finns REST-sensorn i [`docs/api.md`](docs/api.md#home-assistant).
+
+## Versioner
+
+- **Webben** har inga versionsnummer. Varje push till `main` driftsätts, och CI (`ci.yml`, den obligatoriska checken `test`) ska vara grön innan dess.
+- Det som måste vara stabilt har egna kontrakt:
+  - API:t är versionerat i sökvägen (`/api/v1`) och har ett kontraktstest mot `openapi.json`.
+  - Adress-id får inte tas bort (`check:ids` i CI).
+  - ICS-UID ändrar aldrig format.
+- **Integrationerna** har semver och egna releaser: Homey-appen med taggar `homey-v*`, och Home Assistant i sitt eget repo.
 
 ## Driftsättning
 

@@ -7,6 +7,13 @@ updates:
     groups:
       beroenden:
         patterns: ['*']
+  - package-ecosystem: npm
+    directory: /integrations/homey
+    schedule:
+      interval: weekly
+    groups:
+      homey:
+        patterns: ['*']
   - package-ecosystem: github-actions
     directory: /
     schedule:

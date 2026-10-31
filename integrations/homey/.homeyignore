@@ -1,0 +1,4 @@
+# Följer inte med i appen som laddas upp till Athom
+scripts/
+**/*.test.mts
+README.md
