@@ -81,11 +81,8 @@ export function MonthCalendar({ schedule, initial, today }: { schedule: Schedule
                 )}
               >
                 <span aria-hidden={Boolean(label)}>{day}</span>
-                <span className="flex h-3 gap-0.5" aria-hidden>
-                  {fractions?.map((f) => {
-                    const Icon = FRACTION_ICON[f]
-                    return <Icon key={f} className={cn('size-3', FRACTION_CLASS[f].fg)} />
-                  })}
+                <span className="flex h-3 items-center gap-0.5" aria-hidden>
+                  {fractions && <DayIcons fractions={fractions} />}
                 </span>
               </span>
             )
@@ -104,5 +101,20 @@ export function MonthCalendar({ schedule, initial, today }: { schedule: Schedule
         </div>
       </div>
     </section>
+  )
+}
+
+/** Får det inte plats fler än tre ikoner i en dagruta (mobil): visa två och "+N". */
+function DayIcons({ fractions }: { fractions: FractionId[] }) {
+  const shown = fractions.length > 3 ? fractions.slice(0, 2) : fractions
+  const more = fractions.length - shown.length
+  return (
+    <>
+      {shown.map((f) => {
+        const Icon = FRACTION_ICON[f]
+        return <Icon key={f} className={cn('size-3', FRACTION_CLASS[f].fg)} />
+      })}
+      {more > 0 && <span className="text-[10px] leading-none font-extrabold text-text-2">+{more}</span>}
+    </>
   )
 }
