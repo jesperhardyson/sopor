@@ -18,9 +18,9 @@ export interface HandlerOptions {
   places?: Record<string, Record<string, string>>
 }
 
-const CACHE_SEARCH = 'public, s-maxage=86400, stale-while-revalidate=604800'
+export const CACHE_SEARCH = 'public, s-maxage=86400, stale-while-revalidate=604800'
 const CACHE_SCHEDULE = 'public, s-maxage=21600, stale-while-revalidate=86400'
-const CACHE_PARTIAL = 'public, s-maxage=60'
+export const CACHE_PARTIAL = 'public, s-maxage=60'
 
 const json = (body: unknown, status = 200, cache = 'no-store') =>
   Response.json(body, { status, headers: { 'Cache-Control': cache } })

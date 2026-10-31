@@ -5,10 +5,15 @@ import { secondsToStockholmMidnight, todayInStockholm } from '../domain/dates.js
 import { FRACTIONS, sortFractions } from '../domain/fractions.js'
 import { nextPerFraction, pickupSummary } from '../domain/next.js'
 import { upcoming } from '../domain/schedule.js'
-import type { FractionId, Schedule } from '../domain/types.js'
-import { SOURCES } from '../sources/index.js'
-import { decodeId, type HandlerOptions } from './handlers.js'
+import { normalize, searchAddresses } from '../domain/search.js'
+import type { Address, FractionId, Schedule } from '../domain/types.js'
+import { pickLiveSources, shardKey, type StreetShard } from '../data/street-index.js'
+import type { AddressIndexFile } from '../data/static-format.js'
+import { SOURCES, type Source } from '../sources/index.js'
+import { edpSearch } from './edp.js'
+import { CACHE_PARTIAL, CACHE_SEARCH, decodeId, toAddress, withDetails, type HandlerOptions } from './handlers.js'
 import { lookupAddress } from './lookup.js'
+import { loadServerPlaces, siteJson } from './site.js'
 
 export type V1Handler = (request: Request, opts?: HandlerOptions) => Promise<Response>
 
@@ -127,6 +132,73 @@ export const handleV1Address: V1Handler = async (request, opts = {}) => {
     200,
     addressCacheControl(now),
   )
+}
+
+const SEARCH_LIMIT = 10
+
+const v1Address = (a: Address, origin: string) => ({
+  id: a.id,
+  street: a.street,
+  locality: a.locality,
+  kommun: a.kommun,
+  source: a.sourceId,
+  detail: a.detail ?? null,
+  url: `${origin}/api/v1/adress/${a.sourceId}/${encodeURIComponent(a.id)}`,
+})
+
+/** Statiska källor söks lokalt i sin adressfil. */
+async function searchStatic(source: Source, query: string, origin: string, opts: HandlerOptions): Promise<Address[]> {
+  const index = await siteJson<AddressIndexFile>(origin, `/data/${source.id}/addresses.json`, opts.fetchFn, opts.timeoutMs)
+  if (!index) throw new Error(`${source.id} saknar adressfil`)
+  const kommun = source.kommuner[0]?.name ?? source.name
+  const addresses = index.addresses.map(([id, street, locality]) => ({ id, street, locality, sourceId: source.id, kommun }))
+  return searchAddresses(query, addresses, SEARCH_LIMIT)
+}
+
+/** Gatuindexet hjälper till att välja källor. Når vi det inte frågar vi som om gatan saknades. */
+async function streetShard(q: string, origin: string, opts: HandlerOptions): Promise<StreetShard | null> {
+  try {
+    return await siteJson<StreetShard>(origin, `/data/gator/${shardKey(q)}.json`, opts.fetchFn, opts.timeoutMs)
+  } catch {
+    return null
+  }
+}
+
+/** GET /api/v1/sok?q=storgatan 2[&kalla=uppsala] */
+export const handleV1Search: V1Handler = async (request, opts = {}) => {
+  const url = new URL(request.url)
+  const q = url.searchParams.get('q') ?? ''
+  if (normalize(q).length < 3) return v1Error(400, 'bad_request', 'Minst tre tecken')
+
+  const visible = visibleSources(opts)
+  const kalla = url.searchParams.get('kalla')
+  let sources: Source[]
+  if (kalla) {
+    const only = visible.find((s) => s.id === kalla)
+    if (!only) return v1Error(404, 'not_found', 'Källan finns inte')
+    sources = [only]
+  } else {
+    const live = visible.filter((s) => s.config.system === 'edp')
+    const shard = await streetShard(q, url.origin, opts)
+    const picked = pickLiveSources(shard, q, live.map((s) => s.id), false)
+    sources = [...live.filter((s) => picked.includes(s.id)), ...visible.filter((s) => s.config.system !== 'edp')]
+  }
+
+  // Orttabellen behövs bara när en live-källa täcker flera kommuner.
+  const places =
+    opts.places ?? (sources.some((s) => s.config.system === 'edp' && s.kommuner.length > 1) ? await loadServerPlaces(url.origin, opts.fetchFn) : undefined)
+  const results = await Promise.allSettled(
+    sources.map(async (s) =>
+      s.config.system === 'edp'
+        ? withDetails(await edpSearch(s.config.baseUrl, q, opts.fetchFn, opts.timeoutMs ?? 3000))
+            .slice(0, SEARCH_LIMIT)
+            .map(([b, detail]) => toAddress(s, b, places, detail))
+        : await searchStatic(s, q, url.origin, opts),
+    ),
+  )
+  const failed = sources.filter((_, i) => results[i].status === 'rejected').map((s) => s.id)
+  const addresses = results.flatMap((r) => (r.status === 'fulfilled' ? r.value : [])).map((a) => v1Address(a, url.origin))
+  return v1Json({ addresses, failed }, 200, failed.length > 0 ? CACHE_PARTIAL : CACHE_SEARCH)
 }
 
 /** GET /api/v1/kallor */

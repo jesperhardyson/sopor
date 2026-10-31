@@ -9,7 +9,7 @@ import { defineConfig, type Plugin } from 'vite'
 /** Kör api/-funktionerna i dev-servern, så att `npm run dev` fungerar utan `vercel dev`. */
 function soporApi(): Plugin {
   const routes: Record<string, string> = { sok: 'handleSearch', schema: 'handleSchedule', ics: 'handleIcs' }
-  const v1Routes: Record<string, string> = { adress: 'handleV1Address', kallor: 'handleV1Sources' }
+  const v1Routes: Record<string, string> = { adress: 'handleV1Address', kallor: 'handleV1Sources', sok: 'handleV1Search' }
   return {
     name: 'sopor-api',
     configureServer(server) {

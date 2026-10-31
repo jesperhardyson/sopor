@@ -1,9 +1,9 @@
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi, type Mock } from 'vitest'
 import { FRACTIONS } from '../domain/fractions.js'
 import type { Source } from '../sources/index.js'
-import { addressCacheControl, handleV1Address, handleV1NotFound, handleV1Sources, v1, v1Error } from './v1.js'
+import { addressCacheControl, handleV1Address, handleV1NotFound, handleV1Search, handleV1Sources, v1, v1Error } from './v1.js'
 
 const fixture = (name: string) => readFileSync(path.resolve(import.meta.dirname, '__fixtures__', name), 'utf8')
 const json = (body: unknown) =>
@@ -26,6 +26,8 @@ const SOURCES: Source[] = [
 
 const event = (date: string) => ({ date, fractions: ['mat'], estimated: false })
 const files: Record<string, unknown> = {
+  '/data/gator/st.json': { storgatan: ['uppsala'] },
+  '/data/orter.json': {},
   '/data/statisk/addresses.json': {
     sourceId: 'statisk',
     updatedAt: '2026-01-01',
@@ -267,5 +269,104 @@ describe('v1', () => {
   it('v1Error har den gemensamma felformen', async () => {
     const res = v1Error(400, 'bad_request', 'Fel')
     expect(await res.json()).toEqual({ apiVersion: '1', error: { code: 'bad_request', message: 'Fel' } })
+  })
+})
+
+describe('handleV1Search', () => {
+  const calls = fetchFn as unknown as Mock<(input: string | URL | Request) => Promise<Response>>
+  const search = (query: string, o = opts) => v1(handleV1Search)(get(`/api/v1/sok?${query}`), o)
+  const q = (text: string, extra = '') => `q=${encodeURIComponent(text)}${extra}`
+  const hosts = () => calls.mock.calls.map(([input]) => new URL(String(input)).host)
+
+  it('frågar bara källan som gatuindexet pekar ut och ger v1-adresser', async () => {
+    calls.mockClear()
+    const res = await search(q('Storgatan 2, Uppsala'))
+    expect(res.status).toBe(200)
+    expect(res.headers.get('Cache-Control')).toBe('public, s-maxage=86400, stale-while-revalidate=604800')
+    const body = await res.json()
+    expect(body.apiVersion).toBe('1')
+    expect(body.failed).toEqual([])
+    expect(body.addresses.length).toBeGreaterThan(0)
+    for (const a of body.addresses) {
+      expect(Object.keys(a).sort()).toEqual(['detail', 'id', 'kommun', 'locality', 'source', 'street', 'url'])
+      expect(a.url).toBe(`https://preview.test/api/v1/adress/uppsala/${encodeURIComponent(a.id)}`)
+    }
+    expect(hosts()).toContain('uppsala.test')
+    expect(hosts()).not.toContain('trog.test')
+  })
+
+  it('kalla hoppar över gatuindexet', async () => {
+    calls.mockClear()
+    const res = await search(q('Storgatan 2', '&kalla=uppsala'))
+    expect((await res.json()).addresses.length).toBeGreaterThan(0)
+    expect(calls.mock.calls.some(([i]) => String(i).includes('/data/gator/'))).toBe(false)
+    expect(hosts()).not.toContain('trog.test')
+  })
+
+  it('okänd eller dold kalla ger 404 not_found', async () => {
+    for (const kalla of ['finns-inte', 'dold']) {
+      const res = await search(q('Storgatan 2', `&kalla=${kalla}`))
+      expect(res.status).toBe(404)
+      expect((await res.json()).error.code).toBe('not_found')
+    }
+  })
+
+  it('för kort fråga ger 400 bad_request', async () => {
+    const res = await search(q('St'))
+    expect(res.status).toBe(400)
+    const body = await res.json()
+    expect(body.apiVersion).toBe('1')
+    expect(body.error.code).toBe('bad_request')
+  })
+
+  it('en källa som inte svarar hamnar i failed med kort cache', async () => {
+    const res = await search(q('Storgatan 2', '&kalla=trog'))
+    expect(res.status).toBe(200)
+    expect(res.headers.get('Cache-Control')).toBe('public, s-maxage=60')
+    expect(await res.json()).toMatchObject({ addresses: [], failed: ['trog'] })
+  })
+
+  it('gatuindexet som saknas stoppar inte sökningen', async () => {
+    const down = vi.fn(async (input: string | URL | Request, init?: RequestInit) =>
+      String(input).includes('/data/gator/') ? new Response('', { status: 500 }) : fetchFn(input, init),
+    ) as unknown as typeof fetch
+    const res = await search(q('Storgatan 2'), { ...opts, fetchFn: down })
+    expect(res.status).toBe(200)
+    // Siffran gör att alla live-källor frågas: Uppsala svarar, Trög hamnar i failed
+    const body = await res.json()
+    expect(body.addresses.length).toBeGreaterThan(0)
+    expect(body.failed).toEqual(['trog'])
+  })
+
+  it('söker statiska källor lokalt och ger dem kommunens namn', async () => {
+    const res = await search(q('Storgatan 1', '&kalla=statisk'))
+    const body = await res.json()
+    expect(body.failed).toEqual([])
+    expect(body.addresses).toEqual([
+      {
+        id: 'storgatan-1_örebro',
+        street: 'Storgatan 1',
+        locality: 'Örebro',
+        kommun: 'Statiska kommun',
+        source: 'statisk',
+        detail: null,
+        url: `https://preview.test/api/v1/adress/statisk/${encodeURIComponent('storgatan-1_örebro')}`,
+      },
+    ])
+  })
+
+  it('en statisk källa som inte går att läsa hamnar i failed', async () => {
+    const res = await search(q('Storgatan 1', '&kalla=statisk'), { ...opts, fetchFn: (async () => new Response('', { status: 404 })) as typeof fetch })
+    expect(await res.json()).toMatchObject({ addresses: [], failed: ['statisk'] })
+  })
+
+  it('begränsar till tio träffar per källa', async () => {
+    const many = Array.from({ length: 15 }, (_, i) => [`s-${i}`, `Storgatan ${i + 1}`, 'Örebro', ['del']])
+    const bigFetch = (async (input: string | URL | Request, init?: RequestInit) =>
+      String(input).endsWith('/data/statisk/addresses.json')
+        ? json({ sourceId: 'statisk', updatedAt: '2026-01-01', addresses: many })
+        : fetchFn(input, init)) as typeof fetch
+    const body = await (await search(q('Storgatan', '&kalla=statisk'), { ...opts, fetchFn: bigFetch })).json()
+    expect(body.addresses).toHaveLength(10)
   })
 })
