@@ -77,7 +77,7 @@ Berätta i ärendet att du har skickat en begäran, så att ingen annan gör sam
 
 | Kommun | Sköts av | Schema publikt | Söktjänst per adress | Adress → område | Läge |
 |---|---|---|---|---|---|
-| Avesta | Avesta Vatten och Avfall AB | PDF per trakt (1–10), en per år | EDP Future SimpleWastePickup finns men är tom | Begärd som allmän handling | Testdata på sajten, väntar på tabellen |
+| Avesta | Avesta Vatten och Avfall AB | PDF per trakt (1–10), en per år | EDP Future SimpleWastePickup finns men är tom | Begärd som allmän handling | Dold på sajten (påhittad testdata), väntar på tabellen |
 | Säter | Kommunen själv (inte Dala Vatten och Avfall) | Webbsida med områden per veckodag och jämn/udda vecka, plus veckoschema för fraktionerna | Nej. Mina sidor (`minasidorva.sater.se`) är en kundportal från CGI som kräver inloggning | Saknas, behöver begäras | Inte påbörjad |
 | Uppsala | Uppsala Vatten | Via söktjänsten | EDP Future SimpleWastePickup med data (`futureweb.uppsalavatten.se`) | Behövs inte | Live på sajten (beräknade datum) |
 | Örebro | Örebro kommun | Via söktjänsten | EDP Future SimpleWastePickup med data (`futureweb.orebro.se`) | Behövs inte | Live på sajten (beräknade datum) |

@@ -40,7 +40,7 @@ Att prova med seed-datan: sätt tillfälligt `hidden: false` på Avesta i `src/s
 - Sök på `Storgtan 12` och tryck Enter. Det ger "Vi hittade inte adressen" med förslaget "Storgatan 12, Avesta".
 - Öppna `/avesta/krylbo-storgatan-12b`, exempelvillan. Där är 6 januari flyttad till 7 januari (trettondedag jul).
 - Öppna `/avesta/fors-storgatan-21`. Där är juldagen flyttad till 28 december.
-- Öppna `/hedemora/x`. Det ger läget "Vi finns bara i Avesta just nu".
+- Öppna `/hedemora/x`. Det ger läget "Den här adressen finns inte hos Sopor".
 
 ## Så hänger det ihop
 
