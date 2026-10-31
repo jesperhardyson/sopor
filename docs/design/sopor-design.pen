@@ -6675,6 +6675,164 @@
                   ]
                 }
               ]
+            },
+            {
+              "type": "frame",
+              "id": "f0OjZ",
+              "name": "API",
+              "width": "fill_container",
+              "fill": "$surface",
+              "cornerRadius": 20,
+              "stroke": "$border",
+              "strokeWidth": 1,
+              "layout": "vertical",
+              "gap": 12,
+              "padding": 16,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Z1OOn",
+                  "name": "Övre",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "FJEhM",
+                      "name": "Ikon",
+                      "width": 44,
+                      "height": 44,
+                      "fill": "$surface-2",
+                      "cornerRadius": 14,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "Zx2s3",
+                          "name": "Ikon",
+                          "width": 20,
+                          "height": 20,
+                          "icon": "braces",
+                          "library": "lucide",
+                          "fill": "$text"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "XJuSJ",
+                      "name": "Text",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 3,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "tsdlW",
+                          "name": "Rubrik",
+                          "fill": "$text",
+                          "content": "API",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 16,
+                          "fontWeight": "800"
+                        },
+                        {
+                          "type": "text",
+                          "id": "yxHgP",
+                          "name": "Beskrivning",
+                          "fill": "$text-2",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Hämta adressens schema som JSON, till exempel i Home Assistant eller Homey.",
+                          "lineHeight": 1.4,
+                          "fontFamily": "$font-ui",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "mROZx",
+                  "name": "Länk",
+                  "width": "fill_container",
+                  "fill": "$surface-2",
+                  "cornerRadius": 14,
+                  "gap": 10,
+                  "padding": [
+                    12,
+                    14
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "E8w3f",
+                      "name": "Ikon",
+                      "width": 18,
+                      "height": 18,
+                      "icon": "link",
+                      "library": "lucide",
+                      "fill": "$text-2"
+                    },
+                    {
+                      "type": "text",
+                      "id": "QcE5M",
+                      "name": "Url",
+                      "fill": "$text-2",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "sopor.hardyson.se/api/v1/adress/avesta/krylbo-storgatan-12b",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "D2RA7h",
+                      "name": "Kopiera",
+                      "fill": "$primary",
+                      "content": "Kopiera",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 14,
+                      "fontWeight": "800"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "Mqiuz",
+                  "name": "Dokumentation",
+                  "gap": 6,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "kpckN",
+                      "name": "Text",
+                      "fill": "$primary",
+                      "content": "API-dokumentation",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 14,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "E8bfkb",
+                      "name": "Pil",
+                      "width": 16,
+                      "height": 16,
+                      "icon": "arrow-up-right",
+                      "library": "lucide",
+                      "fill": "$primary"
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -9545,6 +9703,164 @@
                   ]
                 }
               ]
+            },
+            {
+              "type": "frame",
+              "id": "K2vRY",
+              "name": "API",
+              "width": "fill_container",
+              "fill": "$surface",
+              "cornerRadius": 20,
+              "stroke": "$border",
+              "strokeWidth": 1,
+              "layout": "vertical",
+              "gap": 12,
+              "padding": 16,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "ek4EQ",
+                  "name": "Övre",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "kCjLR",
+                      "name": "Ikon",
+                      "width": 44,
+                      "height": 44,
+                      "fill": "$surface-2",
+                      "cornerRadius": 14,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "m0Log",
+                          "name": "Ikon",
+                          "width": 20,
+                          "height": 20,
+                          "icon": "braces",
+                          "library": "lucide",
+                          "fill": "$text"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "P0Eur",
+                      "name": "Text",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 3,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "QxOXD",
+                          "name": "Rubrik",
+                          "fill": "$text",
+                          "content": "API",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 16,
+                          "fontWeight": "800"
+                        },
+                        {
+                          "type": "text",
+                          "id": "Qmln1",
+                          "name": "Beskrivning",
+                          "fill": "$text-2",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Hämta adressens schema som JSON, till exempel i Home Assistant eller Homey.",
+                          "lineHeight": 1.4,
+                          "fontFamily": "$font-ui",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "XPrdt",
+                  "name": "Länk",
+                  "width": "fill_container",
+                  "fill": "$surface-2",
+                  "cornerRadius": 14,
+                  "gap": 10,
+                  "padding": [
+                    12,
+                    14
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "wZZ1b",
+                      "name": "Ikon",
+                      "width": 18,
+                      "height": 18,
+                      "icon": "link",
+                      "library": "lucide",
+                      "fill": "$text-2"
+                    },
+                    {
+                      "type": "text",
+                      "id": "z7oE6e",
+                      "name": "Url",
+                      "fill": "$text-2",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "sopor.hardyson.se/api/v1/adress/avesta/krylbo-storgatan-12b",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "QrVhM",
+                      "name": "Kopiera",
+                      "fill": "$primary",
+                      "content": "Kopiera",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 14,
+                      "fontWeight": "800"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "iLxlQ",
+                  "name": "Dokumentation",
+                  "gap": 6,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "ViT43",
+                      "name": "Text",
+                      "fill": "$primary",
+                      "content": "API-dokumentation",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 14,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "MPqtk",
+                      "name": "Pil",
+                      "width": 16,
+                      "height": 16,
+                      "icon": "arrow-up-right",
+                      "library": "lucide",
+                      "fill": "$primary"
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -9571,7 +9887,7 @@
           "id": "U2jEeH",
           "layoutPosition": "absolute",
           "x": 0,
-          "y": 141,
+          "y": 239,
           "name": "Ark",
           "width": 375,
           "fill": "$surface",
@@ -10024,96 +10340,6 @@
                     {
                       "type": "icon",
                       "id": "DUZ6W",
-                      "name": "Pil",
-                      "width": 20,
-                      "height": 20,
-                      "icon": "chevron-right",
-                      "library": "lucide",
-                      "fill": "$text-2"
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "aPuor",
-                  "name": "API (JSON)",
-                  "width": "fill_container",
-                  "fill": "$surface",
-                  "cornerRadius": 16,
-                  "stroke": "$border",
-                  "strokeWidth": 1,
-                  "gap": 14,
-                  "padding": 14,
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "frame",
-                      "id": "pHA1Y",
-                      "name": "Ikon",
-                      "width": 40,
-                      "height": 40,
-                      "fill": "$surface-2",
-                      "cornerRadius": 12,
-                      "justifyContent": "center",
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "icon",
-                          "id": "Od1VN",
-                          "name": "Ikon",
-                          "width": 20,
-                          "height": 20,
-                          "icon": "braces",
-                          "library": "lucide",
-                          "fill": "$text"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "YO6s2",
-                      "name": "Text",
-                      "width": "fill_container",
-                      "layout": "vertical",
-                      "gap": 2,
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "RJPG8",
-                          "name": "Titelrad",
-                          "gap": 8,
-                          "alignItems": "center",
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "UYZOI",
-                              "name": "Titel",
-                              "fill": "$text",
-                              "content": "API (JSON)",
-                              "fontFamily": "$font-ui",
-                              "fontSize": 16,
-                              "fontWeight": "800"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "text",
-                          "id": "sMb2i",
-                          "name": "Beskrivning",
-                          "fill": "$text-2",
-                          "textGrowth": "fixed-width",
-                          "width": "fill_container",
-                          "content": "För Home Assistant, Homey och andra system",
-                          "lineHeight": 1.35,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 14,
-                          "fontWeight": "normal"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "icon",
-                      "id": "bMxMU",
                       "name": "Pil",
                       "width": 20,
                       "height": 20,
@@ -13006,6 +13232,164 @@
                       "fontFamily": "$font-ui",
                       "fontSize": 14,
                       "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "i5JNM",
+              "name": "API",
+              "width": "fill_container",
+              "fill": "$surface",
+              "cornerRadius": 20,
+              "stroke": "$border",
+              "strokeWidth": 1,
+              "layout": "vertical",
+              "gap": 12,
+              "padding": 16,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "teR9O",
+                  "name": "Övre",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "a8YFPE",
+                      "name": "Ikon",
+                      "width": 44,
+                      "height": 44,
+                      "fill": "$surface-2",
+                      "cornerRadius": 14,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "dV9lV",
+                          "name": "Ikon",
+                          "width": 20,
+                          "height": 20,
+                          "icon": "braces",
+                          "library": "lucide",
+                          "fill": "$text"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "E96L9",
+                      "name": "Text",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 3,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "K1Maz",
+                          "name": "Rubrik",
+                          "fill": "$text",
+                          "content": "API",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 16,
+                          "fontWeight": "800"
+                        },
+                        {
+                          "type": "text",
+                          "id": "X8iujQ",
+                          "name": "Beskrivning",
+                          "fill": "$text-2",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Hämta adressens schema som JSON, till exempel i Home Assistant eller Homey.",
+                          "lineHeight": 1.4,
+                          "fontFamily": "$font-ui",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "K7Uh0M",
+                  "name": "Länk",
+                  "width": "fill_container",
+                  "fill": "$surface-2",
+                  "cornerRadius": 14,
+                  "gap": 10,
+                  "padding": [
+                    12,
+                    14
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "j3Gsv",
+                      "name": "Ikon",
+                      "width": 18,
+                      "height": 18,
+                      "icon": "link",
+                      "library": "lucide",
+                      "fill": "$text-2"
+                    },
+                    {
+                      "type": "text",
+                      "id": "t09KM",
+                      "name": "Url",
+                      "fill": "$text-2",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "sopor.hardyson.se/api/v1/adress/avesta/krylbo-storgatan-12b",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "gHxe1",
+                      "name": "Kopiera",
+                      "fill": "$primary",
+                      "content": "Kopiera",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 14,
+                      "fontWeight": "800"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "QtU4F",
+                  "name": "Dokumentation",
+                  "gap": 6,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "LnNUA",
+                      "name": "Text",
+                      "fill": "$primary",
+                      "content": "API-dokumentation",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 14,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "tXSS0",
+                      "name": "Pil",
+                      "width": 16,
+                      "height": 16,
+                      "icon": "arrow-up-right",
+                      "library": "lucide",
+                      "fill": "$primary"
                     }
                   ]
                 }
@@ -18091,6 +18475,164 @@
                       "fontFamily": "$font-ui",
                       "fontSize": 14,
                       "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "l04wA",
+              "name": "API",
+              "width": "fill_container",
+              "fill": "$surface",
+              "cornerRadius": 20,
+              "stroke": "$border",
+              "strokeWidth": 1,
+              "layout": "vertical",
+              "gap": 12,
+              "padding": 16,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Yen2X",
+                  "name": "Övre",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "C887JN",
+                      "name": "Ikon",
+                      "width": 44,
+                      "height": 44,
+                      "fill": "$surface-2",
+                      "cornerRadius": 14,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "s8raG",
+                          "name": "Ikon",
+                          "width": 20,
+                          "height": 20,
+                          "icon": "braces",
+                          "library": "lucide",
+                          "fill": "$text"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "YzrWh",
+                      "name": "Text",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 3,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "lnVXU",
+                          "name": "Rubrik",
+                          "fill": "$text",
+                          "content": "API",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 16,
+                          "fontWeight": "800"
+                        },
+                        {
+                          "type": "text",
+                          "id": "rKbqm",
+                          "name": "Beskrivning",
+                          "fill": "$text-2",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Hämta adressens schema som JSON, till exempel i Home Assistant eller Homey.",
+                          "lineHeight": 1.4,
+                          "fontFamily": "$font-ui",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "U2hAZA",
+                  "name": "Länk",
+                  "width": "fill_container",
+                  "fill": "$surface-2",
+                  "cornerRadius": 14,
+                  "gap": 10,
+                  "padding": [
+                    12,
+                    14
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "CdTaM",
+                      "name": "Ikon",
+                      "width": 18,
+                      "height": 18,
+                      "icon": "link",
+                      "library": "lucide",
+                      "fill": "$text-2"
+                    },
+                    {
+                      "type": "text",
+                      "id": "QizpV",
+                      "name": "Url",
+                      "fill": "$text-2",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "sopor.hardyson.se/api/v1/adress/avesta/krylbo-storgatan-12b",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "RXan7",
+                      "name": "Kopiera",
+                      "fill": "$primary",
+                      "content": "Kopiera",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 14,
+                      "fontWeight": "800"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "V0xcz",
+                  "name": "Dokumentation",
+                  "gap": 6,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "VZ55d",
+                      "name": "Text",
+                      "fill": "$primary",
+                      "content": "API-dokumentation",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 14,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "yxMMe",
+                      "name": "Pil",
+                      "width": 16,
+                      "height": 16,
+                      "icon": "arrow-up-right",
+                      "library": "lucide",
+                      "fill": "$primary"
                     }
                   ]
                 }
@@ -23475,6 +24017,164 @@
                               "fontFamily": "$font-ui",
                               "fontSize": 14,
                               "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "s7hVuL",
+                      "name": "API",
+                      "width": "fill_container",
+                      "fill": "$surface",
+                      "cornerRadius": 20,
+                      "stroke": "$border",
+                      "strokeWidth": 1,
+                      "layout": "vertical",
+                      "gap": 12,
+                      "padding": 16,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "sn2S0",
+                          "name": "Övre",
+                          "width": "fill_container",
+                          "gap": 14,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "OFnUC",
+                              "name": "Ikon",
+                              "width": 44,
+                              "height": 44,
+                              "fill": "$surface-2",
+                              "cornerRadius": 14,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "eNjka",
+                                  "name": "Ikon",
+                                  "width": 20,
+                                  "height": 20,
+                                  "icon": "braces",
+                                  "library": "lucide",
+                                  "fill": "$text"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "ta5tr",
+                              "name": "Text",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 3,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "bM6O0",
+                                  "name": "Rubrik",
+                                  "fill": "$text",
+                                  "content": "API",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 16,
+                                  "fontWeight": "800"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "TVT3U",
+                                  "name": "Beskrivning",
+                                  "fill": "$text-2",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Hämta adressens schema som JSON, till exempel i Home Assistant eller Homey.",
+                                  "lineHeight": 1.4,
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "ySaWn",
+                          "name": "Länk",
+                          "width": "fill_container",
+                          "fill": "$surface-2",
+                          "cornerRadius": 14,
+                          "gap": 10,
+                          "padding": [
+                            12,
+                            14
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "nnJNo",
+                              "name": "Ikon",
+                              "width": 18,
+                              "height": 18,
+                              "icon": "link",
+                              "library": "lucide",
+                              "fill": "$text-2"
+                            },
+                            {
+                              "type": "text",
+                              "id": "WzwFT",
+                              "name": "Url",
+                              "fill": "$text-2",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "sopor.hardyson.se/api/v1/adress/avesta/krylbo-storgatan-12b",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "D2fj65",
+                              "name": "Kopiera",
+                              "fill": "$primary",
+                              "content": "Kopiera",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 14,
+                              "fontWeight": "800"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "hnBjK",
+                          "name": "Dokumentation",
+                          "gap": 6,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "DS5TC",
+                              "name": "Text",
+                              "fill": "$primary",
+                              "content": "API-dokumentation",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 14,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "icon",
+                              "id": "HgguB",
+                              "name": "Pil",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "arrow-up-right",
+                              "library": "lucide",
+                              "fill": "$primary"
                             }
                           ]
                         }
@@ -29353,6 +30053,164 @@
                           ]
                         }
                       ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "rfsHX",
+                      "name": "API",
+                      "width": "fill_container",
+                      "fill": "$surface",
+                      "cornerRadius": 20,
+                      "stroke": "$border",
+                      "strokeWidth": 1,
+                      "layout": "vertical",
+                      "gap": 12,
+                      "padding": 16,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "J0vCl9",
+                          "name": "Övre",
+                          "width": "fill_container",
+                          "gap": 14,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "vEqEU",
+                              "name": "Ikon",
+                              "width": 44,
+                              "height": 44,
+                              "fill": "$surface-2",
+                              "cornerRadius": 14,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "T6Q6Hd",
+                                  "name": "Ikon",
+                                  "width": 20,
+                                  "height": 20,
+                                  "icon": "braces",
+                                  "library": "lucide",
+                                  "fill": "$text"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "rN3Vy",
+                              "name": "Text",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 3,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "ywhBW",
+                                  "name": "Rubrik",
+                                  "fill": "$text",
+                                  "content": "API",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 16,
+                                  "fontWeight": "800"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "SNXQv",
+                                  "name": "Beskrivning",
+                                  "fill": "$text-2",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Hämta adressens schema som JSON, till exempel i Home Assistant eller Homey.",
+                                  "lineHeight": 1.4,
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "cLi3z",
+                          "name": "Länk",
+                          "width": "fill_container",
+                          "fill": "$surface-2",
+                          "cornerRadius": 14,
+                          "gap": 10,
+                          "padding": [
+                            12,
+                            14
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "z0ib0Z",
+                              "name": "Ikon",
+                              "width": 18,
+                              "height": 18,
+                              "icon": "link",
+                              "library": "lucide",
+                              "fill": "$text-2"
+                            },
+                            {
+                              "type": "text",
+                              "id": "RWnYM",
+                              "name": "Url",
+                              "fill": "$text-2",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "sopor.hardyson.se/api/v1/adress/avesta/krylbo-storgatan-12b",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "PAiaw",
+                              "name": "Kopiera",
+                              "fill": "$primary",
+                              "content": "Kopiera",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 14,
+                              "fontWeight": "800"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "mPPmM",
+                          "name": "Dokumentation",
+                          "gap": 6,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "MVXVh",
+                              "name": "Text",
+                              "fill": "$primary",
+                              "content": "API-dokumentation",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 14,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "icon",
+                              "id": "hW7AG",
+                              "name": "Pil",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "arrow-up-right",
+                              "library": "lucide",
+                              "fill": "$primary"
+                            }
+                          ]
+                        }
+                      ]
                     }
                   ]
                 }
@@ -29864,96 +30722,6 @@
                     {
                       "type": "icon",
                       "id": "Zdrsr",
-                      "name": "Pil",
-                      "width": 20,
-                      "height": 20,
-                      "icon": "chevron-right",
-                      "library": "lucide",
-                      "fill": "$text-2"
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "pTC8J",
-                  "name": "API (JSON)",
-                  "width": "fill_container",
-                  "fill": "$surface",
-                  "cornerRadius": 16,
-                  "stroke": "$border",
-                  "strokeWidth": 1,
-                  "gap": 14,
-                  "padding": 14,
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "frame",
-                      "id": "ucUT2",
-                      "name": "Ikon",
-                      "width": 40,
-                      "height": 40,
-                      "fill": "$surface-2",
-                      "cornerRadius": 12,
-                      "justifyContent": "center",
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "icon",
-                          "id": "C73Jz1",
-                          "name": "Ikon",
-                          "width": 20,
-                          "height": 20,
-                          "icon": "braces",
-                          "library": "lucide",
-                          "fill": "$text"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "frame",
-                      "id": "F5nnDU",
-                      "name": "Text",
-                      "width": "fill_container",
-                      "layout": "vertical",
-                      "gap": 2,
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "NMcKM",
-                          "name": "Titelrad",
-                          "gap": 8,
-                          "alignItems": "center",
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "pC5vN",
-                              "name": "Titel",
-                              "fill": "$text",
-                              "content": "API (JSON)",
-                              "fontFamily": "$font-ui",
-                              "fontSize": 16,
-                              "fontWeight": "800"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "text",
-                          "id": "DKeVy",
-                          "name": "Beskrivning",
-                          "fill": "$text-2",
-                          "textGrowth": "fixed-width",
-                          "width": "fill_container",
-                          "content": "För Home Assistant, Homey och andra system",
-                          "lineHeight": 1.35,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 14,
-                          "fontWeight": "normal"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "icon",
-                      "id": "EcYGy",
                       "name": "Pil",
                       "width": 20,
                       "height": 20,
@@ -32942,6 +33710,164 @@
                           ]
                         }
                       ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "VuE5F",
+                      "name": "API",
+                      "width": "fill_container",
+                      "fill": "$surface",
+                      "cornerRadius": 20,
+                      "stroke": "$border",
+                      "strokeWidth": 1,
+                      "layout": "vertical",
+                      "gap": 12,
+                      "padding": 16,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "WjRLN",
+                          "name": "Övre",
+                          "width": "fill_container",
+                          "gap": 14,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "n1Xj30",
+                              "name": "Ikon",
+                              "width": 44,
+                              "height": 44,
+                              "fill": "$surface-2",
+                              "cornerRadius": 14,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "z5nQb",
+                                  "name": "Ikon",
+                                  "width": 20,
+                                  "height": 20,
+                                  "icon": "braces",
+                                  "library": "lucide",
+                                  "fill": "$text"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "Pl0sA",
+                              "name": "Text",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 3,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "E8jAsa",
+                                  "name": "Rubrik",
+                                  "fill": "$text",
+                                  "content": "API",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 16,
+                                  "fontWeight": "800"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "t2YaFM",
+                                  "name": "Beskrivning",
+                                  "fill": "$text-2",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Hämta adressens schema som JSON, till exempel i Home Assistant eller Homey.",
+                                  "lineHeight": 1.4,
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "tlKST",
+                          "name": "Länk",
+                          "width": "fill_container",
+                          "fill": "$surface-2",
+                          "cornerRadius": 14,
+                          "gap": 10,
+                          "padding": [
+                            12,
+                            14
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "BJ3og",
+                              "name": "Ikon",
+                              "width": 18,
+                              "height": 18,
+                              "icon": "link",
+                              "library": "lucide",
+                              "fill": "$text-2"
+                            },
+                            {
+                              "type": "text",
+                              "id": "iH3xm",
+                              "name": "Url",
+                              "fill": "$text-2",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "sopor.hardyson.se/api/v1/adress/avesta/krylbo-storgatan-12b",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "soyRv",
+                              "name": "Kopiera",
+                              "fill": "$primary",
+                              "content": "Kopiera",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 14,
+                              "fontWeight": "800"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "uyhZe",
+                          "name": "Dokumentation",
+                          "gap": 6,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "znYX0",
+                              "name": "Text",
+                              "fill": "$primary",
+                              "content": "API-dokumentation",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 14,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "icon",
+                              "id": "rJwIq",
+                              "name": "Pil",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "arrow-up-right",
+                              "library": "lucide",
+                              "fill": "$primary"
+                            }
+                          ]
+                        }
+                      ]
                     }
                   ]
                 }
@@ -35192,6 +36118,164 @@
                               "fontFamily": "$font-ui",
                               "fontSize": 14,
                               "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "UuE5K",
+                      "name": "API",
+                      "width": "fill_container",
+                      "fill": "$surface",
+                      "cornerRadius": 20,
+                      "stroke": "$border",
+                      "strokeWidth": 1,
+                      "layout": "vertical",
+                      "gap": 12,
+                      "padding": 16,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "gt7eF",
+                          "name": "Övre",
+                          "width": "fill_container",
+                          "gap": 14,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "gJEZl",
+                              "name": "Ikon",
+                              "width": 44,
+                              "height": 44,
+                              "fill": "$surface-2",
+                              "cornerRadius": 14,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "w1iTu",
+                                  "name": "Ikon",
+                                  "width": 20,
+                                  "height": 20,
+                                  "icon": "braces",
+                                  "library": "lucide",
+                                  "fill": "$text"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "c24g0u",
+                              "name": "Text",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 3,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "L15LVK",
+                                  "name": "Rubrik",
+                                  "fill": "$text",
+                                  "content": "API",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 16,
+                                  "fontWeight": "800"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "u4oIJG",
+                                  "name": "Beskrivning",
+                                  "fill": "$text-2",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Hämta adressens schema som JSON, till exempel i Home Assistant eller Homey.",
+                                  "lineHeight": 1.4,
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "FNUrS",
+                          "name": "Länk",
+                          "width": "fill_container",
+                          "fill": "$surface-2",
+                          "cornerRadius": 14,
+                          "gap": 10,
+                          "padding": [
+                            12,
+                            14
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "RLAZg",
+                              "name": "Ikon",
+                              "width": 18,
+                              "height": 18,
+                              "icon": "link",
+                              "library": "lucide",
+                              "fill": "$text-2"
+                            },
+                            {
+                              "type": "text",
+                              "id": "kQ1uB",
+                              "name": "Url",
+                              "fill": "$text-2",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "sopor.hardyson.se/api/v1/adress/avesta/krylbo-storgatan-12b",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "ojlS1",
+                              "name": "Kopiera",
+                              "fill": "$primary",
+                              "content": "Kopiera",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 14,
+                              "fontWeight": "800"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "czRfa",
+                          "name": "Dokumentation",
+                          "gap": 6,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "SFpbD",
+                              "name": "Text",
+                              "fill": "$primary",
+                              "content": "API-dokumentation",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 14,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "icon",
+                              "id": "IjKd4",
+                              "name": "Pil",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "arrow-up-right",
+                              "library": "lucide",
+                              "fill": "$primary"
                             }
                           ]
                         }
@@ -38113,6 +39197,164 @@
                               "fontFamily": "$font-ui",
                               "fontSize": 14,
                               "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "SztFY",
+                      "name": "API",
+                      "width": "fill_container",
+                      "fill": "$surface",
+                      "cornerRadius": 20,
+                      "stroke": "$border",
+                      "strokeWidth": 1,
+                      "layout": "vertical",
+                      "gap": 12,
+                      "padding": 16,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "WSfyp",
+                          "name": "Övre",
+                          "width": "fill_container",
+                          "gap": 14,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "OWpvv",
+                              "name": "Ikon",
+                              "width": 44,
+                              "height": 44,
+                              "fill": "$surface-2",
+                              "cornerRadius": 14,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "b2J8Q",
+                                  "name": "Ikon",
+                                  "width": 20,
+                                  "height": 20,
+                                  "icon": "braces",
+                                  "library": "lucide",
+                                  "fill": "$text"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "eItD4",
+                              "name": "Text",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 3,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "RLq7z",
+                                  "name": "Rubrik",
+                                  "fill": "$text",
+                                  "content": "API",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 16,
+                                  "fontWeight": "800"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "oSWps",
+                                  "name": "Beskrivning",
+                                  "fill": "$text-2",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Hämta adressens schema som JSON, till exempel i Home Assistant eller Homey.",
+                                  "lineHeight": 1.4,
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "U8sRiz",
+                          "name": "Länk",
+                          "width": "fill_container",
+                          "fill": "$surface-2",
+                          "cornerRadius": 14,
+                          "gap": 10,
+                          "padding": [
+                            12,
+                            14
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "qEuoV",
+                              "name": "Ikon",
+                              "width": 18,
+                              "height": 18,
+                              "icon": "link",
+                              "library": "lucide",
+                              "fill": "$text-2"
+                            },
+                            {
+                              "type": "text",
+                              "id": "eeWRS",
+                              "name": "Url",
+                              "fill": "$text-2",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "sopor.hardyson.se/api/v1/adress/avesta/krylbo-storgatan-12b",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "FoM9H",
+                              "name": "Kopiera",
+                              "fill": "$primary",
+                              "content": "Kopiera",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 14,
+                              "fontWeight": "800"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "L0GYhC",
+                          "name": "Dokumentation",
+                          "gap": 6,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Uf5iR",
+                              "name": "Text",
+                              "fill": "$primary",
+                              "content": "API-dokumentation",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 14,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "icon",
+                              "id": "T4TvR",
+                              "name": "Pil",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "arrow-up-right",
+                              "library": "lucide",
+                              "fill": "$primary"
                             }
                           ]
                         }
