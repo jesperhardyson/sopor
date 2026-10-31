@@ -1,5 +1,17 @@
-import { ArrowRight, ArrowUpRight, CircleCheck, CircleDashed, Flag, GitPullRequest, MapPinPlus, type LucideIcon } from 'lucide-react'
+import {
+  ArrowRight,
+  ArrowUpRight,
+  ChevronDown,
+  CircleCheck,
+  CircleDashed,
+  Flag,
+  GitPullRequest,
+  MapPinPlus,
+  type LucideIcon,
+} from 'lucide-react'
+import { useId, useState } from 'react'
 import { Link } from 'react-router'
+import { cn } from '@/lib/utils'
 import { SITE } from '@/config'
 import { SOURCES } from '@/sources'
 import { GitHubMark } from '../components/GitHubMark'
@@ -34,27 +46,44 @@ function kommunRows() {
   return [...new Map(rows.map((r) => [r.code, r])).values()].sort((a, b) => a.name.localeCompare(b.name, 'sv'))
 }
 
-/** Kommunerna i registret och deras läge, plus "Nästa kommun". */
+/** Antalet kommuner i registret, namnen bakom en knapp (de är för många för att visas direkt), plus "Nästa kommun". */
 export function MunicipalityStatusList() {
+  const listId = useId()
+  const [open, setOpen] = useState(false)
+  const rows = kommunRows()
+  const row = 'flex items-center gap-2.5 text-[15px] font-extrabold text-text'
   return (
-    <ul className="flex flex-col gap-2.5">
-      {kommunRows().map((m) => (
-        <li key={m.code} className="flex items-center gap-2.5 text-[15px] font-extrabold text-text">
-          <CircleCheck className="size-[18px] text-primary" aria-hidden />
-          {m.name}
-          {m.testData ? (
-            <span className={`${pill} bg-warn-bg text-warn`}>Testdata</span>
-          ) : (
-            <span className={`${pill} bg-brand-soft text-brand-text`}>Finns nu</span>
-          )}
-        </li>
-      ))}
-      <li className="flex items-center gap-2.5 text-[15px] font-extrabold text-text">
+    <div className="flex flex-col gap-2.5">
+      <p className={row}>
+        <CircleCheck className="size-[18px] text-primary" aria-hidden />
+        {rows.length} kommuner finns nu
+      </p>
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-controls={listId}
+        onClick={() => setOpen(!open)}
+        className="inline-flex items-center gap-1.5 self-start pl-7 text-sm font-extrabold text-earth hover:underline"
+      >
+        {open ? 'Dölj kommunerna' : 'Visa alla kommuner'}
+        <ChevronDown className={cn('size-4 transition-transform', open && 'rotate-180')} aria-hidden />
+      </button>
+      {open && (
+        <ul id={listId} aria-label="Kommuner som finns nu" className="columns-2 gap-x-4 pb-1 pl-7 text-[13px] text-text">
+          {rows.map((m) => (
+            <li key={m.code} className="flex break-inside-avoid flex-wrap items-center gap-1.5 py-[3px]">
+              <span>{m.name}</span>
+              {m.testData && <span className={`${pill} bg-warn-bg text-warn`}>Testdata</span>}
+            </li>
+          ))}
+        </ul>
+      )}
+      <p className={row}>
         <CircleDashed className="size-[18px] text-earth" aria-hidden />
         Nästa kommun
         <span className={`${pill} bg-surface text-earth`}>Med din hjälp</span>
-      </li>
-    </ul>
+      </p>
+    </div>
   )
 }
 

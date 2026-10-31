@@ -22,11 +22,12 @@ describe('BidraPage', () => {
     expect(screen.queryByText(/curl/)).toBeNull()
   })
 
-  it('har de tre sätten att bidra och kommunernas status', () => {
+  it('har de tre sätten att bidra och kommunernas status', async () => {
     setup()
     expect(screen.getByRole('link', { name: /Tipsa om din kommun/ })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Rapportera ett fel/ })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Lägg in schemat själv/ })).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Visa alla kommuner' }))
     expect(screen.getByText('Avesta kommun')).toBeInTheDocument()
   })
 
