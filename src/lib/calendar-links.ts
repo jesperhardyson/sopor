@@ -16,3 +16,7 @@ export function webcalUrl(httpsUrl: string): string {
 export function googleCalendarUrl(webcal: string): string {
   return `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(webcal)}`
 }
+
+export function isAndroid(userAgent: string = typeof navigator === 'undefined' ? '' : navigator.userAgent): boolean {
+  return /android/i.test(userAgent)
+}

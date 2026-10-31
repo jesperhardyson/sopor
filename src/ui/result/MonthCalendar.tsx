@@ -42,8 +42,11 @@ export function MonthCalendar({ schedule, initial, today }: { schedule: Schedule
 
   const shown = new Set<FractionId>(schedule.events.flatMap((e) => e.fractions))
   const legend = (Object.keys(FRACTIONS) as FractionId[]).filter((f) => shown.has(f))
+  // Samma namn som etiketterna när källan har ett eget (t.ex. "Hushåll" för kärl).
+  const legendName = (f: FractionId) => schedule.events.find((e) => e.labels?.[f])?.labels?.[f] ?? FRACTIONS[f].short
+  // Rundeln är 36 px som i designen, tryckytan 44 px.
   const navButton =
-    'inline-flex size-9 items-center justify-center rounded-full border border-border text-text disabled:opacity-35'
+    'relative inline-flex size-9 items-center justify-center rounded-full border border-border text-text after:absolute after:-inset-1 disabled:opacity-35'
 
   return (
     <section aria-labelledby={headingId} className="flex flex-col gap-3">
@@ -123,13 +126,13 @@ export function MonthCalendar({ schedule, initial, today }: { schedule: Schedule
             )
           })}
         </div>
-        <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 border-t border-border px-2 pt-2.5">
+        <div data-testid="forklaring" className="mt-1 flex flex-wrap gap-x-4 gap-y-1 border-t border-border px-2 pt-2.5">
           {legend.map((f) => {
             const Icon = FRACTION_ICON[f]
             return (
               <span key={f} className="flex items-center gap-1.5 text-[13px] font-semibold text-text-2">
                 <Icon className={cn('size-3.5', FRACTION_CLASS[f].fg)} aria-hidden />
-                {FRACTIONS[f].short}
+                {legendName(f)}
               </span>
             )
           })}
@@ -218,7 +221,7 @@ function DayIcons({ fractions }: { fractions: FractionId[] }) {
     <>
       {shown.map((f) => {
         const Icon = FRACTION_ICON[f]
-        return <Icon key={f} className={cn('size-3', FRACTION_CLASS[f].fg)} />
+        return <Icon key={f} className={cn('size-3 max-[359px]:size-2.5', FRACTION_CLASS[f].fg)} />
       })}
       {more > 0 && <span className="text-[10px] leading-none font-extrabold text-text-2">+{more}</span>}
     </>

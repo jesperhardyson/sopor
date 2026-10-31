@@ -72,18 +72,28 @@ export function AddressSearch({
   const rootRef = useRef<HTMLDivElement>(null)
 
   // Klick utanför avbryter sökningen och lämnar fokusläget, så att ingen gammal träfflista blir kvar.
+  // Läget avgörs vid pointerdown (fokus har inte flyttat än) men verkställs först vid click,
+  // så att en scrollgest på mobil inte avbryter.
   useEffect(() => {
+    let armed = false
+    const outside = (e: Event) => !!rootRef.current && !rootRef.current.contains(e.target as Node)
     function onPointerDown(e: PointerEvent) {
-      const root = rootRef.current
-      if (!root || root.contains(e.target as Node)) return
-      if (query === '' && !root.contains(document.activeElement)) return
+      armed = outside(e) && (query !== '' || !!rootRef.current?.contains(document.activeElement))
+    }
+    function onClick(e: MouseEvent) {
+      if (!armed || !outside(e)) return
+      armed = false
       setQuery('')
       setSubmitted(false)
       setExpanded(new Set())
       onDeactivate?.()
     }
     document.addEventListener('pointerdown', onPointerDown)
-    return () => document.removeEventListener('pointerdown', onPointerDown)
+    document.addEventListener('click', onClick)
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown)
+      document.removeEventListener('click', onClick)
+    }
   }, [query, onDeactivate])
 
   useEffect(() => {
@@ -179,7 +189,7 @@ export function AddressSearch({
           key={`fler/${item.kommun}`}
           {...props}
           className={cn(
-            'flex cursor-pointer items-center gap-1.5 rounded-xl py-2 pr-3 pl-[60px] text-sm font-extrabold text-primary',
+            'flex min-h-11 cursor-pointer items-center gap-1.5 rounded-xl py-2 pr-3 pl-[60px] text-sm font-extrabold text-primary',
             i === active && 'bg-surface-2',
           )}
         >
@@ -255,6 +265,9 @@ export function AddressSearch({
           data-lpignore="true"
           data-form-type="other"
           spellCheck={false}
+          autoCorrect="off"
+          autoCapitalize="off"
+          enterKeyHint="search"
           placeholder="Skriv din adress, t.ex. Storgatan 12"
           value={query}
           onChange={(e) => {
@@ -277,9 +290,12 @@ export function AddressSearch({
               setQuery('')
               inputRef.current?.focus()
             }}
-            className="inline-flex size-7 shrink-0 items-center justify-center rounded-full bg-surface-2 text-text-2"
+            // Tryckytan är 44 px, rundeln behåller designens 28 px.
+            className="-mr-2 inline-flex size-11 shrink-0 items-center justify-center"
           >
-            <X className="size-4" aria-hidden />
+            <span className="inline-flex size-7 items-center justify-center rounded-full bg-surface-2 text-text-2">
+              <X className="size-4" aria-hidden />
+            </span>
           </button>
         )}
       </div>
