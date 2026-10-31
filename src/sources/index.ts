@@ -1,3 +1,5 @@
+import { normalize } from '../domain/search.js'
+
 /** En kommun enligt SCB:s kommunkod. */
 export interface Kommun {
   code: string
@@ -16,6 +18,11 @@ export interface Source {
   name: string
   url: string
   kommuner: Kommun[]
+  /**
+   * Kommuner där källan har en del adresser utan att räknas som täckt där, t.ex. för att den
+   * bara hämtar vissa fraktioner. Används bara för att slå upp ort → kommun.
+   */
+  grannkommuner?: Kommun[]
   config: SourceConfig
   /** Påhittad data (seed). Ta bort när riktig data finns. */
   testData?: boolean
@@ -110,6 +117,8 @@ export const ALL_SOURCES: Source[] = [
     name: 'Kretslopp Sydost',
     url: 'https://www.kretsloppsydost.se',
     kommuner: [{ code: '0880', name: 'Kalmar kommun' }, { code: '0881', name: 'Nybro kommun' }, { code: '0862', name: 'Emmaboda kommun' }, { code: '0834', name: 'Torsås kommun' }, { code: '0840', name: 'Mörbylånga kommun' }, { code: '0885', name: 'Borgholms kommun' }],
+    // Söktjänsten har även adresser här (sedd 2026-10-31), t.ex. Kristdala, Korsberga och Åseda.
+    grannkommuner: [{ code: '0882', name: 'Oskarshamns kommun' }, { code: '0685', name: 'Vetlanda kommun' }, { code: '0684', name: 'Sävsjö kommun' }, { code: '0760', name: 'Uppvidinge kommun' }],
     config: { system: 'edp', baseUrl: 'https://kundportal.kretsloppsydost.se/FutureWeb' },
   },
   {
@@ -224,12 +233,23 @@ export function sourceLabel(source: Source): string {
   return names.length > 1 ? `${names.slice(0, -1).join(', ')} och ${names.at(-1)}` : names[0]
 }
 
+/** Kommunerna vars orter finns i källans ort→kommun-tabell. */
+export function placeKommuner(source: Source): Kommun[] {
+  return [...source.kommuner, ...(source.grannkommuner ?? [])]
+}
+
+/** Om adresserna behöver ort→kommun-tabellen, dvs. om orten kan ligga i mer än en kommun. */
+export function needsPlaces(source: Source): boolean {
+  return placeKommuner(source).length > 1
+}
+
 /**
- * Kommunen för en adress hos källan. Källor med en kommun ger den direkt. För källor med flera
- * kommuner slås orten upp i gatuindexets ort→kommun-tabell (se scripts/build-street-index.ts).
+ * Kommunen för en adress hos källan. Källor med en kommun ger den direkt. Annars slås orten upp
+ * i gatuindexets ort→kommun-tabell (se scripts/build-street-index.ts). En okänd ort visas som
+ * den är, hellre än att källans namn ser ut som en kommun.
  */
 export function kommunForLocality(source: Source, locality: string, places: Record<string, string> = {}): string {
-  if (source.kommuner.length === 1) return source.kommuner[0].name
-  return places[locality.toLowerCase()] ?? source.name
+  if (!needsPlaces(source)) return source.kommuner[0].name
+  return places[normalize(locality, false)] ?? locality
 }
 

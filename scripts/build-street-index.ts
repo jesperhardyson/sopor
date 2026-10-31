@@ -5,7 +5,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { SOURCES } from '../src/sources/index.js'
+import { placeKommuner, SOURCES } from '../src/sources/index.js'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const outDir = path.join(root, 'data', 'osm')
@@ -45,7 +45,7 @@ async function fetchKommun(code: string, attempt = 1): Promise<{ streets: string
 async function main() {
   const force = process.argv.includes('--force')
   fs.mkdirSync(outDir, { recursive: true })
-  const kommuner = new Map(SOURCES.flatMap((s) => s.kommuner).map((k) => [k.code, k.name]))
+  const kommuner = new Map(SOURCES.flatMap(placeKommuner).map((k) => [k.code, k.name]))
   for (const [code, name] of kommuner) {
     const file = path.join(outDir, `${code}.json`)
     if (fs.existsSync(file) && !force) continue

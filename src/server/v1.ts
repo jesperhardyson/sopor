@@ -9,7 +9,7 @@ import { normalize, searchAddresses } from '../domain/search.js'
 import type { Address, FractionId, Schedule } from '../domain/types.js'
 import { pickLiveSources, shardKey, type StreetShard } from '../data/street-index.js'
 import type { AddressIndexFile } from '../data/static-format.js'
-import { SOURCES, type Source } from '../sources/index.js'
+import { needsPlaces, SOURCES, type Source } from '../sources/index.js'
 import { edpSearch } from './edp.js'
 import { CACHE_PARTIAL, CACHE_SEARCH, decodeId, toAddress, withDetails, type HandlerOptions } from './handlers.js'
 import { lookupAddress } from './lookup.js'
@@ -185,9 +185,8 @@ export const handleV1Search: V1Handler = async (request, opts = {}) => {
     sources = [...live.filter((s) => picked.includes(s.id)), ...visible.filter((s) => s.config.system !== 'edp')]
   }
 
-  // Orttabellen behövs bara när en live-källa täcker flera kommuner.
   const places =
-    opts.places ?? (sources.some((s) => s.config.system === 'edp' && s.kommuner.length > 1) ? await loadServerPlaces(url.origin, opts.fetchFn) : undefined)
+    opts.places ?? (sources.some((s) => s.config.system === 'edp' && needsPlaces(s)) ? await loadServerPlaces(url.origin, opts.fetchFn) : undefined)
   const results = await Promise.allSettled(
     sources.map(async (s) =>
       s.config.system === 'edp'

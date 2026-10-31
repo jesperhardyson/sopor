@@ -2,7 +2,7 @@
 // ligger i. Byggs av scripts/build-data.ts från data/osm/<kommunkod>.json.
 
 import { normalize } from '../domain/search.js'
-import type { Source } from '../sources/index.js'
+import { needsPlaces, placeKommuner, type Kommun, type Source } from '../sources/index.js'
 
 /** Gatunamn och ortnamn för en kommun, hämtade från OpenStreetMap. */
 export interface OsmKommun {
@@ -30,7 +30,6 @@ export function buildStreetIndex(osm: OsmKommun[], sources: Source[]): StreetInd
   const places: StreetIndex['places'] = {}
 
   for (const source of sources) {
-    const placeKommun = new Map<string, string | null>()
     for (const kommun of source.kommuner) {
       const data = osm.find((o) => o.code === kommun.code)
       if (!data) continue
@@ -42,19 +41,40 @@ export function buildStreetIndex(osm: OsmKommun[], sources: Source[]): StreetInd
         const ids = (shard[key] ??= [])
         if (!ids.includes(source.id)) ids.push(source.id)
       }
-      for (const place of data.places) {
-        const key = normalize(place, false)
-        // Samma ort i två av källans kommuner är tvetydig och utelämnas.
-        placeKommun.set(key, placeKommun.has(key) && placeKommun.get(key) !== kommun.name ? null : kommun.name)
-      }
     }
-    if (source.kommuner.length > 1) {
-      places[source.id] = Object.fromEntries([...placeKommun].filter((e): e is [string, string] => e[1] !== null))
-    }
+    if (needsPlaces(source)) places[source.id] = placeTable(osm, placeKommuner(source))
   }
 
   for (const shard of Object.values(shards)) for (const ids of Object.values(shard)) ids.sort()
   return { shards, places }
+}
+
+/** "Borgholms kommun" → "borgholm": centralorten heter som kommunen, ibland utan genitiv-s. */
+function isCentralort(place: string, kommun: Kommun): boolean {
+  const base = normalize(kommun.name.replace(/ kommun$/, ''), false)
+  return place === base || `${place}s` === base
+}
+
+/**
+ * Normaliserad ort → kommun. Samma ortnamn i två kommuner är tvetydigt och utelämnas, utom när
+ * det är centralorten i den ena (Sävsjö är både en stad och en by i Kalmar kommun).
+ */
+function placeTable(osm: OsmKommun[], kommuner: Kommun[]): Record<string, string> {
+  const table = new Map<string, string | null>()
+  const central = new Set<string>()
+  for (const kommun of kommuner) {
+    for (const place of osm.find((o) => o.code === kommun.code)?.places ?? []) {
+      const key = normalize(place, false)
+      if (central.has(key)) continue
+      if (isCentralort(key, kommun)) {
+        central.add(key)
+        table.set(key, kommun.name)
+      } else {
+        table.set(key, table.has(key) && table.get(key) !== kommun.name ? null : kommun.name)
+      }
+    }
+  }
+  return Object.fromEntries([...table].filter((e): e is [string, string] => e[1] !== null))
 }
 
 /**

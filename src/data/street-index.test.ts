@@ -43,6 +43,26 @@ describe('buildStreetIndex', () => {
     expect(index.places.vafab).toEqual({ västerås: 'Västerås kommun', enköping: 'Enköpings kommun', grillby: 'Enköpings kommun' })
     expect(index.places.uppsala).toBeUndefined()
   })
+
+  it('låter centralorten vinna när en by i en annan kommun heter likadant', () => {
+    const osm: OsmKommun[] = [
+      { code: '0880', streets: ['Storgatan'], places: ['Kalmar', 'Sävsjö'] },
+      { code: '0684', streets: ['Storgatan'], places: ['Sävsjö', 'Vrigstad'] },
+    ]
+    const sydost = { ...src('sydost', [['0880', 'Kalmar kommun']]), grannkommuner: [{ code: '0684', name: 'Sävsjö kommun' }] }
+    expect(buildStreetIndex(osm, [sydost]).places.sydost).toEqual({
+      kalmar: 'Kalmar kommun',
+      sävsjö: 'Sävsjö kommun',
+      vrigstad: 'Sävsjö kommun',
+    })
+  })
+
+  it('tar grannkommunernas orter till ort-tabellen men inte deras gator till sökningen', () => {
+    const vafab = { ...SOURCES[1], grannkommuner: [{ code: '0380', name: 'Uppsala kommun' }] }
+    const withNeighbour = buildStreetIndex(OSM, [vafab])
+    expect(withNeighbour.places.vafab.storvreta).toBe('Uppsala kommun')
+    expect(withNeighbour.shards.sv).toBeUndefined()
+  })
 })
 
 describe('candidateSources', () => {
