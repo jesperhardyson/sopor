@@ -32,11 +32,18 @@ const files: Record<string, unknown> = {
     addresses: [
       ['storgatan-1_örebro', 'Storgatan 1', 'Örebro', ['del']],
       ['gammal-1', 'Gammelgatan 1', 'Örebro', ['gammal']],
+      ['tom-1', 'Tomgatan 1', 'Örebro', ['tom']],
     ],
   },
   '/data/statisk/schedules/del.json': {
     id: 'del', validFrom: '2026-01-01', validTo: '2026-12-31', updatedAt: '2026-01-01', bins: [],
     events: [event('2026-10-29'), event('2026-11-02')],
+  },
+  // Inga valfria fält alls
+  '/data/statisk/schedules/tom.json': {
+    id: 'tom', validFrom: '2026-01-01', validTo: '2026-12-31', updatedAt: '2026-01-01',
+    bins: [{ fraction: 'rest' }],
+    events: [{ date: '2026-11-02', fractions: ['mat'] }],
   },
   '/data/statisk/schedules/gammal.json': {
     id: 'gammal', validFrom: '2026-01-01', validTo: '2026-12-31', updatedAt: '2026-01-01', bins: [],
@@ -119,12 +126,32 @@ describe('handleV1Address', () => {
     })
   })
 
-  it('avkodar ett procentkodat id en gång', async () => {
+  it('avkodar ett procentkodat id', async () => {
     const res = await address('source=statisk&id=storgatan-1_%C3%B6rebro')
     expect(res.status).toBe(200)
     expect((await res.json()).address).toMatchObject({ id: 'storgatan-1_örebro', source: 'statisk', detail: null })
-    // Dubbelkodat avkodas inte två gånger
-    expect((await address('source=statisk&id=storgatan-1_%25C3%25B6rebro')).status).toBe(404)
+  })
+
+  it('tål att rewriten kodar id:t en gång till', async () => {
+    const res = await address('source=statisk&id=storgatan-1_%25C3%25B6rebro')
+    expect(res.status).toBe(200)
+    expect((await res.json()).address.id).toBe('storgatan-1_örebro')
+  })
+
+  it('ger 404 och inte ett krasch för en trasig procentkod', async () => {
+    for (const q of ['source=statisk&id=%E0', 'source=statisk&id=storgatan-1_%25E0']) {
+      const res = await address(q)
+      expect(res.status).toBe(404)
+      expect((await res.json()).error.code).toBe('not_found')
+    }
+  })
+
+  it('skriver ut valfria fält som null och labels som {}', async () => {
+    const body = await (await address('source=statisk&id=tom-1')).json()
+    expect(body.events).toEqual([
+      { date: '2026-11-02', fractions: ['mat'], estimated: false, deviation: null, warning: null, labels: {} },
+    ])
+    expect(body.bins).toEqual([{ fraction: 'rest', sizeLiters: null, pickupsPerYear: null, frequencyText: null }])
   })
 
   it('ger en tom lista när inga hämtningar är kvar', async () => {
@@ -224,6 +251,17 @@ describe('v1', () => {
     const res = await v1(handleV1NotFound)(get('/api/v1/finns-inte'), opts)
     expect(res.status).toBe(404)
     expect((await res.json()).error.code).toBe('not_found')
+  })
+
+  it('ger felformen med CORS när handlern kastar', async () => {
+    const boom = v1(async () => {
+      throw new Error('okänd fraktion')
+    })
+    const res = await boom(get('/api/v1/kallor'), opts)
+    expect(res.status).toBe(502)
+    expect(res.headers.get('Access-Control-Allow-Origin')).toBe('*')
+    expect(res.headers.get('Cache-Control')).toBe('no-store')
+    expect(await res.json()).toEqual({ apiVersion: '1', error: { code: 'source_unavailable', message: expect.any(String) } })
   })
 
   it('v1Error har den gemensamma felformen', async () => {

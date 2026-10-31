@@ -26,12 +26,17 @@ function soporApi(): Plugin {
         const v1 = url.pathname.match(/^\/api\/v1(?:\/(.*))?$/)
         const rest = v1?.[1] ?? ''
         if (v1 && rest !== 'openapi.json') {
+          let name = Object.hasOwn(v1Routes, rest) ? v1Routes[rest] : 'handleV1NotFound'
           const adress = rest.match(/^adress\/([^/]+)\/([^/]+)$/)
           if (adress) {
-            url.searchParams.set('source', decodeURIComponent(adress[1]))
-            url.searchParams.set('id', decodeURIComponent(adress[2]))
+            try {
+              url.searchParams.set('source', decodeURIComponent(adress[1]))
+              url.searchParams.set('id', decodeURIComponent(adress[2]))
+              name = v1Routes.adress
+            } catch {
+              name = 'handleV1NotFound' // Trasig procentkod
+            }
           }
-          const name = adress ? v1Routes.adress : Object.hasOwn(v1Routes, rest) ? v1Routes[rest] : 'handleV1NotFound'
           const mod = await server.ssrLoadModule('/src/server/v1.ts')
           return send(res, await mod.v1(mod[name])(new Request(url, { method: req.method })))
         }

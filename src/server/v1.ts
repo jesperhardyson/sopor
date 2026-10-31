@@ -7,7 +7,7 @@ import { nextPerFraction, pickupSummary } from '../domain/next.js'
 import { upcoming } from '../domain/schedule.js'
 import type { FractionId, Schedule } from '../domain/types.js'
 import { SOURCES } from '../sources/index.js'
-import type { HandlerOptions } from './handlers.js'
+import { decodeId, type HandlerOptions } from './handlers.js'
 import { lookupAddress } from './lookup.js'
 
 export type V1Handler = (request: Request, opts?: HandlerOptions) => Promise<Response>
@@ -27,10 +27,15 @@ export function v1Error(
   return v1Json({ error: { code, message } }, status, cache)
 }
 
-/** OPTIONS → 204. Lägger till CORS på alla svar (apiVersion lägger handlern själv). */
+/** OPTIONS → 204. Lägger till CORS på alla svar (apiVersion lägger handlern själv). Ett kast blir 502 i felformen. */
 export function v1(handler: V1Handler) {
   return async (request: Request, opts?: HandlerOptions): Promise<Response> => {
-    const res = request.method === 'OPTIONS' ? new Response(null, { status: 204 }) : await handler(request, opts)
+    let res: Response
+    try {
+      res = request.method === 'OPTIONS' ? new Response(null, { status: 204 }) : await handler(request, opts)
+    } catch {
+      res = v1Error(502, 'source_unavailable', 'Något gick fel, försök igen senare')
+    }
     res.headers.set('Access-Control-Allow-Origin', '*')
     return res
   }
@@ -90,7 +95,8 @@ function scheduleBody(schedule: Schedule, today: string) {
 export const handleV1Address: V1Handler = async (request, opts = {}) => {
   const url = new URL(request.url)
   const sourceId = url.searchParams.get('source')
-  const id = url.searchParams.get('id')
+  const raw = url.searchParams.get('id')
+  const id = raw && decodeId(raw)
   if (!sourceId || !id) return v1Error(400, 'bad_request', 'Källa och adress-id krävs')
   const source = visibleSources(opts).find((s) => s.id === sourceId)
   if (!source) return v1Error(404, 'not_found', 'Källan finns inte')

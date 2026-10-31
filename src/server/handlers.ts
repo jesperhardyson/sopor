@@ -78,6 +78,19 @@ export function searchCandidates(query: string): string[] {
   return [...new Set([query, street, streetName])].filter((q) => normalize(q).length >= 3)
 }
 
+/**
+ * Adress-id innehåller aldrig '%'. Finns en procentkod kvar efter URLSearchParams har en rewrite
+ * kodat id:t en gång till, så det avkodas en gång till. En trasig kod lämnas orörd (ger 404).
+ */
+export function decodeId(value: string): string {
+  if (!/%[0-9A-Fa-f]{2}/.test(value)) return value
+  try {
+    return decodeURIComponent(value)
+  } catch {
+    return value
+  }
+}
+
 const lookup = (url: URL, opts: HandlerOptions, id: string) =>
   lookupAddress((opts.sources ?? SOURCES).find((s) => s.id === url.searchParams.get('source')), id, url.origin, opts)
 
@@ -91,7 +104,7 @@ export async function handleSchedule(url: URL, opts: HandlerOptions = {}): Promi
 
 /** GET /api/ics?source=uppsala&file=storgatan-2_uppsala-4004688.ics (via rewrite från /ics/…) */
 export async function handleIcs(url: URL, opts: HandlerOptions = {}): Promise<Response> {
-  const id = decodeURIComponent((url.searchParams.get('file') ?? '').replace(/\.ics$/, ''))
+  const id = decodeId((url.searchParams.get('file') ?? '').replace(/\.ics$/, ''))
   const r = await lookup(url, opts, id)
   // Källan nere: svara med fel så att kalenderappen behåller det den har.
   if (r.status === 502) return new Response('Källan svarar inte just nu', { status: 502, headers: { 'Cache-Control': 'no-store' } })
