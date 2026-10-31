@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { daysBetween, formatLong, relativeDayLabel, todayInStockholm, weekdayShort } from './dates'
+import { daysBetween, formatLong, relativeDayLabel, secondsToStockholmMidnight, todayInStockholm, weekdayShort } from './dates'
 
 describe('todayInStockholm', () => {
   it('räknar dagen i svensk tid, inte UTC', () => {
@@ -37,5 +37,22 @@ describe('formatShort', () => {
     const { formatShort } = await import('./dates')
     expect(formatShort('2026-11-11')).toBe('Ons 11 nov')
     expect(formatShort('2026-11-03')).toBe('Tis 3 nov')
+  })
+})
+
+describe('secondsToStockholmMidnight', () => {
+  it('räknar till nästa midnatt i vintertid', () => {
+    expect(secondsToStockholmMidnight(new Date('2026-10-30T22:59:00Z'))).toBe(60)
+  })
+  it('räknar till nästa midnatt i sommartid', () => {
+    expect(secondsToStockholmMidnight(new Date('2026-07-01T21:00:00Z'))).toBe(3600)
+  })
+  it('klarar natten då klockan ställs fram', () => {
+    // 01:30 CET, 2026-03-29. Nästa midnatt är 00:00 CEST = 22:00Z.
+    expect(secondsToStockholmMidnight(new Date('2026-03-29T00:30:00Z'))).toBe(77_400)
+  })
+  it('klarar natten då klockan ställs tillbaka', () => {
+    // 00:00 CEST, 2026-10-25. Nästa midnatt är 00:00 CET = 23:00Z, ett dygn på 25 timmar.
+    expect(secondsToStockholmMidnight(new Date('2026-10-24T22:00:00Z'))).toBe(90_000)
   })
 })

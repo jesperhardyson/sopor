@@ -36,6 +36,24 @@ export function todayInStockholm(now: Date = new Date()): string {
   }).format(now)
 }
 
+/** Stockholms UTC-offset i ms vid ögonblicket, ur "GMT+01:00". */
+function stockholmOffsetMs(at: Date): number {
+  const name = new Intl.DateTimeFormat('en-US', { timeZone: 'Europe/Stockholm', timeZoneName: 'longOffset' })
+    .formatToParts(at)
+    .find((p) => p.type === 'timeZoneName')?.value ?? 'GMT'
+  const [, sign, h, m] = name.match(/GMT([+-])(\d{2}):(\d{2})/) ?? []
+  if (!sign) return 0
+  return (sign === '-' ? -1 : 1) * (Number(h) * 60 + Number(m)) * 60_000
+}
+
+/** Sekunder till nästa midnatt i Stockholm (1–90000, längst när klockan ställs tillbaka). */
+export function secondsToStockholmMidnight(now: Date = new Date()): number {
+  const midnightUtc = toUtc(addDays(todayInStockholm(now), 1))
+  // Offseten två timmar före midnatt ligger på samma sida om omställningen som midnatten.
+  const offset = stockholmOffsetMs(new Date(midnightUtc.getTime() - 2 * 3_600_000))
+  return Math.round((midnightUtc.getTime() - offset - now.getTime()) / 1000)
+}
+
 export function daysBetween(from: string, to: string): number {
   return Math.round((toUtc(to).getTime() - toUtc(from).getTime()) / DAY_MS)
 }
