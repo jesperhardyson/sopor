@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { SoporSchedule } from './api.mjs'
-import { collectedOn, fractionChoices, fractionIds, fractionName, fractionsOn, nextDate, nextText, summary } from './schedule.mjs'
+import { collectedOn, fractionChoices, tomorrowText, fractionIds, fractionName, fractionsOn, nextDate, nextText, summary } from './schedule.mjs'
 
 const fraction = (name: string, short: string) => ({ name, short, color: '#000000', icon: 'trash-2' })
 
@@ -65,5 +65,10 @@ describe('schemat', () => {
     expect(fractionChoices(schedule, '', 'Någon fraktion').map((c) => c.id)).toEqual(['*', 'rest', 'plast', 'metall', 'kompost'])
     expect(fractionChoices(schedule, 'pla', 'Någon fraktion')).toEqual([{ id: 'plast', name: 'Plastförpackningar' }])
     expect(fractionChoices(schedule, 'NÅG', 'Någon fraktion')).toEqual([{ id: '*', name: 'Någon fraktion' }])
+  })
+
+  it('sammanfattar vad som hämtas i morgon', () => {
+    expect(tomorrowText(schedule, today)).toBe('Plast & metall')
+    expect(tomorrowText(schedule, '2026-11-01')).toBe('Inget')
   })
 })

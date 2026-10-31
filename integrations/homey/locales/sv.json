@@ -13,7 +13,8 @@
   },
   "device": {
     "gone": "Adressen finns inte längre hos källan. Reparera eller ta bort enheten.",
-    "waiting": "Väntar på schemat från Sopor."
+    "waiting": "Väntar på schemat från Sopor.",
+    "badTime": "Skriv tiden som HH:MM, till exempel 18:00."
   },
   "anyFraction": "Någon fraktion"
 }

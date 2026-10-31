@@ -5,6 +5,9 @@ import { parseQuery, placeKey, places, searchOutcome } from '../../lib/pairing.m
 import { ANY, fractionChoices } from '../../lib/schedule.mjs'
 import type AddressDevice from './device.mjs'
 
+/** Autocomplete-valet, där "Någon fraktion" blir null */
+const chosenFraction = (choice?: { id: string }) => (!choice || choice.id === ANY ? null : choice.id)
+
 interface CardArgs {
   device: AddressDevice
   fraktion?: { id: string }
@@ -17,15 +20,21 @@ function deviceName(hit: SoporSearchHit): string {
 
 export default class AddressDriver extends Homey.Driver {
   async onInit() {
-    const hamtas = this.homey.flow.getConditionCard('hamtas')
-    hamtas.registerArgumentAutocompleteListener('fraktion', async (query: string, args: CardArgs) => {
+    const autocomplete = async (query: string, args: CardArgs) => {
       const schedule = args.device.schedule
       return schedule ? fractionChoices(schedule, query, this.homey.__('anyFraction')) : []
+    }
+
+    const imorgon = this.homey.flow.getDeviceTriggerCard('hamtas_i_morgon')
+    imorgon.registerArgumentAutocompleteListener('fraktion', autocomplete)
+    imorgon.registerRunListener(async (args: CardArgs, state: { fractions: string[] }) => {
+      const fraction = chosenFraction(args.fraktion)
+      return fraction === null || state.fractions.includes(fraction)
     })
-    hamtas.registerRunListener(async (args: CardArgs) => {
-      const fraction = !args.fraktion || args.fraktion.id === ANY ? null : args.fraktion.id
-      return args.device.isCollected(fraction, Number(args.nar))
-    })
+
+    const hamtas = this.homey.flow.getConditionCard('hamtas')
+    hamtas.registerArgumentAutocompleteListener('fraktion', autocomplete)
+    hamtas.registerRunListener(async (args: CardArgs) => args.device.isCollected(chosenFraction(args.fraktion), Number(args.nar)))
 
     this.homey.flow.getActionCard('uppdatera').registerRunListener(async (args: CardArgs) => {
       await args.device.refresh()

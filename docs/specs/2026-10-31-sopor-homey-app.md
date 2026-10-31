@@ -1,6 +1,10 @@
 # Spec: Sopor som Homey-app
 
-Status: utkast, 2026-10-31. Bygger på undersökningen `2026-10-31-integrationer-homey-home-assistant.md`. Beslut: appen får **villkor, inga tidsstyrda triggers**. Användaren väljer själv tiden i sitt flöde.
+Status: utkast, 2026-10-31. Bygger på undersökningen `2026-10-31-integrationer-homey-home-assistant.md`.
+
+Beslut:
+- Villkoren gör att användaren kan välja tiden själv i sitt flöde.
+- Från 0.2.0 finns också triggern "Sopor hämtas i morgon" vid en inställd tid per enhet. Utan den gick det inte att få fraktionernas namn i en notis i ett vanligt flöde, eftersom tokens från handlingskort bara finns i Advanced Flow.
 
 ## Mål
 
@@ -9,7 +13,7 @@ En Homey Pro-ägare lägger till sin adress genom att söka på den. Sedan kan a
 ## Utanför MVP
 
 - Homey Cloud (kräver Verified Developer).
-- Triggers, widget, inställningssida, Insights.
+- Widget, inställningssida för appen och Insights.
 - Publicering i App Store. Ikon, bilder och `brandColor` finns (sidan "Homey · Sophämtning" i designen), och appen klarar `homey app validate --level publish`. Under utvecklingen installeras appen med `homey app install`.
 
 ## Ramar
@@ -31,6 +35,7 @@ En Homey Pro-ägare lägger till sin adress genom att söka på den. Sedan kan a
 | Capability | Typ | Visar |
 |---|---|---|
 | `sopor_summary` | string, sensor | Nästa hämtning, till exempel "Plast & metall – om 4 dagar". Räknas lokalt ur `events`. |
+| `sopor_tomorrow` | string, sensor | "I morgon": till exempel "Plast & metall", eller "Inget". Fungerar som enhetstagg i vanliga flöden. |
 | `sopor_next.<fraktion>` | string, sensor | En per fraktion som adressen har, med fraktionens namn som titel. Till exempel "i morgon" eller "om 4 dagar, ons 4 nov". |
 
 Underkapabiliteter (`sopor_next.plast`) läggs till och tas bort efter vad svaret innehåller. Titeln sätts med `setCapabilityOptions`, så okända fraktions-id fungerar utan att appen uppdateras.
@@ -60,6 +65,12 @@ Vyn använder Homeys egna klasser (`homey-form-input`, `homey-button-primary-ful
 
 Alla är enhetskort och syns under adressens enhet (i dess zon) när man väljer kort, inte under appen. Titlarna innehåller "sopor" eller "hämt…", så att de kommer fram när man söker i kortväljaren.
 
+- **Trigger `hamtas_i_morgon`:** "Sopor hämtas i morgon" i listan, och "[[fraktion]] hämtas i morgon" i kortet.
+  - Går en gång om dagen vid enhetens inställning **Påminnelsetid** (`paminnelsetid`, "HH:MM" svensk tid, standard 18:00), om något hämtas dagen efter.
+  - Var Homey avstängd vid den tiden, går den i högst tre timmar efteråt.
+  - `fraktion` (autocomplete, "Någon fraktion" som standard) filtrerar.
+  - Tokens: `fraktioner` (namnen med komma emellan), `antal` och `datum` (till exempel "tors 5 nov").
+  - Senast utlöst dag sparas i enhetens `store`, så att triggern inte går två gånger efter en omstart.
 - **Villkor `hamtas`:** "Sopor hämtas !{{|inte}}" i listan, och "[[fraktion]] hämtas !{{|inte}} [[nar]]" i kortet.
   - `fraktion` (autocomplete): "Någon fraktion", följd av adressens fraktioner i den ordning svarets `fractions{}` har dem. Valet filtreras på det användaren skriver.
   - `nar` (dropdown): i dag (0), i morgon (1), i övermorgon (2).
@@ -81,7 +92,6 @@ Alla är enhetskort och syns under adressens enhet (i dess zon) när man väljer
 
 ## Senare
 
-- Triggers (om användarna efterfrågar dem).
 - Widget med nästa hämtningar i fraktionsfärg.
 - Testversion i App Store, och sedan certifiering.
 - Länk från Om-sidan och `docs/api.md`.

@@ -5,7 +5,8 @@
   },
   "class": "other",
   "capabilities": [
-    "sopor_summary"
+    "sopor_summary",
+    "sopor_tomorrow"
   ],
   "platforms": [
     "local"
@@ -37,5 +38,20 @@
     "small": "/drivers/adress/assets/images/small.png",
     "large": "/drivers/adress/assets/images/large.png",
     "xlarge": "/drivers/adress/assets/images/xlarge.png"
-  }
+  },
+  "settings": [
+    {
+      "id": "paminnelsetid",
+      "type": "text",
+      "label": {
+        "en": "Reminder time",
+        "sv": "Påminnelsetid"
+      },
+      "value": "18:00",
+      "hint": {
+        "en": "When the card \"Waste is collected tomorrow\" runs, the evening before a collection. Format HH:MM, Swedish time.",
+        "sv": "När kortet \"Sopor hämtas i morgon\" går, kvällen före en hämtning. Skriv som HH:MM, svensk tid."
+      }
+    }
+  ]
 }

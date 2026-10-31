@@ -46,16 +46,26 @@ export function nextDate(schedule: SoporSchedule, today: string, fraction: strin
   return upcoming(schedule, today).find((event) => event.fractions.includes(fraction))?.date ?? null
 }
 
+/** "Plast & metall": korta namn, versal bara först. */
+function joinShort(schedule: SoporSchedule, ids: string[]): string {
+  const names = ids.map((id, i) => {
+    const short = schedule.fractions[id]?.short ?? id
+    return i === 0 ? short : short.toLowerCase()
+  })
+  return names.length > 1 ? `${names.slice(0, -1).join(', ')} & ${names.at(-1)}` : names[0]
+}
+
 /** "Plast & metall – i morgon", som API:ts `summary`. */
 export function summary(schedule: SoporSchedule, today: string): string {
   const first = upcoming(schedule, today)[0]
   if (!first) return NONE
-  const names = first.fractions.map((id, i) => {
-    const short = schedule.fractions[id]?.short ?? id
-    return i === 0 ? short : short.toLowerCase()
-  })
-  const joined = names.length > 1 ? `${names.slice(0, -1).join(', ')} & ${names.at(-1)}` : names[0]
-  return `${joined} – ${relativeDayLabel(daysBetween(today, first.date))}`
+  return `${joinShort(schedule, first.fractions)} – ${relativeDayLabel(daysBetween(today, first.date))}`
+}
+
+/** Raden "I morgon" på enhetskortet: "Plast & metall" eller "Inget". */
+export function tomorrowText(schedule: SoporSchedule, today: string): string {
+  const ids = fractionsOn(schedule, today, 1)
+  return ids.length ? joinShort(schedule, ids) : 'Inget'
 }
 
 /** Texten i enhetens rad för en fraktion. */

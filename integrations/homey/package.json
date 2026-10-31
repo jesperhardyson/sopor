@@ -1,7 +1,7 @@
 {
   "name": "se.hardyson.sopor",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Sopor som Homey-app: sophämtning per adress i flöden",
   "license": "MIT",
   "type": "module",

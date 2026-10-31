@@ -23,6 +23,11 @@ export function todayInStockholm(now: Date = new Date()): string {
   return new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Stockholm', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now)
 }
 
+/** "18:05", klockslaget i Stockholm */
+export function stockholmTime(now: Date = new Date()): string {
+  return new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Stockholm', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(now)
+}
+
 export function relativeDayLabel(days: number): string {
   if (days === 0) return 'i dag'
   if (days === 1) return 'i morgon'

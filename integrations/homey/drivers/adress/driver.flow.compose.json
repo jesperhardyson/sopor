@@ -140,5 +140,71 @@
         }
       ]
     }
+  ],
+  "triggers": [
+    {
+      "id": "hamtas_i_morgon",
+      "title": {
+        "en": "Waste is collected tomorrow",
+        "sv": "Sopor hämtas i morgon"
+      },
+      "titleFormatted": {
+        "en": "[[fraktion]] is collected tomorrow",
+        "sv": "[[fraktion]] hämtas i morgon"
+      },
+      "hint": {
+        "en": "Runs once a day at the reminder time in the device settings (18:00 unless you change it), if something is collected the next day.",
+        "sv": "Går en gång om dagen vid påminnelsetiden i enhetens inställningar (18:00 om du inte ändrar den), om något hämtas dagen efter."
+      },
+      "args": [
+        {
+          "name": "fraktion",
+          "type": "autocomplete",
+          "title": {
+            "en": "Fraction",
+            "sv": "Fraktion"
+          },
+          "placeholder": {
+            "en": "Any fraction",
+            "sv": "Någon fraktion"
+          }
+        }
+      ],
+      "tokens": [
+        {
+          "name": "fraktioner",
+          "type": "string",
+          "title": {
+            "en": "Fractions",
+            "sv": "Fraktioner"
+          },
+          "example": {
+            "en": "Plastic packaging, Metal",
+            "sv": "Plastförpackningar, Metall"
+          }
+        },
+        {
+          "name": "antal",
+          "type": "number",
+          "title": {
+            "en": "Number of fractions",
+            "sv": "Antal fraktioner"
+          },
+          "example": 2
+        },
+        {
+          "name": "datum",
+          "type": "string",
+          "title": {
+            "en": "Date",
+            "sv": "Datum"
+          },
+          "example": {
+            "en": "thu 5 nov",
+            "sv": "tors 5 nov"
+          }
+        }
+      ]
+    }
   ]
 }
