@@ -1,6 +1,6 @@
 import type { Address } from '@/domain/types'
 import { getSource, SOURCES, type Source } from '@/sources'
-import { candidateSources, shardKey, type StreetShard } from '@/data/street-index'
+import { pickLiveSources, shardKey, type StreetShard } from '@/data/street-index'
 import { normalize } from '@/domain/search'
 import { kommunForLocality } from '@/sources'
 import { createApiProvider } from './api'
@@ -50,18 +50,12 @@ export interface SearchOptions {
   submitted?: boolean
 }
 
-/**
- * Live-källor att fråga: de som gatuindexet pekar ut. Saknas gatan i indexet frågas alla källor,
- * men bara när frågan har ett husnummer eller användaren tryckt Enter. Det är den dyraste
- * sökningen, och utan nummer är det oftast ett halvskrivet eller felstavat namn.
- */
+/** Live-källor att fråga för sökningen; valet görs av `pickLiveSources`. */
 async function liveSourcesFor(query: string, { submitted = false }: SearchOptions): Promise<string[]> {
   const live = SOURCES.filter((s) => s.config.system !== 'static').map((s) => s.id)
   if (live.length === 0 || normalize(query).length < 3) return []
   const shard = await loadShard(shardKey(query))
-  const candidates = shard ? candidateSources(shard, query).filter((id) => live.includes(id)) : []
-  if (candidates.length > 0) return candidates
-  return submitted || /\d/.test(query) ? live : []
+  return pickLiveSources(shard, query, live, submitted)
 }
 
 /** EDP svarar med högst så här många adresser per källa. Färre betyder att svaret är komplett. */

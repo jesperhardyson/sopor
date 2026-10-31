@@ -77,6 +77,9 @@ describe('Vercel-funktionernas importer', () => {
         .filter((f) => readFileSync(path.join(root, d, f), 'utf8').includes("from '@/"))
         .map((f) => `${d}/${f}`),
     )
+    if (readFileSync(path.join(root, 'src/data/street-index.ts'), 'utf8').includes("from '@/")) {
+      offenders.push('src/data/street-index.ts')
+    }
     expect(offenders).toEqual([])
   })
 
@@ -94,6 +97,9 @@ describe('Vercel-funktionernas importer', () => {
             .map((spec) => `${d}/${f}: ${spec}`),
         ),
     )
+    for (const m of readFileSync(path.join(root, 'src/data/street-index.ts'), 'utf8').matchAll(/from '(\.{1,2}\/[^']+)'/g)) {
+      if (!m[1].endsWith('.js')) offenders.push(`src/data/street-index.ts: ${m[1]}`)
+    }
     expect(offenders).toEqual([])
   })
 })
