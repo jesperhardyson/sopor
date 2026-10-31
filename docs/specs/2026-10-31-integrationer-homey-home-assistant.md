@@ -96,7 +96,33 @@ Svenska (`sv`) stöds. Engelska är obligatoriskt och reservspråk, och Athom kr
 - **Vercel:** `ignoreCommand` bygger om sajten vid varje commit. Ändringar som bara rör `integrations/` kan hoppas över (`git diff --quiet HEAD^ HEAD -- . ':!integrations'`). Det är en liten ändring, men den rör deploy-flödet och görs separat.
 - **Node-version:** Athom anger att CLI:t kräver Node 24+. Repot kräver `>=22.12`, och CLI 4.4.0 fungerar på Jespers Node 22.20. Behåll 22 tills något går sönder.
 
-## Home Assistant
+### Flödeskort i liknande appar
+
+Kartlagt 2026-10-31.
+- Trashcan Reminder 2.0 och Min Renovasjon är lästa i källkoden.
+- Övriga appar är lästa via App Store-sidornas korttitlar, så argument, tokens och tidpunkter är *(overifierat)*.
+
+| App | När | Och | Då |
+|---|---|---|---|
+| **Sophämtning 0.2.0** | i morgon vid inställd tid (+ fraktion) | fraktion (inte) i dag/i morgon/i övermorgon | uppdatera; Advanced: vilka fraktioner [när] |
+| SRV Sophämtning | i dag, i morgon, om N dagar, schemat ändrat | dagar till hämtning = N; nästa innehåller typ | uppdatera |
+| Sysav (hibbisoft) | i dag, i morgon, datum ändrat | om N dagar | – |
+| Trashcan Reminder 2.0 | inga | typ (inte) [i dag/i morgon/i övermorgon] | Advanced: vilka typer [när] |
+| Renovasjon (NO) | inga (utvecklaren avböjde) | något om N dagar; typ om N dagar | Advanced: typer om N dagar |
+| Remidt (NO) | i dag, i morgon, om 2 dagar, denna vecka, status ändrad | många, bl.a. "minst N typer i dag" | – |
+| Recycle België | tio stycken, bl.a. påminnelse 24 h och 4 h före, schemat ändrat, flyttad hämtning | fem | sex, bl.a. färdig notistext |
+
+**Där vi ligger efter:**
+- Godtyckligt antal dagar ("om N dagar") och "dagar till nästa hämtning", både som villkor, token och capability.
+- En trigger för "schemat ändrat" eller "flyttad hämtning", som spelar roll kring helgdagar.
+- En trigger för "hämtas i dag", till exempel som påminnelse på morgonen.
+- Möjligheten att dölja fraktioner man inte har.
+- En widget.
+
+**Där vi ligger före:**
+- Triggern med inställd tid och fraktionsfilter. Trashcan och Renovasjon saknar triggers och får kritik för det på forumet.
+- Fraktionsnamn som alltid är svenska. Renovasjons användare klagar på att namnen följer systemspråket.
+
 
 ### Tre vägar
 
