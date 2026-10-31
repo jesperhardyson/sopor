@@ -11,6 +11,10 @@ updates:
     directory: /integrations/homey
     schedule:
       interval: weekly
+    # Typerna ska följa Node-versionen som Homey kör (22), inte den senaste
+    ignore:
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
     groups:
       homey:
         patterns: ['*']
