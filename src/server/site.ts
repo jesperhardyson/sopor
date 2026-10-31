@@ -25,7 +25,7 @@ export async function siteJson<T>(
   }
 }
 
-/** Ort → kommun per källa (orter.json). Fel ger en tom tabell: orten faller då tillbaka på källans namn. */
+/** Ort → kommun per källa (orter.json). Fel ger en tom tabell: orten visas då som den är. */
 export async function loadServerPlaces(
   origin: string,
   fetchFn?: typeof fetch,

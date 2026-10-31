@@ -3,7 +3,7 @@
 import { mergeParts } from '../domain/schedule.js'
 import type { Address, Schedule } from '../domain/types.js'
 import type { AddressIndexFile, ScheduleFile } from '../data/static-format.js'
-import type { Source } from '../sources/index.js'
+import { needsPlaces, type Source } from '../sources/index.js'
 import { edpSchedule, edpSearch, queryFromAddressId, type EdpBuilding } from './edp.js'
 import { searchCandidates, toAddress, withDetails, type HandlerOptions } from './handlers.js'
 import { loadServerPlaces, siteJson } from './site.js'
@@ -42,8 +42,7 @@ async function lookupEdp(source: Source, baseUrl: string, id: string, origin: st
   if (!found) return { status: 404 }
   const [building, detail] = found
   const schedule = await edpSchedule(baseUrl, building.raw, opts.fetchFn, opts.now, opts.timeoutMs ?? 5000)
-  // Orttabellen behövs bara när källan täcker flera kommuner.
-  const places = opts.places ?? (source.kommuner.length > 1 ? await loadServerPlaces(origin, opts.fetchFn) : undefined)
+  const places = opts.places ?? (needsPlaces(source) ? await loadServerPlaces(origin, opts.fetchFn) : undefined)
   return { status: 200, address: toAddress(source, building, places, detail), schedule }
 }
 
