@@ -55354,7 +55354,7 @@
       "name": "Homey · Sophämtning",
       "clip": true,
       "width": 2400,
-      "height": 1100,
+      "height": 1500,
       "fill": "$bg",
       "layout": "none",
       "children": [
@@ -56121,6 +56121,1224 @@
           "fontSize": 13,
           "fontWeight": "700",
           "letterSpacing": 0.4
+        },
+        {
+          "type": "text",
+          "id": "icqUe",
+          "x": 64,
+          "y": 1100,
+          "name": "Widgetrubrik",
+          "fill": "$text",
+          "content": "Widget · Nästa hämtning",
+          "fontFamily": "$font-brand",
+          "fontSize": 28,
+          "fontWeight": "600"
+        },
+        {
+          "type": "frame",
+          "id": "zrLHm",
+          "x": 64,
+          "y": 1160,
+          "name": "Widget (ljust)",
+          "theme": {
+            "mode": "light"
+          },
+          "width": 380,
+          "fill": "$surface",
+          "cornerRadius": 20,
+          "layout": "vertical",
+          "gap": 4,
+          "padding": 12,
+          "children": [
+            {
+              "type": "frame",
+              "id": "IAAvI",
+              "name": "Rubrik",
+              "width": "fill_container",
+              "padding": [
+                4,
+                8,
+                8,
+                8
+              ],
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "vhaBt",
+                  "name": "Adress",
+                  "fill": "$text",
+                  "content": "Storgatan 3, Dalsjöfors",
+                  "fontFamily": "$font-ui",
+                  "fontSize": 14,
+                  "fontWeight": "800"
+                },
+                {
+                  "id": "O0rFp",
+                  "type": "ref",
+                  "ref": "M4wKm",
+                  "name": "Symbol"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Ldd3W",
+              "name": "Rad Matavfall",
+              "width": "fill_container",
+              "fill": "$brand-soft",
+              "cornerRadius": 14,
+              "gap": 12,
+              "padding": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "id": "ktYwc",
+                  "type": "ref",
+                  "ref": "F5iQxg",
+                  "name": "Ikon",
+                  "width": 40,
+                  "height": 40
+                },
+                {
+                  "type": "frame",
+                  "id": "QE3wY",
+                  "name": "Text",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 1,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "BnukB",
+                      "name": "Fraktion",
+                      "fill": "$text",
+                      "content": "Matavfall",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 15,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "X21DtP",
+                      "name": "Datum",
+                      "fill": "$text-2",
+                      "content": "tors 5 nov",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "wTJaN",
+                  "name": "När",
+                  "fill": "$brand-text",
+                  "content": "i morgon",
+                  "fontFamily": "$font-ui",
+                  "fontSize": 15,
+                  "fontWeight": "800"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "vzJxE",
+              "name": "Rad Plastförpackningar",
+              "width": "fill_container",
+              "fill": "$brand-soft",
+              "cornerRadius": 14,
+              "gap": 12,
+              "padding": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "id": "N7KuY",
+                  "type": "ref",
+                  "ref": "Qc4qi",
+                  "name": "Ikon",
+                  "width": 40,
+                  "height": 40
+                },
+                {
+                  "type": "frame",
+                  "id": "VQ5d9",
+                  "name": "Text",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 1,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "fucU5",
+                      "name": "Fraktion",
+                      "fill": "$text",
+                      "content": "Plastförpackningar",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 15,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "VFoGU",
+                      "name": "Datum",
+                      "fill": "$text-2",
+                      "content": "tors 5 nov",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "Q1qNM",
+                  "name": "När",
+                  "fill": "$brand-text",
+                  "content": "i morgon",
+                  "fontFamily": "$font-ui",
+                  "fontSize": 15,
+                  "fontWeight": "800"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "YpXBy",
+              "name": "Rad Restavfall",
+              "width": "fill_container",
+              "fill": "#00000000",
+              "cornerRadius": 14,
+              "gap": 12,
+              "padding": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "id": "oFc0O",
+                  "type": "ref",
+                  "ref": "vPeSE",
+                  "name": "Ikon",
+                  "width": 40,
+                  "height": 40
+                },
+                {
+                  "type": "frame",
+                  "id": "WLl6B",
+                  "name": "Text",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 1,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "aMelH",
+                      "name": "Fraktion",
+                      "fill": "$text",
+                      "content": "Restavfall",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 15,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "dSVKw",
+                      "name": "Datum",
+                      "fill": "$text-2",
+                      "content": "mån 9 nov",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "fPsIC",
+                  "name": "När",
+                  "fill": "$text-2",
+                  "content": "om 5 dagar",
+                  "fontFamily": "$font-ui",
+                  "fontSize": 15,
+                  "fontWeight": "800"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "SiRuY",
+              "name": "Rad Pappersförpackningar",
+              "width": "fill_container",
+              "fill": "#00000000",
+              "cornerRadius": 14,
+              "gap": 12,
+              "padding": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "id": "czeH1",
+                  "type": "ref",
+                  "ref": "o5jApD",
+                  "name": "Ikon",
+                  "width": 40,
+                  "height": 40
+                },
+                {
+                  "type": "frame",
+                  "id": "Fo31G",
+                  "name": "Text",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 1,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "V9ZlJN",
+                      "name": "Fraktion",
+                      "fill": "$text",
+                      "content": "Pappersförpackningar",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 15,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "YnXH6",
+                      "name": "Datum",
+                      "fill": "$text-2",
+                      "content": "mån 16 nov",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "LDY2Q",
+                  "name": "När",
+                  "fill": "$text-2",
+                  "content": "om 12 dagar",
+                  "fontFamily": "$font-ui",
+                  "fontSize": 15,
+                  "fontWeight": "800"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "yqimF",
+          "x": 520,
+          "y": 1160,
+          "name": "Widget (mörkt)",
+          "theme": {
+            "mode": "dark"
+          },
+          "width": 380,
+          "fill": "$surface",
+          "cornerRadius": 20,
+          "layout": "vertical",
+          "gap": 4,
+          "padding": 12,
+          "children": [
+            {
+              "type": "frame",
+              "id": "oEaIJ",
+              "name": "Rubrik",
+              "width": "fill_container",
+              "padding": [
+                4,
+                8,
+                8,
+                8
+              ],
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "wW40Q",
+                  "name": "Adress",
+                  "fill": "$text",
+                  "content": "Storgatan 3, Dalsjöfors",
+                  "fontFamily": "$font-ui",
+                  "fontSize": 14,
+                  "fontWeight": "800"
+                },
+                {
+                  "id": "lrUJZ",
+                  "type": "ref",
+                  "ref": "M4wKm",
+                  "name": "Symbol"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "JMqLm",
+              "name": "Rad Matavfall",
+              "width": "fill_container",
+              "fill": "$brand-soft",
+              "cornerRadius": 14,
+              "gap": 12,
+              "padding": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "id": "Q0RxiQ",
+                  "type": "ref",
+                  "ref": "F5iQxg",
+                  "name": "Ikon",
+                  "width": 40,
+                  "height": 40
+                },
+                {
+                  "type": "frame",
+                  "id": "G7Eykb",
+                  "name": "Text",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 1,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "HY9ms",
+                      "name": "Fraktion",
+                      "fill": "$text",
+                      "content": "Matavfall",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 15,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "Qr9Va",
+                      "name": "Datum",
+                      "fill": "$text-2",
+                      "content": "tors 5 nov",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "XokWf",
+                  "name": "När",
+                  "fill": "$brand-text",
+                  "content": "i morgon",
+                  "fontFamily": "$font-ui",
+                  "fontSize": 15,
+                  "fontWeight": "800"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "hGlky",
+              "name": "Rad Plastförpackningar",
+              "width": "fill_container",
+              "fill": "$brand-soft",
+              "cornerRadius": 14,
+              "gap": 12,
+              "padding": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "id": "jq0di",
+                  "type": "ref",
+                  "ref": "Qc4qi",
+                  "name": "Ikon",
+                  "width": 40,
+                  "height": 40
+                },
+                {
+                  "type": "frame",
+                  "id": "Kn722",
+                  "name": "Text",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 1,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "tzkzO",
+                      "name": "Fraktion",
+                      "fill": "$text",
+                      "content": "Plastförpackningar",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 15,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "AQ6HJ",
+                      "name": "Datum",
+                      "fill": "$text-2",
+                      "content": "tors 5 nov",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "jCkE1",
+                  "name": "När",
+                  "fill": "$brand-text",
+                  "content": "i morgon",
+                  "fontFamily": "$font-ui",
+                  "fontSize": 15,
+                  "fontWeight": "800"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "f2A7hU",
+              "name": "Rad Restavfall",
+              "width": "fill_container",
+              "fill": "#00000000",
+              "cornerRadius": 14,
+              "gap": 12,
+              "padding": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "id": "qyvtt",
+                  "type": "ref",
+                  "ref": "vPeSE",
+                  "name": "Ikon",
+                  "width": 40,
+                  "height": 40
+                },
+                {
+                  "type": "frame",
+                  "id": "Rah9L",
+                  "name": "Text",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 1,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "nzU9A",
+                      "name": "Fraktion",
+                      "fill": "$text",
+                      "content": "Restavfall",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 15,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "d8tGT",
+                      "name": "Datum",
+                      "fill": "$text-2",
+                      "content": "mån 9 nov",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "fW0Dk",
+                  "name": "När",
+                  "fill": "$text-2",
+                  "content": "om 5 dagar",
+                  "fontFamily": "$font-ui",
+                  "fontSize": 15,
+                  "fontWeight": "800"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "u8OkwV",
+              "name": "Rad Pappersförpackningar",
+              "width": "fill_container",
+              "fill": "#00000000",
+              "cornerRadius": 14,
+              "gap": 12,
+              "padding": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "id": "ee9rR",
+                  "type": "ref",
+                  "ref": "o5jApD",
+                  "name": "Ikon",
+                  "width": 40,
+                  "height": 40
+                },
+                {
+                  "type": "frame",
+                  "id": "K2qtu",
+                  "name": "Text",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 1,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "q6Nel",
+                      "name": "Fraktion",
+                      "fill": "$text",
+                      "content": "Pappersförpackningar",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 15,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "qqd83",
+                      "name": "Datum",
+                      "fill": "$text-2",
+                      "content": "mån 16 nov",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "idLDj",
+                  "name": "När",
+                  "fill": "$text-2",
+                  "content": "om 12 dagar",
+                  "fontFamily": "$font-ui",
+                  "fontSize": 15,
+                  "fontWeight": "800"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "gwxlb",
+          "x": 976,
+          "y": 1060,
+          "name": "Widget-förhandsbild (ljus) 512 → 1024",
+          "theme": {
+            "mode": "light"
+          },
+          "width": 512,
+          "height": 512,
+          "fill": "#EEF1EF",
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "q7y03",
+              "name": "Widget",
+              "theme": {
+                "mode": "light"
+              },
+              "width": 380,
+              "fill": "$surface",
+              "cornerRadius": 20,
+              "layout": "vertical",
+              "gap": 4,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "K7iUK",
+                  "name": "Rubrik",
+                  "width": "fill_container",
+                  "padding": [
+                    4,
+                    8,
+                    8,
+                    8
+                  ],
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "hLyc3",
+                      "name": "Adress",
+                      "fill": "$text",
+                      "content": "Storgatan 3, Dalsjöfors",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 14,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "id": "x63gpg",
+                      "type": "ref",
+                      "ref": "M4wKm",
+                      "name": "Symbol"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "CTm1k",
+                  "name": "Rad Matavfall",
+                  "width": "fill_container",
+                  "fill": "$brand-soft",
+                  "cornerRadius": 14,
+                  "gap": 12,
+                  "padding": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "f7S6T0",
+                      "type": "ref",
+                      "ref": "F5iQxg",
+                      "name": "Ikon",
+                      "width": 40,
+                      "height": 40
+                    },
+                    {
+                      "type": "frame",
+                      "id": "MFbS9",
+                      "name": "Text",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 1,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "Ad2Eq",
+                          "name": "Fraktion",
+                          "fill": "$text",
+                          "content": "Matavfall",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 15,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "U0lrdX",
+                          "name": "Datum",
+                          "fill": "$text-2",
+                          "content": "tors 5 nov",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "M3cvG",
+                      "name": "När",
+                      "fill": "$brand-text",
+                      "content": "i morgon",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 15,
+                      "fontWeight": "800"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "A0wOZ",
+                  "name": "Rad Plastförpackningar",
+                  "width": "fill_container",
+                  "fill": "$brand-soft",
+                  "cornerRadius": 14,
+                  "gap": 12,
+                  "padding": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "Xp0hY",
+                      "type": "ref",
+                      "ref": "Qc4qi",
+                      "name": "Ikon",
+                      "width": 40,
+                      "height": 40
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Y8eYfN",
+                      "name": "Text",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 1,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "aCdxE",
+                          "name": "Fraktion",
+                          "fill": "$text",
+                          "content": "Plastförpackningar",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 15,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "eKtPp",
+                          "name": "Datum",
+                          "fill": "$text-2",
+                          "content": "tors 5 nov",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "U6iKx",
+                      "name": "När",
+                      "fill": "$brand-text",
+                      "content": "i morgon",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 15,
+                      "fontWeight": "800"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "L7L2o4",
+                  "name": "Rad Restavfall",
+                  "width": "fill_container",
+                  "fill": "#00000000",
+                  "cornerRadius": 14,
+                  "gap": 12,
+                  "padding": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "k4pii",
+                      "type": "ref",
+                      "ref": "vPeSE",
+                      "name": "Ikon",
+                      "width": 40,
+                      "height": 40
+                    },
+                    {
+                      "type": "frame",
+                      "id": "XoR5T",
+                      "name": "Text",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 1,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "fid2u",
+                          "name": "Fraktion",
+                          "fill": "$text",
+                          "content": "Restavfall",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 15,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "YPkz7",
+                          "name": "Datum",
+                          "fill": "$text-2",
+                          "content": "mån 9 nov",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "h1CUuB",
+                      "name": "När",
+                      "fill": "$text-2",
+                      "content": "om 5 dagar",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 15,
+                      "fontWeight": "800"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "ZCC7W",
+                  "name": "Rad Pappersförpackningar",
+                  "width": "fill_container",
+                  "fill": "#00000000",
+                  "cornerRadius": 14,
+                  "gap": 12,
+                  "padding": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "c2eAWM",
+                      "type": "ref",
+                      "ref": "o5jApD",
+                      "name": "Ikon",
+                      "width": 40,
+                      "height": 40
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Qrm6a",
+                      "name": "Text",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 1,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "ORgs0",
+                          "name": "Fraktion",
+                          "fill": "$text",
+                          "content": "Pappersförpackningar",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 15,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "w0NiS",
+                          "name": "Datum",
+                          "fill": "$text-2",
+                          "content": "mån 16 nov",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "QuAZv",
+                      "name": "När",
+                      "fill": "$text-2",
+                      "content": "om 12 dagar",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 15,
+                      "fontWeight": "800"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "lmKJY",
+          "x": 1520,
+          "y": 1060,
+          "name": "Widget-förhandsbild (mörk) 512 → 1024",
+          "theme": {
+            "mode": "dark"
+          },
+          "width": 512,
+          "height": 512,
+          "fill": "#0E1411",
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "NmASJ",
+              "name": "Widget",
+              "theme": {
+                "mode": "dark"
+              },
+              "width": 380,
+              "fill": "$surface",
+              "cornerRadius": 20,
+              "layout": "vertical",
+              "gap": 4,
+              "padding": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "XgLD0",
+                  "name": "Rubrik",
+                  "width": "fill_container",
+                  "padding": [
+                    4,
+                    8,
+                    8,
+                    8
+                  ],
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "P9kR0",
+                      "name": "Adress",
+                      "fill": "$text",
+                      "content": "Storgatan 3, Dalsjöfors",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 14,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "id": "t7Cia",
+                      "type": "ref",
+                      "ref": "M4wKm",
+                      "name": "Symbol"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "kUbqM",
+                  "name": "Rad Matavfall",
+                  "width": "fill_container",
+                  "fill": "$brand-soft",
+                  "cornerRadius": 14,
+                  "gap": 12,
+                  "padding": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "H9K5R6",
+                      "type": "ref",
+                      "ref": "F5iQxg",
+                      "name": "Ikon",
+                      "width": 40,
+                      "height": 40
+                    },
+                    {
+                      "type": "frame",
+                      "id": "cpZS7",
+                      "name": "Text",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 1,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "vYNvv",
+                          "name": "Fraktion",
+                          "fill": "$text",
+                          "content": "Matavfall",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 15,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "VIpJb",
+                          "name": "Datum",
+                          "fill": "$text-2",
+                          "content": "tors 5 nov",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "qgUhu",
+                      "name": "När",
+                      "fill": "$brand-text",
+                      "content": "i morgon",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 15,
+                      "fontWeight": "800"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "B78ux",
+                  "name": "Rad Plastförpackningar",
+                  "width": "fill_container",
+                  "fill": "$brand-soft",
+                  "cornerRadius": 14,
+                  "gap": 12,
+                  "padding": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "gu7R4",
+                      "type": "ref",
+                      "ref": "Qc4qi",
+                      "name": "Ikon",
+                      "width": 40,
+                      "height": 40
+                    },
+                    {
+                      "type": "frame",
+                      "id": "TZOko",
+                      "name": "Text",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 1,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "ym5KR",
+                          "name": "Fraktion",
+                          "fill": "$text",
+                          "content": "Plastförpackningar",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 15,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "QzRYh",
+                          "name": "Datum",
+                          "fill": "$text-2",
+                          "content": "tors 5 nov",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "iYnlc",
+                      "name": "När",
+                      "fill": "$brand-text",
+                      "content": "i morgon",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 15,
+                      "fontWeight": "800"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "Etzgk",
+                  "name": "Rad Restavfall",
+                  "width": "fill_container",
+                  "fill": "#00000000",
+                  "cornerRadius": 14,
+                  "gap": 12,
+                  "padding": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "pS6jO",
+                      "type": "ref",
+                      "ref": "vPeSE",
+                      "name": "Ikon",
+                      "width": 40,
+                      "height": 40
+                    },
+                    {
+                      "type": "frame",
+                      "id": "CKqH8",
+                      "name": "Text",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 1,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "X7eTBm",
+                          "name": "Fraktion",
+                          "fill": "$text",
+                          "content": "Restavfall",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 15,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "YfX6N",
+                          "name": "Datum",
+                          "fill": "$text-2",
+                          "content": "mån 9 nov",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "i8pTS",
+                      "name": "När",
+                      "fill": "$text-2",
+                      "content": "om 5 dagar",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 15,
+                      "fontWeight": "800"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "cyOjm",
+                  "name": "Rad Pappersförpackningar",
+                  "width": "fill_container",
+                  "fill": "#00000000",
+                  "cornerRadius": 14,
+                  "gap": 12,
+                  "padding": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "Gkm32",
+                      "type": "ref",
+                      "ref": "o5jApD",
+                      "name": "Ikon",
+                      "width": 40,
+                      "height": 40
+                    },
+                    {
+                      "type": "frame",
+                      "id": "ZwW4B",
+                      "name": "Text",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 1,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "IMfrH",
+                          "name": "Fraktion",
+                          "fill": "$text",
+                          "content": "Pappersförpackningar",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 15,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "E4LhLf",
+                          "name": "Datum",
+                          "fill": "$text-2",
+                          "content": "mån 16 nov",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "ia7kr",
+                      "name": "När",
+                      "fill": "$text-2",
+                      "content": "om 12 dagar",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 15,
+                      "fontWeight": "800"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         }
       ]
     }
