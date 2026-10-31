@@ -55345,6 +55345,784 @@
           ]
         }
       ]
+    },
+    {
+      "type": "frame",
+      "id": "TMvML",
+      "x": 0,
+      "y": -3620,
+      "name": "Homey · Sophämtning",
+      "clip": true,
+      "width": 2400,
+      "height": 1100,
+      "fill": "$bg",
+      "layout": "none",
+      "children": [
+        {
+          "type": "text",
+          "id": "jSLD1",
+          "x": 64,
+          "y": 56,
+          "name": "Rubrik",
+          "fill": "$text",
+          "content": "Homey-appen · Sophämtning",
+          "fontFamily": "$font-brand",
+          "fontSize": 40,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "P155Zy",
+          "x": 64,
+          "y": 112,
+          "name": "Underrubrik",
+          "fill": "$text-2",
+          "content": "Tillgångar för Homey App Store. Ikoner som SVG 960×960 i linjestil. Bilder exporteras i 1×, ½× och ¼×.",
+          "fontFamily": "$font-ui",
+          "fontSize": 16,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "QLpbz",
+          "x": 360,
+          "y": 200,
+          "name": "App-ikon",
+          "layout": "vertical",
+          "gap": 12,
+          "children": [
+            {
+              "type": "frame",
+              "id": "r7nYX",
+              "name": "Ikon 960 (visas i 240)",
+              "width": 240,
+              "height": 240,
+              "fill": "$surface",
+              "cornerRadius": 24,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "id": "bEuya",
+                  "type": "ref",
+                  "ref": "n8pQe",
+                  "name": "Symbol"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "rRqES",
+              "name": "Etikett",
+              "fill": "$text-2",
+              "content": "APP-IKON · SVG 960×960 · brandColor #157A46",
+              "fontFamily": "$font-ui",
+              "fontSize": 13,
+              "fontWeight": "700",
+              "letterSpacing": 0.4
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "s8CgF",
+          "x": 1336,
+          "y": 200,
+          "name": "App-bild 1000×700",
+          "clip": true,
+          "width": 1000,
+          "height": 700,
+          "fill": "$primary",
+          "layout": "none",
+          "children": [
+            {
+              "type": "ellipse",
+              "id": "FtA8B",
+              "x": 520,
+              "y": -160,
+              "name": "Glöd",
+              "fill": "#1FA35C55",
+              "width": 760,
+              "height": 760
+            },
+            {
+              "type": "frame",
+              "id": "B610TN",
+              "x": 72,
+              "y": 203,
+              "name": "Text",
+              "width": 430,
+              "layout": "vertical",
+              "gap": 20,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "lwYPY",
+                  "name": "Märke",
+                  "width": 96,
+                  "height": 96,
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 26,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "d2jh2",
+                      "type": "ref",
+                      "ref": "L1ycY",
+                      "name": "Symbol",
+                      "width": 48,
+                      "height": 48
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "PJAn1",
+                  "name": "Namn",
+                  "fill": "#FFFFFF",
+                  "content": "Sophämtning",
+                  "fontFamily": "$font-brand",
+                  "fontSize": 72,
+                  "fontWeight": "600",
+                  "letterSpacing": -1
+                },
+                {
+                  "type": "text",
+                  "id": "y3efbJ",
+                  "name": "Tagline",
+                  "fill": "#E3F5EA",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Veta vad som hämtas i morgon, direkt i dina flöden.",
+                  "lineHeight": 1.25,
+                  "fontFamily": "$font-ui",
+                  "fontSize": 28,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "fiu0a",
+              "x": 560,
+              "y": 169,
+              "name": "Enhetskort",
+              "width": 368,
+              "fill": "$surface",
+              "cornerRadius": 28,
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#0B241640",
+                "offset": {
+                  "x": 0,
+                  "y": 24
+                },
+                "blur": 60
+              },
+              "layout": "vertical",
+              "gap": 16,
+              "padding": 28,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "OGISI",
+                  "name": "Adress",
+                  "fill": "$text",
+                  "content": "Storgatan 2, Uppsala",
+                  "fontFamily": "$font-ui",
+                  "fontSize": 18,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "frame",
+                  "id": "Lx2wQ",
+                  "name": "Nästa",
+                  "width": "fill_container",
+                  "fill": "$brand-soft",
+                  "cornerRadius": 16,
+                  "layout": "vertical",
+                  "gap": 4,
+                  "padding": [
+                    14,
+                    16
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "bSPYW",
+                      "name": "Rubrik",
+                      "fill": "$brand-text",
+                      "content": "Nästa hämtning",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 13,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "lg9fL",
+                      "name": "Värde",
+                      "fill": "$text",
+                      "content": "Plast & metall – i morgon",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 20,
+                      "fontWeight": "800"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "AiIgr",
+                  "name": "Rad Plastförpackningar",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "j1gWY",
+                      "type": "ref",
+                      "ref": "jB0Ev",
+                      "name": "Chip"
+                    },
+                    {
+                      "type": "text",
+                      "id": "R5XAha",
+                      "name": "När",
+                      "fill": "$brand-text",
+                      "content": "i morgon",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 15,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "kXVBm",
+                  "name": "Rad Metall",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "jrXaA",
+                      "type": "ref",
+                      "ref": "b1np4",
+                      "name": "Chip"
+                    },
+                    {
+                      "type": "text",
+                      "id": "P8ih5",
+                      "name": "När",
+                      "fill": "$brand-text",
+                      "content": "i morgon",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 15,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "ntdIc",
+                  "name": "Rad Restavfall",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "GCvZg",
+                      "type": "ref",
+                      "ref": "b6R4P",
+                      "name": "Chip"
+                    },
+                    {
+                      "type": "text",
+                      "id": "v2bl7J",
+                      "name": "När",
+                      "fill": "$text-2",
+                      "content": "om 5 dagar",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 15,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "jSPlC",
+                  "name": "Rad Matavfall",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "id": "mTGd0",
+                      "type": "ref",
+                      "ref": "v7CoAp",
+                      "name": "Chip"
+                    },
+                    {
+                      "type": "text",
+                      "id": "YK6Xs",
+                      "name": "När",
+                      "fill": "$text-2",
+                      "content": "om 5 dagar",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 15,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "SCgmg",
+          "x": 1336,
+          "y": 916,
+          "name": "App-bild etikett",
+          "children": [
+            {
+              "type": "text",
+              "id": "wF6WX",
+              "name": "Etikett",
+              "fill": "$text-2",
+              "content": "APP-BILD · 1000×700, 500×350, 250×175 (JPG/PNG)",
+              "fontFamily": "$font-ui",
+              "fontSize": 13,
+              "fontWeight": "700",
+              "letterSpacing": 0.4
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "U6Mkj",
+          "x": 64,
+          "y": 200,
+          "name": "Drivrutinsikon",
+          "layout": "vertical",
+          "gap": 12,
+          "children": [
+            {
+              "type": "frame",
+              "id": "FohIi",
+              "name": "Kärl/Linjeikon",
+              "clip": true,
+              "width": 240,
+              "height": 240,
+              "layout": "none",
+              "children": [
+                {
+                  "type": "path",
+                  "id": "UTAuh",
+                  "x": 63.76,
+                  "y": 58.68,
+                  "geometry": "M0 0l8 109.99999",
+                  "width": 8,
+                  "height": 110,
+                  "stroke": "#000000",
+                  "strokeWidth": 5.09692
+                },
+                {
+                  "type": "path",
+                  "id": "hDT9C",
+                  "x": 84.64,
+                  "y": 69.36,
+                  "geometry": "M0 137.24001l24.84 15.83999c4.52 2.67999 8.43999 3 13.6 2.08l37-8.48001c4.24001-0.95999 6.95999-4.19999 7.28-8.71998l12.4-137.96001",
+                  "width": 95.12,
+                  "height": 155.6256,
+                  "stroke": "#000000",
+                  "strokeWidth": 4.91188
+                },
+                {
+                  "type": "path",
+                  "id": "mq32d",
+                  "x": 110.96,
+                  "y": 79.44,
+                  "geometry": "M0 0l2.44 140.39999c0.08 3.04001 1.36 4.76001 4.24 5.08001",
+                  "width": 6.68,
+                  "height": 145.48,
+                  "stroke": "#000000",
+                  "strokeWidth": 4.91188
+                },
+                {
+                  "type": "path",
+                  "id": "g1Uoq",
+                  "x": 167.36,
+                  "y": 164.92,
+                  "geometry": "M3.88 0c7.36 1.64 12.67999 11.96001 12.68 23.84 0 13.68001-6.84 21.32001-14.76 20.28l-1.8 0",
+                  "width": 16.56,
+                  "height": 44.214,
+                  "stroke": "#000000",
+                  "strokeWidth": 4.99424
+                },
+                {
+                  "type": "path",
+                  "id": "DNQtH",
+                  "x": 167.48,
+                  "y": 174.6,
+                  "geometry": "M3.12001 0c2.39999 3.43999 3.84 8.72 3.84 14.39999 0 8.08-3 14.56-6.96001 15.84",
+                  "width": 6.96,
+                  "height": 30.24,
+                  "stroke": "#000000",
+                  "strokeWidth": 4.30752
+                },
+                {
+                  "type": "path",
+                  "id": "NsD90",
+                  "x": 55.12,
+                  "y": 168.68,
+                  "geometry": "M31.16 26c0 14.52-7.04 21.68001-14.64 21.68001-10.08 0-16.52-11.36-16.52-25.60001 0-13.72 6.2-22.08 14.12-22.08 9.56001 0 17.04 12.24001 17.04 26z",
+                  "width": 31.16,
+                  "height": 47.68,
+                  "stroke": "#000000",
+                  "strokeWidth": 4.99424
+                },
+                {
+                  "type": "ellipse",
+                  "id": "h1498z",
+                  "x": 62.8935,
+                  "y": 181.9648,
+                  "width": 12.0914,
+                  "height": 21.1761,
+                  "stroke": "#000000",
+                  "strokeWidth": 4.30752
+                },
+                {
+                  "type": "path",
+                  "id": "vbs27",
+                  "x": 50.4346,
+                  "y": 14.7255,
+                  "geometry": "M4.04544 21.47451l0-0.24 0 0.28 0.28 13.92c0 2.92 1.2 4.68 3.80001 5.8l48.07999 21.72c3.84 1.56 7.52 1.76 11.84001 1.23999l65.4-10.31999c3.15999-0.56 5.03999-2.88 5.03999-5.96l0-6.08c0.12-3.36-2.16-5.64-5.59999-6l-0.72-1.44c-0.60001-2.52-2.52-4.12-4.92001-5.16l-34.95999-14.92-0.32001-3.96c-0.28-3.88-3.48-6.12-7.72-5.16-1.07999-3.56-4.15999-5.48-7.63999-5.16l-71.60001 9.72c-3.2 0.4-5 2.72-5 5.96-0.12 3 1.76 4.92 4.04 5.76z",
+                  "width": 138.49,
+                  "height": 64.4516,
+                  "stroke": "#000000",
+                  "strokeWidth": 5.09692
+                },
+                {
+                  "type": "path",
+                  "id": "MNBz0",
+                  "x": 54.56,
+                  "y": 32.96,
+                  "geometry": "M0 10.2l6.44 3c1.88 0.8 3.32-0.08 3.32-1.4l0-6.4c0-3.16-2.4-5.4-5.2-5.4-2.64 0-4.56 2-4.56 4.92l0 5.28z",
+                  "width": 9.76,
+                  "height": 13.5051,
+                  "stroke": "#000000",
+                  "strokeWidth": 4.64472
+                },
+                {
+                  "type": "path",
+                  "id": "w7BX1",
+                  "x": 65.04,
+                  "y": 41.08,
+                  "geometry": "M0 0l42 19.84c3.72 1.56 7.2 1.92 11 1.48l65.2-10.68",
+                  "width": 118.2,
+                  "height": 21.4939,
+                  "stroke": "#000000",
+                  "strokeWidth": 4.64472
+                },
+                {
+                  "type": "path",
+                  "id": "s9k8wx",
+                  "x": 66.36,
+                  "y": 27.6256,
+                  "geometry": "M0 12.89438c0.72-2.2 3.72-3.12 7.24-3.76 19.28-3.68 44.36-7.68 57.76-9 4.24-0.36 7.92 0 11.31999 1.12",
+                  "width": 76.32,
+                  "height": 12.8944,
+                  "stroke": "#000000",
+                  "strokeWidth": 4.30752
+                },
+                {
+                  "type": "path",
+                  "id": "uAJib",
+                  "x": 131.48,
+                  "y": 19.68,
+                  "geometry": "M0.12001 7.36l-0.12001-2.2c0-3.16 2.12001-5.16 5.12001-5.16 3.12 0 5.48 2.16 5.72 5.36l0.2 3.24",
+                  "width": 11.04,
+                  "height": 8.6,
+                  "stroke": "#000000",
+                  "strokeWidth": 5.09692
+                },
+                {
+                  "type": "path",
+                  "id": "cuwO6",
+                  "x": 136.28,
+                  "y": 54.68,
+                  "geometry": "M0 5.24l0.32001 3.76c0.23999 2.68 2.12 4.08 4.36 3.84l24.03999-3.84c2.32001-0.44 3.52-1.88 3.52-4.32l-0.24-4.68",
+                  "width": 32.24,
+                  "height": 12.8665,
+                  "stroke": "#000000",
+                  "strokeWidth": 4.50088
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "I47J0",
+              "name": "Etikett",
+              "fill": "$text-2",
+              "content": "DRIVRUTINSIKON · Adress (kärl) · SVG 960×960",
+              "fontFamily": "$font-ui",
+              "fontSize": 13,
+              "fontWeight": "700",
+              "letterSpacing": 0.4
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "upiM6",
+          "x": 64,
+          "y": 520,
+          "name": "Drivrutinsbild",
+          "layout": "vertical",
+          "gap": 12,
+          "children": [
+            {
+              "type": "frame",
+              "id": "F4Om9d",
+              "name": "Drivrutinsbild 500 (exporteras 2×, 1×, 0,15×)",
+              "clip": true,
+              "width": 500,
+              "height": 500,
+              "fill": "#FFFFFF",
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "id": "bMBHQ",
+                  "type": "ref",
+                  "ref": "DNNFH",
+                  "name": "Kärl"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "D1utM",
+              "name": "Etikett",
+              "fill": "$text-2",
+              "content": "DRIVRUTINSBILD · vit bakgrund · 1000, 500 och 75 px",
+              "fontFamily": "$font-ui",
+              "fontSize": 13,
+              "fontWeight": "700",
+              "letterSpacing": 0.4
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "DNNFH",
+          "x": 640,
+          "y": 520,
+          "name": "Kärl/Illustration",
+          "reusable": true,
+          "clip": true,
+          "width": 480,
+          "height": 480,
+          "layout": "none",
+          "children": [
+            {
+              "type": "path",
+              "id": "m2zH9q",
+              "x": 138.36080000000004,
+              "y": 336.42675,
+              "geometry": "M17.09999 0c-9.84 4.01999-17.09999 25.61999-17.09999 45.47998 0 22.50003 7.25999 33.84003 16.73999 35.39999 3.84 0.72003 8.10001 0.78003 10.31999 0.54004l-6.11998-81.42001-3.84001 0z",
+              "fill": "#4A4F54",
+              "width": 27.06,
+              "height": 81.5467
+            },
+            {
+              "type": "path",
+              "id": "sVqEX",
+              "x": 152.70080000000002,
+              "y": 354.30675,
+              "geometry": "M4.86 0c-3.23999 7.91998-4.86 19.97998-4.86 30.54001 0 19.07999 5.87999 30.95996 12.17999 32.64001l-7.31999-63.18002z",
+              "fill": "#31373B",
+              "width": 12.18,
+              "height": 63.18
+            },
+            {
+              "type": "path",
+              "id": "kvvAZ",
+              "x": 134.6408,
+              "y": 110.52674999999999,
+              "geometry": "M2.52 37.86l26.64 266.28001c0.71999 6.35999 5.27998 10.56 10.98 11.76001 26.04001 5.64002 70.13998 11.87995 88.20001 12.83997 5.27997 0.30005 9.95999-0.83997 13.62-3.23999l31.07998-21.29999 20.45999-74.52 20.46003-229.68001-57.96003 22.14-155.99998-6.65999 2.52 22.37999z",
+              "fill": "#179E61",
+              "width": 213.96,
+              "height": 328.7871
+            },
+            {
+              "type": "path",
+              "id": "FgUoa",
+              "x": 269.16080000000005,
+              "y": 110.52674999999999,
+              "geometry": "M22.86002 23.16l-20.46003 299.28c-0.12 2.52002-1.07999 4.44-2.39999 5.52002 2.75998-0.36004 5.45999-1.20001 7.44-2.46002l31.07999-21.29999 20.45999-74.52 20.46002-229.68001-56.57998 23.16z",
+              "fill": "#0E824C",
+              "width": 79.44,
+              "height": 327.96
+            },
+            {
+              "type": "path",
+              "id": "jtrLD",
+              "x": 302.6408,
+              "y": 339.77955000000003,
+              "geometry": "M23.39999 0.00714c-12.78-0.42001-23.39999 24.96002-23.39999 49.5 0 22.14001 6.72 32.64001 16.07999 34.56003 4.20001 0.89999 9.54001 1.14001 12.90002 0.83996 12-0.89999 21.72-25.01996 21.72-49.67999 0-19.32001-5.81998-30.95999-13.31997-33.65997-4.26004-1.32001-9.54001-1.62003-13.98005-1.56003z",
+              "fill": "#4A4F54",
+              "width": 50.7,
+              "height": 85.0297
+            },
+            {
+              "type": "path",
+              "id": "DmjDc",
+              "x": 317.7608,
+              "y": 341.64675,
+              "geometry": "M19.74002 0c-10.62 1.73999-19.74002 25.38001-19.74002 49.13998 0 20.46002 6 32.51999 13.56003 33.72 12.59998-0.11999 22.01999-25.20001 22.01999-49.49999 0-20.57999-6.78-33.17999-15.84-33.35999z",
+              "fill": "#31373B",
+              "width": 35.58,
+              "height": 82.86
+            },
+            {
+              "type": "ellipse",
+              "id": "X6ng9g",
+              "x": 328.83900000000006,
+              "y": 357.08545,
+              "rotation": -5.598459999999999,
+              "fill": "#62686C",
+              "width": 18.9844,
+              "height": 50.1563
+            },
+            {
+              "type": "path",
+              "id": "lYL1H",
+              "x": 129.06080000000003,
+              "y": 108.48675,
+              "geometry": "M0 17.52l7.67999 22.14c1.2 3.23999 7.5 3.48 8.04001 0.41999l2.34-13.37999 122.63998 8.22 4.68002 14.64c0.96 2.82001 7.91999 2.64 8.51999-0.06l4.68-16.56 43.14001-15.72 0.9 14.81999c0.30001 3.3 6.30001 2.58 6.89999-1.01999l4.20001-23.16 5.75998-4.62 0.42001-3.24-60.05999 24.84-25.68003 1.91999-134.15997-9.23999z",
+              "fill": "#107243",
+              "width": 219.9,
+              "height": 51.601
+            },
+            {
+              "type": "path",
+              "id": "ZNeeS",
+              "x": 291.78080000000006,
+              "y": 120.48675,
+              "geometry": "M0.06 12.42l-0.06 7.92 38.82001-15.48 0.05999-4.86-38.82 12.42z",
+              "fill": "#0D5E39",
+              "width": 38.88,
+              "height": 20.34
+            },
+            {
+              "type": "path",
+              "id": "dQ2dH",
+              "x": 341.4608,
+              "y": 112.08675,
+              "geometry": "M0.36002 3.42001l-0.36002 7.44001 5.88-4.44001 1.01999-6.42001-6.53997 3.42001z",
+              "fill": "#0D5E39",
+              "width": 6.9,
+              "height": 10.86
+            },
+            {
+              "type": "path",
+              "id": "PrFB6",
+              "x": 115.98080000000002,
+              "y": 89.52674999999999,
+              "geometry": "M0 16.44l0 13.02c0 4.2 5.88 6.36 11.58 6.78l136.38001 9.47999c10.85998 0.66 21.23999-0.06 27.66-2.22l63.78-23.7c2.10001-0.84 3.11999-1.8 3.11999-3.72l0-16.07999-242.52 16.44z",
+              "fill": "#179E61",
+              "width": 242.52,
+              "height": 45.9559
+            },
+            {
+              "type": "path",
+              "id": "pydMn",
+              "x": 115.97920000000002,
+              "y": 61.266749999999995,
+              "geometry": "M11.22157 37.62c-6.36 1.74-11.04 3.84-11.22 6.72-0.12 2.88001 6.66 4.44 12.95999 4.92l134.27999 7.74c11.28003 0.72 22.08001-0.18001 29.70001-2.76l61.86001-22.26c3.54001-1.43999 4.56-4.25999 2.70002-5.94l-14.52002-11.4-9.60001-9.84c-1.67999-0.84-4.37997-1.14001-7.44-1.32l-14.81998-0.84-120.48001-2.64c-19.44 7.62-43.79999 19.98-55.68001 27.3-4.13998 2.93999-6.11999 7.25999-7.73999 10.32z",
+              "fill": "#129258",
+              "width": 242.415,
+              "height": 57.2393
+            },
+            {
+              "type": "path",
+              "id": "o9b80",
+              "x": 125.61770000000001,
+              "y": 66.42675,
+              "geometry": "M207.7431 0l-54.6 31.26c-4.55997 2.34-9.9 2.88-16.13999 2.58l-129.65999-6.78c-3.78 2.94-6.48 6.53999-7.26 9.54-0.66 2.22 2.7 3.48001 6.9 3.78l129.23999 8.1c10.98001 0.72 21.18003 0 28.62-2.34l57.36001-20.45999c1.56-0.72 1.97999-2.04 1.62-3.72-2.28-8.94-8.70001-18.78-16.08002-21.96001z",
+              "fill": "#0D7948",
+              "width": 223.9436,
+              "height": 48.7473
+            },
+            {
+              "type": "path",
+              "id": "KblMR",
+              "x": 343.0208,
+              "y": 75.90674999999999,
+              "geometry": "M0 0l12.95999 0.54c5.34 0.3 8.04001 5.82 8.04001 13.8 0 7.38001-3 12.78-5.88003 13.56l0-13.14001c-0.23999-2.09999-1.73999-2.75999-4.38001-2.57999l-4.13998 0.36c-0.95999-4.62-3.66-9.18-6.59998-12.54z",
+              "fill": "#128351",
+              "width": 21,
+              "height": 27.9
+            },
+            {
+              "type": "path",
+              "id": "e1pN3",
+              "x": 349.3808,
+              "y": 76.61945,
+              "geometry": "M7.56 0.00732c-4.62-0.24-7.20001 5.46-7.56 10.8l3.95999-0.12c2.76001-1.02 5.34 0.66 5.4 3.48001l0 12.47999c3.29999-1.02001 5.28003-6.78 5.28003-13.02 0-7.8-2.88004-13.37999-7.08002-13.62z",
+              "fill": "#0D643D",
+              "width": 14.64,
+              "height": 26.6473
+            },
+            {
+              "type": "path",
+              "id": "dwFPw",
+              "x": 190.50080000000003,
+              "y": 40.68615,
+              "geometry": "M11.34 0.00061c-7.61999-0.06-11.34 4.32-11.34 10.38l0 11.34c5.03999 1.5 15.06 2.34 16.44-0.3l0-6.84c0-1.74 1.13998-2.4 2.93999-2.34001l80.82002 3.72001c2.33997 0.18 3.53998 1.32 3.71997 3.24l0.78003 7.74c6.41999 1.02 15.35999 1.56 16.25998-1.26l-1.38-11.52c-0.78-6.72-5.51999-10.08-12.29999-10.38l-95.94-3.78z",
+              "fill": "#128D57",
+              "width": 120.96,
+              "height": 27.7636
+            },
+            {
+              "type": "path",
+              "id": "PeaVb",
+              "x": 190.50080000000003,
+              "y": 45.89635,
+              "geometry": "M0 7.15043l0 9.18c4.98 1.86 14.87999 2.4 16.25998 0.06l0-7.26c0-2.04 1.26002-2.64 3.90002-2.52l79.73999 3.78c2.58002 0.18 3.66001 1.38 3.9 3.42l0.78 7.8c7.02002 1.38001 15.72 1.68 16.02002-1.2l-0.78-6.96c-4.44001 0.96-10.62-0.18-14.16001-3.66-2.28-3.06-6.12002-3.96-10.13998-4.14l-43.50002-2.1c-17.34001-5.04-34.2-4.38-39.66-0.12-3.72002 5.04-9 5.34-12.36 3.72z",
+              "fill": "#0D683F",
+              "width": 120.6,
+              "height": 22.6261
+            },
+            {
+              "type": "path",
+              "id": "oZQY5",
+              "x": 131.4653,
+              "y": 93.90455,
+              "geometry": "M2.99554 0.00221c-3.3-0.12-4.25999 4.67999-0.9 4.92l41.7 2.7c3.42 0.24001 4.14-4.8 0.96001-4.98l-41.76001-2.64z",
+              "fill": "#C9FFE6",
+              "width": 46.7903,
+              "height": 7.6305
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "G5Smh",
+          "x": 640,
+          "y": 1012,
+          "name": "Komponentetikett",
+          "fill": "$text-2",
+          "content": "KOMPONENT · Kärl/Illustration",
+          "fontFamily": "$font-ui",
+          "fontSize": 13,
+          "fontWeight": "700",
+          "letterSpacing": 0.4
+        }
+      ]
     }
   ],
   "themes": {
