@@ -104,7 +104,7 @@ Kartlagt 2026-10-31.
 
 | App | När | Och | Då |
 |---|---|---|---|
-| **Sophämtning 0.2.0** | i morgon vid inställd tid (+ fraktion) | fraktion (inte) i dag/i morgon/i övermorgon | uppdatera; Advanced: vilka fraktioner [när] |
+| **Sophämtning 0.3.0** | i morgon och i dag vid inställda tider (+ fraktion), schemat ändrat | fraktion (inte) i dag/i morgon/i övermorgon; fraktion (inte) om N dagar | uppdatera; Advanced: vilka fraktioner [när] |
 | SRV Sophämtning | i dag, i morgon, om N dagar, schemat ändrat | dagar till hämtning = N; nästa innehåller typ | uppdatera |
 | Sysav (hibbisoft) | i dag, i morgon, datum ändrat | om N dagar | – |
 | Trashcan Reminder 2.0 | inga | typ (inte) [i dag/i morgon/i övermorgon] | Advanced: vilka typer [när] |
@@ -112,10 +112,12 @@ Kartlagt 2026-10-31.
 | Remidt (NO) | i dag, i morgon, om 2 dagar, denna vecka, status ändrad | många, bl.a. "minst N typer i dag" | – |
 | Recycle België | tio stycken, bl.a. påminnelse 24 h och 4 h före, schemat ändrat, flyttad hämtning | fem | sex, bl.a. färdig notistext |
 
-**Där vi ligger efter:**
-- Godtyckligt antal dagar ("om N dagar") och "dagar till nästa hämtning", både som villkor, token och capability.
-- En trigger för "schemat ändrat" eller "flyttad hämtning", som spelar roll kring helgdagar.
-- En trigger för "hämtas i dag", till exempel som påminnelse på morgonen.
+**Där vi låg efter, och som 0.3.0 täcker:**
+- "Om N dagar" och "Dagar kvar".
+- En trigger för "schemat ändrat".
+- En trigger för "hämtas i dag".
+
+**Kvar:**
 - Möjligheten att dölja fraktioner man inte har.
 - En widget.
 

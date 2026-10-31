@@ -6,6 +6,7 @@
   "class": "other",
   "capabilities": [
     "sopor_summary",
+    "sopor_days",
     "sopor_tomorrow"
   ],
   "platforms": [
@@ -51,6 +52,19 @@
       "hint": {
         "en": "When the card \"Waste is collected tomorrow\" runs, the evening before a collection. Format HH:MM, Swedish time.",
         "sv": "När kortet \"Sopor hämtas i morgon\" går, kvällen före en hämtning. Skriv som HH:MM, svensk tid."
+      }
+    },
+    {
+      "id": "morgontid",
+      "type": "text",
+      "label": {
+        "en": "Morning time",
+        "sv": "Morgontid"
+      },
+      "value": "07:00",
+      "hint": {
+        "en": "When the card \"Waste is collected today\" runs on a collection day. Format HH:MM, Swedish time.",
+        "sv": "När kortet \"Sopor hämtas i dag\" går på en hämtningsdag. Skriv som HH:MM, svensk tid."
       }
     }
   ]

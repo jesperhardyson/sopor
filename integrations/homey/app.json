@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "se.hardyson.sopor",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "compatibility": ">=12.3.0",
   "sdk": 3,
   "platforms": [
@@ -104,6 +104,171 @@
             }
           }
         ]
+      },
+      {
+        "id": "hamtas_i_dag",
+        "title": {
+          "en": "Waste is collected today",
+          "sv": "Sopor hämtas i dag"
+        },
+        "titleFormatted": {
+          "en": "[[fraktion]] is collected today",
+          "sv": "[[fraktion]] hämtas i dag"
+        },
+        "hint": {
+          "en": "Runs once on a collection day at the morning time in the device settings (07:00 unless you change it).",
+          "sv": "Går en gång på en hämtningsdag vid morgontiden i enhetens inställningar (07:00 om du inte ändrar den)."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=adress"
+          },
+          {
+            "name": "fraktion",
+            "type": "autocomplete",
+            "title": {
+              "en": "Fraction",
+              "sv": "Fraktion"
+            },
+            "placeholder": {
+              "en": "Any fraction",
+              "sv": "Någon fraktion"
+            }
+          }
+        ],
+        "tokens": [
+          {
+            "name": "fraktioner",
+            "type": "string",
+            "title": {
+              "en": "Fractions",
+              "sv": "Fraktioner"
+            },
+            "example": {
+              "en": "Plastic packaging, Metal",
+              "sv": "Plastförpackningar, Metall"
+            }
+          },
+          {
+            "name": "antal",
+            "type": "number",
+            "title": {
+              "en": "Number of fractions",
+              "sv": "Antal fraktioner"
+            },
+            "example": 2
+          },
+          {
+            "name": "datum",
+            "type": "string",
+            "title": {
+              "en": "Date",
+              "sv": "Datum"
+            },
+            "example": {
+              "en": "thu 5 nov",
+              "sv": "tors 5 nov"
+            }
+          }
+        ]
+      },
+      {
+        "id": "schema_andrat",
+        "title": {
+          "en": "The collection schedule changed",
+          "sv": "Hämtschemat ändrades"
+        },
+        "titleFormatted": {
+          "en": "The schedule for [[fraktion]] changed",
+          "sv": "Schemat för [[fraktion]] ändrades"
+        },
+        "hint": {
+          "en": "Runs when the next collection of a fraction is moved, cancelled or added, for example around holidays.",
+          "sv": "Går när nästa hämtning av en fraktion flyttas, ställs in eller tillkommer, till exempel kring helgdagar."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=adress"
+          },
+          {
+            "name": "fraktion",
+            "type": "autocomplete",
+            "title": {
+              "en": "Fraction",
+              "sv": "Fraktion"
+            },
+            "placeholder": {
+              "en": "Any fraction",
+              "sv": "Någon fraktion"
+            }
+          }
+        ],
+        "tokens": [
+          {
+            "name": "fraktion",
+            "type": "string",
+            "title": {
+              "en": "Fraction",
+              "sv": "Fraktion"
+            },
+            "example": {
+              "en": "Plastic packaging",
+              "sv": "Plastförpackningar"
+            }
+          },
+          {
+            "name": "text",
+            "type": "string",
+            "title": {
+              "en": "Description",
+              "sv": "Beskrivning"
+            },
+            "example": {
+              "en": "Plastförpackningar flyttas från ons 4 nov till tors 5 nov",
+              "sv": "Plastförpackningar flyttas från ons 4 nov till tors 5 nov"
+            }
+          },
+          {
+            "name": "tidigare",
+            "type": "string",
+            "title": {
+              "en": "Previous date",
+              "sv": "Tidigare datum"
+            },
+            "example": {
+              "en": "wed 4 nov",
+              "sv": "ons 4 nov"
+            }
+          },
+          {
+            "name": "nytt",
+            "type": "string",
+            "title": {
+              "en": "New date",
+              "sv": "Nytt datum"
+            },
+            "example": {
+              "en": "thu 5 nov",
+              "sv": "tors 5 nov"
+            }
+          },
+          {
+            "name": "orsak",
+            "type": "string",
+            "title": {
+              "en": "Reason",
+              "sv": "Orsak"
+            },
+            "example": {
+              "en": "Public holiday",
+              "sv": "Allhelgonahelgen"
+            }
+          }
+        ]
       }
     ],
     "conditions": [
@@ -169,6 +334,55 @@
                 }
               }
             ]
+          }
+        ]
+      },
+      {
+        "id": "hamtas_om",
+        "title": {
+          "en": "Waste is !{{|not}} collected in a number of days",
+          "sv": "Sopor hämtas !{{|inte}} om ett antal dagar"
+        },
+        "titleFormatted": {
+          "en": "[[fraktion]] is !{{|not}} collected in [[dagar]] days",
+          "sv": "[[fraktion]] hämtas !{{|inte}} om [[dagar]] dagar"
+        },
+        "hint": {
+          "en": "0 is today, 1 is tomorrow.",
+          "sv": "0 är i dag, 1 är i morgon."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=adress"
+          },
+          {
+            "name": "fraktion",
+            "type": "autocomplete",
+            "title": {
+              "en": "Fraction",
+              "sv": "Fraktion"
+            },
+            "placeholder": {
+              "en": "Any fraction",
+              "sv": "Någon fraktion"
+            }
+          },
+          {
+            "name": "dagar",
+            "type": "number",
+            "title": {
+              "en": "Days",
+              "sv": "Dagar"
+            },
+            "min": 0,
+            "max": 60,
+            "step": 1,
+            "placeholder": {
+              "en": "3",
+              "sv": "3"
+            }
           }
         ]
       }
@@ -275,6 +489,7 @@
       "class": "other",
       "capabilities": [
         "sopor_summary",
+        "sopor_days",
         "sopor_tomorrow"
       ],
       "platforms": [
@@ -321,12 +536,43 @@
             "en": "When the card \"Waste is collected tomorrow\" runs, the evening before a collection. Format HH:MM, Swedish time.",
             "sv": "När kortet \"Sopor hämtas i morgon\" går, kvällen före en hämtning. Skriv som HH:MM, svensk tid."
           }
+        },
+        {
+          "id": "morgontid",
+          "type": "text",
+          "label": {
+            "en": "Morning time",
+            "sv": "Morgontid"
+          },
+          "value": "07:00",
+          "hint": {
+            "en": "When the card \"Waste is collected today\" runs on a collection day. Format HH:MM, Swedish time.",
+            "sv": "När kortet \"Sopor hämtas i dag\" går på en hämtningsdag. Skriv som HH:MM, svensk tid."
+          }
         }
       ],
       "id": "adress"
     }
   ],
   "capabilities": {
+    "sopor_days": {
+      "type": "number",
+      "title": {
+        "en": "Days left",
+        "sv": "Dagar kvar"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "units": {
+        "en": "d",
+        "sv": "d"
+      },
+      "decimals": 0,
+      "min": 0,
+      "icon": "/assets/icon.svg",
+      "insights": false
+    },
     "sopor_next": {
       "type": "string",
       "title": {

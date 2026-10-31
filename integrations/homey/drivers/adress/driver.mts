@@ -12,6 +12,13 @@ interface CardArgs {
   device: AddressDevice
   fraktion?: { id: string }
   nar: string
+  dagar: number
+}
+
+/** Fraktionsfiltret i triggerkorten: "Någon fraktion" släpper igenom allt. */
+const matchesFraction = (args: CardArgs, state: { fractions: string[] }) => {
+  const fraction = chosenFraction(args.fraktion)
+  return fraction === null || state.fractions.includes(fraction)
 }
 
 function deviceName(hit: SoporSearchHit): string {
@@ -25,16 +32,19 @@ export default class AddressDriver extends Homey.Driver {
       return schedule ? fractionChoices(schedule, query, this.homey.__('anyFraction')) : []
     }
 
-    const imorgon = this.homey.flow.getDeviceTriggerCard('hamtas_i_morgon')
-    imorgon.registerArgumentAutocompleteListener('fraktion', autocomplete)
-    imorgon.registerRunListener(async (args: CardArgs, state: { fractions: string[] }) => {
-      const fraction = chosenFraction(args.fraktion)
-      return fraction === null || state.fractions.includes(fraction)
-    })
+    for (const id of ['hamtas_i_morgon', 'hamtas_i_dag', 'schema_andrat']) {
+      const trigger = this.homey.flow.getDeviceTriggerCard(id)
+      trigger.registerArgumentAutocompleteListener('fraktion', autocomplete)
+      trigger.registerRunListener(async (args: CardArgs, state: { fractions: string[] }) => matchesFraction(args, state))
+    }
 
     const hamtas = this.homey.flow.getConditionCard('hamtas')
     hamtas.registerArgumentAutocompleteListener('fraktion', autocomplete)
     hamtas.registerRunListener(async (args: CardArgs) => args.device.isCollected(chosenFraction(args.fraktion), Number(args.nar)))
+
+    const hamtasOm = this.homey.flow.getConditionCard('hamtas_om')
+    hamtasOm.registerArgumentAutocompleteListener('fraktion', autocomplete)
+    hamtasOm.registerRunListener(async (args: CardArgs) => args.device.isCollected(chosenFraction(args.fraktion), Math.round(args.dagar)))
 
     this.homey.flow.getActionCard('uppdatera').registerRunListener(async (args: CardArgs) => {
       await args.device.refresh()

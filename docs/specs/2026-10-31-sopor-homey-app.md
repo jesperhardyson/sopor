@@ -5,6 +5,7 @@ Status: utkast, 2026-10-31. Bygger på undersökningen `2026-10-31-integrationer
 Beslut:
 - Villkoren gör att användaren kan välja tiden själv i sitt flöde.
 - Från 0.2.0 finns också triggern "Sopor hämtas i morgon" vid en inställd tid per enhet. Utan den gick det inte att få fraktionernas namn i en notis i ett vanligt flöde, eftersom tokens från handlingskort bara finns i Advanced Flow.
+- 0.3.0 lägger till det som liknande appar har och vi saknade (se jämförelsen i undersökningen): "om N dagar", "Dagar kvar", triggern "Sopor hämtas i dag" och triggern "Hämtschemat ändrades".
 
 ## Mål
 
@@ -35,6 +36,7 @@ En Homey Pro-ägare lägger till sin adress genom att söka på den. Sedan kan a
 | Capability | Typ | Visar |
 |---|---|---|
 | `sopor_summary` | string, sensor | Nästa hämtning, till exempel "Plast & metall – om 4 dagar". Räknas lokalt ur `events`. |
+| `sopor_days` | number (d), sensor | "Dagar kvar" till nästa hämtning av någon fraktion. Den är tom när inget väntar. |
 | `sopor_tomorrow` | string, sensor | "I morgon": till exempel "Plast & metall", eller "Inget". Fungerar som enhetstagg i vanliga flöden. |
 | `sopor_next.<fraktion>` | string, sensor | En per fraktion som adressen har, med fraktionens namn som titel. Till exempel "i morgon" eller "om 4 dagar, ons 4 nov". |
 
@@ -71,10 +73,16 @@ Alla är enhetskort och syns under adressens enhet (i dess zon) när man väljer
   - `fraktion` (autocomplete, "Någon fraktion" som standard) filtrerar.
   - Tokens: `fraktioner` (namnen med komma emellan), `antal` och `datum` (till exempel "tors 5 nov").
   - Senast utlöst dag sparas i enhetens `store`, så att triggern inte går två gånger efter en omstart.
+- **Trigger `hamtas_i_dag`:** "Sopor hämtas i dag". Den fungerar som `hamtas_i_morgon`, men går vid inställningen **Morgontid** (`morgontid`, standard 07:00) på själva hämtningsdagen. Senast utlöst dag sparas separat.
+- **Trigger `schema_andrat`:** "Hämtschemat ändrades" / "Schemat för [[fraktion]] ändrades".
+  - Går efter en hämtning från API:t, en gång per fraktion vars nästa datum (räknat från i dag) har flyttats, försvunnit eller tillkommit jämfört med förra svaret.
+  - Passerade hämtningar räknas inte som ändringar. Vid första hämtningen går den inte.
+  - Tokens: `fraktion`, `text` (till exempel "Plastförpackningar flyttas från ons 4 nov till tors 5 nov"), `tidigare`, `nytt` och `orsak` (källans `deviation.reason`, annars tom).
 - **Villkor `hamtas`:** "Sopor hämtas !{{|inte}}" i listan, och "[[fraktion]] hämtas !{{|inte}} [[nar]]" i kortet.
   - `fraktion` (autocomplete): "Någon fraktion", följd av adressens fraktioner i den ordning svarets `fractions{}` har dem. Valet filtreras på det användaren skriver.
   - `nar` (dropdown): i dag (0), i morgon (1), i övermorgon (2).
   - Sant om något datum i `events` med `datum = i dag + nar` innehåller fraktionen. Med "Någon fraktion" räcker det att datumet finns.
+- **Villkor `hamtas_om`:** "[[fraktion]] hämtas !{{|inte}} om [[dagar]] dagar", där `dagar` är 0–60 och 0 betyder i dag.
 - **Handling `uppdatera`:** "Uppdatera hämtschemat". Hämtar direkt från API:t och kastar fel om det misslyckas, så att flödet visar felet.
 - **Handling `vad_hamtas`** (bara Advanced Flow, eftersom den har tokens): "Vilka sopor hämtas [[nar]]?".
   - Token `fraktioner` (text): namnen med komma emellan, eller tom text.

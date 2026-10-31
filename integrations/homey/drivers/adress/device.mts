@@ -3,13 +3,20 @@ import type SoporApp from '../../app.mjs'
 import { SoporError, type SoporSchedule } from '../../lib/api.mjs'
 import { addDays, shortDate, stockholmTime, todayInStockholm } from '../../lib/dates.mjs'
 import { isValidTime, reminderDue } from '../../lib/reminder.mjs'
-import { collectedOn, fractionIds, fractionName, fractionsOn, nextText, summary, tomorrowText } from '../../lib/schedule.mjs'
+import { changeText, collectedOn, daysToNext, fractionIds, fractionName, fractionsOn, nextText, scheduleChanges, summary, tomorrowText } from '../../lib/schedule.mjs'
 
 const TICK_MS = 15 * 60_000
 const REMINDER_TICK_MS = 60_000
 const REFRESH_MS = 6 * 3_600_000
 const RETRY_MS = 3_600_000
 const PREFIX = 'sopor_next.'
+const BASE_CAPABILITIES = ['sopor_summary', 'sopor_days', 'sopor_tomorrow']
+
+/** Triggerkorten som går vid en inställd tid, och dagarna framåt de gäller. */
+const REMINDERS = [
+  { card: 'hamtas_i_morgon', setting: 'paminnelsetid', fallback: '18:00', daysAhead: 1, store: 'reminded' },
+  { card: 'hamtas_i_dag', setting: 'morgontid', fallback: '07:00', daysAhead: 0, store: 'remindedToday' },
+]
 
 /** Capability-id får bara innehålla a–z, 0–9 och _. */
 const capabilityFor = (fraction: string) => PREFIX + fraction.toLowerCase().replace(/[^a-z0-9_]/g, '_')
@@ -24,36 +31,57 @@ export default class AddressDevice extends Homey.Device {
     await this.tick()
   }
 
-  /** Enheter från 0.1.0 saknar "I morgon". Fraktionsraderna läggs om så att den hamnar före dem. */
+  /** Äldre enheter saknar nyare rader. Fraktionsraderna läggs om så att de hamnar sist. */
   private async migrate() {
-    if (this.hasCapability('sopor_tomorrow')) return
-    await this.addCapability('sopor_tomorrow')
+    const missing = BASE_CAPABILITIES.filter((capability) => !this.hasCapability(capability))
+    if (!missing.length) return
+    for (const capability of missing) await this.addCapability(capability)
     for (const capability of this.getCapabilities()) {
       if (capability.startsWith(PREFIX)) await this.removeCapability(capability)
     }
   }
 
-  async onSettings({ newSettings }: { newSettings: { paminnelsetid?: string } }) {
-    if (newSettings.paminnelsetid !== undefined && !isValidTime(newSettings.paminnelsetid)) {
-      throw new Error(this.homey.__('device.badTime'))
+  async onSettings({ newSettings }: { newSettings: Record<string, unknown> }) {
+    for (const { setting } of REMINDERS) {
+      const time = newSettings[setting]
+      if (typeof time === 'string' && !isValidTime(time)) throw new Error(this.homey.__('device.badTime'))
     }
   }
 
-  /** Triggern "Sopor hämtas i morgon": en gång om dagen vid påminnelsetiden, om något hämtas. */
+  /** Triggerkorten "hämtas i morgon" och "hämtas i dag": en gång om dagen vid sin tid, om något hämtas. */
   private async remind() {
     const schedule = this.schedule
+    if (!schedule) return
     const today = todayInStockholm()
-    const time = this.getSetting('paminnelsetid') ?? '18:00'
-    if (!schedule || !reminderDue({ now: stockholmTime(), time, today, lastFired: this.getStoreValue('reminded') ?? null })) return
-    await this.setStoreValue('reminded', today)
-    const fractions = fractionsOn(schedule, today, 1)
-    if (!fractions.length) return
-    const tokens = {
-      fraktioner: fractions.map((id) => fractionName(schedule, id)).join(', '),
-      antal: fractions.length,
-      datum: shortDate(addDays(today, 1)),
+    const now = stockholmTime()
+    for (const reminder of REMINDERS) {
+      const time = this.getSetting(reminder.setting) ?? reminder.fallback
+      if (!reminderDue({ now, time, today, lastFired: this.getStoreValue(reminder.store) ?? null })) continue
+      await this.setStoreValue(reminder.store, today)
+      const fractions = fractionsOn(schedule, today, reminder.daysAhead)
+      if (!fractions.length) continue
+      const tokens = {
+        fraktioner: fractions.map((id) => fractionName(schedule, id)).join(', '),
+        antal: fractions.length,
+        datum: shortDate(addDays(today, reminder.daysAhead)),
+      }
+      await this.homey.flow.getDeviceTriggerCard(reminder.card).trigger(this, tokens, { fractions })
     }
-    await this.homey.flow.getDeviceTriggerCard('hamtas_i_morgon').trigger(this, tokens, { fractions })
+  }
+
+  /** Triggern "Hämtschemat ändrades", en gång per fraktion vars nästa hämtning ändrats. */
+  private async announceChanges(before: SoporSchedule, after: SoporSchedule) {
+    const card = this.homey.flow.getDeviceTriggerCard('schema_andrat')
+    for (const change of scheduleChanges(before, after, todayInStockholm())) {
+      const tokens = {
+        fraktion: fractionName(after, change.fraction),
+        text: changeText(after, change),
+        tidigare: change.from ? shortDate(change.from) : '',
+        nytt: change.to ? shortDate(change.to) : '',
+        orsak: change.reason ?? '',
+      }
+      await card.trigger(this, tokens, { fractions: [change.fraction] })
+    }
   }
 
   get schedule(): SoporSchedule | null {
@@ -69,8 +97,10 @@ export default class AddressDevice extends Homey.Device {
   /** Hämtar schemat direkt. Kastar vid fel, så att flödeskortet "Uppdatera schemat" visar det. */
   async refresh() {
     const { client } = this.homey.app as SoporApp
+    const before = this.schedule
     const schedule = await client.schedule(this.getStoreValue('url'))
     await this.setStoreValue('schedule', schedule)
+    if (before) await this.announceChanges(before, schedule).catch(this.error)
     this.nextFetch = Date.now() + REFRESH_MS
     await this.setAvailable()
     await this.render()
@@ -103,6 +133,7 @@ export default class AddressDevice extends Homey.Device {
     }
     await this.setCapabilityValue('sopor_summary', summary(schedule, today))
     await this.setCapabilityValue('sopor_tomorrow', tomorrowText(schedule, today))
+    await this.setCapabilityValue('sopor_days', daysToNext(schedule, today))
   }
 
   private requireSchedule(): SoporSchedule {

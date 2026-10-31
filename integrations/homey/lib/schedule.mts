@@ -85,3 +85,38 @@ export function formatNext(days: number, date: string, estimated: boolean): stri
   void date, estimated, shortDate
   return relativeDayLabel(days)
 }
+
+/** Dagar till nästa hämtning av någon fraktion, eller null när inget väntar. */
+export function daysToNext(schedule: SoporSchedule, today: string): number | null {
+  const first = upcoming(schedule, today)[0]
+  return first ? daysBetween(today, first.date) : null
+}
+
+export interface ScheduleChange {
+  fraction: string
+  /** Nästa datum före ändringen, null om fraktionen inte hade något */
+  from: string | null
+  to: string | null
+  /** Källans förklaring till avvikelsen, om den finns */
+  reason: string | null
+}
+
+/** Fraktioner vars nästa hämtning (från i dag) har flyttats, försvunnit eller tillkommit. */
+export function scheduleChanges(before: SoporSchedule, after: SoporSchedule, today: string): ScheduleChange[] {
+  const ids = [...new Set([...fractionIds(before), ...fractionIds(after)])]
+  return ids.flatMap((fraction) => {
+    const from = nextDate(before, today, fraction)
+    const to = nextDate(after, today, fraction)
+    if (from === to) return []
+    const reason = (to && after.events.find((e) => e.date === to && e.fractions.includes(fraction))?.deviation?.reason) || null
+    return [{ fraction, from, to, reason }]
+  })
+}
+
+/** "Plastförpackningar flyttas från ons 4 nov till tors 5 nov" */
+export function changeText(schedule: SoporSchedule, change: ScheduleChange): string {
+  const name = fractionName(schedule, change.fraction)
+  if (change.from && change.to) return `${name} flyttas från ${shortDate(change.from)} till ${shortDate(change.to)}`
+  if (change.from) return `${name} hämtas inte ${shortDate(change.from)}`
+  return `${name} hämtas ${shortDate(change.to!)}`
+}
