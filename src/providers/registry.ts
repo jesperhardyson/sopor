@@ -1,7 +1,7 @@
 import type { Address } from '@/domain/types'
 import { getSource, SOURCES, type Source } from '@/sources'
 import { pickLiveSources, shardKey, type StreetShard } from '@/data/street-index'
-import { normalize } from '@/domain/search'
+import { fairShare, normalize } from '@/domain/search'
 import { kommunForLocality } from '@/sources'
 import { createApiProvider } from './api'
 import { loadPlaces } from './places'
@@ -161,7 +161,7 @@ export async function searchAll(
   const localAddresses = localResults.some((r) => r.status === 'fulfilled') ? mergeResults(localResults, 8) : []
   if (!signal?.aborted) onPartial?.({ addresses: localAddresses, failed: [] })
   const { addresses, failed } = await live
-  return { addresses: [...localAddresses, ...addresses].slice(0, 12), failed }
+  return { addresses: fairShare([...localAddresses, ...addresses], 12), failed }
 }
 
 /** Förslag för "Menade du:" (bara statiska källor har listan lokalt). */

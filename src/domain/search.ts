@@ -99,3 +99,27 @@ export function groupByKommun(addresses: Address[]): KommunGroup[] {
   for (const a of addresses) groups.set(a.kommun, [...(groups.get(a.kommun) ?? []), a])
   return [...groups].map(([kommun, list]) => ({ kommun, addresses: list }))
 }
+
+/**
+ * Högst `limit` träffar, fördelade per kommun i tur och ordning. Annars tar den källa som svarar
+ * först alla platser. Träffarnas inbördes ordning behålls.
+ */
+export function fairShare(addresses: Address[], limit: number): Address[] {
+  if (addresses.length <= limit) return addresses
+  const groups = groupByKommun(addresses)
+  const quota = new Map(groups.map((g) => [g.kommun, 0]))
+  for (let given = 0; given < limit; ) {
+    for (const g of groups) {
+      const n = quota.get(g.kommun)!
+      if (given < limit && n < g.addresses.length) {
+        quota.set(g.kommun, n + 1)
+        given++
+      }
+    }
+  }
+  return addresses.filter((a) => {
+    const n = quota.get(a.kommun)!
+    quota.set(a.kommun, n - 1)
+    return n > 0
+  })
+}

@@ -82,6 +82,15 @@ describe('searchAll', () => {
     expect(f.mock.calls.map(([u]) => u)).toContain('/api/sok?q=storgatan&sources=uppsala')
   })
 
+  it('låter inte en källa med många träffar tränga ut de andra kommunerna', async () => {
+    const boras: Address = { id: 'storgatan-1_boras', street: 'Storgatan 1', locality: 'Borås', sourceId: 'boras', kommun: 'Borås kommun' }
+    stubFetch({ addresses: [...Array.from({ length: 11 }, (_, i) => up(`Storgatan ${i + 1}`)), boras], failed: [] })
+    const { searchAll } = await import('./registry')
+    const result = await searchAll('Storgatan')
+    expect(result.addresses).toHaveLength(12)
+    expect(result.addresses.map((x) => x.kommun)).toEqual(expect.arrayContaining(['Avesta kommun', 'Borås kommun']))
+  })
+
   it('skickar frågan med gemener och enkla mellanslag, så att Vercels cache träffar oftare', async () => {
     const f = stubFetch({ addresses: [], failed: [] })
     const { searchAll } = await import('./registry')
