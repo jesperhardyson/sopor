@@ -1,6 +1,6 @@
 # Spec: Smarta hem på webben
 
-Status: skiss, 2026-10-31. Skisserna finns på sidan "Smarta hem på webben · skiss" i `docs/design/sopor-design.pen`.
+Status: byggd, 2026-10-31. Skisserna finns på sidan "Smarta hem på webben · skiss" i `docs/design/sopor-design.pen`.
 
 ## Mål
 
@@ -13,6 +13,8 @@ Den som har Homey eller Home Assistant ska förstå att Sopor fungerar där, och
    - Den har en rad per integration.
    - Raden för Homey visar exakt vad man ska söka på för just den adressen, med en kopieringsknapp.
    - API-länken för utvecklare ligger kvar längst ner som en enkel rad med "Kopiera".
+
+3. **Startsidan:** en femte rad i "Det här får du", efter "Spara adresser". Den har samma utseende som de andra raderna (ikon i `brand-soft`, rubrik och text) och en länk "Läs mer →" till avsnittet Smarta hem på Om-sidan (`/om#smarta-hem`).
 
 Ingen egen sida i första steget. Den kan komma när Home Assistant finns, med skärmbilder av widget och flöden.
 
@@ -42,6 +44,16 @@ Ingen egen sida i första steget. Den kan komma när Home Assistant finns, med s
 
 **Bygger du något eget?** Läs API-guiden →
 
+### Startsidan
+
+**Smarta hem** (ikon `house-wifi`)
+
+> Påminnelse i Homey kvällen innan. Home Assistant är på väg.
+>
+> Läs mer →
+
+När Home Assistant finns: "Påminnelser i Homey och Home Assistant, kvällen innan."
+
 ### Adressidan
 
 **Smarta hem**
@@ -69,9 +81,15 @@ Söktexten är `"<gata>, <ort>"`, med kommunen om orten saknas. Det är samma fo
 - **Samma löfte som sajten.** Inofficiellt och gratis, och kommunens information gäller vid avvikelser. Det står redan på Om-sidan och i App Store-texten och behöver inte upprepas i varje kort.
 - **Korta texter.** En mening till ett kort, högst tre punkter och en knapp.
 
-## Byggs sen
+## Bygget
 
-- Komponenten `SmartHomeBox` ersätter `ApiBox` på adressidan. `ApiBox` lever kvar som raden längst ner. Avsnittet på Om-sidan blir en komponent `IntegrationCard`.
+- `src/ui/integrations/SmartHomeBox.tsx` ersätter `ApiBox` på adressidan. API-länken är raden längst ner, med "Kopiera".
+- `src/ui/integrations/IntegrationCards.tsx` innehåller Om-sidans kort, och `StatusBadge.tsx` märkena.
+- Söktexten för Homey räknas i `homeySearchText` (`src/lib/homey.ts`).
+- Om-sidan skrollar till `#smarta-hem` när den öppnas med ankaret.
 - Länkarna läggs i `SITE`: `homeyAppUrl` (testlänken nu, App Store sen) och `homeAssistantGuideUrl`.
-- Tester: korten och rutan renderar, söktexten för en adress utan ort, och att kopieringen fungerar utan urklipp (try/catch, som i `ApiBox`).
-- Desktop och tablet för adressidan ritas innan bygget, eftersom skissen bara visar mobil.
+- Testerna täcker korten, rutan, söktexten (också utan ort), kopiering av söktext och API-länk, startsidans rad och Om-sidans avsnitt.
+- På desktop sitter rutan i högerkolumnen (360 px), lika bred som i mobil, med samma layout.
+- **Avvikelser från skissen:**
+  - Märkena i adressrutans rader är 11 px och radernas sidmarginal 12 px, så att "Home Assistant" och "Kommer snart" ryms på en rad i mobil.
+  - På Om-sidans desktop (640 px bred) hamnar märket under namnet när det inte ryms bredvid.

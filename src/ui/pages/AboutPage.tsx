@@ -4,7 +4,8 @@ import { cn } from '@/lib/utils'
 import { clearSaved, loadSaved } from '@/lib/storage'
 import { GitHubMark } from '../components/GitHubMark'
 import { ForgetAll } from '../saved/ForgetAll'
-import { Link } from 'react-router'
+import { Link, useLocation } from 'react-router'
+import { IntegrationCards } from '../integrations/IntegrationCards'
 import { SITE } from '@/config'
 import { SOURCES, sourceLabel, type Source } from '@/sources'
 import { providerFor } from '@/providers/registry'
@@ -92,8 +93,17 @@ function SourceList() {
   )
 }
 
+/** Skrollar till ett avsnitt när sidan öppnas med #ankare, till exempel /om#smarta-hem från startsidan. */
+function useScrollToHash() {
+  const { hash } = useLocation()
+  useEffect(() => {
+    if (hash) document.getElementById(decodeURIComponent(hash.slice(1)))?.scrollIntoView()
+  }, [hash])
+}
+
 export function AboutPage() {
   const [savedCount, setSavedCount] = useState(() => loadSaved().length)
+  useScrollToHash()
   return (
     <div className="mx-auto flex w-full max-w-[640px] flex-col gap-9 px-5 pt-1 pb-10 md:px-0 md:pt-6 md:pb-20">
       <div className="flex flex-col gap-3">
@@ -173,19 +183,19 @@ export function AboutPage() {
         </div>
       </section>
 
-      <section className="flex flex-col items-start gap-3">
-        <h2 className={h2}>API</h2>
-        <p className={body}>
-          Sopor har ett öppet API som Home Assistant, Homey och andra system kan läsa. Inga nycklar och ingen inloggning.
+      <section id="smarta-hem" aria-labelledby="smarta-hem-rubrik" className="flex scroll-mt-6 flex-col items-start gap-3.5">
+        <h2 id="smarta-hem-rubrik" className={h2}>
+          Smarta hem
+        </h2>
+        <p className={body}>Få veta när soporna hämtas, direkt i ditt smarta hem. Det är gratis, och du behöver inget konto.</p>
+        <IntegrationCards />
+        <p className="flex items-center gap-2.5 text-[15px]">
+          <Braces className="size-[18px] shrink-0 text-text-2" aria-hidden />
+          <span className="font-bold text-text">Bygger du något eget?</span>
+          <a href={SITE.apiGuideUrl} rel="noopener" className="font-extrabold text-primary">
+            Läs API-guiden →
+          </a>
         </p>
-        <a
-          href={SITE.apiGuideUrl}
-          rel="noopener"
-          className="inline-flex items-center gap-2 rounded-[14px] border border-border bg-surface px-4 py-3 text-[15px] font-bold text-text"
-        >
-          <Braces className="size-[18px]" aria-hidden />
-          Läs API-guiden
-        </a>
       </section>
 
       <section className="flex flex-col items-start gap-3">

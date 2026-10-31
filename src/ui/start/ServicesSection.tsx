@@ -1,7 +1,8 @@
-import { Bookmark, CalendarCheck, CalendarClock, CalendarDays, CalendarSync, type LucideIcon } from 'lucide-react'
+import { Bookmark, CalendarCheck, CalendarClock, CalendarDays, CalendarSync, HouseWifi, type LucideIcon } from 'lucide-react'
+import { Link } from 'react-router'
 import { NextPickup } from '../result/NextPickup'
 
-const BENEFITS: { icon: LucideIcon; title: string; text: string }[] = [
+const BENEFITS: { icon: LucideIcon; title: string; text: string; more?: { to: string; label: string } }[] = [
   { icon: CalendarClock, title: 'Nästa tömning direkt', text: 'Vilket kärl, vilken dag och hur många dagar det är kvar.' },
   { icon: CalendarDays, title: 'Alla tömningar framåt', text: 'Lista och månadskalender, med flyttade tömningar vid helgdagar.' },
   {
@@ -10,6 +11,12 @@ const BENEFITS: { icon: LucideIcon; title: string; text: string }[] = [
     text: 'Prenumerera i Google, Apple eller Outlook. Ändringar kommer in av sig själva.',
   },
   { icon: Bookmark, title: 'Spara adresser', text: 'Hemma, stugan eller jobbet. Inget konto, sparas bara på din enhet.' },
+  {
+    icon: HouseWifi,
+    title: 'Smarta hem',
+    text: 'Påminnelse i Homey kvällen innan. Home Assistant är på väg.',
+    more: { to: '/om#smarta-hem', label: 'Läs mer om smarta hem' },
+  },
 ]
 
 /** Fast exempel på resultatsidan. Visas bara visuellt så att datumet inte läses upp som en riktig tömning. */
@@ -57,7 +64,7 @@ export function ServicesSection() {
       <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:gap-16">
         <Preview />
         <ul aria-label="Det här får du" className="flex flex-col gap-5 lg:gap-7">
-          {BENEFITS.map(({ icon: Icon, title, text }) => (
+          {BENEFITS.map(({ icon: Icon, title, text, more }) => (
             <li key={title} className="flex gap-4">
               <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-brand-soft text-brand-text">
                 <Icon className="size-[22px]" aria-hidden />
@@ -65,6 +72,11 @@ export function ServicesSection() {
               <span className="flex flex-col gap-1">
                 <h3 className="text-lg font-extrabold text-text">{title}</h3>
                 <p className="text-[15px] leading-[1.45] text-text-2">{text}</p>
+                {more && (
+                  <Link to={more.to} aria-label={more.label} className="self-start text-[15px] font-extrabold text-primary">
+                    Läs mer →
+                  </Link>
+                )}
               </span>
             </li>
           ))}
