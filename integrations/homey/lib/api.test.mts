@@ -20,11 +20,6 @@ describe('API-klienten', () => {
     expect(fetch.mock.calls[0][0]).toBe('https://sopor.hardyson.se/api/v1/sok?q=storgatan+2&kalla=uppsala')
   })
 
-  it('hämtar källorna', async () => {
-    const fetch = vi.fn(async () => json(200, { apiVersion: '1', sources: [], fractions: {} }))
-    await createClient({ fetch, userAgent: 'x' }).sources()
-    expect(fetch.mock.calls[0][0]).toBe('https://sopor.hardyson.se/api/v1/kallor')
-  })
 
   it('ger API:ts felkod vid felsvar', async () => {
     const fetch = vi.fn(async () => json(404, { apiVersion: '1', error: { code: 'not_found', message: 'Adressen finns inte hos källan' } }))

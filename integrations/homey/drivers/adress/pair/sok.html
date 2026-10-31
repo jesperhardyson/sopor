@@ -1,54 +1,67 @@
 <p data-i18n="pair.intro"></p>
 <form id="form">
   <div class="homey-form-group">
-    <label class="homey-form-label" for="kommun" data-i18n="pair.kommun"></label>
-    <select class="homey-form-select" id="kommun" disabled></select>
-  </div>
-  <div class="homey-form-group">
     <label class="homey-form-label" for="q" data-i18n="pair.label"></label>
     <input class="homey-form-input" id="q" type="text" autocomplete="street-address" />
+    <p class="homey-form-hint" data-i18n="pair.hint"></p>
   </div>
-  <p id="status" class="homey-form-hint" role="status"></p>
+  <p id="status" role="status"></p>
   <button class="homey-button-primary-full" id="search" type="submit" data-i18n="pair.search"></button>
 </form>
+<div id="places" hidden>
+  <p class="homey-form-label" data-i18n="pair.choosePlace"></p>
+  <div id="placeList"></div>
+</div>
+
+<style>
+  #status:empty { display: none; }
+  #placeList { display: flex; flex-direction: column; gap: 8px; }
+</style>
 
 <script type="text/javascript">
   const form = document.getElementById('form')
-  const kommun = document.getElementById('kommun')
   const input = document.getElementById('q')
   const status = document.getElementById('status')
   const button = document.getElementById('search')
+  const placesBox = document.getElementById('places')
+  const placeList = document.getElementById('placeList')
   input.placeholder = Homey.__('pair.placeholder')
 
-  // Kommunen först: då söker drivrutinen bara i den kommunens källa
-  Homey.emit('kommuner')
-    .then((choices) => {
-      kommun.add(new Option(Homey.__('pair.chooseKommun'), ''))
-      for (const choice of choices) kommun.add(new Option(choice.name, choice.key))
-      kommun.disabled = false
-    })
-    .catch(() => {
-      status.textContent = Homey.__('pair.loadFailed')
-    })
+  const messages = { failed: 'pair.failed', none: 'pair.notFound' }
+
+  function showPlaces(places) {
+    placeList.replaceChildren(
+      ...places.map((place) => {
+        const choice = document.createElement('button')
+        choice.type = 'button'
+        choice.className = 'homey-button-secondary-full'
+        choice.textContent = `${place.label} (${place.count})`
+        choice.addEventListener('click', async () => {
+          await Homey.emit('place', place.key)
+          Homey.showView('list_devices')
+        })
+        return choice
+      }),
+    )
+    placesBox.hidden = false
+  }
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault()
     const q = input.value.trim()
-    if (!kommun.value) {
-      status.textContent = Homey.__('pair.noKommun')
-      return
-    }
-    if (q.length < 3) {
+    placesBox.hidden = true
+    if (q.split(',')[0].trim().length < 3) {
       status.textContent = Homey.__('pair.tooShort')
       return
     }
     button.disabled = true
     status.textContent = Homey.__('pair.searching')
     try {
-      // Drivrutinen sparar träffarna åt list_devices och svarar med hur det gick
-      const result = await Homey.emit('search', { q, kommun: kommun.value })
+      // Drivrutinen sparar träffarna åt list_devices
+      const { result, places } = await Homey.emit('search', q)
+      status.textContent = ''
       if (result === 'found') return Homey.showView('list_devices')
-      const messages = { tooMany: 'pair.tooMany', failed: 'pair.failed', none: 'pair.notFound' }
+      if (result === 'places') return showPlaces(places)
       status.textContent = Homey.__(messages[result] ?? 'pair.notFound')
     } catch (error) {
       status.textContent = error.message

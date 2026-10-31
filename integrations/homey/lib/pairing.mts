@@ -1,38 +1,50 @@
-// Kommunvalet i parningen. Valet blir `kalla` i sökningen, så att träffarna blir få.
+// Adressökningen i parningen: ett fält, "gata husnummer" och gärna ", ort".
+// Orten filtreras här och inte i API:t, eftersom källorna tolkar ort i frågan olika.
 
-import type { SoporSearch, SoporSearchHit, SoporSource } from './api.mjs'
+import type { SoporSearch, SoporSearchHit } from './api.mjs'
 
-/** API:t ger högst så många träffar per källa. */
-const MAX_PER_SOURCE = 10
+/** Fler träffar än så visas som en lista med orter att välja bland först. */
+export const MAX_LIST = 12
 
-export interface KommunChoice {
-  /** "<källa>|<kommunnamn>" */
+export type SearchResult = 'found' | 'places' | 'failed' | 'none'
+
+export interface Place {
+  /** "<ort>|<kommun>" */
   key: string
-  name: string
+  label: string
+  count: number
 }
 
-export function kommunChoices(sources: SoporSource[]): KommunChoice[] {
-  return sources
-    .flatMap((source) => source.kommuner.map((kommun) => ({ key: `${source.id}|${kommun.name}`, name: kommun.name })))
-    .sort((a, b) => a.name.localeCompare(b.name, 'sv'))
+export function parseQuery(input: string): { q: string; place: string } {
+  const [q, ...rest] = input.split(',')
+  return { q: q.trim(), place: rest.join(',').trim() }
 }
 
-export function parseKommun(key: string): { source: string; kommun: string } | null {
-  const [source, kommun] = key.split('|')
-  return source && kommun ? { source, kommun } : null
+const words = (s: string) => s.toLocaleLowerCase('sv').split(/[^\p{L}\p{N}]+/u).filter(Boolean)
+
+/** Varje ord i `place` ska vara början på ett ord i ortens eller kommunens namn. */
+function inPlace(hit: SoporSearchHit, place: string): boolean {
+  const haystack = words(`${hit.locality} ${hit.kommun}`)
+  return words(place).every((w) => haystack.some((h) => h.startsWith(w)))
 }
 
-export type SearchResult = 'found' | 'tooMany' | 'failed' | 'none'
-
-/**
- * En källa kan täcka flera kommuner, så träffar i källans andra kommuner tas bort. Träffar i kommuner
- * som källan inte listar (grannkommuner, okända orter) behålls, eftersom de inte går att välja.
- * Fyllde källan sina tio träffar med andra kommuner kan adressen ändå finnas: då behövs husnummer.
- */
-export function searchOutcome(search: SoporSearch, kommun: string, source: SoporSource): { result: SearchResult; hits: SoporSearchHit[] } {
-  const others = new Set(source.kommuner.map((k) => k.name).filter((name) => name !== kommun))
-  const hits = search.addresses.filter((hit) => !others.has(hit.kommun))
+export function searchOutcome(search: SoporSearch, place: string): { result: SearchResult; hits: SoporSearchHit[] } {
+  const hits = place ? search.addresses.filter((hit) => inPlace(hit, place)) : search.addresses
+  if (hits.length > MAX_LIST) return { result: 'places', hits }
   if (hits.length) return { result: 'found', hits }
-  if (search.addresses.length >= MAX_PER_SOURCE) return { result: 'tooMany', hits }
   return { result: search.failed.length ? 'failed' : 'none', hits }
+}
+
+export const placeKey = (hit: SoporSearchHit) => `${hit.locality}|${hit.kommun}`
+
+/** Orterna bland träffarna, flest träffar först. */
+export function places(hits: SoporSearchHit[]): Place[] {
+  const byKey = new Map<string, Place>()
+  for (const hit of hits) {
+    const key = placeKey(hit)
+    const place = byKey.get(key) ?? { key, label: hit.locality ? `${hit.locality}, ${hit.kommun}` : hit.kommun, count: 0 }
+    place.count++
+    byKey.set(key, place)
+  }
+  return [...byKey.values()].sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, 'sv'))
 }

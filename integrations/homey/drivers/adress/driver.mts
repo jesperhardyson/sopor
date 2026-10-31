@@ -1,7 +1,7 @@
 import Homey from 'homey'
 import type SoporApp from '../../app.mjs'
-import type { SoporSearchHit, SoporSource } from '../../lib/api.mjs'
-import { kommunChoices, parseKommun, searchOutcome } from '../../lib/pairing.mjs'
+import type { SoporSearchHit } from '../../lib/api.mjs'
+import { parseQuery, placeKey, places, searchOutcome } from '../../lib/pairing.mjs'
 import { ANY, fractionChoices } from '../../lib/schedule.mjs'
 import type AddressDevice from './device.mjs'
 
@@ -12,7 +12,7 @@ interface CardArgs {
 }
 
 function deviceName(hit: SoporSearchHit): string {
-  return `${hit.street}, ${hit.locality}${hit.detail ? ` – ${hit.detail}` : ''}`
+  return `${hit.street}, ${hit.locality || hit.kommun}${hit.detail ? ` – ${hit.detail}` : ''}`
 }
 
 export default class AddressDriver extends Homey.Driver {
@@ -38,21 +38,18 @@ export default class AddressDriver extends Homey.Driver {
   async onPair(session: Homey.Driver.PairSession) {
     const { client } = this.homey.app as SoporApp
     let hits: SoporSearchHit[] = []
-    let sources: SoporSource[] = []
 
-    session.setHandler('kommuner', async () => {
-      sources = await client.sources()
-      return kommunChoices(sources)
+    // Svarar med resultatet, och med orterna när träffarna är för många. Vyn visar texten.
+    session.setHandler('search', async (input: string) => {
+      const { q, place } = parseQuery(input)
+      const outcome = searchOutcome(await client.search(q), place)
+      hits = outcome.hits
+      return { result: outcome.result, places: outcome.result === 'places' ? places(hits) : [] }
     })
 
-    // Svarar med ett SearchResult. Vyn visar texten.
-    session.setHandler('search', async ({ q, kommun }: { q: string; kommun: string }) => {
-      const choice = parseKommun(kommun)
-      const source = sources.find((s) => s.id === choice?.source)
-      if (!choice || !source) throw new Error(this.homey.__('pair.noKommun'))
-      const outcome = searchOutcome(await client.search(q, choice.source), choice.kommun, source)
-      hits = outcome.hits
-      return outcome.result
+    // Användaren valde en ort bland många träffar
+    session.setHandler('place', async (key: string) => {
+      hits = hits.filter((hit) => placeKey(hit) === key)
     })
 
     session.setHandler('list_devices', async () =>

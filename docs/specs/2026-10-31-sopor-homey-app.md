@@ -44,16 +44,14 @@ Underkapabiliteter (`sopor_next.plast`) läggs till och tas bort efter vad svare
 
 ## Parning
 
-1. **Egen vy `sok`:**
-   - **Kommun** (obligatorisk): ett val med alla kommuner ur `/api/v1/kallor`, i bokstavsordning.
-   - **Gata och husnummer:** ett textfält, och knappen "Sök".
-   - Drivrutinen söker med `/api/v1/sok?q=…&kalla=<källa>` och tar bort träffar i källans andra kommuner. Träffar i kommuner som källan inte listar (grannkommuner, okända orter) behålls. Utan kommun gav "Storgatan" 139 träffar från 15 källor.
-   - Är `q` kortare än tre tecken visas ett fel.
-   - Ger källan sina högst tio träffar, men alla i andra kommuner: "För många träffar i området. Skriv med husnummer."
-   - Svarade källan inte: "Källan svarade inte. Försök igen om en stund."
-   - Annars, om inget hittades: "Ingen adress hittades i kommunen. Kontrollera stavningen och skriv med husnummer."
-   - Finns det träffar går vyn vidare till `list_devices`.
-2. **`list_devices`** (systemvy): träffarna, med namnet `"<gata>, <ort>"` och `detail` om det finns.
+1. **Egen vy `sok`:** ett fält "Gata och husnummer" (exempel "Storgatan 2, Uppsala") och knappen "Sök". Inget kommunval: det första försöket med kommun före sökningen var krångligt och låste sig.
+   - Text efter första kommat är **ort**. Drivrutinen söker på det som står före kommat (`/api/v1/sok?q=…`) och filtrerar själv på ort eller kommun, där varje ord ska vara början på ett ord i ortens eller kommunens namn. API:t används inte för orten, eftersom källorna tolkar ort i frågan olika: EDP förstår "gata, ort", de statiska källorna förstår ord.
+   - Är delen före kommat kortare än tre tecken visas ett fel.
+   - **Fler än 12 träffar:** vyn visar orterna som knappar, till exempel "Uppsala, Uppsala kommun (10)", med flest träffar först. Ett tryck på en ort visar bara dess träffar. "Storgatan 2" gav 129 träffar.
+   - **Inga träffar och någon källa svarade inte:** "Några källor svarade inte. Försök igen om en stund."
+   - **Annars, om inget hittades:** "Ingen adress hittades. Kontrollera stavningen och skriv med husnummer."
+   - **1–12 träffar:** vyn går vidare till `list_devices`.
+2. **`list_devices`** (systemvy): träffarna, med namnet `"<gata>, <ort>"` (kommunen om orten saknas) och `detail` om det finns.
 3. **`add_devices`** (systemvy).
 
 Vyn använder Homeys egna klasser (`homey-form-input`, `homey-button-primary-full`). Den har ingen egen design.
