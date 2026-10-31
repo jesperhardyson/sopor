@@ -150,6 +150,35 @@ Exempel: EDP Future "SimpleWastePickup", som många kommuner använder.
 
 Inget utanför `src/providers/` och `scripts/` får känna till trakter, EDP eller andra källdetaljer.
 
+## Integrationer
+
+Integrationer ligger i `integrations/`. De är egna paket som bara använder det publika API:t (`/api/v1`), aldrig koden i `src/` (regel 8 i `AGENTS.md`).
+
+### Homey: `integrations/homey/`
+
+Appen **Sophämtning** för Homey Pro (SDK v3, TypeScript).
+- **Enhet:** en enhet per adress, som man lägger till genom att söka på adressen. Den visar nästa hämtning, "Dagar kvar", "I morgon" och en rad per fraktion. Fraktioner man inte har kan döljas.
+- **När:** sopor hämtas i morgon (vid enhetens påminnelsetid), sopor hämtas i dag (vid morgontiden), hämtschemat ändrades.
+- **Och:** [fraktion] hämtas (inte) i dag, i morgon eller i övermorgon, eller om N dagar.
+- **Då:** uppdatera hämtschemat, och "vilka sopor hämtas …?" (Advanced Flow).
+- **Widget:** "Nästa hämtning" för Homeys dashboards.
+
+Appen finns inte i Homey App Store än. Så här provar man den på en egen Homey Pro:
+
+```bash
+npm install -g homey && homey login && homey select
+cd integrations/homey && npm install && npx homey app install
+```
+
+- **Utveckling:** se `integrations/homey/README.md`.
+- **Spec:** `docs/specs/2026-10-31-sopor-homey-app.md`.
+- **Undersökning och jämförelse med liknande appar:** `docs/specs/2026-10-31-integrationer-homey-home-assistant.md`.
+- **CI:** arbetsflödet `homey.yml` körs bara när `integrations/homey/` ändras.
+
+### Home Assistant
+
+Planerad. HACS kräver ett eget repo, så integrationen kommer att ligga i ett separat repo, se undersökningen. Tills dess finns REST-sensorn i [`docs/api.md`](docs/api.md#home-assistant).
+
 ## Driftsättning
 
 Vercel (Hobby). `vercel.json` sätter `Content-Type: text/calendar` och cache-headers för `/ics/*`, kort cache för `/data/*` och SPA-rewrite för övriga sökvägar. Varje deploy tömmer CDN-cachen.

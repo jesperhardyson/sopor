@@ -17,6 +17,8 @@ npm run build:data   # bara datagenereringen (scripts/build-data.ts)
 
 Kör `npm run lint && npm test && npm run build` innan varje commit. Allt ska vara grönt.
 
+Homey-appen (`integrations/homey/`) är ett eget paket: `cd integrations/homey && npm test && npm run typecheck && npm run validate`. `npx homey app install` installerar den på vald Homey. Kör `homey select current` först, eftersom CLI:t kan peka på fel Homey.
+
 `main` är skyddad: ändringar går via pull request och kräver grön CI. Arbeta på en gren.
 
 ## Arkitekturregler (bryt inte dessa)
@@ -41,6 +43,7 @@ Kör `npm run lint && npm test && npm run build` innan varje commit. Allt ska va
 
 - Specifikationer: `docs/specs/`
 - Implementationsplaner: `docs/plans/`
+- Integrationer (Homey, Home Assistant): `docs/specs/2026-10-31-integrationer-homey-home-assistant.md` och `integrations/*/README.md`
 - Kommunernas datakällor och lärdomar: `docs/kommuner/hitta-kommunens-data.md` (uppdatera tabellen när en kommun undersöks)
 
 Nya design- och plandokument läggs där, inte någon annanstans.
