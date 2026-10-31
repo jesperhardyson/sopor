@@ -24,7 +24,8 @@ export async function lookupAddress(
   try {
     if (source.config.system === 'edp') return await lookupEdp(source, source.config.baseUrl, id, origin, opts)
     return await lookupStatic(source, id, origin, opts)
-  } catch {
+  } catch (e) {
+    console.error('Uppslagning av adress misslyckades', e)
     return { status: 502 }
   }
 }

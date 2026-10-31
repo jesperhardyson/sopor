@@ -127,7 +127,7 @@
             }
           },
           "400": {
-            "description": "Ogiltigt anrop.",
+            "description": "Saknad source eller id i sökvägen.",
             "headers": {
               "Access-Control-Allow-Origin": {
                 "description": "Alltid *.",
@@ -153,7 +153,7 @@
             }
           },
           "404": {
-            "description": "Hittades inte.",
+            "description": "Okänd källa eller adress.",
             "headers": {
               "Access-Control-Allow-Origin": {
                 "description": "Alltid *.",
@@ -277,7 +277,7 @@
             }
           },
           "400": {
-            "description": "Ogiltigt anrop.",
+            "description": "Parametern q saknas eller har färre än tre tecken.",
             "headers": {
               "Access-Control-Allow-Origin": {
                 "description": "Alltid *.",
@@ -303,7 +303,7 @@
             }
           },
           "404": {
-            "description": "Hittades inte.",
+            "description": "Okänd källa i parametern kalla.",
             "headers": {
               "Access-Control-Allow-Origin": {
                 "description": "Alltid *.",
@@ -329,7 +329,7 @@
             }
           },
           "502": {
-            "description": "Källan svarar inte just nu. Behåll det senast lyckade svaret och försök igen senare.",
+            "description": "Svarar ingen källa får du 200 med tom addresses och alla källor i failed. 502 betyder ett oväntat fel hos Sopor.",
             "headers": {
               "Access-Control-Allow-Origin": {
                 "description": "Alltid *.",
@@ -420,7 +420,7 @@
             }
           },
           "400": {
-            "description": "Ogiltigt anrop.",
+            "description": "Används inte av den här endpointen, finns för att alla endpoints har samma felformat.",
             "headers": {
               "Access-Control-Allow-Origin": {
                 "description": "Alltid *.",
@@ -446,7 +446,7 @@
             }
           },
           "404": {
-            "description": "Hittades inte.",
+            "description": "Okänd sökväg under /api/v1/.",
             "headers": {
               "Access-Control-Allow-Origin": {
                 "description": "Alltid *.",
@@ -472,7 +472,7 @@
             }
           },
           "502": {
-            "description": "Källan svarar inte just nu. Behåll det senast lyckade svaret och försök igen senare.",
+            "description": "Oväntat fel hos Sopor. Försök igen senare.",
             "headers": {
               "Access-Control-Allow-Origin": {
                 "description": "Alltid *.",
@@ -950,7 +950,7 @@
           },
           "updatedAt": {
             "type": "string",
-            "description": "När källans schema senast uppdaterades, YYYY-MM-DD.",
+            "description": "Datum då schemat senast hämtades eller uppdaterades hos källan, YYYY-MM-DD.",
             "format": "date",
             "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
           }

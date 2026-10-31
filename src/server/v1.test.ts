@@ -187,10 +187,12 @@ describe('handleV1Address', () => {
   })
 
   it('ger 502 när källan inte svarar', async () => {
+    const err = vi.spyOn(console, 'error').mockImplementation(() => {})
     const res = await address('source=trog&id=a_b-1')
     expect(res.status).toBe(502)
     expect(res.headers.get('Cache-Control')).toBe('no-store')
     expect((await res.json()).error.code).toBe('source_unavailable')
+    expect(err).toHaveBeenCalled()
   })
 })
 
@@ -256,6 +258,7 @@ describe('v1', () => {
   })
 
   it('ger felformen med CORS när handlern kastar', async () => {
+    const err = vi.spyOn(console, 'error').mockImplementation(() => {})
     const boom = v1(async () => {
       throw new Error('okänd fraktion')
     })
@@ -264,6 +267,7 @@ describe('v1', () => {
     expect(res.headers.get('Access-Control-Allow-Origin')).toBe('*')
     expect(res.headers.get('Cache-Control')).toBe('no-store')
     expect(await res.json()).toEqual({ apiVersion: '1', error: { code: 'source_unavailable', message: expect.any(String) } })
+    expect(err).toHaveBeenCalledTimes(1)
   })
 
   it('v1Error har den gemensamma felformen', async () => {

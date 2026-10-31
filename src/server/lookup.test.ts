@@ -72,10 +72,12 @@ describe('lookupAddress', () => {
   })
 
   it('ger 404 för okänt EDP-id och 502 när källan inte svarar', async () => {
+    const err = vi.spyOn(console, 'error').mockImplementation(() => {})
     const o = { ...opts, fetchFn: edpFetch }
     expect(await lookupAddress(uppsala, 'storgatan-2_uppsala-1', 'https://x', o)).toEqual({ status: 404 })
     const down = (async () => new Response('', { status: 500 })) as unknown as typeof fetch
     expect(await lookupAddress(uppsala, 'storgatan-2_uppsala-4004688', 'https://x', { ...opts, fetchFn: down })).toEqual({ status: 502 })
+    expect(err).toHaveBeenCalledTimes(1)
   })
 
   it('slår upp en statisk adress och slår ihop delarna i datumordning', async () => {
@@ -90,6 +92,7 @@ describe('lookupAddress', () => {
   })
 
   it('ger 502 när addresses.json svarar 500, saknas eller nätet felar', async () => {
+    const err = vi.spyOn(console, 'error').mockImplementation(() => {})
     const f500 = (async () => new Response('', { status: 500 })) as unknown as typeof fetch
     const f404 = (async () => new Response('', { status: 404 })) as unknown as typeof fetch
     const fNet = vi.fn(async () => {
@@ -98,6 +101,7 @@ describe('lookupAddress', () => {
     for (const fetchFn of [f500, f404, fNet]) {
       expect(await lookupAddress(avesta, 'storgatan-1', 'https://x', { ...opts, fetchFn })).toEqual({ status: 502 })
     }
+    expect(err).toHaveBeenCalled()
   })
 
   it('ger 502 när en schemafil saknas', async () => {

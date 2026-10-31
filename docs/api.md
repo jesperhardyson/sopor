@@ -4,7 +4,7 @@ Ett öppet, inofficiellt API för sophämtning per adress. Det är samma data so
 
 - Bas-URL: `https://sopor.hardyson.se/api/v1`
 - Bara `GET`. Svaren är JSON. Inga nycklar och ingen inloggning.
-- Alla svar har `"apiVersion": "1"` och `Access-Control-Allow-Origin: *`.
+- Alla JSON-svar från endpoints har `"apiVersion": "1"`. Alla svar har `Access-Control-Allow-Origin: *`.
 - Maskinläsbar beskrivning: [`openapi.json`](https://sopor.hardyson.se/api/v1/openapi.json) (OpenAPI 3.1).
 
 Det är en hobbytjänst utan garantier. Vid avvikelser gäller alltid kommunens information.
@@ -57,7 +57,7 @@ Tänk på:
 - Skriv med **husnummer** (`storgatan 2`) eller ange **`kalla`**. Utan husnummer och utan `kalla` kan svaret bli en tom lista om gatan inte finns i Soporas gatuindex. Tom lista betyder alltså inte alltid att adressen saknas.
 - `q` måste vara minst tre tecken.
 - Flera träffar kan ha samma gata och ort. Då skiljer `detail` dem åt (till exempel `"Byggnad 4062411"`). Låt användaren välja.
-- Sökningen frågar flera källor. Svarar inte alla får du ändå **200** med de träffar som kom, och de källor som inte svarade står i `failed`. **502** får du bara om ingen källa svarade. En tom `addresses` med icke-tom `failed` betyder alltså "försök igen", inte "adressen finns inte".
+- Sökningen frågar flera källor. Svarar inte alla får du ändå **200** med de träffar som kom, och de källor som inte svarade står i `failed`. Svarar ingen källa får du ändå 200, med tom `addresses` och alla källor i `failed`. **502** betyder ett oväntat fel hos Sopor. En tom `addresses` med icke-tom `failed` betyder alltså "försök igen", inte "adressen finns inte".
 
 ## Endpoints
 
@@ -148,7 +148,7 @@ Alla fel har samma form:
 | `fractions` | objekt | Id → `name`, `short`, `color`, `icon` för de fraktioner som förekommer i svaret. |
 | `links.ics` | URL | Kalenderprenumeration (iCalendar). |
 | `links.web` | URL | Adressens sida på sajten. |
-| `updatedAt` | `"YYYY-MM-DD"` | När källans schema senast uppdaterades. |
+| `updatedAt` | `"YYYY-MM-DD"` | Datum då schemat senast hämtades eller uppdaterades hos källan. |
 
 `today` är referensdatumet. Behöver du egen logik, till exempel "påminn två dagar innan", räknar du själv ur `events` och `today`.
 

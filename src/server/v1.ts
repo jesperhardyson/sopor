@@ -38,7 +38,8 @@ export function v1(handler: V1Handler) {
     let res: Response
     try {
       res = request.method === 'OPTIONS' ? new Response(null, { status: 204 }) : await handler(request, opts)
-    } catch {
+    } catch (e) {
+      console.error('Oväntat fel i API v1', e)
       res = v1Error(502, 'source_unavailable', 'Något gick fel, försök igen senare')
     }
     res.headers.set('Access-Control-Allow-Origin', '*')
@@ -209,7 +210,7 @@ export const handleV1Sources: V1Handler = async (_request, opts = {}) =>
         id: s.id,
         name: s.name,
         url: s.url,
-        kommuner: s.kommuner,
+        kommuner: s.kommuner.map((k) => ({ code: k.code, name: k.name })),
         testData: s.testData ?? false,
       })),
       fractions: fractionRegistry(Object.keys(FRACTIONS) as FractionId[]),

@@ -157,6 +157,7 @@ describe('kontrakt: riktiga svar följer schemana', () => {
   })
 
   it('ett fel av varje kod', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
     const bad = await call(handleV1Search, '/api/v1/sok?q=a')
     const missing = await call(handleV1Address, '/api/v1/adress?source=finns-inte&id=x')
     const gone = await call(handleV1NotFound, '/api/v1/okand')
