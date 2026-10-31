@@ -11,6 +11,7 @@ import { useSchedule } from '../hooks/useSchedule'
 import { MonthCalendar } from '../result/MonthCalendar'
 import { NextPickup } from '../result/NextPickup'
 import { RemindersSoon } from '../result/RemindersSoon'
+import { ApiBox } from '../result/ApiBox'
 import { EmptyState, ErrorState, LoadingState, UnsupportedState } from '../result/ResultStates'
 import { UpcomingList } from '../result/UpcomingList'
 import { AddressSearch } from '../search/AddressSearch'
@@ -165,6 +166,7 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
             <MonthCalendar schedule={schedule} initial={next?.date ?? today} today={today} />
           )}
           <RemindersSoon />
+          {address && <ApiBox address={address} />}
         </div>
       </div>
       {address && (

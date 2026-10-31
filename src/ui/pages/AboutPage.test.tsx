@@ -60,6 +60,20 @@ describe('AboutPage', () => {
     expect(screen.getByRole('link', { name: /Sopor på GitHub/ })).toHaveAttribute('href', 'https://github.com/jesperhardyson/sopor')
   })
 
+  it('berättar om API:t och länkar till guiden', () => {
+    render(
+      <MemoryRouter>
+        <AboutPage />
+      </MemoryRouter>,
+    )
+    expect(screen.getByRole('heading', { name: 'API' })).toBeInTheDocument()
+    expect(screen.getByText(/Sopor har ett öppet API som Home Assistant, Homey och andra system kan läsa\./)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Läs API-guiden/ })).toHaveAttribute(
+      'href',
+      'https://github.com/jesperhardyson/sopor/blob/main/docs/api.md',
+    )
+  })
+
   it('kan glömma sparade adresser under Integritet', async () => {
     localStorage.setItem(
       'sopor.saved.v1',

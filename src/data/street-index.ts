@@ -75,3 +75,14 @@ export function candidateSources(shard: StreetShard, query: string): string[] {
   }
   return []
 }
+
+/**
+ * Live-källor att fråga: de som gatuindexet pekar ut. Saknas gatan i indexet frågas alla källor,
+ * men bara när frågan har ett husnummer eller användaren tryckt Enter. Det är den dyraste
+ * sökningen, och utan nummer är det oftast ett halvskrivet eller felstavat namn.
+ */
+export function pickLiveSources(shard: StreetShard | null, query: string, live: string[], submitted: boolean): string[] {
+  const candidates = shard ? candidateSources(shard, query).filter((id) => live.includes(id)) : []
+  if (candidates.length > 0) return candidates
+  return submitted || /\d/.test(query) ? live : []
+}

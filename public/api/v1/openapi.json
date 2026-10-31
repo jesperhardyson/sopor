@@ -1,0 +1,1061 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Sopor – publikt API",
+    "version": "1",
+    "summary": "Sophämtning per adress från publika källor.",
+    "description": "Inofficiellt, öppet API bakom sopor.hardyson.se. Inga nycklar och ingen inloggning. Allt är GET och svaren är JSON.\n\n**Stabilitet.** Inom v1 tas fält aldrig bort och byter aldrig namn eller typ; fält kan bara tillkomma, så ignorera fält du inte känner till. Fält utan värde skickas som null (labels som {}), aldrig utelämnade. Fraktions-id är en öppen mängd: nya id kan tillkomma och okända id ska hanteras. Adress-id och källans id är stabila.\n\n**Hämta snällt.** Svaren cachas. Hämta högst en gång i timmen per adress. Vid 502 (source_unavailable): behåll det senast lyckade svaret och försök igen senare.\n\n**CORS.** Alla svar har Access-Control-Allow-Origin: *. Ett vanligt GET behöver ingen preflight. OPTIONS ger 204 med bara Access-Control-Allow-Origin: *.\n\n**Fel.** Alla fel har formen { apiVersion, error: { code, message } } med code bad_request (400), not_found (404) eller source_unavailable (502). Okänd sökväg under /api/v1/ ger 404 not_found."
+  },
+  "servers": [
+    {
+      "url": "https://sopor.hardyson.se",
+      "description": "Produktion"
+    }
+  ],
+  "paths": {
+    "/api/v1/adress/{source}/{id}": {
+      "get": {
+        "operationId": "getAddress",
+        "summary": "Hämtschema för en adress",
+        "description": "Adressens kommande hämtningar, nästa hämtning per fraktion och kärl. Använd source och id från /api/v1/sok. Id:t kan skickas procentkodat. Cachas till högst sex timmar och aldrig förbi midnatt i Stockholm, så att today, daysUntil och isToday stämmer.",
+        "parameters": [
+          {
+            "name": "source",
+            "in": "path",
+            "required": true,
+            "description": "Källans id, se /api/v1/kallor.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "uppsala"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Adressens id från /api/v1/sok.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "storgatan-2_uppsala-4004688"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Adressens schema.",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "description": "Alltid *.",
+                "schema": {
+                  "type": "string",
+                  "const": "*"
+                }
+              },
+              "Cache-Control": {
+                "description": "public, s-maxage=<sekunder, högst 21600>[, stale-while-revalidate=<sekunder>]",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddressResponse"
+                },
+                "example": {
+                  "apiVersion": "1",
+                  "today": "2026-10-30",
+                  "address": {
+                    "id": "storgatan-2_uppsala-4004688",
+                    "street": "Storgatan 2",
+                    "locality": "Uppsala",
+                    "kommun": "Uppsala kommun",
+                    "source": "uppsala",
+                    "detail": null
+                  },
+                  "next": [
+                    {
+                      "fraction": "mat",
+                      "name": "Matavfall",
+                      "color": "#7A4A1E",
+                      "date": "2026-11-02",
+                      "daysUntil": 3,
+                      "isToday": false,
+                      "isTomorrow": false,
+                      "estimated": false,
+                      "warning": null,
+                      "text": "Matavfall – om 3 dagar, måndag 2 november"
+                    }
+                  ],
+                  "summary": "Mat – om 3 dagar",
+                  "events": [
+                    {
+                      "date": "2026-11-02",
+                      "fractions": [
+                        "mat"
+                      ],
+                      "estimated": false,
+                      "deviation": null,
+                      "warning": null,
+                      "labels": {}
+                    }
+                  ],
+                  "bins": [
+                    {
+                      "fraction": "mat",
+                      "sizeLiters": 140,
+                      "pickupsPerYear": 26,
+                      "frequencyText": "Varannan vecka"
+                    }
+                  ],
+                  "fractions": {
+                    "mat": {
+                      "name": "Matavfall",
+                      "short": "Mat",
+                      "color": "#7A4A1E",
+                      "icon": "apple"
+                    }
+                  },
+                  "links": {
+                    "ics": "https://sopor.hardyson.se/ics/uppsala/storgatan-2_uppsala-4004688.ics",
+                    "web": "https://sopor.hardyson.se/uppsala/storgatan-2_uppsala-4004688"
+                  },
+                  "updatedAt": "2026-10-30"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Saknad source eller id i sökvägen.",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "description": "Alltid *.",
+                "schema": {
+                  "type": "string",
+                  "const": "*"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "apiVersion": "1",
+                  "error": {
+                    "code": "bad_request",
+                    "message": "Källa och adress-id krävs"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Okänd källa eller adress.",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "description": "Alltid *.",
+                "schema": {
+                  "type": "string",
+                  "const": "*"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "apiVersion": "1",
+                  "error": {
+                    "code": "not_found",
+                    "message": "Adressen finns inte hos källan"
+                  }
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Källan svarar inte just nu. Behåll det senast lyckade svaret och försök igen senare.",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "description": "Alltid *.",
+                "schema": {
+                  "type": "string",
+                  "const": "*"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "apiVersion": "1",
+                  "error": {
+                    "code": "source_unavailable",
+                    "message": "Källan svarar inte just nu"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sok": {
+      "get": {
+        "operationId": "searchAddresses",
+        "summary": "Sök adress",
+        "description": "Söker adresser hos de källor som täcker gatan. Max tio träffar per källa. Utan husnummer och utan kalla returnerar en gata som saknas i gatuindexet en tom lista: ange husnummer (t.ex. \"Storgatan 2\") eller kalla. Källor som inte svarade står i failed. Svaret cachas kort när failed inte är tom.",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "description": "Sökfras, minst tre tecken, t.ex. \"storgatan 2\".",
+            "schema": {
+              "type": "string",
+              "minLength": 3
+            },
+            "example": "storgatan 2"
+          },
+          {
+            "name": "kalla",
+            "in": "query",
+            "required": false,
+            "description": "Begränsa till en källa (källans id). Hoppar över gatuindexet.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "uppsala"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Träffar.",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "description": "Alltid *.",
+                "schema": {
+                  "type": "string",
+                  "const": "*"
+                }
+              },
+              "Cache-Control": {
+                "description": "public, s-maxage=<sekunder>",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResponse"
+                },
+                "example": {
+                  "apiVersion": "1",
+                  "addresses": [
+                    {
+                      "id": "storgatan-2_uppsala-4004688",
+                      "street": "Storgatan 2",
+                      "locality": "Uppsala",
+                      "kommun": "Uppsala kommun",
+                      "source": "uppsala",
+                      "detail": null,
+                      "url": "https://sopor.hardyson.se/api/v1/adress/uppsala/storgatan-2_uppsala-4004688"
+                    }
+                  ],
+                  "failed": []
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Parametern q saknas eller har färre än tre tecken.",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "description": "Alltid *.",
+                "schema": {
+                  "type": "string",
+                  "const": "*"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "apiVersion": "1",
+                  "error": {
+                    "code": "bad_request",
+                    "message": "Minst tre tecken"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Okänd källa i parametern kalla.",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "description": "Alltid *.",
+                "schema": {
+                  "type": "string",
+                  "const": "*"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "apiVersion": "1",
+                  "error": {
+                    "code": "not_found",
+                    "message": "Källan finns inte"
+                  }
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Svarar ingen källa får du 200 med tom addresses och alla källor i failed. 502 betyder ett oväntat fel hos Sopor.",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "description": "Alltid *.",
+                "schema": {
+                  "type": "string",
+                  "const": "*"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "apiVersion": "1",
+                  "error": {
+                    "code": "source_unavailable",
+                    "message": "Något gick fel, försök igen senare"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/kallor": {
+      "get": {
+        "operationId": "listSources",
+        "summary": "Källor och fraktioner",
+        "description": "Alla synliga källor och alla kända fraktioner med visningsuppgifter. Cachas i ett dygn. Fraktionslistan kan växa.",
+        "responses": {
+          "200": {
+            "description": "Källor och fraktioner.",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "description": "Alltid *.",
+                "schema": {
+                  "type": "string",
+                  "const": "*"
+                }
+              },
+              "Cache-Control": {
+                "description": "public, s-maxage=86400",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SourcesResponse"
+                },
+                "example": {
+                  "apiVersion": "1",
+                  "sources": [
+                    {
+                      "id": "uppsala",
+                      "name": "Uppsala Vatten",
+                      "url": "https://www.uppsalavatten.se",
+                      "kommuner": [
+                        {
+                          "code": "0380",
+                          "name": "Uppsala kommun"
+                        }
+                      ],
+                      "testData": false
+                    }
+                  ],
+                  "fractions": {
+                    "rest": {
+                      "name": "Restavfall",
+                      "short": "Rest",
+                      "color": "#474C48",
+                      "icon": "trash-2"
+                    },
+                    "mat": {
+                      "name": "Matavfall",
+                      "short": "Mat",
+                      "color": "#7A4A1E",
+                      "icon": "apple"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Används inte av den här endpointen, finns för att alla endpoints har samma felformat.",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "description": "Alltid *.",
+                "schema": {
+                  "type": "string",
+                  "const": "*"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "apiVersion": "1",
+                  "error": {
+                    "code": "bad_request",
+                    "message": "Ogiltigt anrop"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Okänd sökväg under /api/v1/.",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "description": "Alltid *.",
+                "schema": {
+                  "type": "string",
+                  "const": "*"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "apiVersion": "1",
+                  "error": {
+                    "code": "not_found",
+                    "message": "Okänd sökväg i API:t"
+                  }
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Oväntat fel hos Sopor. Försök igen senare.",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "description": "Alltid *.",
+                "schema": {
+                  "type": "string",
+                  "const": "*"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "apiVersion": "1",
+                  "error": {
+                    "code": "source_unavailable",
+                    "message": "Något gick fel, försök igen senare"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Fraction": {
+        "type": "object",
+        "description": "En fraktion med visningsuppgifter.",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "short",
+          "color",
+          "icon"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Fraktionens namn, t.ex. \"Matavfall\"."
+          },
+          "short": {
+            "type": "string",
+            "description": "Kort namn, t.ex. \"Mat\"."
+          },
+          "color": {
+            "type": "string",
+            "description": "Fraktionens färg som hex, t.ex. \"#7A4A1E\".",
+            "pattern": "^#[0-9A-Fa-f]{6}$"
+          },
+          "icon": {
+            "type": "string",
+            "description": "Ikonens namn (Lucide), t.ex. \"apple\"."
+          }
+        }
+      },
+      "Address": {
+        "type": "object",
+        "description": "En adress hos en källa.",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "street",
+          "locality",
+          "kommun",
+          "source",
+          "detail"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Adressens id. Stabilt och detsamma som i kalenderlänken /ics/<källa>/<id>.ics. Ska användas oförändrat."
+          },
+          "street": {
+            "type": "string",
+            "description": "Gatuadress, t.ex. \"Storgatan 2\"."
+          },
+          "locality": {
+            "type": "string",
+            "description": "Ort."
+          },
+          "kommun": {
+            "type": "string",
+            "description": "Kommunens namn."
+          },
+          "source": {
+            "type": "string",
+            "description": "Källans id, se /api/v1/kallor."
+          },
+          "detail": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Skiljer träffar med samma gata och ort åt, t.ex. \"Byggnad 78838\". null när det saknas."
+          }
+        }
+      },
+      "SearchHit": {
+        "type": "object",
+        "description": "En adress i sökresultatet.",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "street",
+          "locality",
+          "kommun",
+          "source",
+          "detail",
+          "url"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Adressens id."
+          },
+          "street": {
+            "type": "string",
+            "description": "Gatuadress."
+          },
+          "locality": {
+            "type": "string",
+            "description": "Ort."
+          },
+          "kommun": {
+            "type": "string",
+            "description": "Kommunens namn."
+          },
+          "source": {
+            "type": "string",
+            "description": "Källans id."
+          },
+          "detail": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Skiljer träffar med samma gata och ort åt. null när det saknas."
+          },
+          "url": {
+            "type": "string",
+            "description": "Adressens schema i API:t (absolut URL, id:t är procentkodat).",
+            "format": "uri"
+          }
+        }
+      },
+      "NextPickup": {
+        "type": "object",
+        "description": "Nästa hämtning för en fraktion.",
+        "additionalProperties": false,
+        "required": [
+          "fraction",
+          "name",
+          "color",
+          "date",
+          "daysUntil",
+          "isToday",
+          "isTomorrow",
+          "estimated",
+          "warning",
+          "text"
+        ],
+        "properties": {
+          "fraction": {
+            "type": "string",
+            "description": "Fraktionens id, t.ex. rest, mat, papper, plast, glas, metall, tidningar eller karl (kärl med flera fraktioner). Nya id kan tillkomma i v1, så okända id ska hanteras (visa id:t eller ett allmänt namn). Nyckeln finns i fractions i samma svar."
+          },
+          "name": {
+            "type": "string",
+            "description": "Fraktionens namn."
+          },
+          "color": {
+            "type": "string",
+            "description": "Fraktionens färg som hex."
+          },
+          "date": {
+            "type": "string",
+            "description": "Datum för nästa hämtning, YYYY-MM-DD.",
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "daysUntil": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Antal dagar från today (0 = i dag)."
+          },
+          "isToday": {
+            "type": "boolean",
+            "description": "Hämtning i dag."
+          },
+          "isTomorrow": {
+            "type": "boolean",
+            "description": "Hämtning i morgon."
+          },
+          "estimated": {
+            "type": "boolean",
+            "description": "true om datumet är framräknat och inte bekräftat av källan."
+          },
+          "warning": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Varning från källan, t.ex. att hämtningen infaller på en helgdag. null när det saknas."
+          },
+          "text": {
+            "type": "string",
+            "description": "Färdig text på svenska, t.ex. \"Matavfall – i morgon, torsdag 5 november\"."
+          }
+        }
+      },
+      "Event": {
+        "type": "object",
+        "description": "En kommande hämtning (i dag eller senare).",
+        "additionalProperties": false,
+        "required": [
+          "date",
+          "fractions",
+          "estimated",
+          "deviation",
+          "warning",
+          "labels"
+        ],
+        "properties": {
+          "date": {
+            "type": "string",
+            "description": "Datum, YYYY-MM-DD.",
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "fractions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "Fraktionens id, t.ex. rest, mat, papper, plast, glas, metall, tidningar eller karl (kärl med flera fraktioner). Nya id kan tillkomma i v1, så okända id ska hanteras (visa id:t eller ett allmänt namn). Nyckeln finns i fractions i samma svar."
+            },
+            "description": "Fraktionerna som hämtas den dagen."
+          },
+          "estimated": {
+            "type": "boolean",
+            "description": "true om datumet är framräknat och inte bekräftat av källan. Aldrig null."
+          },
+          "deviation": {
+            "description": "Avvikelse från ordinarie hämtdag. null när hämtningen är ordinarie.",
+            "oneOf": [
+              {
+                "type": "object",
+                "description": "Avvikelse från ordinarie hämtdag.",
+                "additionalProperties": false,
+                "required": [
+                  "originalDate",
+                  "reason"
+                ],
+                "properties": {
+                  "originalDate": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Ordinarie datum, YYYY-MM-DD, eller null om källan inte anger det."
+                  },
+                  "reason": {
+                    "type": "string",
+                    "description": "Orsak, t.ex. \"Julhelgen\"."
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "warning": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Varning från källan. null när det saknas."
+          },
+          "labels": {
+            "type": "object",
+            "description": "Källans egen text per fraktions-id, t.ex. {\"karl\": \"Fyrfack 1\"} för kärl med flera fraktioner. {} när det saknas.",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Bin": {
+        "type": "object",
+        "description": "Ett kärl eller en abonnerad tjänst.",
+        "additionalProperties": false,
+        "required": [
+          "fraction",
+          "sizeLiters",
+          "pickupsPerYear",
+          "frequencyText"
+        ],
+        "properties": {
+          "fraction": {
+            "type": "string",
+            "description": "Fraktionens id, t.ex. rest, mat, papper, plast, glas, metall, tidningar eller karl (kärl med flera fraktioner). Nya id kan tillkomma i v1, så okända id ska hanteras (visa id:t eller ett allmänt namn). Nyckeln finns i fractions i samma svar."
+          },
+          "sizeLiters": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Kärlstorlek i liter. null när det saknas."
+          },
+          "pickupsPerYear": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Antal hämtningar per år. null när det saknas."
+          },
+          "frequencyText": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Källans text om frekvensen, t.ex. \"Varannan vecka\". null när det saknas."
+          }
+        }
+      },
+      "Links": {
+        "type": "object",
+        "description": "Länkar för adressen.",
+        "additionalProperties": false,
+        "required": [
+          "ics",
+          "web"
+        ],
+        "properties": {
+          "ics": {
+            "type": "string",
+            "description": "Kalenderprenumeration (iCalendar). Samma id som i adressen.",
+            "format": "uri"
+          },
+          "web": {
+            "type": "string",
+            "description": "Adressens sida på sajten.",
+            "format": "uri"
+          }
+        }
+      },
+      "Source": {
+        "type": "object",
+        "description": "En källa (avfallsbolag eller kommun).",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "url",
+          "kommuner",
+          "testData"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Källans id. Stabilt."
+          },
+          "name": {
+            "type": "string",
+            "description": "Källans namn."
+          },
+          "url": {
+            "type": "string",
+            "description": "Källans webbplats.",
+            "format": "uri"
+          },
+          "kommuner": {
+            "type": "array",
+            "description": "Kommunerna som källan täcker.",
+            "items": {
+              "type": "object",
+              "description": "Kommun.",
+              "additionalProperties": false,
+              "required": [
+                "code",
+                "name"
+              ],
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "description": "Kommunkod enligt SCB."
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Kommunens namn."
+                }
+              }
+            }
+          },
+          "testData": {
+            "type": "boolean",
+            "description": "true om källan har påhittad testdata och inte ska litas på."
+          }
+        }
+      },
+      "FractionRegistry": {
+        "type": "object",
+        "description": "Fraktionsregister: id → visningsuppgifter. Innehåller de fraktioner som förekommer i svaret (för /kallor alla kända). Id:n är öppna, nya kan tillkomma.",
+        "additionalProperties": {
+          "$ref": "#/components/schemas/Fraction"
+        }
+      },
+      "AddressResponse": {
+        "type": "object",
+        "description": "Schema för en adress.",
+        "additionalProperties": false,
+        "required": [
+          "apiVersion",
+          "today",
+          "address",
+          "next",
+          "summary",
+          "events",
+          "bins",
+          "fractions",
+          "links",
+          "updatedAt"
+        ],
+        "properties": {
+          "apiVersion": {
+            "type": "string",
+            "const": "1",
+            "description": "API-versionen. Alltid \"1\"."
+          },
+          "today": {
+            "type": "string",
+            "description": "Dagens datum i Europe/Stockholm. Alla relativa fält (daysUntil, isToday) utgår från det.",
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "address": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "next": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NextPickup"
+            },
+            "description": "Nästa hämtning per fraktion, sorterad på datum (därefter i fraktionsordning)."
+          },
+          "summary": {
+            "type": "string",
+            "description": "Kort sammanfattning på svenska, t.ex. \"Mat – i morgon\". \"Inga kommande hämtningar\" när inga finns."
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Event"
+            },
+            "description": "Alla kommande hämtningar (i dag och framåt), i datumordning. Kan vara tom."
+          },
+          "bins": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Bin"
+            },
+            "description": "Adressens kärl. Kan vara tom."
+          },
+          "fractions": {
+            "$ref": "#/components/schemas/FractionRegistry",
+            "description": "Visningsuppgifter för fraktionerna som förekommer i events och bins."
+          },
+          "links": {
+            "$ref": "#/components/schemas/Links"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Datum då schemat senast hämtades eller uppdaterades hos källan, YYYY-MM-DD.",
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          }
+        }
+      },
+      "SearchResponse": {
+        "type": "object",
+        "description": "Sökresultat.",
+        "additionalProperties": false,
+        "required": [
+          "apiVersion",
+          "addresses",
+          "failed"
+        ],
+        "properties": {
+          "apiVersion": {
+            "type": "string",
+            "const": "1",
+            "description": "API-versionen. Alltid \"1\"."
+          },
+          "addresses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SearchHit"
+            },
+            "description": "Träffar, högst tio per källa."
+          },
+          "failed": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "Källans id."
+            },
+            "description": "Källor som inte svarade. Resultatet kan då vara ofullständigt; försök igen om en stund. Tom när alla svarade."
+          }
+        }
+      },
+      "SourcesResponse": {
+        "type": "object",
+        "description": "Källor och fraktioner.",
+        "additionalProperties": false,
+        "required": [
+          "apiVersion",
+          "sources",
+          "fractions"
+        ],
+        "properties": {
+          "apiVersion": {
+            "type": "string",
+            "const": "1",
+            "description": "API-versionen. Alltid \"1\"."
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Source"
+            },
+            "description": "Synliga källor."
+          },
+          "fractions": {
+            "$ref": "#/components/schemas/FractionRegistry",
+            "description": "Alla kända fraktioner."
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "description": "Felsvar. Alla fel har den här formen.",
+        "additionalProperties": false,
+        "required": [
+          "apiVersion",
+          "error"
+        ],
+        "properties": {
+          "apiVersion": {
+            "type": "string",
+            "const": "1",
+            "description": "API-versionen. Alltid \"1\"."
+          },
+          "error": {
+            "type": "object",
+            "description": "Felet.",
+            "additionalProperties": false,
+            "required": [
+              "code",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "enum": [
+                  "bad_request",
+                  "not_found",
+                  "source_unavailable"
+                ],
+                "description": "bad_request (400), not_found (404) eller source_unavailable (502)."
+              },
+              "message": {
+                "type": "string",
+                "description": "Förklaring på svenska. Avsedd för människor; bygg inte logik på texten, använd code."
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -98,6 +98,13 @@ describe('ResultPage', () => {
     expect(screen.queryByText('190 l')).toBeNull()
   })
 
+  it('visar adressens API-adress under påminnelserna', async () => {
+    renderAt('/avesta/krylbo-storgatan-12b')
+    await vi.waitFor(() => resolveSchedule!())
+    expect(await screen.findByRole('heading', { name: 'API' })).toBeInTheDocument()
+    expect(screen.getByText('https://sopor.hardyson.se/api/v1/adress/avesta/krylbo-storgatan-12b')).toBeInTheDocument()
+  })
+
   it('linjerar kalendern med kortet för nästa tömning', async () => {
     renderAt('/avesta/krylbo-storgatan-12b')
     await vi.waitFor(() => resolveSchedule!())

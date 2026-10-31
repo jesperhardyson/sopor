@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Source } from '@/sources'
-import { buildStreetIndex, candidateSources, shardKey, type OsmKommun } from './street-index'
+import { buildStreetIndex, candidateSources, pickLiveSources, shardKey, type OsmKommun } from './street-index'
 
 const src = (id: string, kommuner: [string, string][]): Source => ({
   id,
@@ -65,5 +65,29 @@ describe('candidateSources', () => {
 
   it('ger inget för okända gator', () => {
     expect(candidateSources(index.shards.st ?? {}, 'strandvägen')).toEqual([])
+  })
+})
+
+describe('pickLiveSources', () => {
+  const shard = { storgatan: ['uppsala', 'vafab'] }
+  const live = ['uppsala', 'orebro']
+
+  it('ger de live-källor som gatuindexet pekar ut', () => {
+    expect(pickLiveSources(shard, 'storgatan 2, uppsala', live, false)).toEqual(['uppsala'])
+  })
+
+  it('ger inget för en gata som saknas utan siffra och utan Enter', () => {
+    expect(pickLiveSources(shard, 'strandvägen', live, false)).toEqual([])
+  })
+
+  it('ger alla live-källor för en gata som saknas med siffra eller Enter', () => {
+    expect(pickLiveSources(shard, 'strandvägen 4', live, false)).toEqual(live)
+    expect(pickLiveSources(shard, 'strandvägen', live, true)).toEqual(live)
+  })
+
+  it('behandlar en saknad delfil som en gata som saknas', () => {
+    expect(pickLiveSources(null, 'storgatan', live, false)).toEqual([])
+    expect(pickLiveSources(null, 'storgatan 2', live, false)).toEqual(live)
+    expect(pickLiveSources(null, 'storgatan', live, true)).toEqual(live)
   })
 })

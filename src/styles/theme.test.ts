@@ -1,6 +1,8 @@
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { FRACTIONS as FRACTION_REGISTRY } from '@/domain/fractions'
+import { FRACTION_CLASS } from '@/ui/components/fraction-style'
 
 const css = readFileSync(path.resolve(import.meta.dirname, 'theme.css'), 'utf8')
 
@@ -35,5 +37,10 @@ describe('theme.css', () => {
   it('har en levande bakgrund som stängs av vid minskad rörelse', () => {
     expect(css).toMatch(/\.bg-live::before\s*\{[^}]*animation:/)
     expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\)[\s\S]*\.bg-live::before[\s\S]*animation: none/)
+  })
+
+  it.each(Object.values(FRACTION_REGISTRY))('$id har samma färg som sajten visar', (f) => {
+    const token = FRACTION_CLASS[f.id].dot.replace(/^bg-/, '') // 'frac-papper', 'text-2'
+    expect(f.color).toBe(value(':root', token)?.toUpperCase())
   })
 })

@@ -27,12 +27,29 @@
           "value": "public, max-age=300, s-maxage=3600"
         }
       ]
+    },
+    {
+      "source": "/api/v1/openapi.json",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        }
+      ]
     }
   ],
   "rewrites": [
     {
       "source": "/ics/:source/:file",
       "destination": "/api/ics?source=:source&file=:file"
+    },
+    {
+      "source": "/api/v1/adress/:source/:id",
+      "destination": "/api/v1/adress?source=:source&id=:id"
+    },
+    {
+      "source": "/api/v1/:path*",
+      "destination": "/api/v1/okand"
     },
     {
       "source": "/((?!data/|ics/|assets/|api/).*)",
