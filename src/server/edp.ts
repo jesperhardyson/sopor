@@ -21,6 +21,7 @@ interface EdpService {
   WastePickupFrequency: string | null
   NextWastePickup: string
   WastePickupsPerYear: number
+  Description?: string | null
 }
 
 const WEEKDAYS = ['måndag', 'tisdag', 'onsdag', 'torsdag', 'fredag', 'lördag', 'söndag']
@@ -103,7 +104,7 @@ export async function edpSchedule(
   const byDate = new Map<string, PickupEvent>()
   for (const service of res.RhServices ?? []) {
     const next = service.NextWastePickup?.slice(0, 10)
-    const mapped = mapWasteType(service.WasteType ?? '', service.WastePickupFrequency ?? '')
+    const mapped = mapWasteType(service.WasteType ?? '', service.WastePickupFrequency ?? '', service.Description ?? '')
     if (!mapped || !next || !isValidDate(next) || next.startsWith('0001')) continue
 
     const pickups = expandPickups({
@@ -113,10 +114,10 @@ export async function edpSchedule(
     })
     for (const p of pickups) {
       const event = byDate.get(p.date) ?? { date: p.date, fractions: [], estimated: false }
-      if (!event.fractions.includes(mapped.fraction)) event.fractions.push(mapped.fraction)
+      for (const f of mapped.fractions) if (!event.fractions.includes(f)) event.fractions.push(f)
       if (mapped.label) {
         const labels = (event.labels ??= {})
-        labels[mapped.fraction] = labels[mapped.fraction] ? `${labels[mapped.fraction]}, ${mapped.label}` : mapped.label
+        labels.karl = [...new Set([...(labels.karl?.split(', ') ?? []), mapped.label])].join(', ')
       }
       // En dag med minst en framräknad tömning märks som beräknad: det försiktiga valet.
       event.estimated = event.estimated || p.estimated

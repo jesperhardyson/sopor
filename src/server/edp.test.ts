@@ -130,8 +130,15 @@ describe('edpSchedule', () => {
     expect(s.events[0]).toMatchObject({ date: '2026-11-09', estimated: false })
   })
 
-  it('visar kärl med flera fraktioner med källans text', async () => {
+  it('visar flerfackskärl som fyrfackskärl', async () => {
     const s = await edpSchedule('https://x', 'x (1)', fakeFetch(fixture('boras-schedule.json')), NOW)
-    expect(s.events[0]).toMatchObject({ date: '2026-11-02', fractions: ['karl'], labels: { karl: 'Kärl 1 – fyrfack' } })
+    expect(s.events[0]).toMatchObject({ date: '2026-11-02', fractions: ['karl'], labels: { karl: 'Fyrfackskärl 1' } })
+  })
+
+  it('visar fraktionerna i Uppsalas fyrfackskärl', async () => {
+    const s = await edpSchedule('https://x', 'x (1)', fakeFetch(fixture('uppsala-fyrfack-schedule.json')), NOW)
+    expect(s.events[0]).toMatchObject({ date: '2026-11-11', fractions: ['rest', 'papper', 'plast', 'glas', 'metall', 'tidningar', 'mat'] })
+    expect(s.events[0].labels).toBeUndefined()
+    expect(s.events[1]).toMatchObject({ date: '2026-11-25', fractions: ['papper', 'metall', 'tidningar', 'mat'] })
   })
 })
