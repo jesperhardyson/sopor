@@ -70,7 +70,8 @@ describe('StartPage innehåll', () => {
     setup()
     expect(screen.getByRole('heading', { name: 'Koll på sopdagen, utan att behöva tänka på den' })).toBeInTheDocument()
     const points = screen.getByRole('list', { name: 'Det här får du' })
-    for (const title of ['Nästa tömning direkt', 'Alla tömningar framåt', 'Schemat i din kalender', 'Spara adresser']) {
+    expect(within(points).getByRole('link', { name: /Läs mer om smarta hem/ })).toHaveAttribute('href', '/om#smarta-hem')
+    for (const title of ['Nästa tömning direkt', 'Alla tömningar framåt', 'Schemat i din kalender', 'Spara adresser', 'Smarta hem']) {
       expect(within(points).getByRole('heading', { name: title })).toBeInTheDocument()
     }
   })

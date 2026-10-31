@@ -98,11 +98,15 @@ describe('ResultPage', () => {
     expect(screen.queryByText('190 l')).toBeNull()
   })
 
-  it('visar adressens API-adress under påminnelserna', async () => {
+  it('visar smarta hem med söktext för Homey och API-länken under påminnelserna', async () => {
     renderAt('/avesta/krylbo-storgatan-12b')
     await vi.waitFor(() => resolveSchedule!())
-    expect(await screen.findByRole('heading', { name: 'API' })).toBeInTheDocument()
-    expect(screen.getByText('https://sopor.hardyson.se/api/v1/adress/avesta/krylbo-storgatan-12b')).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Smarta hem' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Kopiera söktexten' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /API-länk för utvecklare/ })).toHaveAttribute(
+      'href',
+      'https://sopor.hardyson.se/api/v1/adress/avesta/krylbo-storgatan-12b',
+    )
   })
 
   it('linjerar kalendern med kortet för nästa tömning', async () => {
