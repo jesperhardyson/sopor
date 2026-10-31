@@ -1,13 +1,18 @@
 {
   "pair": {
-    "intro": "Search for the address where your waste is collected.",
+    "intro": "Choose your municipality and search for the address where your waste is collected.",
     "label": "Street and house number",
     "placeholder": "Storgatan 2",
     "search": "Search",
     "searching": "Searching…",
     "tooShort": "Type at least three characters.",
-    "notFound": "No address found. Include the house number.",
-    "failed": "Some sources did not respond. Try again in a while."
+    "notFound": "No address found in that municipality. Check the spelling and include the house number.",
+    "failed": "The source did not respond. Try again in a while.",
+    "kommun": "Municipality",
+    "chooseKommun": "Choose municipality",
+    "noKommun": "Choose a municipality first.",
+    "loadFailed": "Could not load the municipalities. Try again in a while.",
+    "tooMany": "Too many matches in the area. Include the house number."
   },
   "device": {
     "gone": "The address no longer exists at the source. Repair or remove the device.",

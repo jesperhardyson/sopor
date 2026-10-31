@@ -20,6 +20,12 @@ export interface SoporSearch {
   failed: string[]
 }
 
+export interface SoporSource {
+  id: string
+  name: string
+  kommuner: { code: string; name: string }[]
+}
+
 export interface SoporEvent {
   date: string
   fractions: string[]
@@ -77,7 +83,9 @@ export function createClient({ fetch, userAgent, timeoutMs = 15_000 }: ClientOpt
   }
 
   return {
-    search: (q: string) => get<SoporSearch>(`${BASE_URL}/sok?${new URLSearchParams({ q })}`),
+    search: (q: string, source?: string) =>
+      get<SoporSearch>(`${BASE_URL}/sok?${new URLSearchParams(source ? { q, kalla: source } : { q })}`),
+    sources: () => get<{ sources: SoporSource[] }>(`${BASE_URL}/kallor`).then((body) => body.sources),
     schedule: (url: string) => get<SoporSchedule>(url),
   }
 }

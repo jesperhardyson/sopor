@@ -3,14 +3,16 @@
   "version": "0.1.0",
   "compatibility": ">=12.3.0",
   "sdk": 3,
-  "platforms": ["local"],
+  "platforms": [
+    "local"
+  ],
   "name": {
-    "en": "Sopor",
-    "sv": "Sopor"
+    "en": "Waste Collection",
+    "sv": "Sophämtning"
   },
   "description": {
-    "en": "Waste collection days for your Swedish address, in your flows",
-    "sv": "Sophämtningen för din adress, i dina flöden"
+    "en": "Waste collection days for your Swedish address, in your flows. Data from sopor.hardyson.se",
+    "sv": "Sophämtningen för din adress, i dina flöden. Data från sopor.hardyson.se"
   },
   "category": "tools",
   "permissions": [],

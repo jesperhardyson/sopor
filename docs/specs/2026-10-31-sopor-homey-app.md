@@ -16,7 +16,7 @@ En Homey Pro-ägare lägger till sin adress genom att söka på den. Sedan kan a
 
 - **Plats:** `integrations/homey/`, ett eget npm-paket. Repots rot-`tsconfig`, Vitest och Vercel-bygget rör inte mappen.
 - **Källkoden:** TypeScript som ESM (`.mts`), SDK v3. `compatibility: ">=12.3.0"` och `platforms: ["local"]`.
-- **App-id:** `se.hardyson.sopor`. Namn: "Sopor". Språk: `en` (krävs) och `sv`.
+- **App-id:** `se.hardyson.sopor`. Namn: "Sophämtning" (engelska "Waste Collection"). Namnet säger vad appen gör, och kopplingen till Sopor står i beskrivningen. Språk: `en` (krävs) och `sv`.
 - **Bara publika API v1:** `/api/v1/sok` och `/api/v1/adress/{källa}/{id}`. Ingen kod från `src/`. Fraktionernas namn kommer ur svarets `fractions{}`.
 - **User-Agent:** `Sopor-Homey/<version> (+https://sopor.hardyson.se)`.
 
@@ -44,10 +44,14 @@ Underkapabiliteter (`sopor_next.plast`) läggs till och tas bort efter vad svare
 
 ## Parning
 
-1. **Egen vy `sok`:** ett textfält ("Gata och husnummer") och knappen "Sök". Vyn skickar `search` till drivrutinen, som anropar `/api/v1/sok?q=…`.
+1. **Egen vy `sok`:**
+   - **Kommun** (obligatorisk): ett val med alla kommuner ur `/api/v1/kallor`, i bokstavsordning.
+   - **Gata och husnummer:** ett textfält, och knappen "Sök".
+   - Drivrutinen söker med `/api/v1/sok?q=…&kalla=<källa>` och behåller bara träffar i vald kommun. Utan kommun gav "Storgatan" 139 träffar från 15 källor.
    - Är `q` kortare än tre tecken visas ett fel.
-   - Är träfflistan tom men `failed` inte tom: "Några källor svarade inte. Försök igen om en stund."
-   - Är listan tom och inga källor saknas: "Ingen adress hittades. Skriv med husnummer."
+   - Ger källan sina högst tio träffar, men alla i andra kommuner: "För många träffar i området. Skriv med husnummer."
+   - Svarade källan inte: "Källan svarade inte. Försök igen om en stund."
+   - Annars, om inget hittades: "Ingen adress hittades i kommunen. Kontrollera stavningen och skriv med husnummer."
    - Finns det träffar går vyn vidare till `list_devices`.
 2. **`list_devices`** (systemvy): träffarna, med namnet `"<gata>, <ort>"` och `detail` om det finns.
 3. **`add_devices`** (systemvy).
@@ -56,14 +60,14 @@ Vyn använder Homeys egna klasser (`homey-form-input`, `homey-button-primary-ful
 
 ## Flödeskort
 
-Alla är enhetskort.
+Alla är enhetskort och syns under adressens enhet (i dess zon) när man väljer kort, inte under appen. Titlarna innehåller "sopor" eller "hämt…", så att de kommer fram när man söker i kortväljaren.
 
-- **Villkor `hamtas`:** "[[fraktion]] hämtas !{{|inte}} [[nar]]".
+- **Villkor `hamtas`:** "Sopor hämtas !{{|inte}}" i listan, och "[[fraktion]] hämtas !{{|inte}} [[nar]]" i kortet.
   - `fraktion` (autocomplete): "Någon fraktion", följd av adressens fraktioner i den ordning svarets `fractions{}` har dem. Valet filtreras på det användaren skriver.
   - `nar` (dropdown): i dag (0), i morgon (1), i övermorgon (2).
   - Sant om något datum i `events` med `datum = i dag + nar` innehåller fraktionen. Med "Någon fraktion" räcker det att datumet finns.
-- **Handling `uppdatera`:** "Uppdatera schemat". Hämtar direkt från API:t och kastar fel om det misslyckas, så att flödet visar felet.
-- **Handling `vad_hamtas`** (bara Advanced Flow, eftersom den har tokens): "Vad hämtas [[nar]]?".
+- **Handling `uppdatera`:** "Uppdatera hämtschemat". Hämtar direkt från API:t och kastar fel om det misslyckas, så att flödet visar felet.
+- **Handling `vad_hamtas`** (bara Advanced Flow, eftersom den har tokens): "Vilka sopor hämtas [[nar]]?".
   - Token `fraktioner` (text): namnen med komma emellan, eller tom text.
   - Token `antal` (tal).
 

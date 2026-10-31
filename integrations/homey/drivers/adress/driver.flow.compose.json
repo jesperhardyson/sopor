@@ -4,7 +4,7 @@
       "id": "hamtas",
       "title": {
         "en": "Waste is !{{|not}} collected",
-        "sv": "Avfall hämtas !{{|inte}}"
+        "sv": "Sopor hämtas !{{|inte}}"
       },
       "titleFormatted": {
         "en": "[[fraktion]] is !{{|not}} collected [[nar]]",
@@ -18,17 +18,44 @@
         {
           "name": "fraktion",
           "type": "autocomplete",
-          "title": { "en": "Fraction", "sv": "Fraktion" },
-          "placeholder": { "en": "Any fraction", "sv": "Någon fraktion" }
+          "title": {
+            "en": "Fraction",
+            "sv": "Fraktion"
+          },
+          "placeholder": {
+            "en": "Any fraction",
+            "sv": "Någon fraktion"
+          }
         },
         {
           "name": "nar",
           "type": "dropdown",
-          "title": { "en": "When", "sv": "När" },
+          "title": {
+            "en": "When",
+            "sv": "När"
+          },
           "values": [
-            { "id": "0", "label": { "en": "today", "sv": "i dag" } },
-            { "id": "1", "label": { "en": "tomorrow", "sv": "i morgon" } },
-            { "id": "2", "label": { "en": "the day after tomorrow", "sv": "i övermorgon" } }
+            {
+              "id": "0",
+              "label": {
+                "en": "today",
+                "sv": "i dag"
+              }
+            },
+            {
+              "id": "1",
+              "label": {
+                "en": "tomorrow",
+                "sv": "i morgon"
+              }
+            },
+            {
+              "id": "2",
+              "label": {
+                "en": "the day after tomorrow",
+                "sv": "i övermorgon"
+              }
+            }
           ]
         }
       ]
@@ -38,8 +65,8 @@
     {
       "id": "uppdatera",
       "title": {
-        "en": "Update the schedule",
-        "sv": "Uppdatera schemat"
+        "en": "Update the collection schedule",
+        "sv": "Uppdatera hämtschemat"
       },
       "hint": {
         "en": "Fetches the schedule from Sopor right away. It is otherwise updated automatically.",
@@ -49,22 +76,43 @@
     {
       "id": "vad_hamtas",
       "title": {
-        "en": "What is collected?",
-        "sv": "Vad hämtas?"
+        "en": "What waste is collected?",
+        "sv": "Vilka sopor hämtas?"
       },
       "titleFormatted": {
-        "en": "What is collected [[nar]]?",
-        "sv": "Vad hämtas [[nar]]?"
+        "en": "What waste is collected [[nar]]?",
+        "sv": "Vilka sopor hämtas [[nar]]?"
       },
       "args": [
         {
           "name": "nar",
           "type": "dropdown",
-          "title": { "en": "When", "sv": "När" },
+          "title": {
+            "en": "When",
+            "sv": "När"
+          },
           "values": [
-            { "id": "0", "label": { "en": "today", "sv": "i dag" } },
-            { "id": "1", "label": { "en": "tomorrow", "sv": "i morgon" } },
-            { "id": "2", "label": { "en": "the day after tomorrow", "sv": "i övermorgon" } }
+            {
+              "id": "0",
+              "label": {
+                "en": "today",
+                "sv": "i dag"
+              }
+            },
+            {
+              "id": "1",
+              "label": {
+                "en": "tomorrow",
+                "sv": "i morgon"
+              }
+            },
+            {
+              "id": "2",
+              "label": {
+                "en": "the day after tomorrow",
+                "sv": "i övermorgon"
+              }
+            }
           ]
         }
       ],
@@ -72,13 +120,22 @@
         {
           "name": "fraktioner",
           "type": "string",
-          "title": { "en": "Fractions", "sv": "Fraktioner" },
-          "example": { "en": "Plastic packaging, Metal", "sv": "Plastförpackningar, Metall" }
+          "title": {
+            "en": "Fractions",
+            "sv": "Fraktioner"
+          },
+          "example": {
+            "en": "Plastic packaging, Metal",
+            "sv": "Plastförpackningar, Metall"
+          }
         },
         {
           "name": "antal",
           "type": "number",
-          "title": { "en": "Number of fractions", "sv": "Antal fraktioner" },
+          "title": {
+            "en": "Number of fractions",
+            "sv": "Antal fraktioner"
+          },
           "example": 2
         }
       ]

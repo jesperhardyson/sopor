@@ -1,13 +1,18 @@
 {
   "pair": {
-    "intro": "Sök upp adressen där dina sopor hämtas.",
+    "intro": "Välj kommun och sök upp adressen där dina sopor hämtas.",
     "label": "Gata och husnummer",
     "placeholder": "Storgatan 2",
     "search": "Sök",
     "searching": "Söker …",
     "tooShort": "Skriv minst tre tecken.",
-    "notFound": "Ingen adress hittades. Skriv med husnummer.",
-    "failed": "Några källor svarade inte. Försök igen om en stund."
+    "notFound": "Ingen adress hittades i kommunen. Kontrollera stavningen och skriv med husnummer.",
+    "failed": "Källan svarade inte. Försök igen om en stund.",
+    "kommun": "Kommun",
+    "chooseKommun": "Välj kommun",
+    "noKommun": "Välj en kommun först.",
+    "loadFailed": "Kunde inte hämta kommunerna. Försök igen om en stund.",
+    "tooMany": "För många träffar i området. Skriv med husnummer."
   },
   "device": {
     "gone": "Adressen finns inte längre hos källan. Reparera eller ta bort enheten.",

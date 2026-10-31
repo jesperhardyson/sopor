@@ -14,6 +14,18 @@ describe('API-klienten', () => {
     expect(new Headers(init.headers).get('User-Agent')).toBe('Sopor-Homey/0.1.0')
   })
 
+  it('söker inom en källa med kalla', async () => {
+    const fetch = vi.fn(async () => json(200, { apiVersion: '1', addresses: [], failed: [] }))
+    await createClient({ fetch, userAgent: 'x' }).search('storgatan 2', 'uppsala')
+    expect(fetch.mock.calls[0][0]).toBe('https://sopor.hardyson.se/api/v1/sok?q=storgatan+2&kalla=uppsala')
+  })
+
+  it('hämtar källorna', async () => {
+    const fetch = vi.fn(async () => json(200, { apiVersion: '1', sources: [], fractions: {} }))
+    await createClient({ fetch, userAgent: 'x' }).sources()
+    expect(fetch.mock.calls[0][0]).toBe('https://sopor.hardyson.se/api/v1/kallor')
+  })
+
   it('ger API:ts felkod vid felsvar', async () => {
     const fetch = vi.fn(async () => json(404, { apiVersion: '1', error: { code: 'not_found', message: 'Adressen finns inte hos källan' } }))
     const client = createClient({ fetch, userAgent: 'x' })

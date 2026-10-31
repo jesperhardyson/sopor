@@ -1,6 +1,7 @@
 import Homey from 'homey'
 import type SoporApp from '../../app.mjs'
 import type { SoporSearchHit } from '../../lib/api.mjs'
+import { kommunChoices, parseKommun, searchOutcome } from '../../lib/pairing.mjs'
 import { ANY, fractionChoices } from '../../lib/schedule.mjs'
 import type AddressDevice from './device.mjs'
 
@@ -38,12 +39,15 @@ export default class AddressDriver extends Homey.Driver {
     const { client } = this.homey.app as SoporApp
     let hits: SoporSearchHit[] = []
 
-    // Svarar 'found', 'failed' (källor svarade inte) eller 'none'. Vyn visar texten.
-    session.setHandler('search', async (q: string) => {
-      const result = await client.search(q)
-      hits = result.addresses
-      if (hits.length) return 'found'
-      return result.failed.length ? 'failed' : 'none'
+    session.setHandler('kommuner', async () => kommunChoices(await client.sources()))
+
+    // Svarar med ett SearchResult. Vyn visar texten.
+    session.setHandler('search', async ({ q, kommun }: { q: string; kommun: string }) => {
+      const choice = parseKommun(kommun)
+      if (!choice) throw new Error(this.homey.__('pair.noKommun'))
+      const outcome = searchOutcome(await client.search(q, choice.source), choice.kommun)
+      hits = outcome.hits
+      return outcome.result
     })
 
     session.setHandler('list_devices', async () =>

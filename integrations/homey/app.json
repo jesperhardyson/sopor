@@ -8,12 +8,12 @@
     "local"
   ],
   "name": {
-    "en": "Sopor",
-    "sv": "Sopor"
+    "en": "Waste Collection",
+    "sv": "Sophämtning"
   },
   "description": {
-    "en": "Waste collection days for your Swedish address, in your flows",
-    "sv": "Sophämtningen för din adress, i dina flöden"
+    "en": "Waste collection days for your Swedish address, in your flows. Data from sopor.hardyson.se",
+    "sv": "Sophämtningen för din adress, i dina flöden. Data från sopor.hardyson.se"
   },
   "category": "tools",
   "permissions": [],
@@ -35,7 +35,7 @@
         "id": "hamtas",
         "title": {
           "en": "Waste is !{{|not}} collected",
-          "sv": "Avfall hämtas !{{|inte}}"
+          "sv": "Sopor hämtas !{{|inte}}"
         },
         "titleFormatted": {
           "en": "[[fraktion]] is !{{|not}} collected [[nar]]",
@@ -101,8 +101,8 @@
       {
         "id": "uppdatera",
         "title": {
-          "en": "Update the schedule",
-          "sv": "Uppdatera schemat"
+          "en": "Update the collection schedule",
+          "sv": "Uppdatera hämtschemat"
         },
         "hint": {
           "en": "Fetches the schedule from Sopor right away. It is otherwise updated automatically.",
@@ -119,12 +119,12 @@
       {
         "id": "vad_hamtas",
         "title": {
-          "en": "What is collected?",
-          "sv": "Vad hämtas?"
+          "en": "What waste is collected?",
+          "sv": "Vilka sopor hämtas?"
         },
         "titleFormatted": {
-          "en": "What is collected [[nar]]?",
-          "sv": "Vad hämtas [[nar]]?"
+          "en": "What waste is collected [[nar]]?",
+          "sv": "Vilka sopor hämtas [[nar]]?"
         },
         "args": [
           {
