@@ -1,4 +1,5 @@
 import { SITE } from '@/config'
+import type { Address } from '@/domain/types'
 
 /** I produktion används sajtens egen adress så att preview-deployer pekar på sig själva. */
 export function defaultOrigin(): string {
@@ -15,4 +16,9 @@ export function webcalUrl(httpsUrl: string): string {
 
 export function googleCalendarUrl(webcal: string): string {
   return `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(webcal)}`
+}
+
+/** Adressens svar i det publika API:t, för hemautomation och andra integrationer. */
+export function apiUrl(address: Address, origin: string = SITE.origin): string {
+  return new URL(`/api/v1/adress/${encodeURIComponent(address.sourceId)}/${encodeURIComponent(address.id)}`, origin).toString()
 }

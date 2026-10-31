@@ -53,7 +53,7 @@ src/domain/          typer, fraktionsregister, datum, schemalogik, ICS, sök (re
 src/data/            filformatet för statisk data: parsning, validering, generering
 src/sources/         källregistret: avfallsbolag/kommuner, system och vilka kommuner de täcker
 src/server/          logiken bakom Vercel-funktionerna (EDP-klient, sök, schema, kalenderfiler)
-api/                 Vercel-funktionerna (sok, schema, ics)
+api/                 Vercel-funktionerna (sok, schema, ics och det publika API:t i api/v1/)
 data/osm/            gatu- och ortnamn per kommun från OpenStreetMap (ODbL)
 src/providers/       WasteProvider-gränssnittet och implementationerna (static nu)
 src/ui/              React-sidor och komponenter
@@ -62,6 +62,8 @@ docs/design/         designen (Pencil, .pen)
 docs/specs/          specifikationer
 docs/plans/          implementationsplaner
 ```
+
+**Publikt API.** Sophämtning per adress finns också som öppet JSON-API (`/api/v1`) för Home Assistant, Homey och egna integrationer. Se [`docs/api.md`](docs/api.md) och [`openapi.json`](https://sopor.hardyson.se/api/v1/openapi.json).
 
 UI:t pratar bara med `WasteProvider` (`src/providers/types.ts`). Det vet aldrig om datan kommer från statiska filer, EDP eller något annat. Genererade filer under `public/data/` och `public/ics/` checkas inte in.
 

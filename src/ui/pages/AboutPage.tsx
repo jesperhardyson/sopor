@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowUpRight, Ban, ChevronDown, Mail, MapPin, Smartphone, UserX, type LucideIcon } from 'lucide-react'
+import { ArrowLeft, ArrowUpRight, Ban, Braces, ChevronDown, Mail, MapPin, Smartphone, UserX, type LucideIcon } from 'lucide-react'
 import { useEffect, useId, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { clearSaved, loadSaved } from '@/lib/storage'
@@ -171,6 +171,21 @@ export function AboutPage() {
             Sopor på GitHub
           </a>
         </div>
+      </section>
+
+      <section className="flex flex-col items-start gap-3">
+        <h2 className={h2}>API</h2>
+        <p className={body}>
+          Sopor har ett öppet API som Home Assistant, Homey och andra system kan läsa. Inga nycklar och ingen inloggning.
+        </p>
+        <a
+          href={SITE.apiGuideUrl}
+          rel="noopener"
+          className="inline-flex items-center gap-2 rounded-[14px] border border-border bg-surface px-4 py-3 text-[15px] font-bold text-text"
+        >
+          <Braces className="size-[18px]" aria-hidden />
+          Läs API-guiden
+        </a>
       </section>
 
       <section className="flex flex-col items-start gap-3">
