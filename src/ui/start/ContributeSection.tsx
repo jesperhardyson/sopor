@@ -1,7 +1,7 @@
 import { ArrowRight, ArrowUpRight, CircleCheck, CircleDashed, Flag, GitPullRequest, MapPinPlus, type LucideIcon } from 'lucide-react'
 import { Link } from 'react-router'
 import { SITE } from '@/config'
-import { SOURCES, sourceLabel } from '@/sources'
+import { SOURCES } from '@/sources'
 import { GitHubMark } from '../components/GitHubMark'
 
 const WAYS: { icon: LucideIcon; title: string; text: string; href: string; tag?: string }[] = [
@@ -28,14 +28,20 @@ const WAYS: { icon: LucideIcon; title: string; text: string; href: string; tag?:
 
 const pill = 'rounded-full px-2 py-0.5 text-xs font-extrabold'
 
+/** En rad per kommun, sorterad efter namn, med testdata-flaggan från kommunens källa. */
+function kommunRows() {
+  const rows = SOURCES.flatMap((s) => s.kommuner.map((k) => ({ ...k, testData: s.testData })))
+  return [...new Map(rows.map((r) => [r.code, r])).values()].sort((a, b) => a.name.localeCompare(b.name, 'sv'))
+}
+
 /** Kommunerna i registret och deras läge, plus "Nästa kommun". */
 export function MunicipalityStatusList() {
   return (
     <ul className="flex flex-col gap-2.5">
-      {SOURCES.map((m) => (
-        <li key={m.id} className="flex items-center gap-2.5 text-[15px] font-extrabold text-text">
+      {kommunRows().map((m) => (
+        <li key={m.code} className="flex items-center gap-2.5 text-[15px] font-extrabold text-text">
           <CircleCheck className="size-[18px] text-primary" aria-hidden />
-          {sourceLabel(m)}
+          {m.name}
           {m.testData ? (
             <span className={`${pill} bg-warn-bg text-warn`}>Testdata</span>
           ) : (

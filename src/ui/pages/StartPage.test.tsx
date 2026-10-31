@@ -71,6 +71,9 @@ describe('StartPage innehåll', () => {
     setup()
     const bidra = screen.getByRole('region', { name: 'Saknas din kommun? Hjälp till att få in den.' })
     expect(within(bidra).getByText('Uppsala kommun')).toBeInTheDocument()
+    expect(within(bidra).getByText('Herrljunga kommun')).toBeInTheDocument()
+    expect(within(bidra).getByText('Vårgårda kommun')).toBeInTheDocument()
+    expect(within(bidra).queryByText(/Remondis|Vafab/)).toBeNull()
     expect(within(bidra).queryByText('Avesta kommun')).toBeNull()
     expect(within(bidra).queryByText('Testdata')).toBeNull()
     expect(within(bidra).getByRole('link', { name: /Tipsa om din kommun/ })).toHaveAttribute(
