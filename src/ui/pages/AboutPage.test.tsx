@@ -1,3 +1,4 @@
+import '@/test/show-hidden-sources'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router'
@@ -17,7 +18,7 @@ describe('AboutPage', () => {
     )
     expect(screen.getByRole('heading', { name: 'Om Sopor', level: 1 })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Avesta Vatten och Avfall/ })).toHaveAttribute('href', 'https://www.avestavatten.se')
-    expect(await screen.findByText('Hämtat 29 okt')).toBeInTheDocument()
+    expect(await screen.findAllByText('Hämtat 29 okt')).toHaveLength(1)
     expect(screen.queryByText('Lantmäteriet')).toBeNull()
     expect(screen.getByRole('link', { name: 'Skriv till oss' })).toHaveAttribute('href', 'mailto:support@hardyson.se')
     expect(screen.getByText(/Sopor är en inofficiell tjänst och är inte kopplad till någon kommun/)).toBeInTheDocument()
@@ -39,7 +40,7 @@ describe('AboutPage', () => {
   it('kan glömma sparade adresser under Integritet', async () => {
     localStorage.setItem(
       'sopor.saved.v1',
-      JSON.stringify([{ municipalityId: 'avesta', addressId: 'a', name: 'Hemma', street: 'S 1', locality: 'A', savedAt: '' }]),
+      JSON.stringify([{ sourceId: 'avesta', addressId: 'a', name: 'Hemma', street: 'S 1', locality: 'A', savedAt: '' }]),
     )
     render(
       <MemoryRouter>
@@ -50,6 +51,18 @@ describe('AboutPage', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Ja, glöm alla' }))
     expect(localStorage.getItem('sopor.saved.v1')).toBe('[]')
     expect(screen.getByText('Inga adresser sparade på den här enheten.')).toBeInTheDocument()
+  })
+
+  it('anger OpenStreetMap som källa för gatunamnen', () => {
+    render(
+      <MemoryRouter>
+        <AboutPage />
+      </MemoryRouter>,
+    )
+    expect(screen.getByRole('link', { name: /OpenStreetMaps bidragsgivare/ })).toHaveAttribute(
+      'href',
+      'https://www.openstreetmap.org/copyright',
+    )
   })
 })
 

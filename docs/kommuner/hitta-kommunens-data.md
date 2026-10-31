@@ -77,13 +77,39 @@ Berätta i ärendet att du har skickat en begäran, så att ingen annan gör sam
 
 | Kommun | Sköts av | Schema publikt | Söktjänst per adress | Adress → område | Läge |
 |---|---|---|---|---|---|
-| Avesta | Avesta Vatten och Avfall AB | PDF per trakt (1–10), en per år | EDP Future SimpleWastePickup finns men är tom | Begärd som allmän handling | Testdata på sajten, väntar på tabellen |
+| Avesta | Avesta Vatten och Avfall AB | PDF per trakt (1–10), en per år | EDP Future SimpleWastePickup finns men är tom | Begärd som allmän handling | Dold på sajten (påhittad testdata), väntar på tabellen |
 | Säter | Kommunen själv (inte Dala Vatten och Avfall) | Webbsida med områden per veckodag och jämn/udda vecka, plus veckoschema för fraktionerna | Nej. Mina sidor (`minasidorva.sater.se`) är en kundportal från CGI som kräver inloggning | Saknas, behöver begäras | Inte påbörjad |
+| Uppsala | Uppsala Vatten | Via söktjänsten | EDP Future SimpleWastePickup med data (`futureweb.uppsalavatten.se`) | Behövs inte | Live på sajten (beräknade datum) |
+| Örebro | Örebro kommun | Via söktjänsten | EDP Future SimpleWastePickup med data (`futureweb.orebro.se`) | Behövs inte | Live på sajten (beräknade datum) |
+| Västerås, Enköping, Heby, Sala, Fagersta, Köping, Arboga, Kungsör, Hallstahammar, Norberg, Skinnskatteberg, Surahammar | Vafab Miljö | Via söktjänsten | EDP Future SimpleWastePickup med data (`services.vafabmiljo.se`) | Behövs inte | Live på sajten (beräknade datum) |
+| Jönköping, Habo, Mullsjö | June Avfall & Miljö | Via söktjänsten | EDP Future SimpleWastePickup med data (`minasidor.juneavfall.se`) | Behövs inte | Live på sajten (beräknade datum) |
+| Borås | Borås Energi och Miljö | Via söktjänsten | EDP Future SimpleWastePickup med data (`kundportal.borasem.se`) | Behövs inte | Live på sajten (beräknade datum) |
+| Lund | Lunds kommun | Via söktjänsten | EDP Future SimpleWastePickup med data (`eservice431601.lund.se`) | Behövs inte | Live på sajten (beräknade datum) |
+| Nacka | Nacka vatten och avfall | Via söktjänsten | EDP Future SimpleWastePickup med data (`futureweb.nvoa.se`) | Behövs inte | Live på sajten (beräknade datum) |
+| Gotland | Region Gotland | Via söktjänsten | EDP Future SimpleWastePickup med data (`edpfuture.gotland.se`) | Behövs inte | Live på sajten (beräknade datum) |
+| Skellefteå | Skellefteå kommun | Via söktjänsten | EDP Future SimpleWastePickup med data (`wwwtk2.skelleftea.se`) | Behövs inte | Live på sajten (beräknade datum) |
+| Växjö, Alvesta, Lessebo, Tingsryd, Uppvidinge | SSAM | Via söktjänsten | EDP Future SimpleWastePickup med data (`edpfuture.ssam.se`) | Behövs inte | Live på sajten (beräknade datum) |
+| Kalmar, Nybro, Emmaboda, Torsås, Mörbylånga, Borgholm | Kretslopp Sydost | Via söktjänsten | EDP Future SimpleWastePickup med data (`kundportal.kretsloppsydost.se`) | Behövs inte | Live på sajten (beräknade datum) |
+| Varberg | VIVAB Varberg | Via söktjänsten | EDP Future SimpleWastePickup med data (`minasidor.vivab.info`) | Behövs inte | Live på sajten (beräknade datum) |
+| Falkenberg | VIVAB Falkenberg | Via söktjänsten | EDP Future SimpleWastePickup med data (`minasidor.vivab.info`) | Behövs inte | Live på sajten (beräknade datum) |
+| Partille | Partille kommun | Via söktjänsten | EDP Future SimpleWastePickup med data (`vatjanst.partille.se`) | Behövs inte | Live på sajten (beräknade datum) |
+| Kungälv | Kungälvs kommun | Via söktjänsten | EDP Future SimpleWastePickup med data (`minasidor-va-avfall.kungalv.se`) | Behövs inte | Live på sajten (beräknade datum) |
+| Boden | Bodens kommun | Via söktjänsten | EDP Future SimpleWastePickup med data (`edpmobile.boden.se`) | Behövs inte | Live på sajten (beräknade datum) |
+| Danderyd | Danderyds kommun | Via söktjänsten | EDP Future SimpleWastePickup med data (`future.danderyd.se`) | Behövs inte | Live på sajten (beräknade datum) |
+| Lycksele | Lycksele kommun | Via söktjänsten | EDP Future SimpleWastePickup med data (`future.lycksele.se`) | Behövs inte | Live på sajten (beräknade datum) |
+| Kiruna | Tekniska Verken i Kiruna | Via söktjänsten | EDP Future SimpleWastePickup med data (`kund.tekniskaverkenikiruna.se`) | Behövs inte | Live på sajten (beräknade datum) |
+| Lidköping | Lidköpings kommun | Via söktjänsten | EDP Future SimpleWastePickup med data (`futureweb.lidkoping.se`) | Behövs inte | Live på sajten (beräknade datum) |
+| Orust | Orust kommun | Via söktjänsten | EDP Future SimpleWastePickup med data (`va-renhallning-minasidor.orust.se`) | Behövs inte | Live på sajten (beräknade datum) |
+| Ljungby | Ljungby kommun | Via söktjänsten | EDP Future SimpleWastePickup med data (`edpwebb.ljungby.se`) | Behövs inte | Live på sajten (beräknade datum) |
+| Mark | Marks kommun | Via söktjänsten | EDP Future SimpleWastePickup med data (`va-renhallning.mark.se`) | Behövs inte | Live på sajten (beräknade datum) |
+| Herrljunga, Vårgårda | Remondis (Herrljunga och Vårgårda) | Via söktjänsten | EDP Future SimpleWastePickup med data (`edpfuture.remondis.se`) | Behövs inte | Live på sajten (beräknade datum) |
+| Stenungsund | – | – | EDP Future SimpleWastePickup svarar men är tom (2026-10-30) | – | Inte med |
 
 Lärdomar så här långt:
 
 - **Båda kommunerna landar i samma modell.** Schemat är publikt per område, och kommunen behöver lämna ut kopplingen från adress till område. Sopors statiska datafiler (`data/<kommun>/<år>/`) är byggda för just det.
-- **En publik söktjänst är en bonus, inte regel.** Även när EDP:s modul finns kan den vara tom.
+- **En publik söktjänst är en bonus, inte regel.** Även när EDP:s modul finns kan den vara tom (Avesta, Stenungsund).
+- **Där EDP:s modul har data räcker en rad i registret.** Ett 25-tal källor med ett 50-tal kommuner svarade med data vid kontrollen 2026-10-30. Modulen ger nästa tömning och en frekvens, så kommande datum räknas fram och märks *beräknat*.
 - **Lantmäteriets adressregister** säger vilka adresser som finns, men inte vilket område de tillhör. Licensen är dessutom oklar för återpublicering. Det ersätter alltså inte kommunens tabell.
 
 En större genomgång av adresskällor och vilka kommuner som har publika källor för hämtschema finns i [undersökningen från oktober 2026](undersokning-2026-10-adresser-och-hamtschema.md).

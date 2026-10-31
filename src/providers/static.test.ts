@@ -1,18 +1,18 @@
 import { describe, expect, it, vi } from 'vitest'
 import type { AddressIndexFile, ScheduleFile } from '@/data/static-format'
-import type { Municipality } from '@/municipalities'
+import type { Source } from '@/sources'
 import { createStaticProvider } from './static'
 
-const avesta: Municipality = {
+const avesta: Source = {
   id: 'avesta',
-  name: 'Avesta kommun',
-  shortName: 'Avesta',
-  operator: { name: 'AVA', url: 'https://x' },
-  provider: { type: 'static' },
+  name: 'AVA',
+  url: 'https://x',
+  kommuner: [{ code: '2084', name: 'Avesta kommun' }],
+  config: { system: 'static' },
 }
 
 const index: AddressIndexFile = {
-  municipalityId: 'avesta',
+  sourceId: 'avesta',
   updatedAt: '2026-10-29',
   addresses: [
     ['krylbo-storgatan-12b', 'Storgatan 12 B', 'Krylbo', ['2026-a', '2027-b']],
@@ -51,7 +51,7 @@ describe('createStaticProvider', () => {
   it('ger adresser med kommun-id', async () => {
     const p = createStaticProvider(avesta, fakeFetch())
     expect(await p.getAddress('krylbo-storgatan-12b')).toEqual({
-      id: 'krylbo-storgatan-12b', street: 'Storgatan 12 B', locality: 'Krylbo', municipalityId: 'avesta',
+      id: 'krylbo-storgatan-12b', street: 'Storgatan 12 B', locality: 'Krylbo', sourceId: 'avesta', kommun: 'Avesta kommun',
     })
     expect(await p.getAddress('finns-inte')).toBeNull()
   })

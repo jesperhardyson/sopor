@@ -10,7 +10,7 @@ vi.mock('@/providers/registry', () => ({
 }))
 
 const saved = (addressId: string, name: string) => ({
-  municipalityId: 'avesta',
+  sourceId: 'avesta',
   addressId,
   name,
   street: 'Storgatan 1',

@@ -1,20 +1,41 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "vite",
+  "regions": ["arn1"],
   "buildCommand": "npm test && npm run build",
   "outputDirectory": "dist",
   "headers": [
     {
       "source": "/ics/(.*)",
       "headers": [
-        { "key": "Content-Type", "value": "text/calendar; charset=utf-8" },
-        { "key": "Cache-Control", "value": "public, max-age=3600, s-maxage=86400" }
+        {
+          "key": "Content-Type",
+          "value": "text/calendar; charset=utf-8"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, s-maxage=86400"
+        }
       ]
     },
     {
       "source": "/data/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=300, s-maxage=3600" }]
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=300, s-maxage=3600"
+        }
+      ]
     }
   ],
-  "rewrites": [{ "source": "/((?!data/|ics/|assets/).*)", "destination": "/index.html" }]
+  "rewrites": [
+    {
+      "source": "/ics/:source/:file",
+      "destination": "/api/ics?source=:source&file=:file"
+    },
+    {
+      "source": "/((?!data/|ics/|assets/|api/).*)",
+      "destination": "/index.html"
+    }
+  ]
 }

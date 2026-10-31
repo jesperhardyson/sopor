@@ -1,0 +1,30 @@
+{
+ "RhServices": [
+  {
+   "WasteType": "Kärl 1",
+   "WastePickupFrequency": "Onsdag jämn vecka ",
+   "NextWastePickup": "2026-11-11",
+   "WastePickupsPerYear": 26,
+   "Description": "Kärl 1, MA PA TI ME. 370L varannan vecka",
+   "BinType": {
+    "Code": "K370",
+    "Size": 370.0,
+    "Unit": "l",
+    "ContainerType": "Kärl"
+   }
+  },
+  {
+   "WasteType": "Kärl 2",
+   "WastePickupFrequency": "Onsdag var 4:e vecka startvecka 2 ",
+   "NextWastePickup": "2026-11-11",
+   "WastePickupsPerYear": 13,
+   "Description": "Kärl 2, RE PL GF GO. 370L var fjärde vecka",
+   "BinType": {
+    "Code": "K370",
+    "Size": 370.0,
+    "Unit": "l",
+    "ContainerType": "Kärl"
+   }
+  }
+ ]
+}

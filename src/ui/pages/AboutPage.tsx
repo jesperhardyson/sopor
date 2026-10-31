@@ -5,7 +5,7 @@ import { GitHubMark } from '../components/GitHubMark'
 import { ForgetAll } from '../saved/ForgetAll'
 import { Link } from 'react-router'
 import { SITE } from '@/config'
-import { MUNICIPALITIES, type Municipality } from '@/municipalities'
+import { SOURCES, sourceLabel, type Source } from '@/sources'
 import { providerFor } from '@/providers/registry'
 import { formatLong } from '@/domain/dates'
 
@@ -18,9 +18,11 @@ const FACTS: [LucideIcon, string][] = [
 const h2 = 'text-xl font-extrabold tracking-[-0.3px] text-text'
 const body = 'text-[15px] leading-normal text-text-2'
 
-function SourceCard({ m }: { m: Municipality }) {
+function SourceCard({ m }: { m: Source }) {
   const [updatedAt, setUpdatedAt] = useState<string | null>(null)
   useEffect(() => {
+    // Live-källor (EDP) har inget datadatum: de hämtas direkt från källan.
+    if (m.config.system !== 'static') return
     let active = true
     providerFor(m)
       .dataUpdatedAt()
@@ -36,13 +38,13 @@ function SourceCard({ m }: { m: Municipality }) {
       <div className="flex items-center justify-between bg-surface-2 px-4 py-3.5">
         <span className="flex items-center gap-2 text-[15px] font-extrabold text-text">
           <MapPin className="size-4 text-primary" aria-hidden />
-          {m.name}
+          {sourceLabel(m)}
         </span>
         {fetched && <span className="text-[13px] text-text-2">{fetched}</span>}
       </div>
-      <a href={m.operator.url} rel="noopener" className="flex items-center gap-3 px-4 py-3.5 hover:bg-bg">
+      <a href={m.url} rel="noopener" className="flex items-center gap-3 px-4 py-3.5 hover:bg-bg">
         <span className="flex flex-1 flex-col gap-0.5">
-          <span className="text-base font-extrabold text-primary">{m.operator.name}</span>
+          <span className="text-base font-extrabold text-primary">{m.name}</span>
           <span className="text-sm leading-[1.35] text-text-2">Hämtschema, kärltyper och ändrade tömningar</span>
         </span>
         <ArrowUpRight className="size-[18px] text-primary" aria-hidden />
@@ -79,9 +81,16 @@ export function AboutPage() {
       <section className="flex flex-col gap-3">
         <h2 className={h2}>Källor</h2>
         <p className={body}>Schemat hämtas från kommunens egna uppgifter. Varje kommun har sina källor.</p>
-        {MUNICIPALITIES.map((m) => (
+        {SOURCES.map((m) => (
           <SourceCard key={m.id} m={m} />
         ))}
+        <p className="text-[13px] leading-normal text-text-2">
+          Gatu- och ortnamn som används för att hitta rätt källa kommer från{' '}
+          <a href="https://www.openstreetmap.org/copyright" rel="noopener" className="font-bold underline underline-offset-2">
+            © OpenStreetMaps bidragsgivare
+          </a>{' '}
+          (ODbL). Datum markerade <em>beräknat</em> är framräknade ur kommunens tömningsintervall och kan flyttas vid helgdagar.
+        </p>
       </section>
 
       <section className="flex flex-col gap-3">

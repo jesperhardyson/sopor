@@ -16,6 +16,19 @@ describe('FractionChip', () => {
   })
 })
 
+describe('FractionChip för källans egna kärl', () => {
+  it('visar källans text för kärl med flera fraktioner', () => {
+    const { container } = render(<FractionChip fraction="karl" label="Fyrfack 1" />)
+    expect(screen.getByText('Fyrfack 1')).toBeInTheDocument()
+    expect(container.querySelector('svg.lucide-container')).not.toBeNull()
+  })
+
+  it('visar tidningar', () => {
+    render(<FractionChip fraction="tidningar" />)
+    expect(screen.getByText('Tidningar')).toBeInTheDocument()
+  })
+})
+
 describe('Deviation', () => {
   it('visar standardtexten för helgdag', () => {
     render(<Deviation />)

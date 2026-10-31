@@ -1,10 +1,14 @@
-export type FractionId = 'rest' | 'mat' | 'papper' | 'plast' | 'glas' | 'metall'
+export type FractionId = 'rest' | 'mat' | 'papper' | 'plast' | 'glas' | 'metall' | 'tidningar' | 'karl'
 
 export interface Address {
   id: string
   street: string
   locality: string
-  municipalityId: string
+  sourceId: string
+  /** Kommunens namn, t.ex. "Avesta kommun" */
+  kommun: string
+  /** Skiljer träffar med samma gata och ort åt, t.ex. "Byggnad 78838" i ett flerbostadshus */
+  detail?: string
 }
 
 export interface Bin {
@@ -19,6 +23,12 @@ export interface PickupEvent {
   date: string
   fractions: FractionId[]
   deviation?: { originalDate?: string; reason: string }
+  /** Källans egen text per fraktion, t.ex. "Fyrfack 1" för kärl med flera fraktioner */
+  labels?: Partial<Record<FractionId, string>>
+  /** Framräknat ur källans frekvens, inte bekräftat av källan */
+  estimated?: boolean
+  /** T.ex. "Infaller på julafton – kan flyttas." */
+  warning?: string
 }
 
 export interface Schedule {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { Municipality } from '@/municipalities'
+import type { Source } from '@/sources'
 import {
   buildMunicipality,
   DataError,
@@ -9,12 +9,12 @@ import {
   type SchedulesFile,
 } from './static-format'
 
-const avesta: Municipality = {
+const avesta: Source = {
   id: 'avesta',
-  name: 'Avesta kommun',
-  shortName: 'Avesta',
-  operator: { name: 'AVA', url: 'https://x' },
-  provider: { type: 'static' },
+  name: 'AVA',
+  url: 'https://x',
+  kommuner: [{ code: '2084', name: 'Avesta kommun' }],
+  config: { system: 'static' },
 }
 
 const schedulesJson = (over: Record<string, unknown> = {}) => ({
@@ -112,7 +112,7 @@ describe('buildMunicipality', () => {
       ],
       avesta,
     )
-    expect(out.index.municipalityId).toBe('avesta')
+    expect(out.index.sourceId).toBe('avesta')
     expect(out.index.updatedAt).toBe('2026-12-15')
     expect(out.index.addresses).toContainEqual(['krylbo-storgatan-12b', 'Storgatan 12 B', 'Krylbo', ['2026-onsdag-jamn', '2027-onsdag-udda']])
     // finns bara i det äldre året: får ändå index-post och .ics

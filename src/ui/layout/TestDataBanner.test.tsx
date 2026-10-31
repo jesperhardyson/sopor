@@ -1,28 +1,17 @@
 import { render, screen } from '@testing-library/react'
+import { MemoryRouter } from 'react-router'
 import { describe, expect, it } from 'vitest'
-import type { Municipality } from '@/municipalities'
 import { TestDataBanner } from './TestDataBanner'
 
-const m = (testData: boolean): Municipality => ({
-  id: 'avesta',
-  name: 'Avesta kommun',
-  shortName: 'Avesta',
-  operator: { name: 'Avesta Vatten och Avfall', url: 'https://www.avestavatten.se' },
-  provider: { type: 'static' },
-  testData,
-})
-
 describe('TestDataBanner', () => {
-  it('varnar när en kommun har påhittade data', () => {
-    render(<TestDataBanner municipalities={[m(true)]} />)
-    expect(screen.getByRole('status')).toHaveTextContent(
-      'Testversion – datumen är påhittade och gäller inte. Kolla alltid din kommuns hämtschema.',
+  it.each(['/', '/uppsala/storgatan-2_uppsala-1', '/om'])('säger att sajten är en testversion på %s', (path) => {
+    render(
+      <MemoryRouter initialEntries={[path]}>
+        <TestDataBanner />
+      </MemoryRouter>,
     )
-    expect(screen.queryByText(/Avesta Vatten och Avfall/)).toBeNull()
-  })
-
-  it('syns inte när datan är riktig', () => {
-    const { container } = render(<TestDataBanner municipalities={[m(false)]} />)
-    expect(container).toBeEmptyDOMElement()
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Testversion – Sopor är under utveckling. Kolla alltid din kommuns hämtschema.',
+    )
   })
 })

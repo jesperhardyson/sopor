@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { loadSaved, removeSaved, renameSaved, upsertSaved, type SavedAddress } from './storage'
 
 const hemma: SavedAddress = {
-  municipalityId: 'avesta',
+  sourceId: 'avesta',
   addressId: 'krylbo-storgatan-12b',
   name: 'Hemma',
   street: 'Storgatan 12 B',
@@ -76,5 +76,16 @@ describe('clearSaved', () => {
     upsertSaved(hemma)
     expect(clearSaved()).toEqual([])
     expect(loadSaved()).toEqual([])
+  })
+})
+
+describe('äldre sparade adresser', () => {
+  it('läser adresser sparade med det gamla fältet municipalityId', () => {
+    localStorage.clear()
+    localStorage.setItem(
+      'sopor.saved.v1',
+      JSON.stringify([{ municipalityId: 'avesta', addressId: 'a', name: 'Hemma', street: 'S 1', locality: 'A', savedAt: '' }]),
+    )
+    expect(loadSaved()).toEqual([{ sourceId: 'avesta', addressId: 'a', name: 'Hemma', street: 'S 1', locality: 'A', savedAt: '' }])
   })
 })

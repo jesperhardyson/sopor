@@ -3,7 +3,16 @@ import type { FractionId } from '@/domain/types'
 import { cn } from '@/lib/utils'
 import { FRACTION_CLASS, FRACTION_ICON } from './fraction-style'
 
-export function FractionChip({ fraction, size = 'md' }: { fraction: FractionId; size?: 'sm' | 'md' }) {
+export function FractionChip({
+  fraction,
+  size = 'md',
+  label,
+}: {
+  fraction: FractionId
+  size?: 'sm' | 'md'
+  /** Källans egen text, t.ex. "Fyrfack 1" */
+  label?: string
+}) {
   const Icon = FRACTION_ICON[fraction]
   const c = FRACTION_CLASS[fraction]
   return (
@@ -16,7 +25,7 @@ export function FractionChip({ fraction, size = 'md' }: { fraction: FractionId; 
       )}
     >
       <Icon className={size === 'sm' ? 'size-3.5' : 'size-4'} aria-hidden />
-      {FRACTIONS[fraction].name}
+      {label ?? FRACTIONS[fraction].name}
     </span>
   )
 }

@@ -1,8 +1,9 @@
-import { addDays, formatLong } from './dates'
-import { FRACTIONS, sortFractions } from './fractions'
-import type { Address, PickupEvent, Schedule } from './types'
+import { addDays, formatLong } from './dates.js'
+import { FRACTIONS, sortFractions } from './fractions.js'
+import type { Address, PickupEvent, Schedule } from './types.js'
 
 export const DISCLAIMER = 'Inofficiell tjänst. Vid avvikelser gäller kommunens information.'
+export const ESTIMATE_NOTE = 'Beräknat datum – helgdagar kan flytta tömningen. Kolla kommunens besked.'
 
 function escapeText(value: string): string {
   return value.replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n')
@@ -41,11 +42,11 @@ export function deviationText(event: PickupEvent): string | undefined {
 
 export function buildIcs(input: {
   address: Address
-  municipalityName: string
+  kommunName: string
   schedule: Schedule
   host?: string
 }): string {
-  const { address, municipalityName, schedule, host = 'sopor.hardyson.se' } = input
+  const { address, kommunName, schedule, host = 'sopor.hardyson.se' } = input
   const stamp = `${compact(schedule.updatedAt)}T000000Z`
 
   const lines = [
@@ -55,15 +56,17 @@ export function buildIcs(input: {
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
     `X-WR-CALNAME:${escapeText(`Sopor – ${address.street}, ${address.locality}`)}`,
-    `X-WR-CALDESC:${escapeText(`Hämtschema för ${address.street}, ${address.locality} (${municipalityName}). ${DISCLAIMER}`)}`,
+    `X-WR-CALDESC:${escapeText(`Hämtschema för ${address.street}, ${address.locality} (${kommunName}). ${DISCLAIMER}`)}`,
     'REFRESH-INTERVAL;VALUE=DURATION:P1D',
     'X-PUBLISHED-TTL:P1D',
   ]
 
   for (const event of schedule.events) {
-    const names = sortFractions(event.fractions).map((f) => FRACTIONS[f].name)
-    const summary = `Sopor: ${names.join(' + ')}`
-    const description = [deviationText(event), DISCLAIMER].filter(Boolean).join('\n')
+    const names = sortFractions(event.fractions).map((f) => event.labels?.[f] ?? FRACTIONS[f].name)
+    const summary = `Sopor: ${names.join(' + ')}${event.estimated ? ' (beräknat)' : ''}`
+    const description = [event.warning, deviationText(event), event.estimated ? ESTIMATE_NOTE : undefined, DISCLAIMER]
+      .filter(Boolean)
+      .join('\n')
     lines.push(
       'BEGIN:VEVENT',
       `UID:${address.id}-${event.date}@${host}`,
@@ -85,3 +88,33 @@ export function buildIcs(input: {
   lines.push('END:VCALENDAR')
   return lines.map(fold).join('\r\n') + '\r\n'
 }
+
+/**
+ * Kalender med en enda händelse som ber prenumeranten söka upp adressen igen. Används när en
+ * live-källa inte längre hittar adressen, så att kalendern inte bara tyst slutar uppdateras.
+ */
+export function buildNoticeIcs(input: { addressId: string; today: string; host?: string }): string {
+  const { addressId, today, host = 'sopor.hardyson.se' } = input
+  const lines = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    `PRODID:-//Sopor//${host}//SV`,
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    'X-WR-CALNAME:Sopor',
+    'REFRESH-INTERVAL;VALUE=DURATION:P1D',
+    'X-PUBLISHED-TTL:P1D',
+    'BEGIN:VEVENT',
+    `UID:${addressId}-saknas@${host}`,
+    `DTSTAMP:${compact(today)}T000000Z`,
+    `DTSTART;VALUE=DATE:${compact(today)}`,
+    `DTEND;VALUE=DATE:${compact(addDays(today, 1))}`,
+    `SUMMARY:${escapeText(`Sopor: adressen hittades inte – sök upp den igen på ${host}`)}`,
+    `DESCRIPTION:${escapeText(`Avfallsbolaget hittar inte längre adressen som den här kalendern gäller. Sök upp den igen på https://${host} och lägg till kalendern på nytt.`)}`,
+    'TRANSP:TRANSPARENT',
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ]
+  return lines.map(fold).join('\r\n') + '\r\n'
+}
+

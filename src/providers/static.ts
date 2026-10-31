@@ -2,7 +2,7 @@ import type { AddressIndexFile, ScheduleFile } from '@/data/static-format'
 import { mergeParts } from '@/domain/schedule'
 import { searchAddresses, suggest } from '@/domain/search'
 import type { Address } from '@/domain/types'
-import type { Municipality } from '@/municipalities'
+import type { Source } from '@/sources'
 import type { WasteProvider } from './types'
 
 interface LoadedIndex {
@@ -12,8 +12,8 @@ interface LoadedIndex {
 }
 
 /** Läser filerna som scripts/build-data.ts genererar till public/. */
-export function createStaticProvider(municipality: Municipality, fetchFn: typeof fetch = fetch): WasteProvider {
-  const base = `/data/${municipality.id}`
+export function createStaticProvider(source: Source, fetchFn: typeof fetch = (...args) => fetch(...args)): WasteProvider {
+  const base = `/data/${source.id}`
   let indexPromise: Promise<LoadedIndex> | undefined
 
   async function getJson<T>(url: string, signal?: AbortSignal): Promise<T> {
@@ -31,7 +31,8 @@ export function createStaticProvider(municipality: Municipality, fetchFn: typeof
           id,
           street,
           locality,
-          municipalityId: municipality.id,
+          sourceId: source.id,
+          kommun: source.kommuner[0]?.name ?? source.name,
         })),
         refs: new Map(file.addresses.map(([id, , , refs]) => [id, refs])),
       }),
@@ -65,7 +66,7 @@ export function createStaticProvider(municipality: Municipality, fetchFn: typeof
       return (await loadIndex()).updatedAt || null
     },
     icsUrl(addressId) {
-      return `/ics/${municipality.id}/${encodeURIComponent(addressId)}.ics`
+      return `/ics/${source.id}/${encodeURIComponent(addressId)}.ics`
     },
   }
 }

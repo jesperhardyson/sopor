@@ -6,7 +6,7 @@ import { isFractionId } from '@/domain/fractions'
 import { buildIcs } from '@/domain/ics'
 import { mergeParts } from '@/domain/schedule'
 import type { Bin, PickupEvent, SchedulePart } from '@/domain/types'
-import type { Municipality } from '@/municipalities'
+import type { Source } from '@/sources'
 
 export class DataError extends Error {
   name = 'DataError'
@@ -31,7 +31,7 @@ export interface AddressRow {
 
 /** public/data/<kommun>/addresses.json */
 export interface AddressIndexFile {
-  municipalityId: string
+  sourceId: string
   updatedAt: string
   addresses: [id: string, street: string, locality: string, scheduleRefs: string[]][]
 }
@@ -126,7 +126,7 @@ export function parseSchedulesFile(json: unknown, file: string): SchedulesFile {
 
 export function buildMunicipality(
   years: { year: number; schedules: SchedulesFile; addresses: AddressRow[] }[],
-  municipality: Municipality,
+  source: Source,
 ): {
   index: AddressIndexFile
   scheduleFiles: ScheduleFile[]
@@ -167,7 +167,7 @@ export function buildMunicipality(
   }
 
   const index: AddressIndexFile = {
-    municipalityId: municipality.id,
+    sourceId: source.id,
     updatedAt: sorted.map((y) => y.schedules.updatedAt).sort().at(-1) ?? '',
     addresses: [...addresses.entries()]
       .sort((a, b) => a[0].localeCompare(b[0]))
@@ -177,8 +177,8 @@ export function buildMunicipality(
   const ics = [...addresses.entries()].map(([id, a]) => ({
     addressId: id,
     content: buildIcs({
-      address: { id, street: a.street, locality: a.locality, municipalityId: municipality.id },
-      municipalityName: municipality.name,
+      address: { id, street: a.street, locality: a.locality, sourceId: source.id, kommun: source.kommuner[0]?.name ?? source.name },
+      kommunName: source.kommuner[0]?.name ?? source.name,
       schedule: mergeParts(a.refs.map((ref) => scheduleFiles.get(ref)!)),
     }),
   }))

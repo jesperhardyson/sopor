@@ -2,6 +2,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useId, useState } from 'react'
 import { MONTHS, toUtc } from '@/domain/dates'
 import { FRACTIONS } from '@/domain/fractions'
+import { holidayOn } from '@/domain/holidays'
 import { eventsInMonth } from '@/domain/schedule'
 import type { FractionId, Schedule } from '@/domain/types'
 import { cn } from '@/lib/utils'
@@ -62,26 +63,26 @@ export function MonthCalendar({ schedule, initial, today }: { schedule: Schedule
             if (day === null) return <span key={i} className="h-[46px]" />
             const date = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
             const fractions = events.get(date)
-            const label = fractions
-              ? `${day} ${MONTHS[month - 1]}: ${fractions.map((f) => FRACTIONS[f].name).join(', ')}`
-              : undefined
+            const holiday = holidayOn(date)
+            const parts = [...(fractions?.map((f) => FRACTIONS[f].name) ?? []), ...(holiday ? [holiday.name] : [])]
+            const label = parts.length > 0 ? `${day} ${MONTHS[month - 1]}: ${parts.join(', ')}` : undefined
             return (
               <span
                 key={i}
                 aria-label={label}
+                title={holiday ? holiday.name[0].toUpperCase() + holiday.name.slice(1) : undefined}
+                data-holiday={holiday?.kind}
                 role={label ? 'img' : undefined}
                 className={cn(
-                  'flex h-[46px] flex-col items-center justify-center gap-1 rounded-xl text-[15px] text-text',
+                  'flex h-[46px] flex-col items-center justify-center gap-1 rounded-xl text-[15px]',
                   fractions ? 'bg-brand-soft font-extrabold' : 'font-medium',
+                  holiday?.kind === 'röd' ? 'font-extrabold text-warn' : holiday ? 'text-warn/70' : 'text-text',
                   date === today && 'ring-2 ring-primary ring-inset',
                 )}
               >
                 <span aria-hidden={Boolean(label)}>{day}</span>
-                <span className="flex h-3 gap-0.5" aria-hidden>
-                  {fractions?.map((f) => {
-                    const Icon = FRACTION_ICON[f]
-                    return <Icon key={f} className={cn('size-3', FRACTION_CLASS[f].fg)} />
-                  })}
+                <span className="flex h-3 items-center gap-0.5" aria-hidden>
+                  {fractions && <DayIcons fractions={fractions} />}
                 </span>
               </span>
             )
@@ -100,5 +101,20 @@ export function MonthCalendar({ schedule, initial, today }: { schedule: Schedule
         </div>
       </div>
     </section>
+  )
+}
+
+/** Får det inte plats fler än tre ikoner i en dagruta (mobil): visa två och "+N". */
+function DayIcons({ fractions }: { fractions: FractionId[] }) {
+  const shown = fractions.length > 3 ? fractions.slice(0, 2) : fractions
+  const more = fractions.length - shown.length
+  return (
+    <>
+      {shown.map((f) => {
+        const Icon = FRACTION_ICON[f]
+        return <Icon key={f} className={cn('size-3', FRACTION_CLASS[f].fg)} />
+      })}
+      {more > 0 && <span className="text-[10px] leading-none font-extrabold text-text-2">+{more}</span>}
+    </>
   )
 }

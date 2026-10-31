@@ -6,7 +6,8 @@ const address: Address = {
   id: 'krylbo-storgatan-12b',
   street: 'Storgatan 12 B',
   locality: 'Krylbo',
-  municipalityId: 'avesta',
+  sourceId: 'avesta',
+  kommun: 'Avesta kommun',
 }
 
 const schedule: Schedule = {
@@ -23,7 +24,7 @@ const schedule: Schedule = {
   ],
 }
 
-const ics = () => buildIcs({ address, municipalityName: 'Avesta kommun', schedule })
+const ics = () => buildIcs({ address, kommunName: 'Avesta kommun', schedule })
 
 /** Avvikta rader (RFC 5545 3.1) */
 function unfold(text: string): string[] {
@@ -94,8 +95,24 @@ describe('buildIcs', () => {
       ...schedule,
       events: [{ date: '2026-12-01', fractions: ['rest'], deviation: { reason: 'a,b;c\\d\nny rad' } }],
     }
-    const text = buildIcs({ address, municipalityName: 'Avesta kommun', schedule: odd })
+    const text = buildIcs({ address, kommunName: 'Avesta kommun', schedule: odd })
     const desc = unfold(text).find((l) => l.startsWith('DESCRIPTION:'))
     expect(desc).toContain('a\\,b\\;c\\\\d\\nny rad')
   })
+
+  it('märker beräknade datum och visar varning och källans kärltext', () => {
+    const estimated: Schedule = {
+      ...schedule,
+      events: [
+        { date: '2026-12-24', fractions: ['rest', 'karl'], labels: { karl: 'Fyrfack 1' }, estimated: true, warning: 'Infaller på julafton – kan flyttas.' },
+      ],
+    }
+    const lines = unfold(buildIcs({ address, kommunName: 'Avesta kommun', schedule: estimated }))
+    expect(lines).toContain('SUMMARY:Sopor: Restavfall + Fyrfack 1 (beräknat)')
+    const desc = lines.find((l) => l.startsWith('DESCRIPTION:Infaller'))
+    expect(desc).toContain('Infaller på julafton – kan flyttas.')
+    expect(desc).toContain('Beräknat datum – helgdagar kan flytta tömningen. Kolla kommunens besked.')
+    expect(lines).toContain('UID:krylbo-storgatan-12b-2026-12-24@sopor.hardyson.se')
+  })
 })
+

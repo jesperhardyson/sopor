@@ -26,6 +26,7 @@ const villa: Schedule = {
 describe('sortFractions', () => {
   it('följer registrets ordning', () => {
     expect(sortFractions(['metall', 'mat', 'rest'])).toEqual(['rest', 'metall', 'mat'])
+    expect(sortFractions(['mat', 'karl', 'tidningar', 'rest'])).toEqual(['rest', 'tidningar', 'karl', 'mat'])
   })
 })
 

@@ -12,6 +12,21 @@ export function deviationExplanation(event: PickupEvent): string | undefined {
   return `Flyttad från ${weekdayShort(d.originalDate).toLowerCase()} ${day} ${monthShort(d.originalDate)} på grund av ${d.reason}.`
 }
 
+/** Märkning för datum som räknats fram ur källans frekvens. */
+export function EstimatedPill({ onDark = false }: { onDark?: boolean }) {
+  return (
+    <span
+      title="Framräknat ur kommunens tömningsintervall. Helgdagar kan flytta tömningen."
+      className={cn(
+        'rounded-full px-2 py-0.5 text-xs font-extrabold',
+        onDark ? 'bg-card-overlay text-on-primary' : 'bg-surface-2 text-text-2',
+      )}
+    >
+      beräknat
+    </span>
+  )
+}
+
 export function UpcomingList({ events, today, limit = 6 }: { events: PickupEvent[]; today: string; limit?: number }) {
   return (
     <section aria-labelledby="kommande-rubrik" className="flex flex-col gap-3 pt-3">
@@ -50,9 +65,11 @@ export function UpcomingList({ events, today, limit = 6 }: { events: PickupEvent
                 )}
                 {moved && <Deviation />}
                 {e.fractions.map((f) => (
-                  <FractionChip key={f} fraction={f} />
+                  <FractionChip key={f} fraction={f} label={e.labels?.[f]} />
                 ))}
+                {e.estimated && <EstimatedPill />}
                 {explanation && <p className="text-[13px] leading-[1.4] text-text-2">{explanation}</p>}
+                {e.warning && <p className="text-[13px] leading-[1.4] font-semibold text-warn">{e.warning}</p>}
               </div>
             </li>
           )

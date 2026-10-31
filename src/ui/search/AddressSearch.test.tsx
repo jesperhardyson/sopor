@@ -1,12 +1,12 @@
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes, useParams } from 'react-router'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { searchAddresses, suggest } from '@/domain/search'
 import type { Address } from '@/domain/types'
 import { AddressSearch } from './AddressSearch'
 
-const a = (id: string, street: string, locality: string): Address => ({ id, street, locality, municipalityId: 'avesta' })
+const a = (id: string, street: string, locality: string): Address => ({ id, street, locality, sourceId: 'avesta', kommun: 'Avesta kommun' })
 const ADDRESSES = [
   a('krylbo-storgatan-12b', 'Storgatan 12 B', 'Krylbo'),
   a('avesta-storgatan-12', 'Storgatan 12', 'Avesta'),
@@ -15,9 +15,11 @@ const ADDRESSES = [
 ]
 
 function Result() {
-  const { municipalityId, addressId } = useParams()
-  return <p>Resultat {municipalityId}/{addressId}</p>
+  const { sourceId, addressId } = useParams()
+  return <p>Resultat {sourceId}/{addressId}</p>
 }
+
+let failed: string[] = []
 
 function setup() {
   render(
@@ -27,12 +29,12 @@ function setup() {
           index
           element={
             <AddressSearch
-              search={async (q) => searchAddresses(q, ADDRESSES)}
+              search={async (q) => ({ addresses: searchAddresses(q, ADDRESSES), failed })}
               suggest={async (q) => suggest(q, ADDRESSES)}
             />
           }
         />
-        <Route path=":municipalityId/:addressId" element={<Result />} />
+        <Route path=":sourceId/:addressId" element={<Result />} />
       </Routes>
     </MemoryRouter>,
   )
@@ -85,7 +87,19 @@ describe('AddressSearch', () => {
   it('lägger träfflistan ovanpå innehållet så att inget under hoppar', async () => {
     await userEvent.type(setup(), 'storg')
     const listbox = await screen.findByRole('listbox')
-    expect(listbox).toHaveClass('absolute')
+    expect(listbox.closest('.absolute')).not.toBeNull()
+  })
+
+  it('lägger hittades inte ovanpå innehållet så att inget under hoppar', async () => {
+    await userEvent.type(setup(), 'Storgtan 12{Enter}')
+    const card = await screen.findByText('Vi hittade inte adressen')
+    expect(card.closest('.absolute')).not.toBeNull()
+  })
+
+  it('ger fältet fokus vid klick var som helst i rutan', async () => {
+    const input = setup()
+    await userEvent.click(input.parentElement!)
+    expect(input).toHaveFocus()
   })
 
   it('ber lösenordshanterare att låta sökfältet vara', () => {
@@ -93,5 +107,58 @@ describe('AddressSearch', () => {
     expect(input).toHaveAttribute('data-1p-ignore')
     expect(input).toHaveAttribute('data-lpignore', 'true')
   })
-})
 
+  it('berättar när en källa inte svarar', async () => {
+    failed = ['uppsala']
+    await userEvent.type(setup(), 'storg')
+    expect(await screen.findByText('Uppsala Vatten svarar inte just nu.')).toBeInTheDocument()
+    failed = []
+  })
+
+  it('visar lokala träffar direkt och att fler källor söks', async () => {
+    let finish: () => void = () => {}
+    render(
+      <MemoryRouter>
+        <AddressSearch
+          search={(q, _signal, onPartial) => {
+            onPartial?.({ addresses: searchAddresses(q, ADDRESSES), failed: [] })
+            return new Promise((resolve) => (finish = () => resolve({ addresses: searchAddresses(q, ADDRESSES), failed: [] })))
+          }}
+          suggest={async () => []}
+        />
+      </MemoryRouter>,
+    )
+    await userEvent.type(screen.getByRole('combobox'), 'storg')
+    expect(await screen.findAllByRole('option')).toHaveLength(3)
+    expect(screen.getByText('Söker hos fler källor…')).toBeInTheDocument()
+    finish()
+    await vi.waitFor(() => expect(screen.queryByText('Söker hos fler källor…')).toBeNull())
+  })
+
+  it('ber om en bredare sökning när man trycker Enter', async () => {
+    const search = vi.fn(async () => ({ addresses: [], failed: [] }))
+    render(
+      <MemoryRouter>
+        <AddressSearch search={search} suggest={async () => []} />
+      </MemoryRouter>,
+    )
+    await userEvent.type(screen.getByRole('combobox'), 'Okändgatan{Enter}')
+    expect(search).toHaveBeenCalledWith('Okändgatan', undefined, undefined, { submitted: true })
+  })
+
+  it('visar särskiljaren när flera träffar har samma adress', async () => {
+    const twins = [
+      { ...a('vasagatan-20_vasteras-1', 'Vasagatan 20', 'Västerås'), detail: 'Byggnad 1' },
+      { ...a('vasagatan-20_vasteras-2', 'Vasagatan 20', 'Västerås'), detail: 'Byggnad 2' },
+    ]
+    render(
+      <MemoryRouter>
+        <AddressSearch search={async () => ({ addresses: twins, failed: [] })} suggest={async () => []} />
+      </MemoryRouter>,
+    )
+    await userEvent.type(screen.getByRole('combobox'), 'vasagatan 20')
+    const options = await screen.findAllByRole('option')
+    expect(within(options[0]).getByText('Byggnad 1')).toBeInTheDocument()
+    expect(within(options[1]).getByText('Byggnad 2')).toBeInTheDocument()
+  })
+})

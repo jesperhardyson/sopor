@@ -6,7 +6,7 @@ import { loadSaved } from '@/lib/storage'
 import { CalendarSheet } from './CalendarSheet'
 import { SaveSheet } from './SaveSheet'
 
-const villa: Address = { id: 'krylbo-storgatan-12b', street: 'Storgatan 12 B', locality: 'Krylbo', municipalityId: 'avesta' }
+const villa: Address = { id: 'krylbo-storgatan-12b', street: 'Storgatan 12 B', locality: 'Krylbo', sourceId: 'avesta', kommun: 'Avesta kommun' }
 
 describe('CalendarSheet', () => {
   it('har fyra sätt att lägga till kalendern och ett notistips', () => {
@@ -38,7 +38,7 @@ describe('SaveSheet', () => {
 
   it('fyller i namn från snabbval och sparar adressen', async () => {
     let open = true
-    render(<SaveSheet open onOpenChange={(o) => (open = o)} address={villa} municipalityName="Avesta kommun" />)
+    render(<SaveSheet open onOpenChange={(o) => (open = o)} address={villa} kommunName="Avesta kommun" />)
     expect(screen.getByText('Storgatan 12 B, Krylbo · Avesta kommun')).toBeInTheDocument()
     await userEvent.click(screen.getByRole('button', { name: 'Stugan' }))
     expect(screen.getByLabelText('Ge adressen ett namn')).toHaveValue('Stugan')

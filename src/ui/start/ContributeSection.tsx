@@ -1,7 +1,7 @@
 import { ArrowRight, ArrowUpRight, CircleCheck, CircleDashed, Flag, GitPullRequest, MapPinPlus, type LucideIcon } from 'lucide-react'
 import { Link } from 'react-router'
 import { SITE } from '@/config'
-import { MUNICIPALITIES } from '@/municipalities'
+import { SOURCES, sourceLabel } from '@/sources'
 import { GitHubMark } from '../components/GitHubMark'
 
 const WAYS: { icon: LucideIcon; title: string; text: string; href: string; tag?: string }[] = [
@@ -32,10 +32,10 @@ const pill = 'rounded-full px-2 py-0.5 text-xs font-extrabold'
 export function MunicipalityStatusList() {
   return (
     <ul className="flex flex-col gap-2.5">
-      {MUNICIPALITIES.map((m) => (
+      {SOURCES.map((m) => (
         <li key={m.id} className="flex items-center gap-2.5 text-[15px] font-extrabold text-text">
           <CircleCheck className="size-[18px] text-primary" aria-hidden />
-          {m.name}
+          {sourceLabel(m)}
           {m.testData ? (
             <span className={`${pill} bg-warn-bg text-warn`}>Testdata</span>
           ) : (

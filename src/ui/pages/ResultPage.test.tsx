@@ -1,3 +1,4 @@
+import '@/test/show-hidden-sources'
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Link, MemoryRouter, Route, Routes } from 'react-router'
@@ -6,7 +7,7 @@ import type { Address, Schedule } from '@/domain/types'
 import type { WasteProvider } from '@/providers/types'
 import { ResultPage, ResultRoute } from './ResultPage'
 
-const villa: Address = { id: 'krylbo-storgatan-12b', street: 'Storgatan 12 B', locality: 'Krylbo', municipalityId: 'avesta' }
+const villa: Address = { id: 'krylbo-storgatan-12b', street: 'Storgatan 12 B', locality: 'Krylbo', sourceId: 'avesta', kommun: 'Avesta kommun' }
 const schedule: Schedule = {
   bins: [{ fraction: 'rest', sizeLiters: 190, frequencyText: 'Var 6:e vecka · onsdagar' }, { fraction: 'mat' }],
   note: 'Påminnelse: ställ ut kärlen senast 06.00 på tömningsdagen.',
@@ -27,7 +28,8 @@ let resolveSchedule: (() => void) | undefined
 vi.mock('@/providers/registry', () => ({
   providerFor: () => fake,
   getAddress: (_m: string, id: string) => fake.getAddress(id),
-  searchAll: async () => [],
+  searchAll: async () => ({ addresses: [], failed: [] }),
+  warmUpSearch: () => {},
   suggestAll: async () => [],
 }))
 
@@ -50,7 +52,7 @@ function renderAt(path: string, today = '2026-10-30') {
   render(
     <MemoryRouter initialEntries={[path]}>
       <Routes>
-        <Route path=":municipalityId/:addressId" element={<ResultPage today={today} />} />
+        <Route path=":sourceId/:addressId" element={<ResultPage today={today} />} />
       </Routes>
     </MemoryRouter>,
   )
@@ -62,9 +64,15 @@ describe('ResultPage', () => {
     resolveSchedule = undefined
   })
 
+  it('visar särskiljaren under adressen', async () => {
+    fake = makeProvider({ getAddress: async () => ({ ...villa, detail: 'Byggnad 81674' }) })
+    renderAt('/avesta/krylbo-storgatan-12b')
+    expect(await screen.findByText('Byggnad 81674')).toBeInTheDocument()
+  })
+
   it('visar laddning och sedan nästa tömning, lista och avvikelse', async () => {
     renderAt('/avesta/krylbo-storgatan-12b')
-    expect(await screen.findByText('Hämtar schemat från Avesta kommun…')).toBeInTheDocument()
+    expect(await screen.findByText('Hämtar schemat från Avesta Vatten och Avfall…')).toBeInTheDocument()
     resolveSchedule!()
 
     const next = await screen.findByRole('region', { name: 'Nästa tömning' })
@@ -116,7 +124,7 @@ describe('ResultPage', () => {
 
   it('visar kommunen stöds inte för okänd kommun, utan e-postfält', async () => {
     renderAt('/hedemora/storgatan-12')
-    expect(await screen.findByText('Vi finns bara i Avesta just nu')).toBeInTheDocument()
+    expect(await screen.findByText('Den här adressen finns inte hos Sopor')).toBeInTheDocument()
     expect(screen.queryByRole('textbox')).toBeNull()
   })
 
@@ -179,20 +187,20 @@ describe('ResultPage', () => {
   })
 
   it('nollställer sparat namn när man byter adress', async () => {
-    const other: Address = { id: 'avesta-storgatan-12', street: 'Storgatan 12', locality: 'Avesta', municipalityId: 'avesta' }
+    const other: Address = { id: 'avesta-storgatan-12', street: 'Storgatan 12', locality: 'Avesta', sourceId: 'avesta', kommun: 'Avesta kommun' }
     fake = makeProvider({
       getAddress: async (id) => (id === villa.id ? villa : id === other.id ? other : null),
       getSchedule: async () => schedule,
     })
     localStorage.setItem(
       'sopor.saved.v1',
-      JSON.stringify([{ municipalityId: 'avesta', addressId: villa.id, name: 'Hemma', street: villa.street, locality: villa.locality, savedAt: '' }]),
+      JSON.stringify([{ sourceId: 'avesta', addressId: villa.id, name: 'Hemma', street: villa.street, locality: villa.locality, savedAt: '' }]),
     )
     render(
       <MemoryRouter initialEntries={['/avesta/krylbo-storgatan-12b']}>
         <Link to="/avesta/avesta-storgatan-12">byt</Link>
         <Routes>
-          <Route path=":municipalityId/:addressId" element={<ResultRoute today="2026-10-30" />} />
+          <Route path=":sourceId/:addressId" element={<ResultRoute today="2026-10-30" />} />
         </Routes>
       </MemoryRouter>,
     )
