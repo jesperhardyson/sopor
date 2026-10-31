@@ -54,23 +54,85 @@ async function liveSourcesFor(query: string): Promise<string[]> {
   return candidates.length > 0 ? candidates : live
 }
 
+/** EDP svarar med högst så här många adresser per källa. Färre betyder att svaret är komplett. */
+const SOURCE_LIMIT = 10
+/** Väntan innan servern frågas, utöver sökrutans debounce: halvskrivna ord ska inte kosta anrop. */
+const NETWORK_DELAY_MS = 150
+const CACHE_SIZE = 300
+
+/** Som källorna jämför: gemener och enkla mellanslag. Källorna matchar början av adressen. */
+const liveKey = (query: string) => query.toLowerCase().replace(/\s+/g, ' ').trim()
+
+/** Svar per källa och fråga under sidans livstid. Källor som inte svarade sparas inte. */
+const liveCache = new Map<string, Address[]>()
+
+function remember(sourceId: string, query: string, addresses: Address[]) {
+  if (liveCache.size >= CACHE_SIZE) liveCache.delete(liveCache.keys().next().value!)
+  liveCache.set(`${sourceId}|${query}`, addresses)
+}
+
+/**
+ * Svaret för en källa utan att fråga servern: samma fråga igen, eller en kortare fråga vars svar
+ * var komplett. Den kortare frågans träffar innehåller då alla som den längre kan ge.
+ */
+function fromCache(sourceId: string, query: string): Address[] | null {
+  const exact = liveCache.get(`${sourceId}|${query}`)
+  if (exact) return exact
+  for (let end = query.length - 1; end >= 3; end--) {
+    const shorter = liveCache.get(`${sourceId}|${query.slice(0, end)}`)
+    if (shorter && shorter.length < SOURCE_LIMIT) {
+      return shorter.filter((a) => liveKey(`${a.street}, ${a.locality}`).startsWith(query))
+    }
+  }
+  return null
+}
+
+function wait(ms: number, signal?: AbortSignal): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const abort = () => {
+      clearTimeout(timer)
+      reject(new DOMException('Avbruten', 'AbortError'))
+    }
+    const timer = setTimeout(() => {
+      signal?.removeEventListener('abort', abort)
+      resolve()
+    }, ms)
+    if (signal?.aborted) abort()
+    else signal?.addEventListener('abort', abort, { once: true })
+  })
+}
+
 async function searchLive(query: string, signal?: AbortSignal): Promise<SearchResult> {
   const placesPromise = loadPlaces() // parallellt med sökningen
-  const sources = await liveSourcesFor(query)
-  if (sources.length === 0) return { addresses: [], failed: [] }
-  try {
-    const res = await fetch(`/api/sok?${new URLSearchParams({ q: query, sources: sources.join(',') })}`, { signal })
-    if (!res.ok) return { addresses: [], failed: sources }
-    const [body, places] = await Promise.all([res.json() as Promise<SearchResult>, placesPromise])
-    const addresses = body.addresses.map((a) => {
-      const source = getSource(a.sourceId)
-      return source ? { ...a, kommun: kommunForLocality(source, a.locality, places[source.id]) } : a
-    })
-    return { addresses, failed: body.failed }
-  } catch {
-    if (signal?.aborted) throw new DOMException('Avbruten', 'AbortError')
-    return { addresses: [], failed: sources }
+  const q = liveKey(query)
+  const sources = await liveSourcesFor(q)
+  const hits = sources.map((id) => ({ id, cached: fromCache(id, q) }))
+  const cached = hits.flatMap((h) => h.cached ?? [])
+  const missing = hits.filter((h) => !h.cached).map((h) => h.id)
+  let fetched: Address[] = []
+  let failed: string[] = []
+  if (missing.length > 0) {
+    await wait(NETWORK_DELAY_MS, signal)
+    try {
+      const res = await fetch(`/api/sok?${new URLSearchParams({ q, sources: missing.join(',') })}`, { signal })
+      if (!res.ok) throw new Error(`/api/sok svarade ${res.status}`)
+      const body = (await res.json()) as SearchResult
+      fetched = body.addresses
+      failed = body.failed
+      for (const id of missing.filter((id) => !failed.includes(id))) {
+        remember(id, q, fetched.filter((a) => a.sourceId === id))
+      }
+    } catch {
+      if (signal?.aborted) throw new DOMException('Avbruten', 'AbortError')
+      failed = missing
+    }
   }
+  const places = await placesPromise
+  const addresses = [...cached, ...fetched].map((a) => {
+    const source = getSource(a.sourceId)
+    return source ? { ...a, kommun: kommunForLocality(source, a.locality, places[source.id]) } : a
+  })
+  return { addresses, failed }
 }
 
 /** Väcker sökfunktionen och laddar ort-tabellen i förväg, t.ex. när sökfältet får fokus. */

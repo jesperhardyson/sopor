@@ -63,7 +63,14 @@ describe('searchAll', () => {
     return f
   }
 
-  afterEach(() => vi.unstubAllGlobals())
+  afterEach(async () => {
+    vi.unstubAllGlobals()
+    vi.resetModules() // tömmer sökcachen mellan testerna
+    await import('@/test/show-hidden-sources') // det nya källregistret ska också visa Avesta
+  })
+
+  const up = (street: string): Address => ({ id: `${street}-1`, street, locality: 'Uppsala', sourceId: 'uppsala', kommun: 'Uppsala kommun' })
+  const sokCalls = (f: ReturnType<typeof vi.fn>) => f.mock.calls.map(([u]) => String(u)).filter((u) => u.startsWith('/api/sok'))
 
   it('söker lokalt i statiska källor och via /api/sok i de källor gatuindexet pekar ut', async () => {
     const uppsala = { id: 'storgatan-2_uppsala-1', street: 'Storgatan 2', locality: 'Uppsala', sourceId: 'uppsala', kommun: 'Uppsala kommun' }
@@ -72,7 +79,59 @@ describe('searchAll', () => {
     const result = await searchAll('Storgatan')
     expect(result.addresses.map((x) => x.id)).toEqual(['avesta-storgatan-12', 'storgatan-2_uppsala-1'])
     expect(result.failed).toEqual([])
-    expect(f.mock.calls.map(([u]) => u)).toContain('/api/sok?q=Storgatan&sources=uppsala')
+    expect(f.mock.calls.map(([u]) => u)).toContain('/api/sok?q=storgatan&sources=uppsala')
+  })
+
+  it('skickar frågan med gemener och enkla mellanslag, så att Vercels cache träffar oftare', async () => {
+    const f = stubFetch({ addresses: [], failed: [] })
+    const { searchAll } = await import('./registry')
+    await searchAll('  Storgatan   2 ')
+    expect(new URL(sokCalls(f)[0], 'http://x').searchParams.get('q')).toBe('storgatan 2')
+  })
+
+  it('frågar inte servern igen för samma sökning', async () => {
+    const f = stubFetch({ addresses: [up('Storgatan 2')], failed: [] })
+    const { searchAll } = await import('./registry')
+    await searchAll('Storgatan 2')
+    const again = await searchAll('storgatan  2')
+    expect(again.addresses.map((x) => x.street)).toContain('Storgatan 2')
+    expect(sokCalls(f)).toHaveLength(1)
+  })
+
+  it('filtrerar ett komplett svar lokalt när man skriver vidare', async () => {
+    const f = stubFetch({ addresses: [up('Storgatan 2'), up('Storgatan 21'), up('Storgatan 3')], failed: [] })
+    const { searchAll } = await import('./registry')
+    await searchAll('Storgatan')
+    const longer = await searchAll('Storgatan 2')
+    expect(longer.addresses.filter((x) => x.sourceId === 'uppsala').map((x) => x.street)).toEqual(['Storgatan 2', 'Storgatan 21'])
+    expect(sokCalls(f)).toHaveLength(1)
+  })
+
+  it('frågar igen när källan gav tio träffar, eftersom svaret kan vara avkortat', async () => {
+    const ten = Array.from({ length: 10 }, (_, i) => up(`Storgatan ${i + 1}`))
+    const f = stubFetch({ addresses: ten, failed: [] })
+    const { searchAll } = await import('./registry')
+    await searchAll('Storgatan')
+    await searchAll('Storgatan 2')
+    expect(sokCalls(f)).toHaveLength(2)
+  })
+
+  it('sparar inte svaret från en källa som inte svarade', async () => {
+    const f = stubFetch({ addresses: [], failed: ['uppsala'] })
+    const { searchAll } = await import('./registry')
+    await searchAll('Storgatan')
+    await searchAll('Storgatan')
+    expect(sokCalls(f)).toHaveLength(2)
+  })
+
+  it('skickar inget anrop om sökningen avbryts medan den väntar', async () => {
+    const f = stubFetch({ addresses: [], failed: [] })
+    const { searchAll } = await import('./registry')
+    const controller = new AbortController()
+    const done = searchAll('Storgatan', controller.signal)
+    setTimeout(() => controller.abort(), 20)
+    await expect(done).rejects.toThrow()
+    expect(sokCalls(f)).toHaveLength(0)
   })
 
   it('frågar alla live-källor när gatan saknas i indexet', async () => {
@@ -102,6 +161,7 @@ describe('searchAll', () => {
     const partials: string[][] = []
     const done = searchAll('Storgatan', undefined, (r) => partials.push(r.addresses.map((x) => x.id)))
     await vi.waitFor(() => expect(partials).toEqual([['avesta-storgatan-12']]))
+    await vi.waitFor(() => expect(sokCalls(f)).toHaveLength(1))
     releaseLive()
     await done
   })
