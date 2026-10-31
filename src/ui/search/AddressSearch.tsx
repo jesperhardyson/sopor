@@ -37,7 +37,10 @@ interface Section {
 function sections(results: Address[], expanded: Set<string>): Section[] {
   const groups = groupByKommun(results)
   const toItems = (list: Address[]): Item[] => list.map((address) => ({ kind: 'address', address }))
-  if (groups.length < 2) return [{ total: results.length, items: toItems(results) }]
+  // Rubriker gör bara nytta när någon kommun har flera träffar. Annars står kommunen på raden.
+  if (groups.length < 2 || groups.every((g) => g.addresses.length === 1)) {
+    return [{ total: results.length, items: toItems(results) }]
+  }
   return groups.map(({ kommun, addresses }) => {
     // En ensam dold träff visas hellre än en rad som säger "Visa 1 till".
     const all = expanded.has(kommun) || addresses.length <= PER_KOMMUN + 1

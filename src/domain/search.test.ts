@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { groupByKommun, normalize, searchAddresses, suggest } from './search'
+import { fairShare, groupByKommun, normalize, searchAddresses, suggest } from './search'
 import type { Address } from './types'
 
 const a = (id: string, street: string, locality: string): Address => ({ id, street, locality, sourceId: 'avesta', kommun: 'Avesta kommun' })
@@ -101,5 +101,25 @@ describe('groupByKommun', () => {
 
   it('ger inga grupper för en tom lista', () => {
     expect(groupByKommun([])).toEqual([])
+  })
+})
+
+describe('fairShare', () => {
+  const k = (id: string, kommun: string): Address => ({ ...a(id, id, id), kommun })
+
+  it('ger varje kommun sin tur, så att en kommun med många träffar inte tränger ut de andra', () => {
+    const many = Array.from({ length: 10 }, (_, i) => k(`b${i}`, 'Borås kommun'))
+    const list = [...many, k('f1', 'Falkenbergs kommun'), k('f2', 'Falkenbergs kommun'), k('u1', 'Uppsala kommun')]
+    expect(ids(fairShare(list, 6))).toEqual(['b0', 'b1', 'b2', 'f1', 'f2', 'u1'])
+  })
+
+  it('fyller platserna som andra kommuner inte behöver', () => {
+    const list = [k('b0', 'Borås kommun'), k('b1', 'Borås kommun'), k('b2', 'Borås kommun'), k('u1', 'Uppsala kommun')]
+    expect(ids(fairShare(list, 3))).toEqual(['b0', 'b1', 'u1'])
+  })
+
+  it('lämnar listan orörd när den ryms', () => {
+    const list = [k('u1', 'Uppsala kommun'), k('b0', 'Borås kommun')]
+    expect(fairShare(list, 12)).toEqual(list)
   })
 })
