@@ -9571,7 +9571,7 @@
           "id": "U2jEeH",
           "layoutPosition": "absolute",
           "x": 0,
-          "y": 239,
+          "y": 141,
           "name": "Ark",
           "width": 375,
           "fill": "$surface",
@@ -10024,6 +10024,96 @@
                     {
                       "type": "icon",
                       "id": "DUZ6W",
+                      "name": "Pil",
+                      "width": 20,
+                      "height": 20,
+                      "icon": "chevron-right",
+                      "library": "lucide",
+                      "fill": "$text-2"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "aPuor",
+                  "name": "API (JSON)",
+                  "width": "fill_container",
+                  "fill": "$surface",
+                  "cornerRadius": 16,
+                  "stroke": "$border",
+                  "strokeWidth": 1,
+                  "gap": 14,
+                  "padding": 14,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "pHA1Y",
+                      "name": "Ikon",
+                      "width": 40,
+                      "height": 40,
+                      "fill": "$surface-2",
+                      "cornerRadius": 12,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "Od1VN",
+                          "name": "Ikon",
+                          "width": 20,
+                          "height": 20,
+                          "icon": "braces",
+                          "library": "lucide",
+                          "fill": "$text"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "YO6s2",
+                      "name": "Text",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "RJPG8",
+                          "name": "Titelrad",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "UYZOI",
+                              "name": "Titel",
+                              "fill": "$text",
+                              "content": "API (JSON)",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "sMb2i",
+                          "name": "Beskrivning",
+                          "fill": "$text-2",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "För Home Assistant, Homey och andra system",
+                          "lineHeight": 1.35,
+                          "fontFamily": "$font-ui",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "icon",
+                      "id": "bMxMU",
                       "name": "Pil",
                       "width": 20,
                       "height": 20,
@@ -29782,6 +29872,96 @@
                       "fill": "$text-2"
                     }
                   ]
+                },
+                {
+                  "type": "frame",
+                  "id": "pTC8J",
+                  "name": "API (JSON)",
+                  "width": "fill_container",
+                  "fill": "$surface",
+                  "cornerRadius": 16,
+                  "stroke": "$border",
+                  "strokeWidth": 1,
+                  "gap": 14,
+                  "padding": 14,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "ucUT2",
+                      "name": "Ikon",
+                      "width": 40,
+                      "height": 40,
+                      "fill": "$surface-2",
+                      "cornerRadius": 12,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "C73Jz1",
+                          "name": "Ikon",
+                          "width": 20,
+                          "height": 20,
+                          "icon": "braces",
+                          "library": "lucide",
+                          "fill": "$text"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "F5nnDU",
+                      "name": "Text",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "NMcKM",
+                          "name": "Titelrad",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "pC5vN",
+                              "name": "Titel",
+                              "fill": "$text",
+                              "content": "API (JSON)",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "DKeVy",
+                          "name": "Beskrivning",
+                          "fill": "$text-2",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "För Home Assistant, Homey och andra system",
+                          "lineHeight": 1.35,
+                          "fontFamily": "$font-ui",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "icon",
+                      "id": "EcYGy",
+                      "name": "Pil",
+                      "width": 20,
+                      "height": 20,
+                      "icon": "chevron-right",
+                      "library": "lucide",
+                      "fill": "$text-2"
+                    }
+                  ]
                 }
               ]
             },
@@ -40942,6 +41122,54 @@
             },
             {
               "type": "frame",
+              "id": "jFiIn",
+              "name": "API",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "hOuHW",
+                  "name": "Rubrik",
+                  "fill": "$text",
+                  "content": "API",
+                  "fontFamily": "$font-ui",
+                  "fontSize": 20,
+                  "fontWeight": "800",
+                  "letterSpacing": -0.3
+                },
+                {
+                  "type": "text",
+                  "id": "zv9bk",
+                  "name": "Text",
+                  "fill": "$text-2",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Sopor har ett öppet API som Home Assistant, Homey och andra system kan läsa. Inga nycklar och ingen inloggning.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font-ui",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                },
+                {
+                  "id": "v9GbAm",
+                  "type": "ref",
+                  "ref": "Mw6Tm",
+                  "name": "Läs API-guiden",
+                  "descendants": {
+                    "Gjg2i": {
+                      "icon": "braces"
+                    },
+                    "E2ubmr": {
+                      "content": "Läs API-guiden"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
               "id": "A9dip",
               "name": "Kontakt",
               "width": "fill_container",
@@ -41604,6 +41832,54 @@
                   "fontFamily": "$font-ui",
                   "fontSize": 15,
                   "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "iMz4G",
+              "name": "API",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "g5WwI1",
+                  "name": "Rubrik",
+                  "fill": "$text",
+                  "content": "API",
+                  "fontFamily": "$font-ui",
+                  "fontSize": 20,
+                  "fontWeight": "800",
+                  "letterSpacing": -0.3
+                },
+                {
+                  "type": "text",
+                  "id": "v9Qbh",
+                  "name": "Text",
+                  "fill": "$text-2",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Sopor har ett öppet API som Home Assistant, Homey och andra system kan läsa. Inga nycklar och ingen inloggning.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font-ui",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                },
+                {
+                  "id": "d6iLnJ",
+                  "type": "ref",
+                  "ref": "Mw6Tm",
+                  "name": "Läs API-guiden",
+                  "descendants": {
+                    "Gjg2i": {
+                      "icon": "braces"
+                    },
+                    "E2ubmr": {
+                      "content": "Läs API-guiden"
+                    }
+                  }
                 }
               ]
             },
@@ -42291,6 +42567,54 @@
                   "fontFamily": "$font-ui",
                   "fontSize": 15,
                   "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "E7aco9",
+              "name": "API",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "fJSbK",
+                  "name": "Rubrik",
+                  "fill": "$text",
+                  "content": "API",
+                  "fontFamily": "$font-ui",
+                  "fontSize": 20,
+                  "fontWeight": "800",
+                  "letterSpacing": -0.3
+                },
+                {
+                  "type": "text",
+                  "id": "iqV0T",
+                  "name": "Text",
+                  "fill": "$text-2",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Sopor har ett öppet API som Home Assistant, Homey och andra system kan läsa. Inga nycklar och ingen inloggning.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font-ui",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                },
+                {
+                  "id": "jILpY",
+                  "type": "ref",
+                  "ref": "Mw6Tm",
+                  "name": "Läs API-guiden",
+                  "descendants": {
+                    "Gjg2i": {
+                      "icon": "braces"
+                    },
+                    "E2ubmr": {
+                      "content": "Läs API-guiden"
+                    }
+                  }
                 }
               ]
             },
@@ -44185,6 +44509,683 @@
               "strokeWidth": 0
             }
           ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "ldRKI",
+      "x": 4550,
+      "y": 760,
+      "name": "Mobil · Start (autocomplete, flera kommuner)",
+      "clip": true,
+      "width": 375,
+      "fill": "$bg",
+      "layout": "vertical",
+      "children": [
+        {
+          "id": "Yhajk",
+          "type": "ref",
+          "ref": "gBy0W",
+          "name": "Sidhuvud",
+          "width": "fill_container"
+        },
+        {
+          "type": "frame",
+          "id": "pbFVg",
+          "name": "Hero",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 24,
+          "padding": [
+            40,
+            20,
+            0,
+            20
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "rVNNT",
+              "x": 20,
+              "y": 40,
+              "name": "Fraktionsrad",
+              "enabled": false,
+              "gap": 8,
+              "children": [
+                {
+                  "id": "JvVoR",
+                  "type": "ref",
+                  "ref": "vPeSE",
+                  "name": "Ikon rest",
+                  "width": 36,
+                  "height": 36,
+                  "cornerRadius": 11
+                },
+                {
+                  "id": "jgWmJ",
+                  "type": "ref",
+                  "ref": "F5iQxg",
+                  "name": "Ikon mat",
+                  "width": 36,
+                  "height": 36,
+                  "cornerRadius": 11
+                },
+                {
+                  "id": "UgxK6",
+                  "type": "ref",
+                  "ref": "o5jApD",
+                  "name": "Ikon papper",
+                  "width": 36,
+                  "height": 36,
+                  "cornerRadius": 11
+                },
+                {
+                  "id": "IlvdD",
+                  "type": "ref",
+                  "ref": "Qc4qi",
+                  "name": "Ikon plast",
+                  "width": 36,
+                  "height": 36,
+                  "cornerRadius": 11
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "o2HgEA",
+              "name": "Rubrik",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "sJAr0",
+                  "name": "H1",
+                  "fill": "$text",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "När töms dina kärl?",
+                  "lineHeight": 1.1,
+                  "fontFamily": "$font-ui",
+                  "fontSize": 34,
+                  "fontWeight": "800",
+                  "letterSpacing": -0.8
+                },
+                {
+                  "type": "text",
+                  "id": "q1gcdg",
+                  "name": "Ingress",
+                  "fill": "$text-2",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Skriv in adressen så ser du vilket kärl som töms härnäst. Inget konto behövs.",
+                  "lineHeight": 1.45,
+                  "fontFamily": "$font-ui",
+                  "fontSize": 17,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "x1DKc",
+              "name": "Sök",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "IbWdt",
+                  "name": "Adressfält",
+                  "width": "fill_container",
+                  "height": 62,
+                  "fill": "$surface",
+                  "cornerRadius": 18,
+                  "stroke": "$primary",
+                  "strokeWidth": 2,
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#157A4633",
+                    "blur": 10
+                  },
+                  "gap": 10,
+                  "padding": [
+                    0,
+                    16,
+                    0,
+                    18
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "Z46Qr",
+                      "name": "Sökikon",
+                      "width": 20,
+                      "height": 20,
+                      "icon": "search",
+                      "library": "lucide",
+                      "fill": "$primary"
+                    },
+                    {
+                      "type": "text",
+                      "id": "b08bD",
+                      "name": "Platshållare",
+                      "fill": "$text",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Storg",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 16,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "u1ajOz",
+                      "name": "Rensa",
+                      "width": 28,
+                      "height": 28,
+                      "fill": "$surface-2",
+                      "cornerRadius": 999,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "uVelc",
+                          "name": "Ikon",
+                          "width": 16,
+                          "height": 16,
+                          "icon": "x",
+                          "library": "lucide",
+                          "fill": "$text-2"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "E8TSit",
+                  "name": "Förslag",
+                  "width": "fill_container",
+                  "fill": "$surface",
+                  "cornerRadius": 18,
+                  "stroke": "$border",
+                  "strokeWidth": 1,
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#1B231F1F",
+                    "offset": {
+                      "x": 0,
+                      "y": 12
+                    },
+                    "blur": 32
+                  },
+                  "layout": "vertical",
+                  "padding": 6,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "ZR8dN",
+                      "name": "Grupprubrik – Avesta kommun",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "padding": [
+                        10,
+                        12,
+                        4,
+                        12
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "yVqVz",
+                          "name": "Kommun",
+                          "fill": "$text-2",
+                          "content": "Avesta kommun",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 13,
+                          "fontWeight": "800"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "X1lhxp",
+                          "name": "Fyll",
+                          "width": "fill_container",
+                          "height": 1
+                        },
+                        {
+                          "type": "text",
+                          "id": "zHGkA",
+                          "name": "Antal",
+                          "fill": "$text-2",
+                          "content": "5",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "H6U9J",
+                      "name": "Förslag – Storgatan 12 B, Krylbo",
+                      "width": "fill_container",
+                      "fill": "$surface-2",
+                      "cornerRadius": 12,
+                      "gap": 12,
+                      "padding": 12,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "mjTb8",
+                          "name": "Ikon",
+                          "width": 36,
+                          "height": 36,
+                          "fill": "$brand-soft",
+                          "cornerRadius": 999,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "Bgydl",
+                              "name": "Ikon",
+                              "width": 18,
+                              "height": 18,
+                              "icon": "map-pin",
+                              "library": "lucide",
+                              "fill": "$brand-text"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "i5p3z1",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "iSjgY",
+                              "name": "Adress",
+                              "fill": "$text",
+                              "content": "Storgatan 12 B",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "text",
+                              "id": "L0pWT",
+                              "name": "Ort",
+                              "fill": "$text-2",
+                              "content": "Krylbo",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "v8l8H",
+                      "name": "Förslag – Storgatan 12, Avesta",
+                      "width": "fill_container",
+                      "cornerRadius": 12,
+                      "gap": 12,
+                      "padding": 12,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "Vwjk8",
+                          "name": "Ikon",
+                          "width": 36,
+                          "height": 36,
+                          "fill": "$brand-soft",
+                          "cornerRadius": 999,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "vm9x2",
+                              "name": "Ikon",
+                              "width": 18,
+                              "height": 18,
+                              "icon": "map-pin",
+                              "library": "lucide",
+                              "fill": "$brand-text"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Y5ziC",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Bt7Hg",
+                              "name": "Adress",
+                              "fill": "$text",
+                              "content": "Storgatan 12",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "text",
+                              "id": "gRAJP",
+                              "name": "Ort",
+                              "fill": "$text-2",
+                              "content": "Avesta",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "WwFlV",
+                      "name": "Förslag – Storgatan 21, Fors",
+                      "width": "fill_container",
+                      "cornerRadius": 12,
+                      "gap": 12,
+                      "padding": 12,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "glWOn",
+                          "name": "Ikon",
+                          "width": 36,
+                          "height": 36,
+                          "fill": "$brand-soft",
+                          "cornerRadius": 999,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "b3sud",
+                              "name": "Ikon",
+                              "width": 18,
+                              "height": 18,
+                              "icon": "map-pin",
+                              "library": "lucide",
+                              "fill": "$brand-text"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "LfdJT",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "eMKsI",
+                              "name": "Adress",
+                              "fill": "$text",
+                              "content": "Storgatan 21",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "text",
+                              "id": "rvYsd",
+                              "name": "Ort",
+                              "fill": "$text-2",
+                              "content": "Fors",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "L2WOM",
+                      "name": "Visa fler",
+                      "width": "fill_container",
+                      "gap": 6,
+                      "padding": [
+                        8,
+                        12,
+                        10,
+                        60
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "xcshc",
+                          "name": "Text",
+                          "fill": "$primary",
+                          "content": "Visa 2 till i Avesta",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 14,
+                          "fontWeight": "800"
+                        },
+                        {
+                          "type": "icon",
+                          "id": "b5wncB",
+                          "name": "Pil",
+                          "width": 16,
+                          "height": 16,
+                          "icon": "chevron-down",
+                          "library": "lucide",
+                          "fill": "$primary"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "pklh8",
+                      "name": "Avdelare",
+                      "width": "fill_container",
+                      "padding": [
+                        4,
+                        12
+                      ],
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "g9sL6",
+                          "name": "Linje",
+                          "width": "fill_container",
+                          "height": 1,
+                          "fill": "$border"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "ptUnV",
+                      "name": "Grupprubrik – Hedemora kommun",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "padding": [
+                        10,
+                        12,
+                        4,
+                        12
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "VFtCv",
+                          "name": "Kommun",
+                          "fill": "$text-2",
+                          "content": "Hedemora kommun",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 13,
+                          "fontWeight": "800"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "JcSFh",
+                          "name": "Status",
+                          "fill": "$surface-2",
+                          "cornerRadius": 6,
+                          "padding": [
+                            2,
+                            8
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "g1hEep",
+                              "name": "Text",
+                              "fill": "$text-2",
+                              "content": "Stöds inte än",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 12,
+                              "fontWeight": "800"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "YjRNU",
+                          "name": "Fyll",
+                          "width": "fill_container",
+                          "height": 1
+                        },
+                        {
+                          "type": "text",
+                          "id": "CYg5d",
+                          "name": "Antal",
+                          "fill": "$text-2",
+                          "content": "1",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "OJodL",
+                      "name": "Förslag – Storgatan 12, Hedemora",
+                      "opacity": 0.6,
+                      "width": "fill_container",
+                      "cornerRadius": 12,
+                      "gap": 12,
+                      "padding": 12,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "MCXB0",
+                          "name": "Ikon",
+                          "width": 36,
+                          "height": 36,
+                          "fill": "$surface-2",
+                          "cornerRadius": 999,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "ozXgB",
+                              "name": "Ikon",
+                              "width": 18,
+                              "height": 18,
+                              "icon": "map-pin",
+                              "library": "lucide",
+                              "fill": "$text-2"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "ujw1q",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "VWsVM",
+                              "name": "Adress",
+                              "fill": "$text",
+                              "content": "Storgatan 12",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "text",
+                              "id": "UtTSb",
+                              "name": "Ort",
+                              "fill": "$text-2",
+                              "content": "Hedemora",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "yQuJU",
+                              "name": "Status",
+                              "fill": "$text-2",
+                              "content": "Få besked när den finns",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Lz6aE",
+          "name": "Spacer",
+          "width": "fill_container",
+          "height": 32
+        },
+        {
+          "id": "GyGpn",
+          "type": "ref",
+          "ref": "fqF9s",
+          "name": "Sidfot",
+          "width": "fill_container"
         }
       ]
     }
