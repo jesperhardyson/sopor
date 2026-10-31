@@ -17,7 +17,7 @@
   },
   "category": "tools",
   "permissions": [],
-  "brandColor": "#2E5E86",
+  "brandColor": "#157A46",
   "author": {
     "name": "Jesper Hardyson",
     "email": "jesper@hardyson.se"
@@ -27,6 +27,11 @@
   "source": "https://github.com/jesperhardyson/sopor/tree/main/integrations/homey",
   "bugs": {
     "url": "https://github.com/jesperhardyson/sopor/issues"
+  },
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png",
+    "xlarge": "/assets/images/xlarge.png"
   },
   "esm": true,
   "flow": {
@@ -226,6 +231,11 @@
           "template": "add_devices"
         }
       ],
+      "images": {
+        "small": "/drivers/adress/assets/images/small.png",
+        "large": "/drivers/adress/assets/images/large.png",
+        "xlarge": "/drivers/adress/assets/images/xlarge.png"
+      },
       "id": "adress"
     }
   ],
@@ -239,7 +249,7 @@
       "getable": true,
       "setable": false,
       "uiComponent": "sensor",
-      "icon": "/assets/icon.svg",
+      "icon": "/assets/karl.svg",
       "insights": false
     },
     "sopor_summary": {

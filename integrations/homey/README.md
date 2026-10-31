@@ -16,4 +16,9 @@ npx homey app run      # provkör på vald Homey (homey select --id …)
 - `lib/` innehåller ren logik utan Homey-beroenden. Allt som går att testa ligger där.
 - `app.mts`, `drivers/adress/driver.mts` och `device.mts` kopplar logiken till Homey och hålls tunna.
 - `app.json` genereras av CLI:t ur `.homeycompose/` och `drivers/*/driver*.compose.json`. Ändra i compose-filerna.
-- Ikonerna är platshållare. Bilder och ikon ska komma från `docs/design/sopor-design.pen` innan appen publiceras.
+- Ikoner och bilder kommer från sidan "Homey · Sophämtning" i `docs/design/sopor-design.pen`:
+  - **App-ikonen** (`assets/icon.svg`) är Sopor-symbolen.
+  - **Drivrutinsikonen** och **`assets/karl.svg`** är kärlet i linjestil.
+  - Ikonerna är svarta SVG:er på 960×960, eftersom Homey färgar dem själv.
+  - **Bilderna** är exporterade PNG:er i Homeys storlekar.
+  - **`brandColor`** är designens `primary` (#157A46).

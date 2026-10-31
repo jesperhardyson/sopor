@@ -10,7 +10,7 @@ En Homey Pro-ägare lägger till sin adress genom att söka på den. Sedan kan a
 
 - Homey Cloud (kräver Verified Developer).
 - Triggers, widget, inställningssida, Insights.
-- Publicering i App Store. Det kräver ikon, bilder och `brandColor` från designen. Under utvecklingen installeras appen med `homey app run` eller `homey app install`.
+- Publicering i App Store. Ikon, bilder och `brandColor` finns (sidan "Homey · Sophämtning" i designen), och appen klarar `homey app validate --level publish`. Under utvecklingen installeras appen med `homey app install`.
 
 ## Ramar
 
@@ -85,6 +85,5 @@ Alla är enhetskort och syns under adressens enhet (i dess zon) när man väljer
 
 - Triggers (om användarna efterfrågar dem).
 - Widget med nästa hämtningar i fraktionsfärg.
-- Ikon, bilder och `brandColor` från `sopor-design.pen`.
 - Testversion i App Store, och sedan certifiering.
 - Länk från Om-sidan och `docs/api.md`.

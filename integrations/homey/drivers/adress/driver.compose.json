@@ -4,22 +4,38 @@
     "sv": "Adress"
   },
   "class": "other",
-  "capabilities": ["sopor_summary"],
-  "platforms": ["local"],
-  "connectivity": ["cloud"],
+  "capabilities": [
+    "sopor_summary"
+  ],
+  "platforms": [
+    "local"
+  ],
+  "connectivity": [
+    "cloud"
+  ],
   "pair": [
     {
       "id": "sok",
-      "navigation": { "next": "list_devices" }
+      "navigation": {
+        "next": "list_devices"
+      }
     },
     {
       "id": "list_devices",
       "template": "list_devices",
-      "navigation": { "prev": "sok", "next": "add_devices" }
+      "navigation": {
+        "prev": "sok",
+        "next": "add_devices"
+      }
     },
     {
       "id": "add_devices",
       "template": "add_devices"
     }
-  ]
+  ],
+  "images": {
+    "small": "/drivers/adress/assets/images/small.png",
+    "large": "/drivers/adress/assets/images/large.png",
+    "xlarge": "/drivers/adress/assets/images/xlarge.png"
+  }
 }

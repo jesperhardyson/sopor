@@ -16,7 +16,7 @@
   },
   "category": "tools",
   "permissions": [],
-  "brandColor": "#2E5E86",
+  "brandColor": "#157A46",
   "author": {
     "name": "Jesper Hardyson",
     "email": "jesper@hardyson.se"
@@ -26,5 +26,10 @@
   "source": "https://github.com/jesperhardyson/sopor/tree/main/integrations/homey",
   "bugs": {
     "url": "https://github.com/jesperhardyson/sopor/issues"
+  },
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png",
+    "xlarge": "/assets/images/xlarge.png"
   }
 }
