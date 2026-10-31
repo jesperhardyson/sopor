@@ -21,6 +21,10 @@ describe('vercel.json', () => {
     expect((config as unknown as { buildCommand: string }).buildCommand).toBe('npm test && npm run build')
   })
 
+  it('kör funktionerna i Stockholm, nära källorna', () => {
+    expect((config as unknown as { regions: string[] }).regions).toEqual(['arn1'])
+  })
+
   it('serverar kalenderfiler som text/calendar med cache', () => {
     expect(header('/ics/(.*)', 'Content-Type')).toBe('text/calendar; charset=utf-8')
     expect(header('/ics/(.*)', 'Cache-Control')).toBe('public, max-age=3600, s-maxage=86400')
