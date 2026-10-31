@@ -88,6 +88,14 @@ describe('AddressSearch', () => {
     expect(screen.queryByRole('group')).toBeNull()
   })
 
+  it('visar kommunen på raden i stället för rubriker när varje kommun har en träff', async () => {
+    const one = [a('avesta-storgatan-12', 'Storgatan 12', 'Avesta'), s('sater-storgatan-40', 'Storgatan 40', 'Säters kommun')]
+    await userEvent.type(setup(one), 'storg')
+    const options = await screen.findAllByRole('option')
+    expect(screen.queryByRole('group')).toBeNull()
+    expect(within(options[1]).getByText('Säters kommun')).toBeInTheDocument()
+  })
+
   it('grupperar träffarna per kommun när de ligger i flera', async () => {
     await userEvent.type(setup(MANY_KOMMUNER), 'storg')
     const groups = await screen.findAllByRole('group')
