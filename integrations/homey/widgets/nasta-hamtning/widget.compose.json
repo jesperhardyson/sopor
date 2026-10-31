@@ -1,0 +1,27 @@
+{
+  "name": {
+    "en": "Next collection",
+    "sv": "Nästa hämtning"
+  },
+  "transparent": true,
+  "settings": [
+    {
+      "id": "adress",
+      "type": "autocomplete",
+      "title": {
+        "en": "Address",
+        "sv": "Adress"
+      },
+      "hint": {
+        "en": "Which of your Sophämtning addresses to show. Without a choice, the first one is shown.",
+        "sv": "Vilken av dina adresser i Sophämtning som visas. Utan val visas den första."
+      }
+    }
+  ],
+  "api": {
+    "getRows": {
+      "method": "GET",
+      "path": "/"
+    }
+  }
+}

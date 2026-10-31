@@ -1,0 +1,12 @@
+{
+  "type": "string",
+  "title": {
+    "en": "Tomorrow",
+    "sv": "I morgon"
+  },
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "icon": "/assets/karl.svg",
+  "insights": false
+}

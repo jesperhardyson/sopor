@@ -1,0 +1,101 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      @font-face { font-family: 'Nunito'; font-weight: 400; src: url('typsnitt/nunito-latin-400-normal.woff2') format('woff2'); }
+      @font-face { font-family: 'Nunito'; font-weight: 700; src: url('typsnitt/nunito-latin-700-normal.woff2') format('woff2'); }
+      @font-face { font-family: 'Nunito'; font-weight: 800; src: url('typsnitt/nunito-latin-800-normal.woff2') format('woff2'); }
+
+      /* Designens tokens (docs/design/sopor-design.pen), ljust och mörkt */
+      :root {
+        --surface: #ffffff; --text: #1b231f; --text-2: #526158; --primary: #157a46;
+        --soon-bg: #cfebd8; --soon-text: #12673b;
+        --rest: #474c48; --rest-bg: #e9eae7; --mat: #7a4a1e; --mat-bg: #f3e6d8;
+        --papper: #2e5e86; --papper-bg: #e1eaf3; --plast: #a8431f; --plast-bg: #fae6dd;
+        --glas: #1f6a7a; --glas-bg: #ddeff2; --metall: #6b4f7a; --metall-bg: #eee6f1;
+        --karl: #526158; --karl-bg: #dcebdf;
+      }
+      .homey-dark-mode {
+        --surface: #14241a; --text: #edf2ee; --text-2: #a0b3a6; --primary: #4cc384;
+        --soon-bg: #1a3d28; --soon-text: #8fe0b2;
+        --rest: #c3c9c4; --rest-bg: #2a2f2c; --mat: #e0a873; --mat-bg: #3a2c1f;
+        --papper: #8db6de; --papper-bg: #1c2a38; --plast: #f0906c; --plast-bg: #3d241b;
+        --glas: #72c6d6; --glas-bg: #173238; --metall: #c6a9d6; --metall-bg: #2e2436;
+        --karl: #a0b3a6; --karl-bg: #1c2f23;
+      }
+
+      body { margin: 0; font-family: 'Nunito', var(--homey-font-family, sans-serif); }
+      .card { background: var(--surface); border-radius: 20px; padding: 12px; display: flex; flex-direction: column; gap: 4px; }
+      .head { display: flex; justify-content: space-between; align-items: center; padding: 4px 8px 8px; }
+      .address { font-size: 14px; font-weight: 800; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .mask { display: inline-block; background: currentColor; -webkit-mask: var(--icon) center / contain no-repeat; mask: var(--icon) center / contain no-repeat; }
+      .symbol { width: 16px; height: 16px; flex: none; color: var(--primary); --icon: url('ikoner/sopor.svg'); }
+      .row { display: flex; align-items: center; gap: 12px; padding: 8px; border-radius: 14px; }
+      .row.soon { background: var(--soon-bg); }
+      .tile { width: 40px; height: 40px; flex: none; border-radius: 13px; display: flex; align-items: center; justify-content: center; color: var(--frac); background: var(--frac-bg); }
+      .tile .mask { width: 20px; height: 20px; }
+      .text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+      .name { font-size: 15px; font-weight: 700; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .date { font-size: 13px; color: var(--text-2); }
+      .when { font-size: 15px; font-weight: 800; color: var(--text-2); white-space: nowrap; }
+      .soon .when { color: var(--soon-text); }
+      .empty { font-size: 14px; color: var(--text-2); padding: 8px; }
+    </style>
+  </head>
+
+  <body class="homey-widget">
+    <div class="card">
+      <div class="head"><span class="address" id="address"></span><span class="mask symbol"></span></div>
+      <div id="rows"></div>
+    </div>
+
+    <script type="text/javascript">
+      // Fraktioner med egna färger i designen. Tidningar delar papprets färg.
+      const PALETTE = { rest: 'rest', mat: 'mat', papper: 'papper', tidningar: 'papper', plast: 'plast', glas: 'glas', metall: 'metall', karl: 'karl' }
+      const REFRESH_MS = 10 * 60_000
+
+      function el(tag, className, text) {
+        const node = document.createElement(tag)
+        if (className) node.className = className
+        if (text !== undefined) node.textContent = text
+        return node
+      }
+
+      function row(item) {
+        const r = el('div', item.soon ? 'row soon' : 'row')
+        const tile = el('div', 'tile')
+        const palette = PALETTE[item.fraction]
+        if (palette) {
+          tile.style.setProperty('--frac', `var(--${palette})`)
+          tile.style.setProperty('--frac-bg', `var(--${palette}-bg)`)
+        } else {
+          tile.style.setProperty('--frac', item.color ?? 'var(--text-2)')
+          tile.style.setProperty('--frac-bg', item.color ? `${item.color}26` : 'var(--karl-bg)')
+        }
+        const icon = el('span', 'mask')
+        icon.style.setProperty('--icon', `url('ikoner/${item.icon ?? 'container'}.svg')`)
+        tile.append(icon)
+        const text = el('div', 'text')
+        text.append(el('span', 'name', item.name), el('span', 'date', item.estimated ? `${item.date} · beräknat` : item.date))
+        r.append(tile, text, el('span', 'when', item.when))
+        return r
+      }
+
+      async function render(Homey) {
+        const id = Homey.getSettings().adress?.id ?? ''
+        const { address, rows } = await Homey.api('GET', `/?id=${encodeURIComponent(id)}`)
+        document.getElementById('address').textContent = address ?? 'Sophämtning'
+        const list = document.getElementById('rows')
+        if (!address) list.replaceChildren(el('p', 'empty', Homey.__('widget.noAddress')))
+        else if (!rows.length) list.replaceChildren(el('p', 'empty', Homey.__('widget.nothing')))
+        else list.replaceChildren(...rows.map(row))
+      }
+
+      function onHomeyReady(Homey) {
+        const show = () => render(Homey).catch((error) => console.error(error))
+        show().finally(() => Homey.ready({ height: document.body.scrollHeight }))
+        setInterval(show, REFRESH_MS)
+      }
+    </script>
+  </body>
+</html>

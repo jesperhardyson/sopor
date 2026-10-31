@@ -1,0 +1,156 @@
+{
+  "name": {
+    "en": "Address",
+    "sv": "Adress"
+  },
+  "class": "other",
+  "capabilities": [
+    "sopor_summary",
+    "sopor_days",
+    "sopor_tomorrow"
+  ],
+  "platforms": [
+    "local"
+  ],
+  "connectivity": [
+    "cloud"
+  ],
+  "pair": [
+    {
+      "id": "sok",
+      "navigation": {
+        "next": "list_devices"
+      }
+    },
+    {
+      "id": "list_devices",
+      "template": "list_devices",
+      "navigation": {
+        "prev": "sok",
+        "next": "add_devices"
+      }
+    },
+    {
+      "id": "add_devices",
+      "template": "add_devices"
+    }
+  ],
+  "images": {
+    "small": "/drivers/adress/assets/images/small.png",
+    "large": "/drivers/adress/assets/images/large.png",
+    "xlarge": "/drivers/adress/assets/images/xlarge.png"
+  },
+  "settings": [
+    {
+      "id": "paminnelsetid",
+      "type": "text",
+      "label": {
+        "en": "Reminder time",
+        "sv": "Påminnelsetid"
+      },
+      "value": "18:00",
+      "hint": {
+        "en": "When the card \"Waste is collected tomorrow\" runs, the evening before a collection. Format HH:MM, Swedish time.",
+        "sv": "När kortet \"Sopor hämtas i morgon\" går, kvällen före en hämtning. Skriv som HH:MM, svensk tid."
+      }
+    },
+    {
+      "id": "morgontid",
+      "type": "text",
+      "label": {
+        "en": "Morning time",
+        "sv": "Morgontid"
+      },
+      "value": "07:00",
+      "hint": {
+        "en": "When the card \"Waste is collected today\" runs on a collection day. Format HH:MM, Swedish time.",
+        "sv": "När kortet \"Sopor hämtas i dag\" går på en hämtningsdag. Skriv som HH:MM, svensk tid."
+      }
+    },
+    {
+      "type": "group",
+      "label": {
+        "en": "Waste types",
+        "sv": "Avfallstyper"
+      },
+      "hint": {
+        "en": "Untick waste you don't have. It is hidden on the device and ignored by the flow cards.",
+        "sv": "Avmarkera det du inte har. Det döljs på enheten och ignoreras av flödeskorten."
+      },
+      "children": [
+        {
+          "id": "visa_rest",
+          "type": "checkbox",
+          "label": {
+            "en": "Residual waste",
+            "sv": "Restavfall"
+          },
+          "value": true
+        },
+        {
+          "id": "visa_mat",
+          "type": "checkbox",
+          "label": {
+            "en": "Food waste",
+            "sv": "Matavfall"
+          },
+          "value": true
+        },
+        {
+          "id": "visa_papper",
+          "type": "checkbox",
+          "label": {
+            "en": "Paper packaging",
+            "sv": "Pappersförpackningar"
+          },
+          "value": true
+        },
+        {
+          "id": "visa_plast",
+          "type": "checkbox",
+          "label": {
+            "en": "Plastic packaging",
+            "sv": "Plastförpackningar"
+          },
+          "value": true
+        },
+        {
+          "id": "visa_glas",
+          "type": "checkbox",
+          "label": {
+            "en": "Glass",
+            "sv": "Glas"
+          },
+          "value": true
+        },
+        {
+          "id": "visa_metall",
+          "type": "checkbox",
+          "label": {
+            "en": "Metal",
+            "sv": "Metall"
+          },
+          "value": true
+        },
+        {
+          "id": "visa_tidningar",
+          "type": "checkbox",
+          "label": {
+            "en": "Newspapers",
+            "sv": "Tidningar"
+          },
+          "value": true
+        },
+        {
+          "id": "visa_karl",
+          "type": "checkbox",
+          "label": {
+            "en": "Multi-compartment bin",
+            "sv": "Kärl (flera avfallstyper)"
+          },
+          "value": true
+        }
+      ]
+    }
+  ]
+}

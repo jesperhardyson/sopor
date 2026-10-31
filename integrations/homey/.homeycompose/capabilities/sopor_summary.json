@@ -1,0 +1,12 @@
+{
+  "type": "string",
+  "title": {
+    "en": "Next collection",
+    "sv": "Nästa hämtning"
+  },
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "icon": "/assets/icon.svg",
+  "insights": false
+}

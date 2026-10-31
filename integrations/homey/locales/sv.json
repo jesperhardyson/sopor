@@ -1,0 +1,24 @@
+{
+  "pair": {
+    "intro": "Sök upp adressen där dina sopor hämtas.",
+    "label": "Gata och husnummer",
+    "placeholder": "Storgatan 2, Uppsala",
+    "search": "Sök",
+    "searching": "Söker …",
+    "tooShort": "Skriv minst tre tecken.",
+    "notFound": "Ingen adress hittades. Kontrollera stavningen och skriv med husnummer.",
+    "failed": "Några källor svarade inte. Försök igen om en stund.",
+    "hint": "Lägg till orten efter ett komma för färre träffar.",
+    "choosePlace": "Många träffar. Var ligger adressen?"
+  },
+  "device": {
+    "gone": "Adressen finns inte längre hos källan. Reparera eller ta bort enheten.",
+    "waiting": "Väntar på schemat från Sopor.",
+    "badTime": "Skriv tiden som HH:MM, till exempel 18:00."
+  },
+  "anyFraction": "Något avfall",
+  "widget": {
+    "noAddress": "Lägg till en adress i Sophämtning först.",
+    "nothing": "Inga kommande hämtningar"
+  }
+}

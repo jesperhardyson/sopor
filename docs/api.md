@@ -260,6 +260,10 @@ Villkoret går på `isTomorrow` i alla poster, inte bara `next[0]`. Första post
 
 ## Homey
 
+**Appen Sophämtning** för Homey Pro är under utveckling i [`integrations/homey/`](../integrations/homey/). Med den lägger man till adressen genom att söka, och får färdiga flödeskort och en widget utan egen kod. Den är inte publicerad i Homey App Store än, så den går bara att installera med Homeys CLI (se [README](../README.md#homey-integrationshomey)). Tills den är publicerad fungerar receptet nedan.
+
+### Med HomeyScript
+
 Homey har inget inbyggt flödeskort som hämtar JSON från en URL och plockar ut ett fält. Appen "HTTP request flow cards" ska enligt användare på Homeys forum inte fungera på nyare Homey Pro. Det enklaste som fungerar är appen **HomeyScript** (gratis från Homey App Store, för Homey Pro, Homey Pro mini, Homey Cloud och Self-Hosted Server).
 
 HomeyScripts flödeskort heter enligt appens sida bland annat *Run Code and return Yes/No-tag*, *Run Code and return Text-tag* och *Run Code and return Number-tag*. Namnen kan vara översatta i din app.
