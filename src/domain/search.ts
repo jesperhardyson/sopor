@@ -84,3 +84,18 @@ export function suggest(query: string, addresses: Address[], limit = 3): Address
     .slice(0, limit)
     .map((x) => x.a)
 }
+
+export interface KommunGroup {
+  kommun: string
+  addresses: Address[]
+}
+
+/**
+ * Träffarna per kommun. Grupperna kommer i den ordning kommunen först dyker upp, så att en
+ * live-källa som svarar sent hamnar sist i stället för att knuffa listan medan man tittar.
+ */
+export function groupByKommun(addresses: Address[]): KommunGroup[] {
+  const groups = new Map<string, Address[]>()
+  for (const a of addresses) groups.set(a.kommun, [...(groups.get(a.kommun) ?? []), a])
+  return [...groups].map(([kommun, list]) => ({ kommun, addresses: list }))
+}

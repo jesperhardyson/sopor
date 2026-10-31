@@ -67,9 +67,10 @@ describe('StartPage innehåll', () => {
     expect(screen.getByTestId('forhandsvisning')).toHaveAttribute('aria-hidden', 'true')
   })
 
-  it('bjuder in till att bidra med kommuner', () => {
+  it('bjuder in till att bidra med kommuner', async () => {
     setup()
     const bidra = screen.getByRole('region', { name: 'Saknas din kommun? Hjälp till att få in den.' })
+    await userEvent.click(within(bidra).getByRole('button', { name: 'Visa alla kommuner' }))
     expect(within(bidra).getByText('Uppsala kommun')).toBeInTheDocument()
     expect(within(bidra).getByText('Herrljunga kommun')).toBeInTheDocument()
     expect(within(bidra).getByText('Vårgårda kommun')).toBeInTheDocument()

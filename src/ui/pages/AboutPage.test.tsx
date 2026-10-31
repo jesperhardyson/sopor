@@ -24,6 +24,29 @@ describe('AboutPage', () => {
     expect(screen.getByText(/Sopor är en inofficiell tjänst och är inte kopplad till någon kommun/)).toBeInTheDocument()
   })
 
+  it('visar de första källorna och resten på begäran', async () => {
+    render(
+      <MemoryRouter>
+        <AboutPage />
+      </MemoryRouter>,
+    )
+    const list = screen.getByRole('list', { name: 'Källor' })
+    expect(list.children).toHaveLength(5)
+    await userEvent.click(screen.getByRole('button', { name: /^Visa alla \d+ källor$/ }))
+    expect(list.children.length).toBeGreaterThan(5)
+    expect(screen.getByRole('button', { name: 'Visa färre källor' })).toHaveAttribute('aria-expanded', 'true')
+  })
+
+  it('upprepar inte källans namn när den bara täcker sin egen kommun', async () => {
+    render(
+      <MemoryRouter>
+        <AboutPage />
+      </MemoryRouter>,
+    )
+    await userEvent.click(screen.getByRole('button', { name: /^Visa alla \d+ källor$/ }))
+    expect(screen.getByRole('link', { name: /Örebro kommun/ })).toHaveTextContent(/^Örebro kommun$/)
+  })
+
   it('berättar om analysen och att man kan bidra på GitHub', () => {
     render(
       <MemoryRouter>

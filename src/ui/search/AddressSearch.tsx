@@ -1,7 +1,7 @@
-import { LoaderCircle, MapPin, Search, X } from 'lucide-react'
+import { ChevronDown, LoaderCircle, MapPin, Search, X } from 'lucide-react'
 import { useEffect, useId, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
-import { normalize } from '@/domain/search'
+import { groupByKommun, normalize } from '@/domain/search'
 import type { Address } from '@/domain/types'
 import { searchAll, suggestAll, warmUpSearch, type SearchOptions, type SearchResult } from '@/providers/registry'
 import { getSource } from '@/sources'
@@ -23,6 +23,29 @@ type State =
   | { kind: 'error' }
 
 const DEBOUNCE_MS = 150
+/** Träffar som visas per kommun innan resten fälls ihop, när träffarna ligger i flera kommuner. */
+const PER_KOMMUN = 3
+
+type Item = { kind: 'address'; address: Address } | { kind: 'more'; kommun: string; count: number }
+interface Section {
+  /** Saknas när alla träffar ligger i en kommun: då visas listan utan rubriker. */
+  kommun?: string
+  total: number
+  items: Item[]
+}
+
+function sections(results: Address[], expanded: Set<string>): Section[] {
+  const groups = groupByKommun(results)
+  const toItems = (list: Address[]): Item[] => list.map((address) => ({ kind: 'address', address }))
+  if (groups.length < 2) return [{ total: results.length, items: toItems(results) }]
+  return groups.map(({ kommun, addresses }) => {
+    // En ensam dold träff visas hellre än en rad som säger "Visa 1 till".
+    const all = expanded.has(kommun) || addresses.length <= PER_KOMMUN + 1
+    const items = toItems(all ? addresses : addresses.slice(0, PER_KOMMUN))
+    if (!all) items.push({ kind: 'more', kommun, count: addresses.length - PER_KOMMUN })
+    return { kommun, total: addresses.length, items }
+  })
+}
 
 export function AddressSearch({
   search = searchAll,
@@ -45,6 +68,23 @@ export function AddressSearch({
   const [active, setActive] = useState(-1)
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [expanded, setExpanded] = useState<Set<string>>(new Set())
+  const rootRef = useRef<HTMLDivElement>(null)
+
+  // Klick utanför avbryter sökningen och lämnar fokusläget, så att ingen gammal träfflista blir kvar.
+  useEffect(() => {
+    function onPointerDown(e: PointerEvent) {
+      const root = rootRef.current
+      if (!root || root.contains(e.target as Node)) return
+      if (query === '' && !root.contains(document.activeElement)) return
+      setQuery('')
+      setSubmitted(false)
+      setExpanded(new Set())
+      onDeactivate?.()
+    }
+    document.addEventListener('pointerdown', onPointerDown)
+    return () => document.removeEventListener('pointerdown', onPointerDown)
+  }, [query, onDeactivate])
 
   useEffect(() => {
     if (normalize(query).length < 2) {
@@ -82,6 +122,8 @@ export function AddressSearch({
   }, [query, search, suggest])
 
   const results = state.kind === 'results' ? state.results : []
+  const list = sections(results, expanded)
+  const items = list.flatMap((s) => s.items)
   const open = results.length > 0
   const showNotFound = state.kind === 'notFound' && (submitted || normalize(query).length >= 4)
 
@@ -89,10 +131,15 @@ export function AddressSearch({
     navigate(`/${address.sourceId}/${address.id}`)
   }
 
+  function choose(item: Item) {
+    if (item.kind === 'address') go(item.address)
+    else setExpanded((prev) => new Set(prev).add(item.kommun))
+  }
+
   function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'ArrowDown' && open) {
       e.preventDefault()
-      setActive((i) => Math.min(i + 1, results.length - 1))
+      setActive((i) => Math.min(i + 1, items.length - 1))
     } else if (e.key === 'ArrowUp' && open) {
       e.preventDefault()
       setActive((i) => Math.max(i - 1, -1))
@@ -100,7 +147,7 @@ export function AddressSearch({
       e.preventDefault()
       // Listan kan höra till en äldre fråga om man trycker Enter innan debouncen hunnit köra.
       if (open && state.kind === 'results' && state.query === query) {
-        go(results[Math.max(active, 0)])
+        choose(items[Math.max(active, 0)])
         return
       }
       setSubmitted(true)
@@ -116,8 +163,67 @@ export function AddressSearch({
     }
   }
 
+  function renderItem(item: Item, showKommun: boolean) {
+    const i = items.indexOf(item)
+    const props = {
+      id: `${listId}-${i}`,
+      role: 'option',
+      'aria-selected': i === active,
+      onMouseDown: (e: React.MouseEvent) => e.preventDefault(),
+      onClick: () => choose(item),
+      onMouseEnter: () => setActive(i),
+    }
+    if (item.kind === 'more') {
+      return (
+        <li
+          key={`fler/${item.kommun}`}
+          {...props}
+          className={cn(
+            'flex cursor-pointer items-center gap-1.5 rounded-xl py-2 pr-3 pl-[60px] text-sm font-extrabold text-primary',
+            i === active && 'bg-surface-2',
+          )}
+        >
+          Visa {item.count} till i {item.kommun}
+          <ChevronDown className="size-4" aria-hidden />
+        </li>
+      )
+    }
+    const r = item.address
+    return (
+      <li
+        key={`${r.sourceId}/${r.id}`}
+        {...props}
+        className={cn('flex cursor-pointer items-center gap-3 rounded-xl p-3', i === active && 'bg-surface-2')}
+      >
+        <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-soft text-brand-text">
+          <MapPin className="size-[18px]" aria-hidden />
+        </span>
+        <span className="flex min-w-0 flex-col gap-1">
+          <span className="text-base font-extrabold text-text">{r.street}</span>
+          <span className="flex flex-wrap items-center gap-2 text-sm text-text-2">
+            <span>{r.locality}</span>
+            {r.detail && (
+              <>
+                <span aria-hidden>·</span>
+                <span>{r.detail}</span>
+              </>
+            )}
+            {showKommun && (
+              <>
+                <span aria-hidden>·</span>
+                <span className="rounded-md bg-brand-soft px-2 py-0.5 text-[13px] font-extrabold text-brand-text">
+                  {r.kommun}
+                </span>
+              </>
+            )}
+          </span>
+        </span>
+      </li>
+    )
+  }
+
   return (
-    <div className="relative flex flex-col gap-3">
+    <div ref={rootRef} className="relative flex flex-col gap-3">
       <div
         // Hela rutan är klickbar, inte bara själva textfältet. Rensa-knappen sköter sig själv.
         onMouseDown={(e) => {
@@ -154,6 +260,7 @@ export function AddressSearch({
           onChange={(e) => {
             setQuery(e.target.value)
             setSubmitted(false)
+            setExpanded(new Set())
           }}
           onKeyDown={onKeyDown}
           onFocus={() => {
@@ -180,38 +287,22 @@ export function AddressSearch({
       {open && (
         <div className="absolute inset-x-0 top-full z-20 mt-3 rounded-[18px] border border-border bg-surface p-1.5 shadow-[0_12px_32px_#1B231F1F]">
         <ul id={listId} role="listbox" aria-label="Adresser" className="flex flex-col">
-          {results.map((r, i) => (
-            <li
-              key={`${r.sourceId}/${r.id}`}
-              id={`${listId}-${i}`}
-              role="option"
-              aria-selected={i === active}
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={() => go(r)}
-              onMouseEnter={() => setActive(i)}
-              className={cn('flex cursor-pointer items-center gap-3 rounded-xl p-3', i === active && 'bg-surface-2')}
-            >
-              <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-soft text-brand-text">
-                <MapPin className="size-[18px]" aria-hidden />
-              </span>
-              <span className="flex min-w-0 flex-col gap-1">
-                <span className="text-base font-extrabold text-text">{r.street}</span>
-                <span className="flex flex-wrap items-center gap-2 text-sm text-text-2">
-                  <span>{r.locality}</span>
-                  {r.detail && (
-                    <>
-                      <span aria-hidden>·</span>
-                      <span>{r.detail}</span>
-                    </>
-                  )}
-                  <span aria-hidden>·</span>
-                  <span className="rounded-md bg-brand-soft px-2 py-0.5 text-[13px] font-extrabold text-brand-text">
-                    {r.kommun}
-                  </span>
-                </span>
-              </span>
-            </li>
-          ))}
+          {list.map((section, s) =>
+            section.kommun ? (
+              <li key={section.kommun} role="group" aria-label={section.kommun}>
+                {s > 0 && <div aria-hidden className="mx-3 my-1 h-px bg-border" />}
+                <div aria-hidden className="flex items-center gap-2 px-3 pt-2.5 pb-1 text-[13px] text-text-2">
+                  <span className="flex-1 font-extrabold">{section.kommun}</span>
+                  <span>{section.total}</span>
+                </div>
+                <ul role="none" className="flex flex-col">
+                  {section.items.map((item) => renderItem(item, false))}
+                </ul>
+              </li>
+            ) : (
+              section.items.map((item) => renderItem(item, true))
+            ),
+          )}
         </ul>
         {state.kind === 'results' && state.pending && (
           <p role="status" className="flex items-center gap-2 px-3 pt-1 pb-2 text-sm text-text-2">

@@ -1,5 +1,6 @@
-import { ArrowLeft, ArrowUpRight, Ban, Braces, Mail, MapPin, Smartphone, UserX, type LucideIcon } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { ArrowLeft, ArrowUpRight, Ban, Braces, ChevronDown, Mail, MapPin, Smartphone, UserX, type LucideIcon } from 'lucide-react'
+import { useEffect, useId, useState } from 'react'
+import { cn } from '@/lib/utils'
 import { clearSaved, loadSaved } from '@/lib/storage'
 import { GitHubMark } from '../components/GitHubMark'
 import { ForgetAll } from '../saved/ForgetAll'
@@ -18,7 +19,7 @@ const FACTS: [LucideIcon, string][] = [
 const h2 = 'text-xl font-extrabold tracking-[-0.3px] text-text'
 const body = 'text-[15px] leading-normal text-text-2'
 
-function SourceCard({ m }: { m: Source }) {
+function SourceRow({ m }: { m: Source }) {
   const [updatedAt, setUpdatedAt] = useState<string | null>(null)
   useEffect(() => {
     // Live-källor (EDP) har inget datadatum: de hämtas direkt från källan.
@@ -32,24 +33,62 @@ function SourceCard({ m }: { m: Source }) {
     }
   }, [m])
   const fetched = updatedAt && `Hämtat ${formatLong(updatedAt).day} ${formatLong(updatedAt).month.slice(0, 3)}`
+  // "Örebro kommun · Örebro kommun" säger inget nytt.
+  const meta = [sourceLabel(m) !== m.name && sourceLabel(m), fetched].filter(Boolean)
 
   return (
-    <div className="overflow-hidden rounded-[20px] border border-border bg-surface">
-      <div className="flex items-center justify-between bg-surface-2 px-4 py-3.5">
-        <span className="flex items-center gap-2 text-[15px] font-extrabold text-text">
-          <MapPin className="size-4 text-primary" aria-hidden />
-          {sourceLabel(m)}
+    <li>
+      <a href={m.url} rel="noopener" className="flex items-start gap-3 px-4 py-3 hover:bg-bg">
+        <MapPin className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+        <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <span className="text-[15px] font-extrabold text-primary">{m.name}</span>
+          {meta.length > 0 && (
+            <span className="text-[13px] leading-[1.35] text-text-2">
+              {meta.map((text, i) => (
+                <span key={i}>
+                  {i > 0 && <span aria-hidden> · </span>}
+                  {text}
+                </span>
+              ))}
+            </span>
+          )}
         </span>
-        {fetched && <span className="text-[13px] text-text-2">{fetched}</span>}
-      </div>
-      <a href={m.url} rel="noopener" className="flex items-center gap-3 px-4 py-3.5 hover:bg-bg">
-        <span className="flex flex-1 flex-col gap-0.5">
-          <span className="text-base font-extrabold text-primary">{m.name}</span>
-          <span className="text-sm leading-[1.35] text-text-2">Hämtschema, kärltyper och ändrade tömningar</span>
-        </span>
-        <ArrowUpRight className="size-[18px] text-primary" aria-hidden />
+        <ArrowUpRight className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
       </a>
-    </div>
+    </li>
+  )
+}
+
+/** Källor som visas innan resten fälls ihop. */
+const SOURCES_SHOWN = 5
+
+function SourceList() {
+  const listId = useId()
+  const [open, setOpen] = useState(false)
+  const sorted = [...SOURCES].sort((a, b) => a.name.localeCompare(b.name, 'sv'))
+  // En ensam dold källa visas hellre än en knapp som säger "Visa alla 6 källor".
+  const collapsible = sorted.length > SOURCES_SHOWN + 1
+  const shown = open || !collapsible ? sorted : sorted.slice(0, SOURCES_SHOWN)
+  return (
+    <>
+      <ul id={listId} aria-label="Källor" className="divide-y divide-border overflow-hidden rounded-[20px] border border-border bg-surface">
+        {shown.map((m) => (
+          <SourceRow key={m.id} m={m} />
+        ))}
+      </ul>
+      {collapsible && (
+        <button
+          type="button"
+          aria-expanded={open}
+          aria-controls={listId}
+          onClick={() => setOpen(!open)}
+          className="inline-flex items-center gap-1.5 self-start text-sm font-extrabold text-primary hover:underline"
+        >
+          {open ? 'Visa färre källor' : `Visa alla ${sorted.length} källor`}
+          <ChevronDown className={cn('size-4 transition-transform', open && 'rotate-180')} aria-hidden />
+        </button>
+      )}
+    </>
   )
 }
 
@@ -80,10 +119,10 @@ export function AboutPage() {
 
       <section className="flex flex-col gap-3">
         <h2 className={h2}>Källor</h2>
-        <p className={body}>Schemat hämtas från kommunens egna uppgifter. Varje kommun har sina källor.</p>
-        {SOURCES.map((m) => (
-          <SourceCard key={m.id} m={m} />
-        ))}
+        <p className={body}>
+          Schemat hämtas från kommunens eller avfallsbolagets egna uppgifter: hämtschema, kärltyper och ändrade tömningar.
+        </p>
+        <SourceList />
         <p className="text-[13px] leading-normal text-text-2">
           Gatu- och ortnamn som används för att hitta rätt källa kommer från{' '}
           <a href="https://www.openstreetmap.org/copyright" rel="noopener" className="font-bold underline underline-offset-2">
