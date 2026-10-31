@@ -22,16 +22,20 @@ const focusTop = () => (window.matchMedia?.('(min-width: 1024px)').matches ? 96 
 
 export function StartPage() {
   const searchRef = useRef<HTMLDivElement>(null)
-  const [focus, setFocus] = useState<{ offset: number } | null>(null)
+  const [focus, setFocus] = useState(false)
 
+  // Sidan scrollas i stället för att fältet flyttas med transform. Mobilen scrollar själv när
+  // tangentbordet öppnas, och en transform ovanpå den scrollen skickade fältet ovanför skärmen.
   function activate() {
     if (focus || !searchRef.current) return
-    const top = searchRef.current.getBoundingClientRect().top
-    setFocus({ offset: Math.max(0, top - focusTop()) })
+    setFocus(true)
+    const top = searchRef.current.getBoundingClientRect().top + window.scrollY - focusTop()
+    const still = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    window.scrollTo({ top: Math.max(0, top), behavior: still ? 'instant' : 'smooth' })
   }
 
   function deactivate() {
-    setFocus(null)
+    setFocus(false)
     ;(document.activeElement as HTMLElement | null)?.blur()
   }
 
@@ -60,14 +64,7 @@ export function StartPage() {
             className="fixed inset-0 z-30 animate-in bg-bg/75 backdrop-blur-[3px] duration-200 fade-in motion-reduce:animate-none"
           />
         )}
-        <div
-          ref={searchRef}
-          style={focus ? { transform: `translateY(-${focus.offset}px)` } : undefined}
-          className={cn(
-            'relative transition-transform duration-300 ease-out motion-reduce:transition-none',
-            focus && 'z-40',
-          )}
-        >
+        <div ref={searchRef} className={cn('relative', focus && 'z-40')}>
           <AddressSearch onActivate={activate} onDeactivate={deactivate} />
         </div>
         <p className="flex items-center gap-2 px-1 text-sm text-text-2 lg:justify-center lg:text-[15px]">
