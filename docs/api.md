@@ -130,7 +130,7 @@ Alla fel har samma form:
 |---|---|---|
 | `today` | `"YYYY-MM-DD"` | Svarets referensdatum i Stockholm. `daysUntil`, `isToday` och `isTomorrow` räknas från det. |
 | `address` | objekt | `id`, `street`, `locality`, `kommun`, `source` och `detail` (`null` om inget skiljer). |
-| `next` | lista | Nästa hämtning **per fraktion**, sorterad på datum. Kortaste vägen till "vad hämtas härnäst". |
+| `next` | lista | Nästa hämtning **per fraktion**, sorterad på datum (därefter i fraktionsordning). Tom (`[]`) när inga hämtningar väntar. Kortaste vägen till "vad hämtas härnäst". |
 | `next[].fraction` | text | Fraktionens id, till exempel `rest`, `mat`, `plast`. |
 | `next[].name` | text | Fraktionens namn, till exempel `Plastförpackningar`. |
 | `next[].color` | text | Färg som hex, till exempel `#A8431F`. |
@@ -140,7 +140,7 @@ Alla fel har samma form:
 | `next[].estimated` | bool | `true` när datumet är framräknat och inte bekräftat av källan. Visa det gärna som "ca" eller "beräknat". |
 | `next[].warning` | text eller `null` | Varning, till exempel att hämtningen infaller på en helgdag. |
 | `next[].text` | text | Färdig svensk text, att visa som den är. |
-| `summary` | text | En rad för nästa hämtning, till exempel `Plast & metall – om 4 dagar`. Passar som sensorns tillstånd. |
+| `summary` | text | En rad för nästa hämtning (`Inga kommande hämtningar` när `next` är tom), till exempel `Plast & metall – om 4 dagar`. Passar som sensorns tillstånd. |
 | `events` | lista | Alla kommande hämtningar (i dag eller senare), sorterade på datum. Varje post har `date`, `fractions` (lista med id), `estimated`, `deviation`, `warning` och `labels`. |
 | `events[].deviation` | objekt eller `null` | Avvikelse från ordinarie dag: `{ "originalDate": "YYYY-MM-DD" eller null, "reason": "…" }`. |
 | `events[].labels` | objekt | Källans egen text per fraktions-id, till exempel `{"karl": "Fyrfack 1"}`. `{}` när det saknas. |
@@ -148,7 +148,7 @@ Alla fel har samma form:
 | `fractions` | objekt | Id → `name`, `short`, `color`, `icon` för de fraktioner som förekommer i svaret. |
 | `links.ics` | URL | Kalenderprenumeration (iCalendar). |
 | `links.web` | URL | Adressens sida på sajten. |
-| `updatedAt` | text eller `null` | När källans uppgifter senast uppdaterades. |
+| `updatedAt` | `"YYYY-MM-DD"` | När källans schema senast uppdaterades. |
 
 `today` är referensdatumet. Behöver du egen logik, till exempel "påminn två dagar innan", räknar du själv ur `events` och `today`.
 
@@ -191,7 +191,10 @@ rest:
     sensor:
       - name: "Sophämtning"
         unique_id: sopor_storgatan_2
-        value_template: "{{ value_json.summary }}"
+        value_template: >
+          {{ value_json.summary
+             if value_json is defined and value_json.summary is defined
+             else this.state }}
         json_attributes:
           - today
           - next
@@ -199,7 +202,14 @@ rest:
 
 Sensorn heter `sensor.sophamtning`, med tillståndet `Plast & metall – om 4 dagar` och attributen `today` och `next`. Ta inte med `events` som attribut. Det är en lång lista, och Home Assistant sparar bara attribut upp till 16 kB.
 
-Om en förfrågan misslyckas (till exempel 502) behåller Home Assistant det gamla värdet tills nästa lyckade hämtning.
+**Vid fel.** Det här följer av Home Assistants källkod (`homeassistant/components/rest/data.py`) och dokumentation:
+
+- Nätverksfel och timeout ger `unavailable` (dokumentationen anger det för timeout, och i koden nollas svaret).
+- Ett svar med felstatus, till exempel Soporas `502`, kastas **inte** bort. Svarskroppen (felet i JSON-form) skickas till mallen som vanligt. En enkel `{{ value_json.summary }}` ger då inget användbart tillstånd.
+- Mallen ovan faller därför tillbaka på `this.state` (sensorns förra tillstånd, `this` finns i REST-sensorns mallar enligt dokumentationen) när svaret saknar `summary`. Då ska det senaste lyckade tillståndet bestå vid 502 (mallen är inte provkörd i en riktig Home Assistant). Vid nätverksfel blir sensorn ändå `unavailable` tills nästa lyckade hämtning.
+- Attributen (`today`, `next`) kan försvinna eller nollställas under ett felsvar. Det har inte verifierats. Mallsensorn och automationen nedan har `or []` och blir då `unavailable` respektive skickar ingen notis, så inget går sönder.
+
+Är svaret ett tomt schema är tillståndet `Inga kommande hämtningar` och `next` är `[]`.
 
 ### Mallsensor: dagar kvar för en fraktion
 
@@ -220,7 +230,7 @@ template:
           {{ (strptime(n.date, '%Y-%m-%d').date() - now().date()).days }}
 ```
 
-Byt `rest` mot `mat`, `papper`, `plast`, `glas`, `metall` eller `tidningar`. Har adressen inte fraktionen blir sensorn `unavailable`.
+Byt `rest` mot `mat`, `papper`, `plast`, `glas`, `metall` eller `tidningar`. Har adressen inte fraktionen, eller inga hämtningar väntar (`next` är `[]`), blir sensorn `unavailable`.
 
 ### Automation: notis kl. 19 kvällen innan
 
