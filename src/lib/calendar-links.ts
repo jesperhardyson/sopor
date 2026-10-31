@@ -18,6 +18,10 @@ export function googleCalendarUrl(webcal: string): string {
   return `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(webcal)}`
 }
 
+export function isAndroid(userAgent: string = typeof navigator === 'undefined' ? '' : navigator.userAgent): boolean {
+  return /android/i.test(userAgent)
+}
+
 /** Adressens svar i det publika API:t, för hemautomation och andra integrationer. */
 export function apiUrl(address: Address, origin: string = SITE.origin): string {
   return new URL(`/api/v1/adress/${encodeURIComponent(address.sourceId)}/${encodeURIComponent(address.id)}`, origin).toString()

@@ -19,6 +19,7 @@ import { CalendarSheet } from '../sheets/CalendarSheet'
 import { SaveSheet } from '../sheets/SaveSheet'
 import { NotFound } from '../search/NotFound'
 
+const dot = "inline-flex items-center before:inline-block before:w-5 before:text-center before:content-['·']"
 const page = 'mx-auto flex w-full max-w-[920px] flex-col gap-5 px-5 pt-1 pb-8 md:px-8 md:pt-4 lg:gap-7 lg:px-0 lg:pb-20'
 
 function BackLink() {
@@ -92,19 +93,19 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
             {address?.street ?? ' '}
           </h1>
           {address && (
-            <p className="flex flex-wrap items-center gap-2 text-[15px] text-text-2">
-              <span>{address.locality}</span>
-              {address.detail && (
-                <>
-                  <span aria-hidden>·</span>
-                  <span>{address.detail}</span>
-                </>
-              )}
-              <span aria-hidden>·</span>
-              <span className="rounded-md bg-brand-soft px-2 py-0.5 text-[13px] font-extrabold text-brand-text">
-                {address.kommun}
-              </span>
-            </p>
+            // Varje del har sin punkt framför sig, och raden är förskjuten så att punkten klipps bort när
+            // en del börjar en ny rad. Annars hänger "Krylbo ·" ensam när kommunen bryts på mobil.
+            <div className="overflow-hidden">
+              <p className="-ml-5 flex flex-wrap items-center gap-y-1.5 text-[15px] text-text-2">
+                <span className={dot}>{address.locality}</span>
+                {address.detail && <span className={dot}>{address.detail}</span>}
+                <span className={dot}>
+                  <span className="rounded-md bg-brand-soft px-2 py-0.5 text-[13px] font-extrabold text-brand-text">
+                    {address.kommun}
+                  </span>
+                </span>
+              </p>
+            </div>
           )}
         </div>
         <button

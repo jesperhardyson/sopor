@@ -1,5 +1,5 @@
 import { ArrowLeft, ArrowUpRight, Check, Copy } from 'lucide-react'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Link } from 'react-router'
 import { SITE } from '@/config'
 import { GitHubMark } from '../components/GitHubMark'
@@ -33,28 +33,38 @@ const h2 = 'text-xl font-extrabold tracking-[-0.3px] text-text'
 const body = 'text-[15px] leading-normal text-text-2'
 
 function CopyRequest() {
-  const [copied, setCopied] = useState(false)
+  const [copied, setCopied] = useState<'kopierad' | 'markerad' | null>(null)
+  const textRef = useRef<HTMLParagraphElement>(null)
 
   async function copy() {
     try {
       await navigator.clipboard.writeText(REQUEST_TEXT)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2500)
+      setCopied('kopierad')
+      setTimeout(() => setCopied(null), 2500)
     } catch {
-      // Utan urklipp (t.ex. äldre webbläsare) får man markera texten själv.
+      // Utan urklipp (t.ex. äldre webbläsare) markeras texten så att man kan kopiera själv.
+      const text = textRef.current
+      if (!text) return
+      const range = document.createRange()
+      range.selectNodeContents(text)
+      window.getSelection()?.removeAllRanges()
+      window.getSelection()?.addRange(range)
+      setCopied('markerad')
     }
   }
 
   return (
     <div className="flex flex-col gap-3 rounded-[20px] border border-border bg-surface p-5">
-      <p className="text-sm leading-relaxed whitespace-pre-line text-text">{REQUEST_TEXT}</p>
+      <p ref={textRef} className="text-sm leading-relaxed whitespace-pre-line text-text">
+        {REQUEST_TEXT}
+      </p>
       <button
         type="button"
         onClick={copy}
         className="inline-flex items-center gap-2 self-start rounded-[14px] border border-border bg-surface px-4 py-2.5 text-[15px] font-bold text-text"
       >
-        {copied ? <Check className="size-[18px] text-primary" aria-hidden /> : <Copy className="size-[18px]" aria-hidden />}
-        {copied ? 'Kopierad!' : 'Kopiera texten'}
+        {copied === 'kopierad' ? <Check className="size-[18px] text-primary" aria-hidden /> : <Copy className="size-[18px]" aria-hidden />}
+        {copied === 'kopierad' ? 'Kopierad!' : copied === 'markerad' ? 'Markerad, kopiera själv' : 'Kopiera texten'}
       </button>
       <p className="text-[13px] text-text-2">
         Skicka den till kommunens eller avfallsbolagets registrator. Kommunen ska svara skyndsamt, men det kan ta några

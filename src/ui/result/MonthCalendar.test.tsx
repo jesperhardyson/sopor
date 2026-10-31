@@ -36,6 +36,17 @@ describe('MonthCalendar', () => {
     expect(day).toHaveTextContent('+5')
   })
 
+  it('använder källans namn på fraktionen i förklaringen, som i etiketterna', () => {
+    const egna: Schedule = { ...schedule, events: [{ date: '2026-12-09', fractions: ['karl'], labels: { karl: 'Hushåll' } }] }
+    render(<MonthCalendar schedule={egna} initial="2026-12-09" today="2026-12-01" />)
+    expect(screen.getByTestId('forklaring')).toHaveTextContent('Hushåll')
+  })
+
+  it('har månadsknappar som är stora nog att träffa med fingret', () => {
+    render(<MonthCalendar schedule={schedule} initial="2026-12-09" today="2026-12-01" />)
+    expect(screen.getByRole('button', { name: 'Nästa månad' })).toHaveClass('after:-inset-1')
+  })
+
   it('visar allt som töms en dag när man trycker på den', async () => {
     render(<MonthCalendar schedule={schedule} initial="2026-12-09" today="2026-12-01" />)
     await userEvent.click(screen.getByRole('button', { name: /^16 december:/ }))

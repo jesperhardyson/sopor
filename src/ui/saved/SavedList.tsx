@@ -56,7 +56,7 @@ export function SavedList({ today = todayInStockholm() }: { today?: string }) {
         <h2 id="mina-adresser-rubrik" className="text-[15px] font-extrabold text-text">
           Mina adresser
         </h2>
-        <button type="button" onClick={() => setEditing((e) => !e)} className="text-sm font-bold text-primary">
+        <button type="button" onClick={() => setEditing((e) => !e)} className="relative text-sm font-bold text-primary after:absolute after:-inset-x-2 after:-inset-y-3">
           {editing ? 'Klar' : 'Hantera'}
         </button>
       </div>
