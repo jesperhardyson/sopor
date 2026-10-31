@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { SoporSchedule } from './api.mjs'
-import { changeText, collectedOn, daysToNext, fractionChoices, scheduleChanges, tomorrowText, fractionIds, fractionName, fractionsOn, nextDate, nextText, summary } from './schedule.mjs'
+import { changeText, collectedOn, withoutFractions, daysToNext, fractionChoices, scheduleChanges, tomorrowText, fractionIds, fractionName, fractionsOn, nextDate, nextText, summary } from './schedule.mjs'
 
 const fraction = (name: string, short: string) => ({ name, short, color: '#000000', icon: 'trash-2' })
 
@@ -114,5 +114,20 @@ describe('ändringar i schemat', () => {
     expect(changeText(schedule, { fraction: 'plast', from: '2026-11-04', to: '2026-11-05', reason: null })).toBe('Plastförpackningar flyttas från ons 4 nov till tors 5 nov')
     expect(changeText(schedule, { fraction: 'plast', from: '2026-11-04', to: null, reason: null })).toBe('Plastförpackningar hämtas inte ons 4 nov')
     expect(changeText(schedule, { fraction: 'glas', from: null, to: '2026-11-04', reason: null })).toBe('glas hämtas ons 4 nov')
+  })
+})
+
+describe('dolda fraktioner', () => {
+  it('tar bort fraktionerna ur händelser och register, och tomma händelser helt', () => {
+    const visible = withoutFractions(schedule, ['rest'])
+    expect(visible.events.map((e) => [e.date, e.fractions])).toEqual([
+      ['2026-11-01', ['plast', 'metall']],
+      ['2026-11-04', ['kompost']],
+    ])
+    expect(Object.keys(visible.fractions)).toEqual(['plast', 'metall'])
+  })
+
+  it('lämnar schemat orört utan dolda fraktioner', () => {
+    expect(withoutFractions(schedule, [])).toBe(schedule)
   })
 })

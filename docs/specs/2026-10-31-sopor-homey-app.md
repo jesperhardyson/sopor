@@ -5,6 +5,7 @@ Status: utkast, 2026-10-31. Bygger på undersökningen `2026-10-31-integrationer
 Beslut:
 - Villkoren gör att användaren kan välja tiden själv i sitt flöde.
 - Från 0.2.0 finns också triggern "Sopor hämtas i morgon" vid en inställd tid per enhet. Utan den gick det inte att få fraktionernas namn i en notis i ett vanligt flöde, eftersom tokens från handlingskort bara finns i Advanced Flow.
+- 0.4.0 lägger till inställningen för att dölja fraktioner och widgeten "Nästa hämtning".
 - 0.3.0 lägger till det som liknande appar har och vi saknade (se jämförelsen i undersökningen): "om N dagar", "Dagar kvar", triggern "Sopor hämtas i dag" och triggern "Hämtschemat ändrades".
 
 ## Mål
@@ -14,7 +15,7 @@ En Homey Pro-ägare lägger till sin adress genom att söka på den. Sedan kan a
 ## Utanför MVP
 
 - Homey Cloud (kräver Verified Developer).
-- Widget, inställningssida för appen och Insights.
+- Inställningssida för appen och Insights.
 - Publicering i App Store. Ikon, bilder och `brandColor` finns (sidan "Homey · Sophämtning" i designen), och appen klarar `homey app validate --level publish`. Under utvecklingen installeras appen med `homey app install`.
 
 ## Ramar
@@ -48,6 +49,13 @@ Underkapabiliteter (`sopor_next.plast`) läggs till och tas bort efter vad svare
 - API:t hämtas om senaste lyckade hämtningen är äldre än 6 timmar, och direkt vid start. Det håller sig gott inom "högst en gång i timmen".
 - Vid 502, nätfel eller timeout (15 s) behålls det sparade svaret. Enheten markeras inte som otillgänglig för enstaka fel. Först när inget svar alls finns (precis efter parning) visas `setUnavailable`.
 - Vid 404 (adressen finns inte längre) blir enheten otillgänglig med texten "Adressen finns inte längre hos källan. Reparera enheten."
+
+### Dolda fraktioner
+
+- Enhetens inställningar har gruppen **Fraktioner**, med en kryssruta `visa_<id>` per känd fraktion (`rest`, `mat`, `papper`, `plast`, `glas`, `metall`, `tidningar`, `karl`). Alla är ikryssade från början.
+- En avmarkerad fraktion tas bort ur schemat innan något räknas. Den försvinner från raderna, sammanfattningen, "I morgon", "Dagar kvar", autocomplete och alla kort, och en hämtning med bara dolda fraktioner finns inte längre.
+- Fraktions-id som appen inte känner till visas alltid, eftersom Homeys inställningar är statiska.
+- Enheten ritas om strax efter att inställningarna sparats.
 
 ## Parning
 
@@ -88,6 +96,17 @@ Alla är enhetskort och syns under adressens enhet (i dess zon) när man väljer
   - Token `fraktioner` (text): namnen med komma emellan, eller tom text.
   - Token `antal` (tal).
 
+## Widget "Nästa hämtning"
+
+- **Design:** sidan "Homey · Sophämtning" i `sopor-design.pen`, i ljust och mörkt läge.
+- **Layout:** ett kort med adressen och Sopor-symbolen. Under det kommer en rad per fraktion med nästa hämtning, tidigast först.
+  - Varje rad har fraktionsikonen (Lucide, i fraktionens färg), namnet, datumet ("tors 5 nov", med "· beräknat" om datumet inte är bekräftat) och "i morgon" / "om 5 dagar".
+  - Rader för i dag och i morgon markeras med `brand-soft`.
+- **Inställning:** `adress` (autocomplete bland appens enheter). Utan val visas den första enheten.
+- **Data:** `widgets/nasta-hamtning/api.ts` (`GET /?id=`) räknar raderna med `lib/widget.mts` ur enhetens filtrerade schema. Widgeten uppdateras var tionde minut.
+- **Utseende:** widgeten är transparent och ritar ett eget kort med designens tokens. Mörkt läge styrs av Homeys klass `homey-dark-mode`.
+- **Filer:** Nunito (OFL) och Lucide-ikonerna (ISC) ligger i `public/`, så widgeten inte behöver nätet för utseendet. Förhandsbilderna är exporterade från designen i 1024×1024.
+
 ## Tester
 
 - Ren logik ligger i `lib/*.mts` utan Homey-beroenden och testas med Vitest:
@@ -100,6 +119,5 @@ Alla är enhetskort och syns under adressens enhet (i dess zon) när man väljer
 
 ## Senare
 
-- Widget med nästa hämtningar i fraktionsfärg.
 - Testversion i App Store, och sedan certifiering.
 - Länk från Om-sidan och `docs/api.md`.

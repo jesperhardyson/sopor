@@ -120,3 +120,16 @@ export function changeText(schedule: SoporSchedule, change: ScheduleChange): str
   if (change.from) return `${name} hämtas inte ${shortDate(change.from)}`
   return `${name} hämtas ${shortDate(change.to!)}`
 }
+
+/** Schemat utan fraktioner som användaren dolt. Händelser utan kvarvarande fraktioner tas bort. */
+export function withoutFractions(schedule: SoporSchedule, hidden: string[]): SoporSchedule {
+  if (!hidden.length) return schedule
+  const keep = (id: string) => !hidden.includes(id)
+  return {
+    ...schedule,
+    events: schedule.events
+      .map((event) => ({ ...event, fractions: event.fractions.filter(keep) }))
+      .filter((event) => event.fractions.length > 0),
+    fractions: Object.fromEntries(Object.entries(schedule.fractions).filter(([id]) => keep(id))),
+  }
+}

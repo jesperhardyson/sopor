@@ -3,7 +3,7 @@ import type SoporApp from '../../app.mjs'
 import { SoporError, type SoporSchedule } from '../../lib/api.mjs'
 import { addDays, shortDate, stockholmTime, todayInStockholm } from '../../lib/dates.mjs'
 import { isValidTime, reminderDue } from '../../lib/reminder.mjs'
-import { changeText, collectedOn, daysToNext, fractionIds, fractionName, fractionsOn, nextText, scheduleChanges, summary, tomorrowText } from '../../lib/schedule.mjs'
+import { changeText, collectedOn, daysToNext, fractionIds, fractionName, fractionsOn, nextText, scheduleChanges, summary, tomorrowText, withoutFractions } from '../../lib/schedule.mjs'
 
 const TICK_MS = 15 * 60_000
 const REMINDER_TICK_MS = 60_000
@@ -11,6 +11,9 @@ const REFRESH_MS = 6 * 3_600_000
 const RETRY_MS = 3_600_000
 const PREFIX = 'sopor_next.'
 const BASE_CAPABILITIES = ['sopor_summary', 'sopor_days', 'sopor_tomorrow']
+
+/** Fraktionerna som har en kryssruta "visa_<id>" i inställningarna. */
+const KNOWN_FRACTIONS = ['rest', 'mat', 'papper', 'plast', 'glas', 'metall', 'tidningar', 'karl']
 
 /** Triggerkorten som går vid en inställd tid, och dagarna framåt de gäller. */
 const REMINDERS = [
@@ -46,6 +49,8 @@ export default class AddressDevice extends Homey.Device {
       const time = newSettings[setting]
       if (typeof time === 'string' && !isValidTime(time)) throw new Error(this.homey.__('device.badTime'))
     }
+    // Inställningarna sparas när onSettings är klar. Rita om efter det, så att dolda fraktioner försvinner.
+    this.homey.setTimeout(() => this.render().catch(this.error), 1000)
   }
 
   /** Triggerkorten "hämtas i morgon" och "hämtas i dag": en gång om dagen vid sin tid, om något hämtas. */
@@ -84,8 +89,14 @@ export default class AddressDevice extends Homey.Device {
     }
   }
 
+  /** Det sparade schemat utan de fraktioner som användaren dolt. */
   get schedule(): SoporSchedule | null {
-    return this.getStoreValue('schedule') ?? null
+    const schedule: SoporSchedule | null = this.getStoreValue('schedule') ?? null
+    return schedule && withoutFractions(schedule, this.hiddenFractions(this.getSettings()))
+  }
+
+  private hiddenFractions(settings: Record<string, unknown>): string[] {
+    return KNOWN_FRACTIONS.filter((id) => settings[`visa_${id}`] === false)
   }
 
   /** Hämtar när det är dags, och räknar alltid om texterna, så att "i dag" byts vid midnatt. */
@@ -98,9 +109,8 @@ export default class AddressDevice extends Homey.Device {
   async refresh() {
     const { client } = this.homey.app as SoporApp
     const before = this.schedule
-    const schedule = await client.schedule(this.getStoreValue('url'))
-    await this.setStoreValue('schedule', schedule)
-    if (before) await this.announceChanges(before, schedule).catch(this.error)
+    await this.setStoreValue('schedule', await client.schedule(this.getStoreValue('url')))
+    if (before) await this.announceChanges(before, this.schedule!).catch(this.error)
     this.nextFetch = Date.now() + REFRESH_MS
     await this.setAvailable()
     await this.render()

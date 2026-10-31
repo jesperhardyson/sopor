@@ -66,6 +66,91 @@
         "en": "When the card \"Waste is collected today\" runs on a collection day. Format HH:MM, Swedish time.",
         "sv": "När kortet \"Sopor hämtas i dag\" går på en hämtningsdag. Skriv som HH:MM, svensk tid."
       }
+    },
+    {
+      "type": "group",
+      "label": {
+        "en": "Fractions",
+        "sv": "Fraktioner"
+      },
+      "hint": {
+        "en": "Untick fractions you don't have. They are hidden on the device and ignored by the flow cards.",
+        "sv": "Avmarkera fraktioner du inte har. De döljs på enheten och ignoreras av flödeskorten."
+      },
+      "children": [
+        {
+          "id": "visa_rest",
+          "type": "checkbox",
+          "label": {
+            "en": "Residual waste",
+            "sv": "Restavfall"
+          },
+          "value": true
+        },
+        {
+          "id": "visa_mat",
+          "type": "checkbox",
+          "label": {
+            "en": "Food waste",
+            "sv": "Matavfall"
+          },
+          "value": true
+        },
+        {
+          "id": "visa_papper",
+          "type": "checkbox",
+          "label": {
+            "en": "Paper packaging",
+            "sv": "Pappersförpackningar"
+          },
+          "value": true
+        },
+        {
+          "id": "visa_plast",
+          "type": "checkbox",
+          "label": {
+            "en": "Plastic packaging",
+            "sv": "Plastförpackningar"
+          },
+          "value": true
+        },
+        {
+          "id": "visa_glas",
+          "type": "checkbox",
+          "label": {
+            "en": "Glass",
+            "sv": "Glas"
+          },
+          "value": true
+        },
+        {
+          "id": "visa_metall",
+          "type": "checkbox",
+          "label": {
+            "en": "Metal",
+            "sv": "Metall"
+          },
+          "value": true
+        },
+        {
+          "id": "visa_tidningar",
+          "type": "checkbox",
+          "label": {
+            "en": "Newspapers",
+            "sv": "Tidningar"
+          },
+          "value": true
+        },
+        {
+          "id": "visa_karl",
+          "type": "checkbox",
+          "label": {
+            "en": "Multi-compartment bin",
+            "sv": "Kärl (flera fraktioner)"
+          },
+          "value": true
+        }
+      ]
     }
   ]
 }

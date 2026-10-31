@@ -16,5 +16,9 @@
     "waiting": "Väntar på schemat från Sopor.",
     "badTime": "Skriv tiden som HH:MM, till exempel 18:00."
   },
-  "anyFraction": "Någon fraktion"
+  "anyFraction": "Någon fraktion",
+  "widget": {
+    "noAddress": "Lägg till en adress i Sophämtning först.",
+    "nothing": "Inga kommande hämtningar"
+  }
 }

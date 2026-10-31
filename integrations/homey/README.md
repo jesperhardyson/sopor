@@ -15,6 +15,7 @@ npx homey app run      # provkör på vald Homey (homey select --id …)
 
 - `lib/` innehåller ren logik utan Homey-beroenden. Allt som går att testa ligger där.
 - `app.mts`, `drivers/adress/driver.mts` och `device.mts` kopplar logiken till Homey och hålls tunna.
+- `widgets/nasta-hamtning/` är widgeten: `api.ts` för data, och `public/` med HTML, ikoner och typsnitt.
 - `app.json` genereras av CLI:t ur `.homeycompose/` och `drivers/*/driver*.compose.json`. Ändra i compose-filerna.
 - Ikoner och bilder kommer från sidan "Homey · Sophämtning" i `docs/design/sopor-design.pen`:
   - **App-ikonen** (`assets/icon.svg`) är Sopor-symbolen.
