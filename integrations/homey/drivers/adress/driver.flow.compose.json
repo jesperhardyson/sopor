@@ -1,0 +1,87 @@
+{
+  "conditions": [
+    {
+      "id": "hamtas",
+      "title": {
+        "en": "Waste is !{{|not}} collected",
+        "sv": "Avfall hämtas !{{|inte}}"
+      },
+      "titleFormatted": {
+        "en": "[[fraktion]] is !{{|not}} collected [[nar]]",
+        "sv": "[[fraktion]] hämtas !{{|inte}} [[nar]]"
+      },
+      "hint": {
+        "en": "Checks the collection schedule for this address. Use it after a time card, for example at 19:00, to get a reminder the evening before.",
+        "sv": "Kollar hämtschemat för den här adressen. Använd det efter ett tidskort, till exempel kl. 19:00, för en påminnelse kvällen innan."
+      },
+      "args": [
+        {
+          "name": "fraktion",
+          "type": "autocomplete",
+          "title": { "en": "Fraction", "sv": "Fraktion" },
+          "placeholder": { "en": "Any fraction", "sv": "Någon fraktion" }
+        },
+        {
+          "name": "nar",
+          "type": "dropdown",
+          "title": { "en": "When", "sv": "När" },
+          "values": [
+            { "id": "0", "label": { "en": "today", "sv": "i dag" } },
+            { "id": "1", "label": { "en": "tomorrow", "sv": "i morgon" } },
+            { "id": "2", "label": { "en": "the day after tomorrow", "sv": "i övermorgon" } }
+          ]
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "id": "uppdatera",
+      "title": {
+        "en": "Update the schedule",
+        "sv": "Uppdatera schemat"
+      },
+      "hint": {
+        "en": "Fetches the schedule from Sopor right away. It is otherwise updated automatically.",
+        "sv": "Hämtar schemat från Sopor direkt. Annars uppdateras det automatiskt."
+      }
+    },
+    {
+      "id": "vad_hamtas",
+      "title": {
+        "en": "What is collected?",
+        "sv": "Vad hämtas?"
+      },
+      "titleFormatted": {
+        "en": "What is collected [[nar]]?",
+        "sv": "Vad hämtas [[nar]]?"
+      },
+      "args": [
+        {
+          "name": "nar",
+          "type": "dropdown",
+          "title": { "en": "When", "sv": "När" },
+          "values": [
+            { "id": "0", "label": { "en": "today", "sv": "i dag" } },
+            { "id": "1", "label": { "en": "tomorrow", "sv": "i morgon" } },
+            { "id": "2", "label": { "en": "the day after tomorrow", "sv": "i övermorgon" } }
+          ]
+        }
+      ],
+      "tokens": [
+        {
+          "name": "fraktioner",
+          "type": "string",
+          "title": { "en": "Fractions", "sv": "Fraktioner" },
+          "example": { "en": "Plastic packaging, Metal", "sv": "Plastförpackningar, Metall" }
+        },
+        {
+          "name": "antal",
+          "type": "number",
+          "title": { "en": "Number of fractions", "sv": "Antal fraktioner" },
+          "example": 2
+        }
+      ]
+    }
+  ]
+}

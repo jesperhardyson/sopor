@@ -1,0 +1,12 @@
+{
+  "type": "string",
+  "title": {
+    "en": "Collection",
+    "sv": "Hämtning"
+  },
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "icon": "/assets/icon.svg",
+  "insights": false
+}

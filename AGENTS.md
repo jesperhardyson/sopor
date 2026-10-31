@@ -28,6 +28,7 @@ Kör `npm run lint && npm test && npm run build` innan varje commit. Allt ska va
 5. **Datum** är strängar på formen `YYYY-MM-DD`. Aritmetik görs i `src/domain/dates.ts` (UTC-midnatt). "I dag" räknas i `Europe/Stockholm`.
 6. **localStorage** används alltid med try/catch. Appen ska fungera utan lagring.
 7. **Domänlogik** (`src/domain/`) är ren TypeScript utan React, eftersom den körs både i build-skriptet och i webbläsaren.
+8. **Integrationer** (`integrations/`) är egna paket som bara pratar med det publika API:t v1. De importerar aldrig från `src/`, och API:ts stabilitetslöften är deras enda kontrakt.
 
 ## Design
 

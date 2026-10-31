@@ -1,0 +1,28 @@
+{
+  "id": "se.hardyson.sopor",
+  "version": "0.1.0",
+  "compatibility": ">=12.3.0",
+  "sdk": 3,
+  "platforms": ["local"],
+  "name": {
+    "en": "Sopor",
+    "sv": "Sopor"
+  },
+  "description": {
+    "en": "Waste collection days for your Swedish address, in your flows",
+    "sv": "Sophämtningen för din adress, i dina flöden"
+  },
+  "category": "tools",
+  "permissions": [],
+  "brandColor": "#2E5E86",
+  "author": {
+    "name": "Jesper Hardyson",
+    "email": "jesper@hardyson.se"
+  },
+  "homepage": "https://sopor.hardyson.se",
+  "support": "https://github.com/jesperhardyson/sopor/issues",
+  "source": "https://github.com/jesperhardyson/sopor/tree/main/integrations/homey",
+  "bugs": {
+    "url": "https://github.com/jesperhardyson/sopor/issues"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "pair": {
+    "intro": "Sök upp adressen där dina sopor hämtas.",
+    "label": "Gata och husnummer",
+    "placeholder": "Storgatan 2",
+    "search": "Sök",
+    "searching": "Söker …",
+    "tooShort": "Skriv minst tre tecken.",
+    "notFound": "Ingen adress hittades. Skriv med husnummer.",
+    "failed": "Några källor svarade inte. Försök igen om en stund."
+  },
+  "device": {
+    "gone": "Adressen finns inte längre hos källan. Reparera eller ta bort enheten.",
+    "waiting": "Väntar på schemat från Sopor."
+  },
+  "anyFraction": "Någon fraktion"
+}

@@ -1,0 +1,17 @@
+{
+  "pair": {
+    "intro": "Search for the address where your waste is collected.",
+    "label": "Street and house number",
+    "placeholder": "Storgatan 2",
+    "search": "Search",
+    "searching": "Searching…",
+    "tooShort": "Type at least three characters.",
+    "notFound": "No address found. Include the house number.",
+    "failed": "Some sources did not respond. Try again in a while."
+  },
+  "device": {
+    "gone": "The address no longer exists at the source. Repair or remove the device.",
+    "waiting": "Waiting for the schedule from Sopor."
+  },
+  "anyFraction": "Any fraction"
+}

@@ -1,0 +1,29 @@
+name: Homey-appen
+
+on:
+  push:
+    branches: [main]
+    paths: ['integrations/homey/**', '.github/workflows/homey.yml']
+  pull_request:
+    paths: ['integrations/homey/**', '.github/workflows/homey.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: integrations/homey
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: integrations/homey/package-lock.json
+      - run: npm ci
+      - run: npm test
+      - run: npm run typecheck
+      - run: npm run validate
