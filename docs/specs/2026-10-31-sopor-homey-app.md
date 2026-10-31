@@ -47,7 +47,7 @@ Underkapabiliteter (`sopor_next.plast`) läggs till och tas bort efter vad svare
 1. **Egen vy `sok`:**
    - **Kommun** (obligatorisk): ett val med alla kommuner ur `/api/v1/kallor`, i bokstavsordning.
    - **Gata och husnummer:** ett textfält, och knappen "Sök".
-   - Drivrutinen söker med `/api/v1/sok?q=…&kalla=<källa>` och behåller bara träffar i vald kommun. Utan kommun gav "Storgatan" 139 träffar från 15 källor.
+   - Drivrutinen söker med `/api/v1/sok?q=…&kalla=<källa>` och tar bort träffar i källans andra kommuner. Träffar i kommuner som källan inte listar (grannkommuner, okända orter) behålls. Utan kommun gav "Storgatan" 139 träffar från 15 källor.
    - Är `q` kortare än tre tecken visas ett fel.
    - Ger källan sina högst tio träffar, men alla i andra kommuner: "För många träffar i området. Skriv med husnummer."
    - Svarade källan inte: "Källan svarade inte. Försök igen om en stund."

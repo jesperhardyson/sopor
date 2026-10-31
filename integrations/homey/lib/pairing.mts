@@ -25,11 +25,13 @@ export function parseKommun(key: string): { source: string; kommun: string } | n
 export type SearchResult = 'found' | 'tooMany' | 'failed' | 'none'
 
 /**
- * En källa kan täcka flera kommuner, så träffarna filtreras på den valda.
+ * En källa kan täcka flera kommuner, så träffar i källans andra kommuner tas bort. Träffar i kommuner
+ * som källan inte listar (grannkommuner, okända orter) behålls, eftersom de inte går att välja.
  * Fyllde källan sina tio träffar med andra kommuner kan adressen ändå finnas: då behövs husnummer.
  */
-export function searchOutcome(search: SoporSearch, kommun: string): { result: SearchResult; hits: SoporSearchHit[] } {
-  const hits = search.addresses.filter((hit) => hit.kommun === kommun)
+export function searchOutcome(search: SoporSearch, kommun: string, source: SoporSource): { result: SearchResult; hits: SoporSearchHit[] } {
+  const others = new Set(source.kommuner.map((k) => k.name).filter((name) => name !== kommun))
+  const hits = search.addresses.filter((hit) => !others.has(hit.kommun))
   if (hits.length) return { result: 'found', hits }
   if (search.addresses.length >= MAX_PER_SOURCE) return { result: 'tooMany', hits }
   return { result: search.failed.length ? 'failed' : 'none', hits }
