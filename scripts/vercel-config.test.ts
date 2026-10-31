@@ -17,6 +17,23 @@ const header = (source: string, key: string) =>
   config.headers.find((h) => h.source === source)?.headers?.find((h) => h.key === key)?.value
 
 describe('vercel.json', () => {
+  it('hoppar över Vercel-bygget för Dependabots grenar men bygger allt annat', async () => {
+    const { execFileSync } = await import('node:child_process')
+    const cmd = (config as unknown as { ignoreCommand: string }).ignoreCommand
+    // Vercel: exit 0 = hoppa över bygget, exit 1 = bygg
+    const skips = (ref: string) => {
+      try {
+        execFileSync('sh', ['-c', cmd], { env: { ...process.env, VERCEL_GIT_COMMIT_REF: ref } })
+        return true
+      } catch {
+        return false
+      }
+    }
+    expect(skips('dependabot/npm_and_yarn/beroenden-1')).toBe(true)
+    expect(skips('main')).toBe(false)
+    expect(skips('ci-skydd')).toBe(false)
+  })
+
   it('kör testerna innan bygget så att röda tester aldrig når produktion', () => {
     expect((config as unknown as { buildCommand: string }).buildCommand).toBe('npm test && npm run build')
   })
