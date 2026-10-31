@@ -11,7 +11,7 @@ export interface OsmKommun {
   places: string[]
 }
 
-/** normaliserat gatunamn → källornas id */
+/** normaliserat gatu- eller ortnamn → källornas id */
 export type StreetShard = Record<string, string[]>
 
 export interface StreetIndex {
@@ -34,7 +34,8 @@ export function buildStreetIndex(osm: OsmKommun[], sources: Source[]): StreetInd
     for (const kommun of source.kommuner) {
       const data = osm.find((o) => o.code === kommun.code)
       if (!data) continue
-      for (const street of data.streets) {
+      // Orterna också: på landsbygden börjar adressen ofta med byn ("Funbo 113", "Vänge Väsby 50").
+      for (const street of [...data.streets, ...data.places]) {
         const key = normalize(street, false)
         if (key.length < 2) continue
         const shard = (shards[shardKey(key)] ??= {})

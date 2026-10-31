@@ -144,6 +144,20 @@ describe('searchAll', () => {
     expect(result.failed).toEqual(['uppsala'])
   })
 
+  it('frågar ingen källa för en okänd gata utan husnummer medan man skriver', async () => {
+    const f = stubFetch({ addresses: [], failed: [] })
+    const { searchAll } = await import('./registry')
+    expect((await searchAll('Okändgatan')).addresses.filter((x) => x.sourceId !== 'avesta')).toEqual([])
+    expect(sokCalls(f)).toHaveLength(0)
+  })
+
+  it('frågar alla live-källor för en okänd gata när man trycker Enter', async () => {
+    const f = stubFetch({ addresses: [], failed: [] })
+    const { searchAll } = await import('./registry')
+    await searchAll('Okändgatan', undefined, undefined, { submitted: true })
+    expect(sokCalls(f)).toHaveLength(1)
+  })
+
   it('lämnar de lokala träffarna direkt, innan live-källorna svarat', async () => {
     let releaseLive: () => void = () => {}
     const f = vi.fn(async (url: string) => {

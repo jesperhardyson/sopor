@@ -3,13 +3,18 @@ import { useEffect, useId, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { normalize } from '@/domain/search'
 import type { Address } from '@/domain/types'
-import { searchAll, suggestAll, warmUpSearch, type SearchResult } from '@/providers/registry'
+import { searchAll, suggestAll, warmUpSearch, type SearchOptions, type SearchResult } from '@/providers/registry'
 import { getSource } from '@/sources'
 import { cn } from '@/lib/utils'
 import { NotFound } from './NotFound'
 
 type Lookup = (query: string, signal?: AbortSignal) => Promise<Address[]>
-type Search = (query: string, signal?: AbortSignal, onPartial?: (partial: SearchResult) => void) => Promise<SearchResult>
+type Search = (
+  query: string,
+  signal?: AbortSignal,
+  onPartial?: (partial: SearchResult) => void,
+  options?: SearchOptions,
+) => Promise<SearchResult>
 
 type State =
   | { kind: 'idle' }
@@ -100,7 +105,7 @@ export function AddressSearch({
       }
       setSubmitted(true)
       if (normalize(query).length < 2) return
-      search(query).then(
+      search(query, undefined, undefined, { submitted: true }).then(
         (fresh) => fresh.addresses.length > 0 && go(fresh.addresses[0]),
         () => setState({ kind: 'error' }),
       )

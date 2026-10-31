@@ -30,7 +30,7 @@ describe('buildStreetIndex', () => {
 
   it('delar upp gatunamn per de två första tecknen och anger källorna', () => {
     expect(shardKey('Storgatan')).toBe('st')
-    expect(index.shards.st).toEqual({ storgatan: ['uppsala', 'vafab'] })
+    expect(index.shards.st).toEqual({ storgatan: ['uppsala', 'vafab'], storvreta: ['uppsala'] })
     expect(index.shards.sv).toEqual({ svartbäcksgatan: ['uppsala'] })
     expect(index.shards.ku).toEqual({ kungsgatan: ['vafab'] })
   })
@@ -56,6 +56,11 @@ describe('candidateSources', () => {
   it('klarar ort efter gatan', () => {
     expect(candidateSources(index.shards.ku, 'kungsgatan 3, enköping')).toEqual(['vafab'])
     expect(candidateSources(index.shards.ku, 'kungsgatan enköping')).toEqual(['vafab'])
+  })
+
+  it('hittar källan för landsbygdsadresser som börjar med ortnamnet', () => {
+    expect(candidateSources(index.shards.gr, 'Grillby 12')).toEqual(['vafab'])
+    expect(candidateSources(index.shards.sk, 'Skultuna 4')).toEqual(['vafab'])
   })
 
   it('ger inget för okända gator', () => {

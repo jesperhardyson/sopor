@@ -57,6 +57,8 @@ Utan kommunväljare måste sökningen veta vilka kommuner som kan ha adressen. D
 3. Svaren cachas på CDN:en per normaliserad fråga (`s-maxage=86400, stale-while-revalidate`).
 4. Kommuner med statiska datafiler (Avesta, Säter) söks lokalt, som i dag. De är ändå med i gatuindexet.
 5. Svarar en kommunkälla inte visas övriga träffar, plus en rad om att "Uppsala svarar inte just nu" med länk till kommunens egen sida.
+6. Saknas namnet i indexet frågas alla källor, men först när frågan har ett husnummer eller användaren trycker Enter. Det är den dyraste sökningen.
+7. Webbläsaren sparar svaren per källa och fråga. Gav en källa färre än 10 träffar (EDP:s gräns) filtreras längre frågor ur det svaret i stället för att fråga igen, eftersom EDP matchar början av adressen. Servern frågas först efter 300 ms utan nya tangenttryck.
 
 ### 3. Providers
 

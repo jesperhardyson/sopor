@@ -45,13 +45,23 @@ function loadShard(key: string): Promise<StreetShard | null> {
   return shard
 }
 
-/** Live-källor att fråga: de som gatuindexet pekar ut, eller alla om gatan saknas i indexet. */
-async function liveSourcesFor(query: string): Promise<string[]> {
+export interface SearchOptions {
+  /** Användaren tryckte Enter: fråga alla källor även om gatan saknas i indexet. */
+  submitted?: boolean
+}
+
+/**
+ * Live-källor att fråga: de som gatuindexet pekar ut. Saknas gatan i indexet frågas alla källor,
+ * men bara när frågan har ett husnummer eller användaren tryckt Enter. Det är den dyraste
+ * sökningen, och utan nummer är det oftast ett halvskrivet eller felstavat namn.
+ */
+async function liveSourcesFor(query: string, { submitted = false }: SearchOptions): Promise<string[]> {
   const live = SOURCES.filter((s) => s.config.system !== 'static').map((s) => s.id)
   if (live.length === 0 || normalize(query).length < 3) return []
   const shard = await loadShard(shardKey(query))
   const candidates = shard ? candidateSources(shard, query).filter((id) => live.includes(id)) : []
-  return candidates.length > 0 ? candidates : live
+  if (candidates.length > 0) return candidates
+  return submitted || /\d/.test(query) ? live : []
 }
 
 /** EDP svarar med högst så här många adresser per källa. Färre betyder att svaret är komplett. */
@@ -102,10 +112,10 @@ function wait(ms: number, signal?: AbortSignal): Promise<void> {
   })
 }
 
-async function searchLive(query: string, signal?: AbortSignal): Promise<SearchResult> {
+async function searchLive(query: string, signal: AbortSignal | undefined, options: SearchOptions): Promise<SearchResult> {
   const placesPromise = loadPlaces() // parallellt med sökningen
   const q = liveKey(query)
-  const sources = await liveSourcesFor(q)
+  const sources = await liveSourcesFor(q, options)
   const hits = sources.map((id) => ({ id, cached: fromCache(id, q) }))
   const cached = hits.flatMap((h) => h.cached ?? [])
   const missing = hits.filter((h) => !h.cached).map((h) => h.id)
@@ -149,8 +159,9 @@ export async function searchAll(
   query: string,
   signal?: AbortSignal,
   onPartial?: (partial: SearchResult) => void,
+  options: SearchOptions = {},
 ): Promise<SearchResult> {
-  const live = searchLive(query, signal)
+  const live = searchLive(query, signal, options)
   const local = SOURCES.filter((m) => m.config.system === 'static')
   const localResults = await Promise.allSettled(local.map((m) => providerFor(m).searchAddresses(query, signal)))
   const localAddresses = localResults.some((r) => r.status === 'fulfilled') ? mergeResults(localResults, 8) : []

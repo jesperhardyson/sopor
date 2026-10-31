@@ -134,5 +134,15 @@ describe('AddressSearch', () => {
     finish()
     await vi.waitFor(() => expect(screen.queryByText('Söker hos fler källor…')).toBeNull())
   })
-})
 
+  it('ber om en bredare sökning när man trycker Enter', async () => {
+    const search = vi.fn(async () => ({ addresses: [], failed: [] }))
+    render(
+      <MemoryRouter>
+        <AddressSearch search={search} suggest={async () => []} />
+      </MemoryRouter>,
+    )
+    await userEvent.type(screen.getByRole('combobox'), 'Okändgatan{Enter}')
+    expect(search).toHaveBeenCalledWith('Okändgatan', undefined, undefined, { submitted: true })
+  })
+})
