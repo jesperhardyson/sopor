@@ -84,6 +84,13 @@ export function AboutPage() {
         {SOURCES.map((m) => (
           <SourceCard key={m.id} m={m} />
         ))}
+        <p className="text-[13px] leading-normal text-text-2">
+          Gatu- och ortnamn som används för att hitta rätt källa kommer från{' '}
+          <a href="https://www.openstreetmap.org/copyright" rel="noopener" className="font-bold underline underline-offset-2">
+            © OpenStreetMaps bidragsgivare
+          </a>{' '}
+          (ODbL). Datum markerade <em>beräknat</em> är framräknade ur kommunens tömningsintervall och kan flyttas vid helgdagar.
+        </p>
       </section>
 
       <section className="flex flex-col gap-3">

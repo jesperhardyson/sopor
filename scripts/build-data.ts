@@ -6,7 +6,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { buildMunicipality, DataError, parseAddressesCsv, parseSchedulesFile } from '../src/data/static-format'
 import { buildStreetIndex, type OsmKommun } from '../src/data/street-index'
-import { SOURCES } from '../src/sources/index.js'
+import { ALL_SOURCES, SOURCES } from '../src/sources/index.js'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 
@@ -49,7 +49,7 @@ function writeStreetIndex() {
 
 function main() {
   writeStreetIndex()
-  for (const municipality of SOURCES) {
+  for (const municipality of ALL_SOURCES) {
     if (municipality.config.system !== 'static') continue
     const dataDir = path.join(root, 'data', municipality.id)
     const dataOut = path.join(root, 'public', 'data', municipality.id)
@@ -59,6 +59,11 @@ function main() {
 
     fs.rmSync(dataOut, { recursive: true, force: true })
     fs.rmSync(icsOut, { recursive: true, force: true })
+    // Dolda källor valideras (buildMunicipality kastar vid fel) men publiceras inte.
+    if (municipality.hidden) {
+      console.log(`build-data: ${municipality.id}: dold, ${index.addresses.length} adresser validerade men inte publicerade`)
+      continue
+    }
     writeFile(path.join(dataOut, 'addresses.json'), JSON.stringify(index))
     for (const s of scheduleFiles) writeFile(path.join(dataOut, 'schedules', `${s.id}.json`), JSON.stringify(s))
     for (const i of ics) writeFile(path.join(icsOut, `${i.addressId}.ics`), i.content)

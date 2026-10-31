@@ -20,8 +20,8 @@ Det är ett hobbyprojekt. Det ska kosta så nära noll som möjligt och vara enk
 
 ## Icke-mål (v1)
 
-- Ingen backend, ingen databas och inga Vercel Functions i v1.
-- Ingen EDP-provider i v1. Gränssnittet ska däremot rymma den (se nedan).
+- Ingen backend, ingen databas och inga Vercel Functions i v1. (I v2 finns små proxyfunktioner i `api/`, se nedan.)
+- Ingen EDP-provider i v1. Gränssnittet ska däremot rymma den (se nedan). Den kom i v2.
 - Inga påminnelser (push, e-post, sms). Bara en "Påminnelser – Kommer snart"-plats i UI:t, som i designen.
 - Inget e-postfält i "kommunen stöds inte". Designens formulär "Meddela mig" byggs inte.
 - Inga adresser i sökningen för kommuner vi inte har schema för (t.ex. Hedemora). Designens autocomplete-rad "Hedemora kommun · Stöds inte än" byggs inte.
@@ -197,12 +197,14 @@ Genererade filer checkas inte in (`.gitignore`). `npm run dev` kör build-data f
 - En sökning utan träff är dokumenterad i README:n och testerna, t.ex. "Storgtan 12" → "Menade du: Storgatan 12, Avesta".
 - Seed-datan märks tydligt som fake och ersätts när den riktiga tabellen kommer.
 
-### EDP-provider (v2, byggs inte nu)
+### EDP-provider (byggd i v2)
 
-- `ProviderConfig { type: "edp", baseUrl }`. Endpointerna är desamma för alla EDP-kommuner (`/SimpleWastePickup/SearchAdress`, `/SimpleWastePickup/GetWastePickupSchedule`).
-- Webbläsaren anropar `/api/edp/<kommun>/search` och `/api/edp/<kommun>/schedule`. Vercel-funktionen proxar och cachar (CDN-cache-headers), eftersom kommunens server troligen saknar CORS.
-- Adress-id för EDP: en stabil slug av den adressträng EDP returnerar. Mappningen RhServices → `Schedule` skrivs när formatet är känt.
-- ICS: `/api/ics/<kommun>/<id>.ics` genereras live med samma domänkod. Providerns `icsUrl` döljer skillnaden mot den statiska varianten.
+Ersatt av `docs/specs/2026-10-30-sopor-hela-sverige-design.md`. Kort om hur det blev:
+
+- Källorna ligger i `src/sources/index.ts` med `config: { system: 'edp', baseUrl }`. Endpointerna är desamma för alla EDP-källor (`/SimpleWastePickup/SearchAdress`, `/SimpleWastePickup/GetWastePickupSchedule`).
+- Webbläsaren anropar `/api/sok` och `/api/schema`. Vercel-funktionerna proxar och cachar, eftersom källornas servrar saknar CORS. Logiken ligger i `src/server/handlers.ts`.
+- ICS: `/ics/<källa>/<id>.ics` skrivs om till `api/ics` och genereras live med samma domänkod. Avestas statiska filer serveras som förut.
+- EDP ger nästa tömning och en frekvens. Kommande datum räknas fram och märks *beräknat*.
 
 ### Extern adresskälla (framtid, byggs inte i v1)
 

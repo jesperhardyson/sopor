@@ -1,3 +1,4 @@
+import '@/test/show-hidden-sources'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { Address } from '@/domain/types'
 import type { Source } from '@/sources'
@@ -78,7 +79,9 @@ describe('searchAll', () => {
     const f = stubFetch({ addresses: [], failed: ['uppsala'] })
     const { searchAll } = await import('./registry')
     const result = await searchAll('Okändgatan 3')
-    expect(f.mock.calls.map(([u]) => u)).toContain('/api/sok?q=Ok%C3%A4ndgatan+3&sources=uppsala')
+    const live = SOURCES.filter((x) => x.config.system !== 'static').map((x) => x.id)
+    const call = f.mock.calls.map(([u]) => String(u)).find((u) => u.startsWith('/api/sok'))!
+    expect(new URL(call, 'http://x').searchParams.get('sources')?.split(',')).toEqual(live)
     expect(result.failed).toEqual(['uppsala'])
   })
 

@@ -2,13 +2,13 @@
 
 **[sopor.hardyson.se](https://sopor.hardyson.se)**: skriv in din adress och se vilka sopkärl som töms vilket datum. Schemat kan läggas in i den egna kalendern.
 
-Sopor är en **inofficiell** hobbytjänst. Den är inte kopplad till någon kommun eller något avfallsbolag. Vid avvikelser gäller alltid kommunens information. Första kommunen är Avesta (Avesta Vatten och Avfall AB).
+Sopor är en **inofficiell** hobbytjänst. Den är inte kopplad till någon kommun eller något avfallsbolag. Vid avvikelser gäller alltid kommunens information.
 
-- Ingen backend, ingen databas, inga konton. Sajten är helt statisk och hostas gratis på Vercel.
+- Ingen databas, inga konton. Sajten är statisk; små Vercel-funktioner (`api/`) hämtar och cachar schema från kommunernas publika tjänster. Allt ryms i Vercels gratisplan.
 - Sparade adresser ligger bara i användarens webbläsare (localStorage).
 - Data hämtas bara från kommunens publika källor, aldrig från inloggade tjänster som Mina sidor.
 
-> **Obs:** Datan i `data/avesta/2026/` är **FAKE** och finns bara för utveckling. Den ersätts när den riktiga adress→trakt-tabellen har kommit från Avesta Vatten och Avfall.
+> **Obs:** Datan i `data/avesta/2026/` är **FAKE** och finns bara för utveckling. Avesta är därför dold (`hidden: true`) och syns inte på sajten. Datan ersätts när den riktiga adress→trakt-tabellen har kommit från Avesta Vatten och Avfall.
 
 ## Bidra
 
@@ -34,7 +34,7 @@ npm run build      # genererar data, typkontroll och produktionsbygge i dist/
 
 `npm run build:data` genererar bara datafilerna. Den körs automatiskt före `dev` och `build`.
 
-Att prova med seed-datan:
+Att prova med seed-datan: sätt tillfälligt `hidden: false` på Avesta i `src/sources/index.ts` (checka inte in det). Sedan:
 
 - Sök på `storg`. Det ger tre adresser (Krylbo, Avesta, Fors).
 - Sök på `Storgtan 12` och tryck Enter. Det ger "Vi hittade inte adressen" med förslaget "Storgatan 12, Avesta".
@@ -51,7 +51,10 @@ data/<kommun>/<år>/addresses.csv   ┘─► scripts/build-data.ts ┼► publi
 
 src/domain/          typer, fraktionsregister, datum, schemalogik, ICS, sök (ren TypeScript)
 src/data/            filformatet för statisk data: parsning, validering, generering
-src/municipalities/  kommunregistret (konfiguration)
+src/sources/         källregistret: avfallsbolag/kommuner, system och vilka kommuner de täcker
+src/server/          logiken bakom Vercel-funktionerna (EDP-klient, sök, schema, kalenderfiler)
+api/                 Vercel-funktionerna (sok, schema, ics)
+data/osm/            gatu- och ortnamn per kommun från OpenStreetMap (ODbL)
 src/providers/       WasteProvider-gränssnittet och implementationerna (static nu)
 src/ui/              React-sidor och komponenter
 src/components/ui/   shadcn/ui-primitiver
@@ -120,15 +123,26 @@ Påminnelsen kvällen innan (`VALARM`) följer med i filen, men Google ignorerar
 
 ## Lägga till en kommun
 
-1. Lägg till kommunen i `src/municipalities/index.ts` (id, namn, avfallsbolag med länk, `provider: { type: 'static' }`).
+1. Lägg till källan i `src/sources/index.ts` (id, namn, länk, kommuner med SCB-kod, `config: { system: 'static' }`).
 2. Skapa `data/<id>/<år>/` med de två filerna.
 3. Kör `npm test && npm run build`. Kommunens adresser dyker upp i sökningen och på Om-sidan.
+
+## Lägga till en EDP-källa
+
+Många kommuner och avfallsbolag kör EDP Future med den publika modulen SimpleWastePickup. Då räcker en rad i registret:
+
+1. Testa att modulen har data (se [guiden](docs/kommuner/hitta-kommunens-data.md#steg-2-finns-en-publik-söktjänst-per-adress)).
+2. Lägg till källan i `src/sources/index.ts` med `config: { system: 'edp', baseUrl: 'https://<värd>/<sökväg till FutureWeb>' }` och alla kommuner den täcker (SCB-kod och namn).
+3. Kör `npm run build:streets` för att hämta gatunamnen för de nya kommunerna från OpenStreetMap, och checka in `data/osm/`.
+4. Kör `npm test && npm run build` och prova sökningen i `npm run dev`.
+
+EDP ger nästa tömning och en frekvens. Sopor räknar fram kommande datum i 12 månader och märker dem *beräknat*; datum som infaller på röda dagar får en varning.
 
 ## Lägga till en ny datakälla (provider-typ)
 
 Exempel: EDP Future "SimpleWastePickup", som många kommuner använder.
 
-1. Lägg till en variant i `ProviderConfig` (`src/municipalities/index.ts`), t.ex. `{ type: 'edp'; baseUrl: string }`.
+1. Lägg till en variant i `SourceConfig` (`src/sources/index.ts`).
 2. Implementera `WasteProvider` i `src/providers/<typ>.ts` och koppla in den i `providerFor` (`src/providers/registry.ts`).
 3. Om källan saknar CORS (troligt för EDP) behövs en liten Vercel Function i `/api` som proxar och cachar, och som genererar `.ics` live med `buildIcs` från `src/domain/ics.ts`. Providerns `icsUrl` pekar då på funktionen.
 
@@ -141,7 +155,8 @@ Vercel (Hobby). `vercel.json` sätter `Content-Type: text/calendar` och cache-he
 - **Projekt:** `sopor` i Vercel-teamet `badvatten-s-projects`, kopplat till GitHub-repot. Varje push till `main` bygger och driftsätter en ny produktionsversion. Pull requests får en egen preview-deploy.
 - **Domän:** `sopor.hardyson.se`. DNS ligger hos Cloudflare: `A sopor 76.76.21.21`, satt till *DNS only* (grå moln, inte proxad).
 - **Öppen sajt:** Vercel Authentication är avstängd, så både `sopor.hardyson.se` och preview-adresserna för pull requests är publika. Bidragsgivare kan alltså testa sina ändringar live. Pull requests från forkar byggs inte förrän förvaltaren godkänt dem i Vercel (Git fork protection).
-- **Testdata:** så länge en kommun har `testData: true` i `src/municipalities/index.ts` visas en allmän varningsbanderoll överst på alla sidor ("Testversion – datumen är påhittade …"). Ta bort flaggan när riktig data finns.
+- **Testversion:** en allmän varningsbanderoll visas överst på alla sidor ("Testversion – Sopor är under utveckling …", `src/ui/layout/TestDataBanner.tsx`).
+- **Dolda källor:** en källa med `hidden: true` i `src/sources/index.ts` syns inte i sökning, på Om-sidan, i API:t eller i byggd data, men build-skriptet validerar ändå dess datafiler. Avesta är dold så länge datan är påhittad (`testData: true`). Ta bort båda flaggorna när riktig data finns.
 
 ## Design
 
@@ -150,3 +165,5 @@ Designen finns i `docs/design/sopor-design.pen` (Pencil) och är facit för fär
 ## Licens
 
 [MIT](LICENSE). Datan om tömningar kommer från respektive kommun.
+
+Gatu- och ortnamn © [OpenStreetMaps bidragsgivare](https://www.openstreetmap.org/copyright), tillgängliga under ODbL. Indexet i `data/osm/` delas under samma licens.

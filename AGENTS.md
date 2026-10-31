@@ -21,10 +21,10 @@ Kör `npm run lint && npm test && npm run build` innan varje commit. Allt ska va
 
 ## Arkitekturregler (bryt inte dessa)
 
-1. **Providergränsen.** UI:t pratar bara med `WasteProvider` (`src/providers/types.ts`) via `src/providers/registry.ts`. Ingen kod utanför `src/providers/`, `src/data/` och `scripts/` får känna till trakter, `scheduleRefs`, EDP eller andra källdetaljer.
-2. **Ingen backend.** Inga Vercel Functions, ingen databas, inga konton. Undantaget som kommer: en EDP-proxy i `/api`, och den byggs bara på uttrycklig begäran.
+1. **Providergränsen.** UI:t pratar bara med `WasteProvider` (`src/providers/types.ts`) via `src/providers/registry.ts`. Ingen kod utanför `src/providers/`, `src/server/`, `src/data/` och `scripts/` får känna till trakter, `scheduleRefs`, EDP eller andra källdetaljer.
+2. **Ingen databas och inga konton.** Vercel Functions (`api/`) används bara som proxy och cache mot publika källor. Logiken ligger i `src/server/handlers.ts`. Kod som funktionerna når (`api/`, `src/server/`, `src/domain/`, `src/sources/`) använder relativa importer med filändelsen `.js`, eftersom Vercel kompilerar fil för fil (ett test vakar över det).
 3. **Stabila id.** Adress-id (i `addresses.csv`) och ICS-UID (`<adress-id>-<datum>@sopor.hardyson.se`) får aldrig ändra format eller återanvändas, eftersom kalenderprenumerationer hänger på dem.
-4. **Bara publika källor.** Inga anrop mot inloggade API:er (Mina sidor o.d.) och ingen scraping bakom inloggning.
+4. **Bara publika källor utan inloggning.** Inga anrop mot inloggade tjänster (Mina sidor, BankID, kundportaler, apptoken). Svar cachas och anropen hålls få; User-Agent är `Sopor/1.0 (+https://sopor.hardyson.se)`.
 5. **Datum** är strängar på formen `YYYY-MM-DD`. Aritmetik görs i `src/domain/dates.ts` (UTC-midnatt). "I dag" räknas i `Europe/Stockholm`.
 6. **localStorage** används alltid med try/catch. Appen ska fungera utan lagring.
 7. **Domänlogik** (`src/domain/`) är ren TypeScript utan React, eftersom den körs både i build-skriptet och i webbläsaren.

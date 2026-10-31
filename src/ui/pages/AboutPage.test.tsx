@@ -1,3 +1,4 @@
+import '@/test/show-hidden-sources'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router'
@@ -50,6 +51,18 @@ describe('AboutPage', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Ja, glöm alla' }))
     expect(localStorage.getItem('sopor.saved.v1')).toBe('[]')
     expect(screen.getByText('Inga adresser sparade på den här enheten.')).toBeInTheDocument()
+  })
+
+  it('anger OpenStreetMap som källa för gatunamnen', () => {
+    render(
+      <MemoryRouter>
+        <AboutPage />
+      </MemoryRouter>,
+    )
+    expect(screen.getByRole('link', { name: /OpenStreetMaps bidragsgivare/ })).toHaveAttribute(
+      'href',
+      'https://www.openstreetmap.org/copyright',
+    )
   })
 })
 

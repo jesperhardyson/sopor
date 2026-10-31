@@ -70,8 +70,9 @@ describe('StartPage innehåll', () => {
   it('bjuder in till att bidra med kommuner', () => {
     setup()
     const bidra = screen.getByRole('region', { name: 'Saknas din kommun? Hjälp till att få in den.' })
-    expect(within(bidra).getByText('Avesta kommun')).toBeInTheDocument()
-    expect(within(bidra).getByText('Testdata')).toBeInTheDocument()
+    expect(within(bidra).getByText('Uppsala kommun')).toBeInTheDocument()
+    expect(within(bidra).queryByText('Avesta kommun')).toBeNull()
+    expect(within(bidra).queryByText('Testdata')).toBeNull()
     expect(within(bidra).getByRole('link', { name: /Tipsa om din kommun/ })).toHaveAttribute(
       'href',
       'https://github.com/jesperhardyson/sopor/issues/new?template=ny-kommun.md',
