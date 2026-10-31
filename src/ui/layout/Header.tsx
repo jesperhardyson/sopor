@@ -4,6 +4,7 @@ import { SITE } from '@/config'
 import { GitHubMark } from '../components/GitHubMark'
 import { Logo } from '../components/Logo'
 import { ThemeToggle } from '../components/ThemeToggle'
+import { MobileMenu } from './MobileMenu'
 
 const navItem = 'inline-flex items-center gap-2 rounded-xl px-3.5 py-2.5 text-[15px] font-bold text-text hover:bg-surface'
 
@@ -35,11 +36,12 @@ export function Header() {
             href={SITE.repoUrl}
             rel="noopener"
             aria-label="Sopor på GitHub"
-            className="inline-flex size-11 items-center justify-center rounded-full border border-border text-text-2 hover:bg-surface"
+            className="hidden size-11 items-center justify-center rounded-full border border-border text-text-2 hover:bg-surface md:inline-flex"
           >
             <GitHubMark />
           </a>
           <ThemeToggle />
+          <MobileMenu />
         </nav>
       </div>
     </header>
