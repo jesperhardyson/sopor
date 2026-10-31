@@ -1,6 +1,6 @@
-import { BellRing, Braces, Calendar, CalendarDays, ChevronRight, Download, RefreshCw, type LucideIcon } from 'lucide-react'
+import { BellRing, Calendar, CalendarDays, ChevronRight, Download, RefreshCw, type LucideIcon } from 'lucide-react'
 import type { Address } from '@/domain/types'
-import { absoluteIcsUrl, apiUrl, defaultOrigin, googleCalendarUrl, webcalUrl } from '@/lib/calendar-links'
+import { absoluteIcsUrl, defaultOrigin, googleCalendarUrl, webcalUrl } from '@/lib/calendar-links'
 import { cn } from '@/lib/utils'
 import { ResponsiveSheet } from './ResponsiveSheet'
 
@@ -84,7 +84,6 @@ export function CalendarSheet({
           description="En fil med kommande tömningar. Uppdateras inte."
           download={`sopor-${address.id}.ics`}
         />
-        <Option href={apiUrl(address, origin)} icon={Braces} title="API (JSON)" description="För Home Assistant, Homey och andra system" />
       </div>
       <p className="flex items-start gap-2.5 rounded-[14px] bg-surface-2 px-3.5 py-3 text-sm leading-[1.4] text-text-2">
         <BellRing className="mt-0.5 size-[18px] shrink-0" aria-hidden />

@@ -31,14 +31,6 @@ describe('CalendarSheet', () => {
       ),
     ).toBeInTheDocument()
   })
-
-  it('länkar till adressens svar i API:t för hemautomation', () => {
-    render(<CalendarSheet open onOpenChange={() => {}} address={villa} icsPath="/ics/avesta/krylbo-storgatan-12b.ics" />)
-    const api = screen.getByRole('link', { name: /API \(JSON\)/ })
-    expect(api).toHaveAttribute('href', 'https://sopor.hardyson.se/api/v1/adress/avesta/krylbo-storgatan-12b')
-    expect(api).toHaveTextContent('För Home Assistant, Homey och andra system')
-    expect(api).not.toHaveTextContent('Bäst')
-  })
 })
 
 describe('SaveSheet', () => {
