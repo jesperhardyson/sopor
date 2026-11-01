@@ -3,6 +3,8 @@
 Datum är YYYY-MM-DD. Aritmetiken görs på hela dagar, som i Homey-appens lib/dates.mts.
 """
 
+from __future__ import annotations
+
 import re
 from dataclasses import dataclass
 from datetime import date, datetime

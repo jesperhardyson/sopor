@@ -1,7 +1,7 @@
 """Basen för integrationens entiteter."""
 
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.device_registry import DeviceInfo
+from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN
@@ -19,7 +19,14 @@ class SoporEntity(CoordinatorEntity[SoporCoordinator]):
     def __init__(self, coordinator: SoporCoordinator) -> None:
         super().__init__(coordinator)
         entry = coordinator.config_entry
-        self._attr_device_info = DeviceInfo(identifiers={(DOMAIN, entry.entry_id)}, name=entry.title)
+        web = (coordinator.data or {}).get("links", {}).get("web")
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, entry.entry_id)},
+            name=entry.title,
+            entry_type=DeviceEntryType.SERVICE,
+            manufacturer="Sopor",
+            configuration_url=web or "https://sopor.hardyson.se",
+        )
 
     @property
     def available(self) -> bool:

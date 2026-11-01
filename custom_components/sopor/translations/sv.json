@@ -57,7 +57,8 @@
     },
     "abort": {
       "already_configured": "Adressen är redan tillagd.",
-      "reconfigure_successful": "Adressen är bytt."
+      "already_in_progress": "Adressen håller redan på att läggas till.",
+      "reconfigure_successful": "Adressen har bytts."
     }
   },
   "options": {

@@ -3,19 +3,25 @@ from datetime import datetime, timedelta
 
 import aiohttp
 from custom_components.sopor.const import DOMAIN
-from custom_components.sopor.coordinator import store_for
+from custom_components.sopor.coordinator import SoporCoordinator, store_for
 from custom_components.sopor.entity import SoporEntity, lang
 from custom_components.sopor.logic import ScheduleChange
 from homeassistant.config_entries import ConfigEntryState
+from homeassistant.helpers.device_registry import DeviceEntryType
 from pytest_homeassistant_custom_component.common import async_fire_time_changed
+from pytest_homeassistant_custom_component.test_util.aiohttp import AiohttpClientMockResponse
 
 
-def _spara(hass_storage, entry, schedule):
+def _spara(hass_storage, entry, schedule, url=None):
+    _spara_data(hass_storage, entry, {"url": url or entry.data["url"], "schedule": schedule})
+
+
+def _spara_data(hass_storage, entry, data):
     hass_storage[f"sopor.{entry.entry_id}"] = {
         "version": 1,
         "minor_version": 1,
         "key": f"sopor.{entry.entry_id}",
-        "data": {"schedule": schedule},
+        "data": data,
     }
 
 
@@ -35,7 +41,10 @@ async def test_setup_hamtar_och_sparar(hass, setup_entry, schedule_json):
     assert setup_entry.state is ConfigEntryState.LOADED
     coordinator = setup_entry.runtime_data
     assert coordinator.data == schedule_json
-    assert await store_for(hass, setup_entry.entry_id).async_load() == {"schedule": schedule_json}
+    assert await store_for(hass, setup_entry.entry_id).async_load() == {
+        "url": setup_entry.data["url"],
+        "schedule": schedule_json,
+    }
 
 
 async def test_502_behaller_senaste_data(hass, setup_entry, aioclient_mock, freezer, schedule_json):
@@ -199,3 +208,71 @@ async def test_entitetens_enhet(hass, setup_entry):
     assert entity.has_entity_name is True
     assert entity.device_info["identifiers"] == {(DOMAIN, setup_entry.entry_id)}
     assert entity.device_info["name"] == "Storgatan 2, Uppsala"
+    assert entity.device_info["entry_type"] is DeviceEntryType.SERVICE
+    assert entity.device_info["manufacturer"] == "Sopor"
+    assert entity.device_info["configuration_url"] == "https://sopor.hardyson.se/uppsala/storgatan-2_uppsala-4004688"
+
+
+async def test_entitetens_enhet_utan_data(hass, mock_entry):
+    mock_entry.add_to_hass(hass)
+    assert (
+        SoporEntity(SoporCoordinator(hass, mock_entry)).device_info["configuration_url"] == "https://sopor.hardyson.se"
+    )
+
+
+async def _starta_med_sparat(hass, entry, aioclient_mock, freezer, svar):
+    freezer.move_to(datetime.fromisoformat("2026-11-01T12:00:00+01:00"))
+    aioclient_mock.get(entry.data["url"], **svar)
+    entry.add_to_hass(hass)
+    await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+
+
+async def test_sparat_svar_for_annan_adress_ignoreras(
+    hass, mock_entry, aioclient_mock, hass_storage, freezer, schedule_json
+):
+    _spara(hass_storage, mock_entry, _flyttad(schedule_json), url="https://sopor.hardyson.se/api/v1/adress/annan/1")
+    await _starta_med_sparat(hass, mock_entry, aioclient_mock, freezer, {"json": schedule_json})
+    assert mock_entry.runtime_data.changes == []
+    assert mock_entry.runtime_data.data == schedule_json
+
+
+async def test_sparat_svar_for_annan_adress_raknas_inte_utan_nat(
+    hass, mock_entry, aioclient_mock, hass_storage, freezer, schedule_json
+):
+    _spara(hass_storage, mock_entry, schedule_json, url="https://sopor.hardyson.se/api/v1/adress/annan/1")
+    await _starta_med_sparat(hass, mock_entry, aioclient_mock, freezer, {"status": 502})
+    assert mock_entry.state is ConfigEntryState.SETUP_RETRY
+
+
+async def test_trasigt_sparat_svar_ignoreras(hass, mock_entry, aioclient_mock, hass_storage, freezer, schedule_json):
+    _spara_data(hass_storage, mock_entry, {"url": mock_entry.data["url"], "schedule": ["inte", "ett", "schema"]})
+    await _starta_med_sparat(hass, mock_entry, aioclient_mock, freezer, {"status": 502})
+    assert mock_entry.state is ConfigEntryState.SETUP_RETRY
+
+
+async def test_gammalt_format_utan_url_ignoreras(
+    hass, mock_entry, aioclient_mock, hass_storage, freezer, schedule_json
+):
+    _spara_data(hass_storage, mock_entry, {"schedule": _flyttad(schedule_json)})
+    await _starta_med_sparat(hass, mock_entry, aioclient_mock, freezer, {"json": schedule_json})
+    assert mock_entry.runtime_data.changes == []
+
+
+async def test_sparar_inte_om_adressen_bytts_under_hamtningen(
+    hass, setup_entry, aioclient_mock, hass_storage, schedule_json
+):
+    coordinator = setup_entry.runtime_data
+    ny_url = "https://sopor.hardyson.se/api/v1/adress/annan/1"
+    nyckel = f"sopor.{setup_entry.entry_id}"
+
+    async def byt_under_hamtningen(method, url, data):
+        hass.config_entries.async_update_entry(setup_entry, data={**setup_entry.data, "url": ny_url})
+        hass_storage.pop(nyckel, None)
+        return AiohttpClientMockResponse(method, url, json=_flyttad(schedule_json))
+
+    aioclient_mock.clear_requests()
+    aioclient_mock.get(setup_entry.data["url"], side_effect=byt_under_hamtningen)
+    await coordinator.async_refresh()
+    await hass.async_block_till_done()
+    assert nyckel not in hass_storage

@@ -2,9 +2,10 @@
 
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.event import async_track_time_interval
 
-from .const import TICK_INTERVAL
+from .const import DOMAIN, TICK_INTERVAL
 from .coordinator import SoporConfigEntry, SoporCoordinator, store_for
 
 PLATFORMS: list[Platform] = [Platform.SENSOR, Platform.BINARY_SENSOR, Platform.CALENDAR, Platform.EVENT]
@@ -28,5 +29,6 @@ async def async_unload_entry(hass: HomeAssistant, entry: SoporConfigEntry) -> bo
 
 
 async def async_remove_entry(hass: HomeAssistant, entry: SoporConfigEntry) -> None:
-    """Raderar postens sparade svar."""
+    """Raderar postens sparade svar och reparationsärende."""
     await store_for(hass, entry.entry_id).async_remove()
+    ir.async_delete_issue(hass, DOMAIN, f"address_gone_{entry.entry_id}")

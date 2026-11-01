@@ -26,6 +26,7 @@ class SoporChangedEvent(SoporEntity, EventEntity):
         self._attr_unique_id = f"{coordinator.config_entry.entry_id}_changed"
 
     def _fire_changes(self) -> None:
+        """Ett tillstånd per ändring, eftersom EventEntity bara behåller den senaste händelsen."""
         visible = self.coordinator.visible
         if visible is None:
             return
@@ -40,12 +41,12 @@ class SoporChangedEvent(SoporEntity, EventEntity):
                     "orsak": change.reason,
                 },
             )
+            self.async_write_ha_state()
 
     async def async_added_to_hass(self) -> None:
         await super().async_added_to_hass()
         # Ändringar som upptäcktes i startens hämtning, innan entiteten fanns
         self._fire_changes()
-        self.async_write_ha_state()
 
     @callback
     def _handle_coordinator_update(self) -> None:

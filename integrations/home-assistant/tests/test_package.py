@@ -22,7 +22,7 @@ def test_hacs_json():
     assert hacs["name"] == "Sophämtning"
     assert hacs["country"] == "SE"
     assert hacs["hide_default_branch"] is True
-    assert hacs["homeassistant"] == "2026.3.0"
+    assert hacs["homeassistant"] == "2026.10.0"
 
 
 def test_gransen_mot_sajten():

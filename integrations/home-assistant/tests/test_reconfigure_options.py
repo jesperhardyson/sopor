@@ -169,3 +169,13 @@ async def test_borttagen_post_raderar_sparat_svar(hass, setup_entry, hass_storag
     assert await hass.config_entries.async_remove(setup_entry.entry_id)
     await hass.async_block_till_done()
     assert nyckel not in hass_storage
+
+
+async def test_borttagen_post_raderar_arendet(hass, setup_entry):
+    arende = f"address_gone_{setup_entry.entry_id}"
+    ir.async_create_issue(
+        hass, DOMAIN, arende, is_fixable=False, severity=ir.IssueSeverity.WARNING, translation_key="address_gone"
+    )
+    assert await hass.config_entries.async_remove(setup_entry.entry_id)
+    await hass.async_block_till_done()
+    assert ir.async_get(hass).async_get_issue(DOMAIN, arende) is None

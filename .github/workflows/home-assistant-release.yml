@@ -32,7 +32,7 @@ jobs:
       - name: Testa
         working-directory: integrations/home-assistant
         run: |
-          uv sync
+          uv sync --locked
           uv run pytest
       - name: Skapa GitHub-releasen
         env:

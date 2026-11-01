@@ -87,9 +87,9 @@ Fixturerna är riktiga API-svar. Rökprovet kräver nät och körs varje natt i 
 
 ```bash
 cd integrations/home-assistant
-uv run scripts/release.py 0.2.0
-git push && git push origin ha-v0.2.0
+uv run scripts/release.py 0.1.0
+git push && git push origin ha-v0.1.0
 ```
 
-1. `release.py` kräver ett rent arbetsträd och en högre version. Det sätter `version` i `custom_components/sopor/manifest.json`, committar och taggar `ha-v<version>`.
+1. `release.py` kräver ett rent arbetsträd och en högre version (manifestet börjar på `0.0.0`). Det sätter `version` i `custom_components/sopor/manifest.json`, committar och taggar `ha-v<version>`.
 2. **Taggen** startar `home-assistant-release.yml`, som kontrollerar att taggen stämmer med manifestet, kör testerna och skapar **GitHub-releasen**. Den är det HACS läser. Bara Home Assistant-integrationen skapar GitHub-releaser i det här repot.

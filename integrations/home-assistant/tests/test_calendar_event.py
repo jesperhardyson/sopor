@@ -175,7 +175,12 @@ async def test_andring_vid_start_avfyras(hass, mock_entry, aioclient_mock, freez
     gammalt["events"][0]["fractions"] = ["metall"]
     gammalt["events"][1]["fractions"].append("plast")
     key = f"{DOMAIN}.{mock_entry.entry_id}"
-    hass_storage[key] = {"version": 1, "minor_version": 1, "key": key, "data": {"schedule": gammalt}}
+    hass_storage[key] = {
+        "version": 1,
+        "minor_version": 1,
+        "key": key,
+        "data": {"url": mock_entry.data["url"], "schedule": gammalt},
+    }
     aioclient_mock.get(mock_entry.data["url"], json=schedule_json)
     mock_entry.add_to_hass(hass)
     assert await hass.config_entries.async_setup(mock_entry.entry_id)
@@ -185,3 +190,18 @@ async def test_andring_vid_start_avfyras(hass, mock_entry, aioclient_mock, freez
     assert state.attributes["avfallstyp"] == "Plastförpackningar"
     assert state.attributes["tidigare"] == "2026-11-05"
     assert state.attributes["nytt"] == "2026-11-04"
+
+
+async def test_tva_typer_ger_tva_tillstandsandringar(hass, setup_entry, aioclient_mock, schedule_json):
+    typer = []
+
+    def spara(event):
+        if event.data["entity_id"] == HANDELSE:
+            typer.append(event.data["new_state"].attributes.get("avfallstyp"))
+
+    hass.bus.async_listen("state_changed", spara)
+    # Plast och metall flyttas båda från 4 nov till 6 nov
+    schedule = copy.deepcopy(schedule_json)
+    schedule["events"][0]["date"] = "2026-11-06"
+    await _nytt_svar(hass, setup_entry, aioclient_mock, schedule)
+    assert typer == ["Plastförpackningar", "Metall"]

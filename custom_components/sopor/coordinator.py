@@ -22,7 +22,7 @@ type SoporConfigEntry = ConfigEntry[SoporCoordinator]
 
 
 def store_for(hass: HomeAssistant, entry_id: str) -> Store[dict[str, Any]]:
-    """Postens sparade svar: {"schedule": Schedule}."""
+    """Postens sparade svar: {"url": adressens url, "schedule": Schedule}."""
     return Store(hass, 1, f"{DOMAIN}.{entry_id}")
 
 
@@ -51,23 +51,28 @@ class SoporCoordinator(DataUpdateCoordinator[Schedule]):
         return without_fractions(self.data, self.hidden) if self.data is not None else None
 
     async def async_load(self) -> bool:
-        """Läser in det sparade svaret. Sant om det fanns."""
+        """Läser in det sparade svaret. Sant om det fanns och gäller postens adress."""
         stored = await self._store.async_load()
-        if not stored or "schedule" not in stored:
+        if (
+            not isinstance(stored, dict)
+            or stored.get("url") != self.config_entry.data["url"]
+            or not isinstance(stored.get("schedule"), dict)
+        ):
             return False
         self.async_set_updated_data(stored["schedule"])
         return True
 
     @callback
     def async_tick(self, now: datetime | None = None) -> None:
-        """Räknar om texterna (i dag, i morgon) utan att anropa API:t."""
+        """Tömmer changes och säger till lyssnarna, som räknar om sina texter (i dag, i morgon). Anropar inte API:t."""
         self.changes = []
         self.async_update_listeners()
 
     async def _async_update_data(self) -> Schedule:
         self.changes = []
+        url = self.config_entry.data["url"]
         try:
-            schedule = await self._client.schedule(self.config_entry.data["url"])
+            schedule = await self._client.schedule(url)
         except SoporError as error:
             if error.status == 404:
                 ir.async_create_issue(
@@ -85,6 +90,8 @@ class SoporCoordinator(DataUpdateCoordinator[Schedule]):
             self.changes = schedule_changes(
                 without_fractions(self.data, hidden), without_fractions(schedule, hidden), self.today
             )
-        await self._store.async_save({"schedule": schedule})
+        # Byttes adressen under hämtningen ska det gamla svaret inte sparas över det raderade
+        if self.config_entry.data["url"] == url:
+            await self._store.async_save({"url": url, "schedule": schedule})
         ir.async_delete_issue(self.hass, DOMAIN, self._issue_id)
         return schedule

@@ -22,8 +22,8 @@ En Home Assistant-användare installerar Sophämtning via HACS, söker upp sin a
 ## Ramar
 
 - **Domän:** `sopor`. Namn: "Sophämtning" (engelska "Waste Collection"), som Homey-appen.
-- **Manifest:** `config_flow: true`, `iot_class: "cloud_polling"`, `integration_type: "service"`, `codeowners`, `documentation` och `issue_tracker` som pekar hit, och `version` (semver).
-- **`hacs.json`:** `name`, `country: "SE"`, `hide_default_branch: true` (användarna får bara releaser) och `homeassistant: "2026.3.0"` (krävs för egna ikoner i `brand/`).
+- **Manifest:** `config_flow: true`, `iot_class: "cloud_polling"`, `integration_type: "service"`, `codeowners`, `documentation` och `issue_tracker` som pekar hit, och `version` (semver, börjar på `0.0.0` så att första releasen kan bli `0.1.0`).
+- **`hacs.json`:** `name`, `country: "SE"`, `hide_default_branch: true` (användarna får bara releaser) och `homeassistant: "2026.10.0"`, den version som är provad live och i testerna. Koden kräver `probatio` (konfigurationsflödet) och Python 3.14, så äldre versioner duger inte, även om egna ikoner i `brand/` kom i 2026.3.
 - **Python 3.14**, och Home Assistant som `pytest-homeassistant-custom-component` följer (2026.10 i dag).
 - **Bara publika API v1:** `/api/v1/sok`, `/api/v1/adress/{källa}/{id}` och `/api/v1/kallor`. Ingen kod från `src/`. Avfallstypernas namn kommer ur svarets `fractions{}`.
 - **User-Agent:** `Sopor-HomeAssistant/<version> (+https://sopor.hardyson.se)`. HTTP via Home Assistants delade `aiohttp`-session.
