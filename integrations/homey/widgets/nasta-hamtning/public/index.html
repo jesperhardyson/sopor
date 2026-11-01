@@ -61,7 +61,7 @@
         return node
       }
 
-      function row(item) {
+      function row(item, Homey) {
         const r = el('div', item.soon ? 'row soon' : 'row')
         const tile = el('div', 'tile')
         const palette = PALETTE[item.fraction]
@@ -76,7 +76,7 @@
         icon.style.setProperty('--icon', `url('ikoner/${item.icon ?? 'container'}.svg')`)
         tile.append(icon)
         const text = el('div', 'text')
-        text.append(el('span', 'name', item.name), el('span', 'date', item.estimated ? `${item.date} · beräknat` : item.date))
+        text.append(el('span', 'name', item.name), el('span', 'date', item.estimated ? `${item.date} · ${Homey.__('widget.estimated')}` : item.date))
         r.append(tile, text, el('span', 'when', item.when))
         return r
       }
@@ -84,11 +84,11 @@
       async function render(Homey) {
         const id = Homey.getSettings().adress?.id ?? ''
         const { address, rows } = await Homey.api('GET', `/?id=${encodeURIComponent(id)}`)
-        document.getElementById('address').textContent = address ?? 'Sophämtning'
+        document.getElementById('address').textContent = address ?? Homey.__('widget.title')
         const list = document.getElementById('rows')
         if (!address) list.replaceChildren(el('p', 'empty', Homey.__('widget.noAddress')))
         else if (!rows.length) list.replaceChildren(el('p', 'empty', Homey.__('widget.nothing')))
-        else list.replaceChildren(...rows.map(row))
+        else list.replaceChildren(...rows.map((item) => row(item, Homey)))
       }
 
       function onHomeyReady(Homey) {

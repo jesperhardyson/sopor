@@ -23,6 +23,8 @@
   "anyFraction": "Något avfall",
   "widget": {
     "noAddress": "Lägg till en adress i Sophämtning först.",
-    "nothing": "Inga kommande hämtningar"
+    "nothing": "Inga kommande hämtningar",
+    "estimated": "beräknat",
+    "title": "Sophämtning"
   }
 }

@@ -1,7 +1,7 @@
 // Raderna i widgeten "Nästa hämtning": nästa hämtning per fraktion, tidigast först.
 
 import type { SoporSchedule } from './api.mjs'
-import { daysBetween, relativeDayLabel, shortDate } from './dates.mjs'
+import { daysBetween, relativeDayLabel, shortDate, type Lang } from './dates.mjs'
 import { fractionIds, fractionName, nextDate } from './schedule.mjs'
 
 export interface WidgetRow {
@@ -19,7 +19,7 @@ export interface WidgetRow {
   estimated: boolean
 }
 
-export function widgetRows(schedule: SoporSchedule, today: string): WidgetRow[] {
+export function widgetRows(schedule: SoporSchedule, today: string, lang: Lang = 'sv'): WidgetRow[] {
   return fractionIds(schedule)
     .map((fraction) => ({ fraction, date: nextDate(schedule, today, fraction) }))
     .filter((row): row is { fraction: string; date: string } => row.date !== null)
@@ -32,8 +32,8 @@ export function widgetRows(schedule: SoporSchedule, today: string): WidgetRow[] 
         name: fractionName(schedule, fraction),
         icon: schedule.fractions[fraction]?.icon ?? null,
         color: schedule.fractions[fraction]?.color ?? null,
-        date: shortDate(date),
-        when: relativeDayLabel(days),
+        date: shortDate(date, lang),
+        when: relativeDayLabel(days, lang),
         soon: days <= 1,
         estimated: event?.estimated ?? false,
       }

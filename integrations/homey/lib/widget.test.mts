@@ -29,3 +29,11 @@ describe('widgetens rader', () => {
     expect(widgetRows(odd, '2026-10-31')[0]).toMatchObject({ fraction: 'kompost', name: 'kompost', icon: null, color: null })
   })
 })
+
+describe('widgeten på engelska', () => {
+  it('ger datum och dag på engelska', () => {
+    const [first] = widgetRows(schedule, '2026-10-31', 'en')
+    expect(first.when).toMatch(/^(today|tomorrow|in \d+ days)$/)
+    expect(first.date).toMatch(/^[A-Z][a-z]{2} \d+ [A-Z][a-z]{2}$/)
+  })
+})

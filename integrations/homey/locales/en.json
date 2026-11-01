@@ -23,6 +23,8 @@
   "anyFraction": "Any waste",
   "widget": {
     "noAddress": "Add an address in Sophämtning first.",
-    "nothing": "No upcoming collections"
+    "nothing": "No upcoming collections",
+    "estimated": "estimated",
+    "title": "Waste Collection"
   }
 }

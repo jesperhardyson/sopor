@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { addDays, daysBetween, relativeDayLabel, stockholmTime, todayInStockholm } from './dates.mjs'
+import { addDays, daysBetween, languageOf, relativeDayLabel, shortDate, stockholmTime, todayInStockholm } from './dates.mjs'
 
 describe('datum', () => {
   it('räknar dagar över månads- och årsskiften', () => {
@@ -28,5 +28,21 @@ describe('datum', () => {
   it('ger klockslaget i Stockholm', () => {
     expect(stockholmTime(new Date('2026-10-31T17:05:00Z'))).toBe('18:05')
     expect(stockholmTime(new Date('2026-07-01T04:00:00Z'))).toBe('06:00')
+  })
+})
+
+describe('texter på engelska', () => {
+  it('säger dagar och datum på engelska', () => {
+    expect(relativeDayLabel(0, 'en')).toBe('today')
+    expect(relativeDayLabel(1, 'en')).toBe('tomorrow')
+    expect(relativeDayLabel(4, 'en')).toBe('in 4 days')
+    expect(shortDate('2026-11-04', 'en')).toBe('Wed 4 Nov')
+    expect(shortDate('2026-11-04')).toBe('ons 4 nov')
+  })
+
+  it('väljer svenska bara för svenska och annars engelska', () => {
+    expect(languageOf('sv')).toBe('sv')
+    expect(languageOf('en')).toBe('en')
+    expect(languageOf('nl')).toBe('en')
   })
 })

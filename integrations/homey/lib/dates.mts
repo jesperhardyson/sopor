@@ -2,8 +2,9 @@
 
 const DAY_MS = 86_400_000
 
-const WEEKDAYS = ['sön', 'mån', 'tis', 'ons', 'tors', 'fre', 'lör']
-const MONTHS = ['jan', 'feb', 'mars', 'apr', 'maj', 'juni', 'juli', 'aug', 'sep', 'okt', 'nov', 'dec']
+import { TEXTS, type Lang } from './texts.mjs'
+
+export { languageOf, type Lang } from './texts.mjs'
 
 function toUtc(date: string): Date {
   const [y, m, d] = date.split('-').map(Number)
@@ -28,14 +29,16 @@ export function stockholmTime(now: Date = new Date()): string {
   return new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Stockholm', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(now)
 }
 
-export function relativeDayLabel(days: number): string {
-  if (days === 0) return 'i dag'
-  if (days === 1) return 'i morgon'
-  return `om ${days} dagar`
+export function relativeDayLabel(days: number, lang: Lang = 'sv'): string {
+  const t = TEXTS[lang]
+  if (days === 0) return t.today
+  if (days === 1) return t.tomorrow
+  return t.inDays(days)
 }
 
-/** "ons 4 nov" */
-export function shortDate(date: string): string {
+/** "ons 4 nov", "Wed 4 Nov" */
+export function shortDate(date: string, lang: Lang = 'sv'): string {
   const d = toUtc(date)
-  return `${WEEKDAYS[d.getUTCDay()]} ${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]}`
+  const t = TEXTS[lang]
+  return `${t.weekdays[d.getUTCDay()]} ${d.getUTCDate()} ${t.months[d.getUTCMonth()]}`
 }
