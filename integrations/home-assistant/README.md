@@ -21,10 +21,10 @@ En enhet per adress, med adressen som namn.
 
 | Entitet | Typ | Visar |
 |---|---|---|
-| En per avfallstyp | sensor (datum) | Nästa hämtning av typen, eller okänt när inget väntar. Attribut: `beraknat` (datumet är inte bekräftat) och `avvikelse` (källans förklaring, annars tomt) |
+| En per avfallstyp | sensor (datum) | Nästa hämtning av typen, eller okänt när inget väntar. Attribut: `beraknat` (datumet är inte bekräftat) och `avvikelse` (källans förklaring, `null` när det inte finns någon avvikelse) |
 | Nästa hämtning | sensor | Till exempel "Plast & metall – om 4 dagar" |
 | Dagar kvar | sensor (dagar) | Dagar till nästa hämtning av någon typ |
-| Hämtas i dag | binär sensor | På om något hämtas i dag. Attributet `avfallstyper` listar typerna |
+| Hämtas i dag | binär sensor | På om något hämtas i dag. Attributet `avfallstyper` listar typerna med komma emellan, och är en tom sträng när inget hämtas |
 | Hämtas i morgon | binär sensor | Som ovan, för i morgon |
 | Hämtschema | kalender | En heldagshändelse per hämtningsdag, med typernas namn som titel |
 | Schemat ändrades | händelse | Typen `andrat`, med `avfallstyp`, `text`, `tidigare`, `nytt` och `orsak` |
@@ -57,12 +57,12 @@ automation:
           message: "{{ trigger.calendar_event.summary }}"
 ```
 
-Byt `entity_id` mot kalenderns id hos dig och `notify.notify` mot din egen notistjänst. Titeln på händelsen är avfallstypernas namn, till exempel "Plast & metall".
+Byt `entity_id` mot kalenderns id hos dig och `notify.notify` mot din egen notistjänst. Kalenderns id följer språket Home Assistant hade när adressen lades till: på engelska blir det till exempel `calendar.storgatan_2_uppsala_collection_schedule`. Titeln på händelsen är avfallstypernas namn, till exempel "Plast & metall".
 
 ## Fel
 
 - **Källan svarar inte** (nätfel, timeout eller 502): integrationen försöker igen vid nästa uppdatering, och entiteterna visar senaste data. Svaret sparas, så värdena finns även efter en omstart utan nät.
-- **Inget sparat svar och källan svarar inte:** entiteterna är otillgängliga tills nästa lyckade hämtning. Vid start försöker Home Assistant igen automatiskt.
+- **Inget sparat svar och källan svarar inte:** posten sätts inte upp (`ConfigEntryNotReady`), och Home Assistant försöker igen automatiskt tills källan svarar.
 - **Adressen finns inte längre hos källan (404):** ett reparationsärende ber dig välja *Konfigurera om* och byta adress. Senaste data visas tills dess.
 - **Fel vid sökningen** visas i formuläret, och ingen adress läggs till.
 
