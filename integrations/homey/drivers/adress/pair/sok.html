@@ -6,6 +6,7 @@
     <p class="homey-form-hint" data-i18n="pair.hint"></p>
   </div>
   <p id="status" role="status"></p>
+  <p id="coverage" hidden><span id="coverageText"></span> <a href="#" id="coverageLink" data-i18n="pair.coverageLink"></a></p>
   <button class="homey-button-primary-full" id="search" type="submit" data-i18n="pair.search"></button>
 </form>
 <div id="places" hidden>
@@ -15,6 +16,7 @@
 
 <style>
   #status:empty { display: none; }
+  #coverageLink { text-decoration: underline; }
   #placeList { display: flex; flex-direction: column; gap: 8px; }
 </style>
 
@@ -27,7 +29,23 @@
   const placeList = document.getElementById('placeList')
   input.placeholder = Homey.__('pair.placeholder')
 
-  const messages = { failed: 'pair.failed', none: 'pair.notFound' }
+  // Listan över kommunerna finns på sajten, i Homeys egen webbvy
+  const coverage = document.getElementById('coverage')
+  document.getElementById('coverageLink').addEventListener('click', (event) => {
+    event.preventDefault()
+    Homey.popup('https://sopor.hardyson.se/bidra#kommuner')
+  })
+  Homey.emit('coverage').then(({ count }) => {
+    if (!count) return
+    document.getElementById('coverageText').textContent = Homey.__('pair.coverage', { count })
+    coverage.hidden = false
+  }, () => {})
+
+  // Utan träff: är orten en kommun som finns är det nog stavningen, annars kanske kommunen
+  function notFound({ place, covered }) {
+    if (covered === null) return Homey.__('pair.notFound')
+    return Homey.__(covered ? 'pair.notFoundCovered' : 'pair.notFoundElsewhere', { place })
+  }
 
   function showPlaces(places) {
     placeList.replaceChildren(
@@ -58,11 +76,12 @@
     status.textContent = Homey.__('pair.searching')
     try {
       // Drivrutinen sparar träffarna åt list_devices
-      const { result, places } = await Homey.emit('search', q)
+      const answer = await Homey.emit('search', q)
+      const { result, places } = answer
       status.textContent = ''
       if (result === 'found') return Homey.showView('list_devices')
       if (result === 'places') return showPlaces(places)
-      status.textContent = Homey.__(messages[result] ?? 'pair.notFound')
+      status.textContent = result === 'failed' ? Homey.__('pair.failed') : notFound(answer)
     } catch (error) {
       status.textContent = error.message
     } finally {

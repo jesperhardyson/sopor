@@ -5,9 +5,9 @@ import { MemoryRouter } from 'react-router'
 import { describe, expect, it, vi } from 'vitest'
 import { BidraPage, REQUEST_TEXT } from './BidraPage'
 
-function setup() {
+function setup(path = '/bidra') {
   render(
-    <MemoryRouter>
+    <MemoryRouter initialEntries={[path]}>
       <BidraPage />
     </MemoryRouter>,
   )
@@ -55,5 +55,11 @@ describe('BidraPage', () => {
       'href',
       'https://github.com/jesperhardyson/sopor/blob/main/docs/kommuner/hitta-kommunens-data.md',
     )
+  })
+
+  it('öppnar kommunlistan direkt med ankaret #kommuner', () => {
+    setup('/bidra#kommuner')
+    expect(screen.getByRole('region', { name: 'Kommuner hittills' })).toHaveAttribute('id', 'kommuner')
+    expect(screen.getByRole('list', { name: 'Kommuner som finns nu' })).toBeInTheDocument()
   })
 })

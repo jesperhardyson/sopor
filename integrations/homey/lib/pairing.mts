@@ -1,7 +1,7 @@
 // Adressökningen i parningen: ett fält, "gata husnummer" och gärna ", ort".
 // Orten filtreras här och inte i API:t, eftersom källorna tolkar ort i frågan olika.
 
-import type { SoporSearch, SoporSearchHit } from './api.mjs'
+import type { SoporSearch, SoporSearchHit, SoporSources } from './api.mjs'
 
 /** Fler träffar än så visas som en lista med orter att välja bland först. */
 export const MAX_LIST = 12
@@ -48,3 +48,19 @@ export function places(hits: SoporSearchHit[]): Place[] {
   }
   return [...byKey.values()].sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, 'sv'))
 }
+
+/** Kommunerna som Sopor har, en gång var och utan ordet "kommun". */
+export function kommunNames({ sources }: SoporSources): string[] {
+  const byCode = new Map(sources.flatMap((s) => s.kommuner).map((k) => [k.code, k.name.replace(/\s+kommun$/i, '')]))
+  return [...byCode.values()].sort((a, b) => a.localeCompare(b, 'sv'))
+}
+
+/** Om orten användaren skrev är en av kommunerna. Avgör vad "ingen adress hittades" ska säga. */
+export function placeCovered(names: string[], place: string): boolean {
+  const wanted = words(place)
+  return names.some((name) => {
+    const haystack = words(name)
+    return wanted.every((w) => haystack.some((h) => h.startsWith(w)))
+  })
+}
+

@@ -1,6 +1,6 @@
 import { ArrowLeft, ArrowUpRight, Check, Copy } from 'lucide-react'
 import { useRef, useState } from 'react'
-import { Link } from 'react-router'
+import { Link, useLocation } from 'react-router'
 import { SITE } from '@/config'
 import { GitHubMark } from '../components/GitHubMark'
 import { ContributeWays, MunicipalityStatusList } from '../start/ContributeSection'
@@ -75,6 +75,8 @@ function CopyRequest() {
 }
 
 export function BidraPage() {
+  // Homey-appen länkar hit för att visa vilka kommuner som finns
+  const { hash } = useLocation()
   return (
     <div className="mx-auto flex w-full max-w-[640px] flex-col gap-9 px-5 pt-1 pb-10 md:px-0 md:pt-6 md:pb-20">
       <div className="flex flex-col gap-3">
@@ -124,11 +126,11 @@ export function BidraPage() {
         <ContributeWays />
       </section>
 
-      <section className="flex flex-col gap-3" aria-labelledby="kommuner-rubrik">
+      <section id="kommuner" className="flex scroll-mt-6 flex-col gap-3" aria-labelledby="kommuner-rubrik">
         <h2 id="kommuner-rubrik" className={h2}>
           Kommuner hittills
         </h2>
-        <MunicipalityStatusList />
+        <MunicipalityStatusList defaultOpen={hash === '#kommuner'} />
       </section>
 
       <section className="flex flex-col items-start gap-3 border-t border-border pt-6" aria-labelledby="utv-rubrik">

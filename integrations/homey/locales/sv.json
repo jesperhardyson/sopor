@@ -6,10 +6,14 @@
     "search": "Sök",
     "searching": "Söker …",
     "tooShort": "Skriv minst tre tecken.",
-    "notFound": "Ingen adress hittades. Kontrollera stavningen och skriv med husnummer.",
+    "notFound": "Ingen adress hittades. Kontrollera stavningen och husnumret, och att din kommun finns med.",
     "failed": "Några källor svarade inte. Försök igen om en stund.",
     "hint": "Lägg till orten efter ett komma för färre träffar.",
-    "choosePlace": "Många träffar. Var ligger adressen?"
+    "choosePlace": "Många träffar. Var ligger adressen?",
+    "notFoundCovered": "Ingen adress hittades i __place__. Kontrollera stavningen och husnumret.",
+    "notFoundElsewhere": "Ingen adress hittades i __place__. Kontrollera att kommunen finns med.",
+    "coverage": "Sopor finns i __count__ kommuner.",
+    "coverageLink": "Se vilka"
   },
   "device": {
     "gone": "Adressen finns inte längre hos källan. Reparera eller ta bort enheten.",
