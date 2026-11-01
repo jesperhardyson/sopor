@@ -6,6 +6,12 @@ Integrationen ligger i `custom_components/sopor/` i repots rot, eftersom HACS ba
 
 ## Installation via HACS
 
+Har du HACS installerat räcker det att trycka här, så öppnas HACS i din egen Home Assistant med Sophämtning ifyllt:
+
+[![Öppna i HACS i din Home Assistant](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=jesperhardyson&repository=sopor&category=integration)
+
+Eller för hand:
+
 1. Öppna HACS i Home Assistant, välj menyn uppe till höger och *Anpassade databaser* (Custom repositories).
 2. Lägg till `jesperhardyson/sopor` med kategorin *Integration*.
 3. Sök upp *Sophämtning* i HACS, ladda ner den och starta om Home Assistant.

@@ -71,7 +71,7 @@ Söktexten är `"<gata>, <ort>"`, med kommunen om orten saknas. Det är samma fo
 
 ## Home Assistant släppt
 
-Från 2026-11-01 (release `ha-v0.1.0`) har Home Assistant inget märke. Länken går till integrationens README (`SITE.homeAssistantUrl`), som beskriver installationen via HACS. Layouten är densamma som i skissen.
+Från 2026-11-01 (release `ha-v0.1.0`) har Home Assistant inget märke. Länken (`SITE.homeAssistantUrl`) är My Home Assistants länk som öppnar HACS i besökarens egen Home Assistant med repot ifyllt. Installationen för hand beskrivs i integrationens README, som har samma knapp överst. Layouten är densamma som i skissen.
 
 - **Om-sidan:** "Integrationen Sophämtning · via HACS".
   > Lägg till din adress i integrationen, så vet Home Assistant när soporna hämtas.
