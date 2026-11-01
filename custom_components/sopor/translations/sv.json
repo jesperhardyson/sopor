@@ -1,1 +1,9 @@
-{ "title": "Sophämtning" }
+{
+  "title": "Sophämtning",
+  "issues": {
+    "address_gone": {
+      "title": "Adressen finns inte längre",
+      "description": "Adressen {title} finns inte längre hos källan. Öppna integrationen Sophämtning och välj Konfigurera om för att byta adress."
+    }
+  }
+}

@@ -1,1 +1,9 @@
-{ "title": "Waste collection" }
+{
+  "title": "Waste collection",
+  "issues": {
+    "address_gone": {
+      "title": "The address no longer exists",
+      "description": "The address {title} no longer exists at the source. Open the Waste collection integration and choose Reconfigure to change the address."
+    }
+  }
+}

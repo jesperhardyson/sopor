@@ -1,15 +1,27 @@
 """Sophämtning: sophämtning per adress från sopor.hardyson.se."""
 
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.event import async_track_time_interval
+
+from .const import TICK_INTERVAL
+from .coordinator import SoporConfigEntry, SoporCoordinator
 
 PLATFORMS: list[Platform] = []
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+async def async_setup_entry(hass: HomeAssistant, entry: SoporConfigEntry) -> bool:
+    coordinator = SoporCoordinator(hass, entry)
+    if await coordinator.async_load():
+        # Det sparade svaret räcker för att starta, även om hämtningen misslyckas
+        await coordinator.async_refresh()
+    else:
+        await coordinator.async_config_entry_first_refresh()
+    entry.runtime_data = coordinator
+    entry.async_on_unload(async_track_time_interval(hass, coordinator.async_tick, TICK_INTERVAL))
+    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True
 
 
-async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    return True
+async def async_unload_entry(hass: HomeAssistant, entry: SoporConfigEntry) -> bool:
+    return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
