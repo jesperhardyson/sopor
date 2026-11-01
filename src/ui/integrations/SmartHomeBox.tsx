@@ -28,7 +28,7 @@ function CopyButton({ text, label }: { text: string; label: string }) {
 
 function Row({ name, status, soon, href, action, actionLabel, children }: {
   name: string
-  status: string
+  status?: string
   soon?: boolean
   href: string
   action: string
@@ -40,7 +40,7 @@ function Row({ name, status, soon, href, action, actionLabel, children }: {
       <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
         <span className="flex items-center gap-1.5">
           <span className="text-[15px] font-extrabold whitespace-nowrap text-text">{name}</span>
-          <StatusBadge soon={soon} onSurface2>{status}</StatusBadge>
+          {status && <StatusBadge soon={soon} onSurface2>{status}</StatusBadge>}
         </span>
         <a href={href} rel="noopener" aria-label={actionLabel} className="inline-flex items-center gap-1 text-sm font-extrabold text-primary">
           {action}
@@ -75,8 +75,8 @@ export function SmartHomeBox({ address, origin = defaultOrigin() }: { address: A
           <CopyButton text={search} label="Kopiera söktexten" />
         </div>
       </Row>
-      <Row name="Home Assistant" status="Kommer snart" soon href={SITE.homeAssistantGuideUrl} action="Guide" actionLabel="Guide för Home Assistant">
-        <p className="text-[13px] text-text-2">Tills dess: en REST-sensor med adressens API-länk.</p>
+      <Row name="Home Assistant" href={SITE.homeAssistantUrl} action="Installera" actionLabel="Installera Sophämtning i Home Assistant">
+        <p className="text-[13px] text-text-2">Sök på samma adress när du lägger till Sophämtning.</p>
       </Row>
       <div className="flex items-center gap-2 px-0.5">
         <Braces className="size-4 shrink-0 text-text-2" aria-hidden />

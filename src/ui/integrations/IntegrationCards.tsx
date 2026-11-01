@@ -1,4 +1,4 @@
-import { BookOpen, Check, Download, HouseWifi, Server, type LucideIcon } from 'lucide-react'
+import { Check, Download, HouseWifi, Server, type LucideIcon } from 'lucide-react'
 import { useId } from 'react'
 import { cn } from '@/lib/utils'
 import { SITE } from '@/config'
@@ -7,7 +7,8 @@ import { StatusBadge } from './StatusBadge'
 interface Integration {
   name: string
   icon: LucideIcon
-  status: string
+  /** Utan märke när integrationen är släppt */
+  status?: string
   soon?: boolean
   sub: string
   text: string
@@ -32,11 +33,14 @@ const INTEGRATIONS: Integration[] = [
   {
     name: 'Home Assistant',
     icon: Server,
-    status: 'Kommer snart',
-    soon: true,
-    sub: 'Integration via HACS',
-    text: 'En integration med sensorer och kalender är på väg. Tills dess kan du läsa schemat med en REST-sensor.',
-    link: { label: 'Så gör du i dag', href: SITE.homeAssistantGuideUrl, icon: BookOpen },
+    sub: 'Integrationen Sophämtning · via HACS',
+    text: 'Lägg till din adress i integrationen, så vet Home Assistant när soporna hämtas.',
+    points: [
+      'Påminnelse kvällen innan, via kalendern',
+      'Nästa hämtning för varje avfallstyp',
+      'Besked när schemat ändras, till exempel kring helgdagar',
+    ],
+    link: { label: 'Installera via HACS', href: SITE.homeAssistantUrl, icon: Download, primary: true },
   },
 ]
 
@@ -54,7 +58,7 @@ function Card({ name, icon: Icon, status, soon, sub, text, points, link }: Integ
             <h3 id={id} className="text-base font-extrabold whitespace-nowrap text-text">
               {name}
             </h3>
-            <StatusBadge soon={soon}>{status}</StatusBadge>
+            {status && <StatusBadge soon={soon}>{status}</StatusBadge>}
           </span>
           <p className="text-[13px] text-text-2">{sub}</p>
         </div>

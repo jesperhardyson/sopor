@@ -66,11 +66,23 @@ describe('StartPage fokusläge', () => {
 })
 
 describe('StartPage innehåll', () => {
+  it('har ett eget avsnitt om smarta hem med korten', () => {
+    setup()
+    const section = screen.getByRole('region', { name: 'Påminnelse i Homey eller Home Assistant' })
+    expect(within(section).getByRole('article', { name: 'Homey' })).toBeInTheDocument()
+    expect(within(section).getByRole('article', { name: 'Home Assistant' })).toBeInTheDocument()
+    expect(within(section).getByRole('link', { name: /Läs API-guiden/ })).toHaveAttribute(
+      'href',
+      'https://github.com/jesperhardyson/sopor/blob/main/docs/api.md',
+    )
+  })
+
   it('berättar vad man får se efter sökningen', () => {
     setup()
     expect(screen.getByRole('heading', { name: 'Koll på sopdagen, utan att behöva tänka på den' })).toBeInTheDocument()
     const points = screen.getByRole('list', { name: 'Det här får du' })
     expect(within(points).getByRole('link', { name: /Läs mer om smarta hem/ })).toHaveAttribute('href', '/om#smarta-hem')
+    expect(within(points).getByText('Påminnelser i Homey och Home Assistant, kvällen innan.')).toBeInTheDocument()
     for (const title of ['Nästa tömning direkt', 'Alla tömningar framåt', 'Schemat i din kalender', 'Spara adresser', 'Smarta hem']) {
       expect(within(points).getByRole('heading', { name: title })).toBeInTheDocument()
     }

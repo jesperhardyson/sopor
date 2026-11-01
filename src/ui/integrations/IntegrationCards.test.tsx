@@ -11,13 +11,15 @@ describe('IntegrationCards', () => {
     expect(within(homey).getByRole('link', { name: /Installera i Homey/ })).toHaveAttribute('href', 'https://homey.app/a/se.hardyson.sopor/test/')
   })
 
-  it('har ett kort för Home Assistant som hänvisar till guiden', () => {
+  it('har ett kort för Home Assistant med installationslänk och inget märke', () => {
     render(<IntegrationCards />)
     const ha = screen.getByRole('article', { name: 'Home Assistant' })
-    expect(within(ha).getByText('Kommer snart')).toBeInTheDocument()
-    expect(within(ha).getByRole('link', { name: /Så gör du i dag/ })).toHaveAttribute(
+    expect(within(ha).queryByText('Kommer snart')).not.toBeInTheDocument()
+    expect(within(ha).getByText('Integrationen Sophämtning · via HACS')).toBeInTheDocument()
+    expect(within(ha).getByText('Påminnelse kvällen innan, via kalendern')).toBeInTheDocument()
+    expect(within(ha).getByRole('link', { name: /Installera via HACS/ })).toHaveAttribute(
       'href',
-      'https://github.com/jesperhardyson/sopor/blob/main/docs/api.md#home-assistant',
+      'https://my.home-assistant.io/redirect/hacs_repository/?owner=jesperhardyson&repository=sopor-home-assistant&category=integration',
     )
   })
 })

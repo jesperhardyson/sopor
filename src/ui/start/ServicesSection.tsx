@@ -14,7 +14,7 @@ const BENEFITS: { icon: LucideIcon; title: string; text: string; more?: { to: st
   {
     icon: HouseWifi,
     title: 'Smarta hem',
-    text: 'Påminnelse i Homey kvällen innan. Home Assistant är på väg.',
+    text: 'Påminnelser i Homey och Home Assistant, kvällen innan.',
     more: { to: '/om#smarta-hem', label: 'Läs mer om smarta hem' },
   },
 ]

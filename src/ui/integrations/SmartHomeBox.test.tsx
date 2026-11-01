@@ -30,12 +30,13 @@ describe('SmartHomeBox', () => {
     expect(screen.getByRole('heading', { name: 'Smarta hem' })).toBeInTheDocument()
     expect(screen.getByText('Få en påminnelse kvällen innan, i Homey eller Home Assistant.')).toBeInTheDocument()
     expect(screen.getByText('Testversion')).toBeInTheDocument()
-    expect(screen.getByText('Kommer snart')).toBeInTheDocument()
+    expect(screen.queryByText('Kommer snart')).not.toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Installera Sophämtning i Homey/ })).toHaveAttribute('href', 'https://homey.app/a/se.hardyson.sopor/test/')
-    expect(screen.getByRole('link', { name: /Guide för Home Assistant/ })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /Installera Sophämtning i Home Assistant/ })).toHaveAttribute(
       'href',
-      'https://github.com/jesperhardyson/sopor/blob/main/docs/api.md#home-assistant',
+      'https://my.home-assistant.io/redirect/hacs_repository/?owner=jesperhardyson&repository=sopor-home-assistant&category=integration',
     )
+    expect(screen.getByText('Sök på samma adress när du lägger till Sophämtning.')).toBeInTheDocument()
     expect(screen.getByText('Östra Ågatan 13, Uppsala')).toBeInTheDocument()
   })
 

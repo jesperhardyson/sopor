@@ -1,6 +1,6 @@
 # Spec: Smarta hem på webben
 
-Status: byggd, 2026-10-31. Skisserna finns på sidan "Smarta hem på webben · skiss" i `docs/design/sopor-design.pen`.
+Status: byggd, 2026-10-31. Home Assistant uppdaterad 2026-11-01, när integrationen släpptes (se "Home Assistant släppt"). Skisserna finns på sidan "Smarta hem på webben · skiss" i `docs/design/sopor-design.pen`.
 
 ## Mål
 
@@ -68,6 +68,31 @@ När Home Assistant finns: "Påminnelser i Homey och Home Assistant, kvällen in
 - {} API-länk för utvecklare [Kopiera]
 
 Söktexten är `"<gata>, <ort>"`, med kommunen om orten saknas. Det är samma format som appen förstår, där orten efter kommat filtrerar träffarna.
+
+## Home Assistant släppt
+
+Från 2026-11-01 (release `ha-v0.1.0`) har Home Assistant inget märke. Länken (`SITE.homeAssistantUrl`) är My Home Assistants länk som öppnar HACS i besökarens egen Home Assistant med repot ifyllt. Installationen för hand beskrivs i integrationens README, som har samma knapp överst. Layouten är densamma som i skissen.
+
+- **Om-sidan:** "Integrationen Sophämtning · via HACS".
+  > Lägg till din adress i integrationen, så vet Home Assistant när soporna hämtas.
+  >
+  > - Påminnelse kvällen innan, via kalendern
+  > - Nästa hämtning för varje avfallstyp
+  > - Besked när schemat ändras, till exempel kring helgdagar
+  >
+  > Knapp (primär): **Installera via HACS**
+- **Adressidan:** raden har länken "Installera ↗" och texten "Sök på samma adress när du lägger till Sophämtning." Integrationen förstår samma söktext som Homey-appen.
+- **Startsidan:** "Påminnelser i Homey och Home Assistant, kvällen innan."
+
+REST-sensorn och Remote Calendar finns kvar i API-guiden, som länkas från "Bygger du något eget?".
+
+### Eget avsnitt på startsidan
+
+Många besökare frågar efter smarta hem, så startsidan har också ett eget avsnitt mellan "Det här får du" och "Bidra". Skisserna finns på samma sida, "Mobil · Start, avsnitt Smarta hem" och "Desktop · Start, avsnitt Smarta hem".
+
+- Överrubrik **SMARTA HEM**, rubrik **Påminnelse i Homey eller Home Assistant** och ingressen från Om-sidan.
+- Samma två kort som på Om-sidan (`IntegrationCards`), och raden "Bygger du något eget?" (`BuildYourOwn`).
+- Raden "Smarta hem" i "Det här får du" finns kvar med länken till Om-sidan.
 
 ## Så skriver vi om integrationerna
 
