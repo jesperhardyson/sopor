@@ -364,6 +364,10 @@
           "en": "The waste bin was put out",
           "sv": "Sopkärlet ställdes ut"
         },
+        "hint": {
+          "en": "Runs when Put out is switched on, in the app, from the device tile or with a flow card.",
+          "sv": "Går när Utställt slås på, i appen, från enhetens ruta eller med ett flödeskort."
+        },
         "args": [
           {
             "type": "device",
@@ -497,6 +501,10 @@
         "titleFormatted": {
           "en": "The waste bin is !{{|not}} emptied [[nar]]",
           "sv": "Sopkärlet töms !{{|inte}} [[nar]]"
+        },
+        "hint": {
+          "en": "Checks the bin's waste types in the address's collection schedule. A bin with several compartments is emptied when any of them is collected.",
+          "sv": "Kollar kärlets avfallstyper i adressens hämtschema. Ett kärl med flera fack töms när något av dem hämtas."
         },
         "args": [
           {
@@ -656,6 +664,10 @@
         "titleFormatted": {
           "en": "Mark the waste bin as [[lage]]",
           "sv": "Markera sopkärlet som [[lage]]"
+        },
+        "hint": {
+          "en": "Put out is switched off by itself the night after the bin is emptied.",
+          "sv": "Utställt slås av av sig självt natten efter att kärlet tömts."
         },
         "args": [
           {
