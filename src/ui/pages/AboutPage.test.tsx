@@ -60,14 +60,17 @@ describe('AboutPage', () => {
     expect(screen.getByRole('link', { name: /Sopor på GitHub/ })).toHaveAttribute('href', 'https://github.com/jesperhardyson/sopor')
   })
 
-  it('berättar om API:t och länkar till guiden', () => {
+  it('berättar om smarta hem och länkar till API-guiden', () => {
     render(
       <MemoryRouter>
         <AboutPage />
       </MemoryRouter>,
     )
-    expect(screen.getByRole('heading', { name: 'API' })).toBeInTheDocument()
-    expect(screen.getByText(/Sopor har ett öppet API som Home Assistant, Homey och andra system kan läsa\./)).toBeInTheDocument()
+    const section = screen.getByRole('region', { name: 'Smarta hem' })
+    expect(section).toHaveAttribute('id', 'smarta-hem')
+    expect(screen.getByText('Få veta när soporna hämtas, direkt i ditt smarta hem. Det är gratis, och du behöver inget konto.')).toBeInTheDocument()
+    expect(screen.getByRole('article', { name: 'Homey' })).toBeInTheDocument()
+    expect(screen.getByRole('article', { name: 'Home Assistant' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Läs API-guiden/ })).toHaveAttribute(
       'href',
       'https://github.com/jesperhardyson/sopor/blob/main/docs/api.md',
