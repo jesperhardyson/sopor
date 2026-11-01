@@ -1,5 +1,44 @@
 {
   "title": "Sophämtning",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Lägg till adress",
+        "description": "Sök adressen där sopor hämtas.\n\nSkriv gata och husnummer. Lägg till orten efter ett kommatecken för färre träffar, till exempel Storgatan 2, Uppsala.\n\n{coverage}",
+        "data": {
+          "adress": "Gata och husnummer"
+        },
+        "data_description": {
+          "adress": "Till exempel Storgatan 2, Uppsala"
+        }
+      },
+      "ort": {
+        "title": "Välj ort",
+        "description": "Många träffar. Var ligger adressen?",
+        "data": {
+          "ort": "Ort"
+        }
+      },
+      "adress": {
+        "title": "Välj adress",
+        "description": "Välj adressen där sopor hämtas.",
+        "data": {
+          "adress": "Adress"
+        }
+      }
+    },
+    "error": {
+      "too_short": "Skriv minst tre tecken av gatan.",
+      "sources_failed": "Några källor svarade inte. Försök igen om en stund.",
+      "not_found": "Ingen adress hittades. Kontrollera stavningen och husnumret, och att din kommun finns med.",
+      "not_found_covered": "Ingen adress hittades i {place}. Kontrollera stavningen och husnumret.",
+      "not_found_elsewhere": "Ingen adress hittades i {place}. Kontrollera att kommunen finns med.",
+      "cannot_connect": "Sopor svarar inte. Försök igen om en stund."
+    },
+    "abort": {
+      "already_configured": "Adressen är redan tillagd."
+    }
+  },
   "issues": {
     "address_gone": {
       "title": "Adressen finns inte längre",

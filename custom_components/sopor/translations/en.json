@@ -1,5 +1,44 @@
 {
   "title": "Waste collection",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Add address",
+        "description": "Search for the address where your waste is collected.\n\nType the street and house number. Add the town after a comma to get fewer matches, for example Storgatan 2, Uppsala.\n\n{coverage}",
+        "data": {
+          "adress": "Street and house number"
+        },
+        "data_description": {
+          "adress": "For example Storgatan 2, Uppsala"
+        }
+      },
+      "ort": {
+        "title": "Choose place",
+        "description": "Many matches. Where is the address?",
+        "data": {
+          "ort": "Place"
+        }
+      },
+      "adress": {
+        "title": "Choose address",
+        "description": "Choose the address where your waste is collected.",
+        "data": {
+          "adress": "Address"
+        }
+      }
+    },
+    "error": {
+      "too_short": "Type at least three characters.",
+      "sources_failed": "Some sources did not respond. Try again in a while.",
+      "not_found": "No address found. Check the spelling and house number, and that your municipality is included.",
+      "not_found_covered": "No address found in {place}. Check the spelling and house number.",
+      "not_found_elsewhere": "No address found in {place}. Check that the municipality is included.",
+      "cannot_connect": "Sopor is not responding. Try again in a while."
+    },
+    "abort": {
+      "already_configured": "The address has already been added."
+    }
+  },
   "issues": {
     "address_gone": {
       "title": "The address no longer exists",
