@@ -71,6 +71,23 @@
       "tomorrow": {
         "name": "Collected tomorrow"
       }
+    },
+    "calendar": {
+      "schedule": {
+        "name": "Collection schedule"
+      }
+    },
+    "event": {
+      "changed": {
+        "name": "Schedule changed",
+        "state_attributes": {
+          "event_type": {
+            "state": {
+              "andrat": "Changed"
+            }
+          }
+        }
+      }
     }
   }
 }

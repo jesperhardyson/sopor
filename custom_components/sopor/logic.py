@@ -30,6 +30,8 @@ TEXTS = {
         "moved": lambda name, from_, to: f"{name} flyttas från {from_} till {to}",
         "cancelled": lambda name, date: f"{name} hämtas inte {date}",
         "added": lambda name, date: f"{name} hämtas {date}",
+        "estimated_date": "Beräknat datum.",
+        "moved_from": lambda date, reason: _moved_line("Flyttad", "från", date, reason),
     },
     "en": {
         "weekdays": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
@@ -43,10 +45,18 @@ TEXTS = {
         "moved": lambda name, from_, to: f"{name} moves from {from_} to {to}",
         "cancelled": lambda name, date: f"{name} is not collected on {date}",
         "added": lambda name, date: f"{name} is collected on {date}",
+        "estimated_date": "Estimated date.",
+        "moved_from": lambda date, reason: _moved_line("Moved", "from", date, reason),
     },
 }
 
 _STOCKHOLM = ZoneInfo("Europe/Stockholm")
+
+
+def _moved_line(moved: str, from_word: str, date_: str | None, reason: str) -> str:
+    """Flyttad från ons 4 nov: Helgdag. Utan ursprungsdatum eller orsak utelämnas den delen."""
+    line = f"{moved} {from_word} {date_}" if date_ else moved
+    return f"{line}: {reason}" if reason else f"{line}."
 
 
 def lang_of(language: str) -> Lang:
@@ -275,3 +285,15 @@ def not_found_error(place: str, names: list[str]) -> str:
     if not place:
         return "not_found"
     return "not_found_covered" if place_covered(names, place) else "not_found_elsewhere"
+
+
+def event_description(event: Event, lang: Lang = "sv") -> str:
+    """Beräknat datum och/eller flyttad från, på var sin rad. Tom när hämtningen är som vanligt."""
+    t = TEXTS[lang]
+    lines = []
+    if event["estimated"]:
+        lines.append(t["estimated_date"])
+    if deviation := event["deviation"]:
+        original = deviation["originalDate"]
+        lines.append(t["moved_from"](short_date(original, lang) if original else None, deviation["reason"]))
+    return "\n".join(lines)
