@@ -1,111 +1,114 @@
-<form id="form">
+<form id="karlForm">
   <fieldset class="homey-form-fieldset">
     <legend class="homey-form-legend" data-i18n="pairKarl.chooseFractions"></legend>
-    <div id="fractions" class="homey-form-group"></div>
+    <div id="karlFractions" class="homey-form-group"></div>
   </fieldset>
   <div class="homey-form-group">
     <p class="homey-form-label" data-i18n="pairKarl.icon"></p>
-    <div id="icons" role="radiogroup"></div>
+    <div id="karlIcons" role="radiogroup"></div>
     <p class="homey-form-hint" data-i18n="pairKarl.iconHint"></p>
   </div>
   <div class="homey-form-group">
-    <label class="homey-form-label" for="name" data-i18n="pairKarl.name"></label>
-    <input class="homey-form-input" id="name" type="text" />
+    <label class="homey-form-label" for="karlName" data-i18n="pairKarl.name"></label>
+    <input class="homey-form-input" id="karlName" type="text" />
   </div>
-  <p id="status" role="status"></p>
-  <button class="homey-button-primary-full" id="add" type="submit" disabled data-i18n="pairKarl.add"></button>
+  <p id="karlStatus" role="status"></p>
+  <button class="homey-button-primary-full" id="karlAdd" type="submit" disabled data-i18n="pairKarl.add"></button>
 </form>
 
 <style>
-  #status:empty { display: none; }
-  #icons { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-  #icons button { aspect-ratio: 1; padding: 6px; border: 1px solid var(--homey-color-mono-200, #ddd); border-radius: 10px; background: none; }
-  #icons button[aria-checked='true'] { border: 2px solid var(--homey-color-highlight, #157a46); }
-  #icons img { width: 100%; height: 100%; }
+  #karlStatus:empty { display: none; }
+  #karlIcons { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  #karlIcons button { aspect-ratio: 1; padding: 6px; border: 1px solid var(--homey-color-mono-200, #ddd); border-radius: 10px; background: none; }
+  #karlIcons button[aria-checked='true'] { border: 2px solid var(--homey-color-highlight, #157a46); }
+  #karlIcons img { width: 100%; height: 100%; }
 </style>
 
 <script type="text/javascript">
-  // Ikonerna i drivers/karl/assets. "standard" är drivrutinens egen ikon.
-  const ICONS = ['standard', 'rest', 'mat', 'papper', 'plast', 'glas', 'metall', 'tidningar', 'flerfack']
-  const iconUrl = (icon) => (icon === 'standard' ? '../assets/icon.svg' : `../assets/icons/${icon}.svg`)
+  // Homey kör parningsvyerna i samma fönster. Skriptet hålls i en egen funktion, så att namnen inte krockar med andra vyers.
+  ;(() => {
+    // Ikonerna i drivers/karl/assets. "standard" är drivrutinens egen ikon.
+    const ICONS = ['standard', 'rest', 'mat', 'papper', 'plast', 'glas', 'metall', 'tidningar', 'flerfack']
+    const iconUrl = (icon) => (icon === 'standard' ? '../assets/icon.svg' : `../assets/icons/${icon}.svg`)
 
-  const form = document.getElementById('form')
-  const fractionBox = document.getElementById('fractions')
-  const iconBox = document.getElementById('icons')
-  const nameInput = document.getElementById('name')
-  const addButton = document.getElementById('add')
-  const status = document.getElementById('status')
+    const form = document.getElementById('karlForm')
+    const fractionBox = document.getElementById('karlFractions')
+    const iconBox = document.getElementById('karlIcons')
+    const nameInput = document.getElementById('karlName')
+    const addButton = document.getElementById('karlAdd')
+    const status = document.getElementById('karlStatus')
 
-  let icon = 'standard'
-  // Förslagen följer valen tills användaren väljer själv
-  let ownName = false
-  let ownIcon = false
+    let icon = 'standard'
+    // Förslagen följer valen tills användaren väljer själv
+    let ownName = false
+    let ownIcon = false
 
-  const selected = () => [...fractionBox.querySelectorAll('input:checked')].map((input) => input.value)
+    const selected = () => [...fractionBox.querySelectorAll('input:checked')].map((input) => input.value)
 
-  function showIcon(chosen) {
-    icon = chosen
-    for (const button of iconBox.children) button.setAttribute('aria-checked', String(button.dataset.icon === chosen))
-  }
+    function showIcon(chosen) {
+      icon = chosen
+      for (const button of iconBox.children) button.setAttribute('aria-checked', String(button.dataset.icon === chosen))
+    }
 
-  iconBox.replaceChildren(
-    ...ICONS.map((id) => {
-      const button = document.createElement('button')
-      button.type = 'button'
-      button.dataset.icon = id
-      button.setAttribute('role', 'radio')
-      const image = document.createElement('img')
-      image.src = iconUrl(id)
-      image.alt = id
-      button.append(image)
-      button.addEventListener('click', () => {
-        ownIcon = true
-        showIcon(id)
-      })
-      return button
-    }),
-  )
-  showIcon(icon)
-
-  nameInput.addEventListener('input', () => {
-    ownName = nameInput.value.trim() !== ''
-  })
-
-  async function update() {
-    const fractions = selected()
-    addButton.disabled = fractions.length === 0
-    const suggestion = await Homey.emit('suggest', fractions)
-    if (!ownName) nameInput.value = suggestion.name
-    if (!ownIcon) showIcon(suggestion.icon)
-  }
-
-  Homey.emit('fractions').then((fractions) => {
-    fractionBox.replaceChildren(
-      ...fractions.map(({ id, name }) => {
-        const label = document.createElement('label')
-        label.className = 'homey-form-checkbox'
-        label.innerHTML = '<input class="homey-form-checkbox-input" type="checkbox"><span class="homey-form-checkbox-checkmark"></span><span class="homey-form-checkbox-text"></span>'
-        const input = label.querySelector('input')
-        input.value = id
-        input.addEventListener('change', () => update().catch((error) => (status.textContent = error.message)))
-        label.querySelector('.homey-form-checkbox-text').textContent = name
-        return label
+    iconBox.replaceChildren(
+      ...ICONS.map((id) => {
+        const button = document.createElement('button')
+        button.type = 'button'
+        button.dataset.icon = id
+        button.setAttribute('role', 'radio')
+        const image = document.createElement('img')
+        image.src = iconUrl(id)
+        image.alt = id
+        button.append(image)
+        button.addEventListener('click', () => {
+          ownIcon = true
+          showIcon(id)
+        })
+        return button
       }),
     )
-  }, (error) => {
-    status.textContent = error.message
-  })
+    showIcon(icon)
 
-  form.addEventListener('submit', async (event) => {
-    event.preventDefault()
-    addButton.disabled = true
-    try {
-      const device = await Homey.emit('device', { fractions: selected(), name: nameInput.value, icon })
-      await Homey.createDevice(device)
-      Homey.done()
-    } catch (error) {
-      status.textContent = error.message
-      addButton.disabled = false
+    nameInput.addEventListener('input', () => {
+      ownName = nameInput.value.trim() !== ''
+    })
+
+    async function update() {
+      const fractions = selected()
+      addButton.disabled = fractions.length === 0
+      const suggestion = await Homey.emit('suggest', fractions)
+      if (!ownName) nameInput.value = suggestion.name
+      if (!ownIcon) showIcon(suggestion.icon)
     }
-  })
+
+    Homey.emit('fractions').then((fractions) => {
+      fractionBox.replaceChildren(
+        ...fractions.map(({ id, name }) => {
+          const label = document.createElement('label')
+          label.className = 'homey-form-checkbox'
+          label.innerHTML = '<input class="homey-form-checkbox-input" type="checkbox"><span class="homey-form-checkbox-checkmark"></span><span class="homey-form-checkbox-text"></span>'
+          const input = label.querySelector('input')
+          input.value = id
+          input.addEventListener('change', () => update().catch((error) => (status.textContent = error.message)))
+          label.querySelector('.homey-form-checkbox-text').textContent = name
+          return label
+        }),
+      )
+    }, (error) => {
+      status.textContent = error.message
+    })
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault()
+      addButton.disabled = true
+      try {
+        const device = await Homey.emit('device', { fractions: selected(), name: nameInput.value, icon })
+        await Homey.createDevice(device)
+        Homey.done()
+      } catch (error) {
+        status.textContent = error.message
+        addButton.disabled = false
+      }
+    })
+  })()
 </script>
