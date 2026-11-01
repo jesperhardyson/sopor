@@ -181,7 +181,7 @@ cd integrations/homey && npm install && npx homey app install
 
 ### Home Assistant
 
-Integrationen **Sophämtning** installeras via HACS som anpassat repo. Lägg till `jesperhardyson/sopor` med kategorin *Integration*, ladda ner Sophämtning och lägg sedan till integrationen och sök upp adressen. Den ger sensorer per avfallstyp, en kalender, binära sensorer för i dag och i morgon och en händelse när schemat ändras.
+Integrationen **Sophämtning** installeras via HACS från [jesperhardyson/sopor-home-assistant](https://github.com/jesperhardyson/sopor-home-assistant), en spegling som uppdateras vid varje release. Tills den finns i HACS standardlista läggs repot till som anpassat repo med kategorin *Integration*. Ladda sedan ner Sophämtning och lägg sedan till integrationen och sök upp adressen. Den ger sensorer per avfallstyp, en kalender, binära sensorer för i dag och i morgon och en händelse när schemat ändras.
 
 - **Installation, entiteter, automationsexempel, utveckling och release:** [`integrations/home-assistant/README.md`](integrations/home-assistant/README.md).
 - **Spec:** `docs/specs/2026-11-01-sopor-home-assistant.md`.
@@ -194,7 +194,7 @@ Integrationen **Sophämtning** installeras via HACS som anpassat repo. Lägg til
   - API:t är versionerat i sökvägen (`/api/v1`) och har ett kontraktstest mot `openapi.json`.
   - Adress-id får inte tas bort (`check:ids` i CI).
   - ICS-UID ändrar aldrig format.
-- **Integrationerna** har semver och egna releaser: Homey-appen med taggar `homey-v*`, och Home Assistant med taggar `ha-v*` och GitHub-releaser i det här repot (HACS läser dem).
+- **Integrationerna** har semver och egna releaser: Homey-appen med taggar `homey-v*`, och Home Assistant med taggar `ha-v*` och GitHub-releaser i det här repot. Varje Home Assistant-release speglas till `jesperhardyson/sopor-home-assistant`, som får en egen release `v*`.
 
 ## Driftsättning
 

@@ -1,0 +1,39 @@
+name: Release
+
+# Taggen v<version> pushas av speglingen i jesperhardyson/sopor. Releasen skapas först när kontrollerna gått igenom,
+# eftersom HACS standardlista kräver det.
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  hassfest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: home-assistant/actions/hassfest@master
+
+  hacs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: hacs/action@main
+        with:
+          category: integration
+
+  release:
+    needs: [hassfest, hacs]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Skapa GitHub-releasen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          gh release create "$GITHUB_REF_NAME" --title "Sophämtning $VERSION" \
+            --notes "Ändringar: https://github.com/jesperhardyson/sopor/releases/tag/ha-v$VERSION"
