@@ -6,5 +6,9 @@
   "0.4.1": {
     "en": "Clearer wording: \"waste type\" instead of \"fraction\", and \"Any waste\" in the flow cards.",
     "sv": "Tydligare ord: \"avfallstyp\" i stället för \"fraktion\", och \"Något avfall\" i flödeskorten."
+  },
+  "0.4.2": {
+    "en": "Shows which municipalities Sopor covers when you search for an address, and explains why an address could not be found.",
+    "sv": "Visar vilka kommuner Sopor finns i när du söker adress, och förklarar varför en adress inte hittades."
   }
 }
