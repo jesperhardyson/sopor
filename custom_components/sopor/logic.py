@@ -3,13 +3,16 @@
 Datum är YYYY-MM-DD. Aritmetiken görs på hela dagar, som i Homey-appens lib/dates.mts.
 """
 
+import re
 from dataclasses import dataclass
 from datetime import date, datetime
 from typing import TYPE_CHECKING, Literal
 from zoneinfo import ZoneInfo
 
+from .const import MAX_LIST
+
 if TYPE_CHECKING:
-    from .api import Event, Schedule
+    from .api import Event, Schedule, Search, SearchHit, Sources
 
 Lang = Literal["sv", "en"]
 
@@ -184,3 +187,91 @@ def without_fractions(schedule: Schedule, hidden: list[str]) -> Schedule:
         "events": [event for event in events if event["fractions"]],
         "fractions": {id_: f for id_, f in schedule["fractions"].items() if id_ not in hidden},
     }
+
+
+# Adressökningen i parningen: ett fält, "gata husnummer" och gärna ", ort".
+# Orten filtreras här och inte i API:t, eftersom källorna tolkar ort i frågan olika.
+
+SearchResult = Literal["found", "places", "failed", "none"]
+
+
+@dataclass(frozen=True)
+class Place:
+    # "<ort>|<kommun>"
+    key: str
+    label: str
+    count: int
+
+
+def parse_query(text: str) -> tuple[str, str]:
+    """ "Storgatan 2, Uppsala" blir ("Storgatan 2", "Uppsala")."""
+    q, _, place = text.partition(",")
+    return q.strip(), place.strip()
+
+
+def _words(text: str) -> list[str]:
+    return [w for w in re.split(r"[^\w]+", text.casefold()) if w]
+
+
+def _starts_words(haystack: list[str], place: str) -> bool:
+    """Varje ord i `place` ska vara början på ett ord i `haystack`."""
+    return all(any(h.startswith(w) for h in haystack) for w in _words(place))
+
+
+def _in_place(hit: SearchHit, place: str) -> bool:
+    return _starts_words(_words(f"{hit['locality']} {hit['kommun']}"), place)
+
+
+def search_outcome(search: Search, place: str, max_list: int = MAX_LIST) -> tuple[SearchResult, list[SearchHit]]:
+    hits = [hit for hit in search["addresses"] if _in_place(hit, place)] if place else search["addresses"]
+    if len(hits) > max_list:
+        return "places", hits
+    if hits:
+        return "found", hits
+    return ("failed" if search["failed"] else "none"), hits
+
+
+def place_key(hit: SearchHit) -> str:
+    return f"{hit['locality']}|{hit['kommun']}"
+
+
+def places(hits: list[SearchHit]) -> list[Place]:
+    """Orterna bland träffarna, flest träffar först, sedan i bokstavsordning (utan hänsyn till versaler)."""
+    counts: dict[str, int] = {}
+    labels: dict[str, str] = {}
+    for hit in hits:
+        key = place_key(hit)
+        counts[key] = counts.get(key, 0) + 1
+        labels[key] = f"{hit['locality']}, {hit['kommun']}" if hit["locality"] else hit["kommun"]
+    found = [Place(key, labels[key], count) for key, count in counts.items()]
+    return sorted(found, key=lambda p: (-p.count, p.label.casefold()))
+
+
+def hit_title(hit: SearchHit) -> str:
+    return f"{hit['street']}, {hit['locality'] or hit['kommun']}"
+
+
+def hit_label(hit: SearchHit) -> str:
+    return f"{hit_title(hit)}, {hit['detail']}" if hit["detail"] else hit_title(hit)
+
+
+def kommun_names(sources: Sources) -> list[str]:
+    """Kommunerna som Sopor har, en gång var och utan ordet "kommun"."""
+    by_code = {
+        k["code"]: re.sub(r"\s+kommun$", "", k["name"], flags=re.IGNORECASE)
+        for source in sources["sources"]
+        for k in source["kommuner"]
+    }
+    return sorted(by_code.values(), key=str.casefold)
+
+
+def place_covered(names: list[str], place: str) -> bool:
+    """Om orten användaren skrev är en av kommunerna. Avgör vad "ingen adress hittades" ska säga."""
+    return any(_starts_words(_words(name), place) for name in names)
+
+
+def not_found_error(place: str, names: list[str]) -> str:
+    """Felnyckeln när ingen adress hittades."""
+    if not place:
+        return "not_found"
+    return "not_found_covered" if place_covered(names, place) else "not_found_elsewhere"
