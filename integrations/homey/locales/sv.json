@@ -26,5 +26,19 @@
     "nothing": "Inga kommande hämtningar",
     "estimated": "beräknat",
     "title": "Sophämtning"
+  },
+  "karl": {
+    "addressGone": "Adressen är borttagen. Lägg till den igen eller ta bort kärlet.",
+    "noFraction": "Välj minst en avfallstyp."
+  },
+  "pairKarl": {
+    "chooseAddress": "Vilken adress står kärlet vid?",
+    "noAddress": "Lägg först till din adress med enheten Adress.",
+    "notReady": "Adressen har inte hämtat schemat än. Försök igen om en stund.",
+    "chooseFractions": "Vad slängs i kärlet?",
+    "icon": "Ikon",
+    "iconHint": "Föreslås utifrån avfallstyperna.",
+    "name": "Namn",
+    "add": "Lägg till"
   }
 }

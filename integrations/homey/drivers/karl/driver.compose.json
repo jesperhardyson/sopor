@@ -1,0 +1,132 @@
+{
+  "name": {
+    "en": "Waste bin",
+    "sv": "Sopkärl"
+  },
+  "class": "other",
+  "capabilities": [
+    "sopor_next",
+    "sopor_days",
+    "sopor_utstallt"
+  ],
+  "capabilitiesOptions": {
+    "sopor_next": {
+      "title": {
+        "en": "Next emptying",
+        "sv": "Nästa tömning"
+      }
+    }
+  },
+  "platforms": [
+    "local"
+  ],
+  "connectivity": [
+    "cloud"
+  ],
+  "pair": [
+    {
+      "id": "adress",
+      "navigation": {
+        "next": "fraktioner"
+      }
+    },
+    {
+      "id": "fraktioner",
+      "navigation": {
+        "prev": "adress"
+      }
+    }
+  ],
+  "images": {
+    "small": "/drivers/karl/assets/images/small.png",
+    "large": "/drivers/karl/assets/images/large.png",
+    "xlarge": "/drivers/karl/assets/images/xlarge.png"
+  },
+  "settings": [
+    {
+      "type": "group",
+      "label": {
+        "en": "Waste types in the bin",
+        "sv": "Avfallstyper i kärlet"
+      },
+      "hint": {
+        "en": "What the bin holds. The bin is emptied when any of them is collected.",
+        "sv": "Det som slängs i kärlet. Kärlet töms när något av det hämtas."
+      },
+      "children": [
+        {
+          "id": "ingar_rest",
+          "type": "checkbox",
+          "label": {
+            "en": "Residual waste",
+            "sv": "Restavfall"
+          },
+          "value": false
+        },
+        {
+          "id": "ingar_mat",
+          "type": "checkbox",
+          "label": {
+            "en": "Food waste",
+            "sv": "Matavfall"
+          },
+          "value": false
+        },
+        {
+          "id": "ingar_papper",
+          "type": "checkbox",
+          "label": {
+            "en": "Paper packaging",
+            "sv": "Pappersförpackningar"
+          },
+          "value": false
+        },
+        {
+          "id": "ingar_plast",
+          "type": "checkbox",
+          "label": {
+            "en": "Plastic packaging",
+            "sv": "Plastförpackningar"
+          },
+          "value": false
+        },
+        {
+          "id": "ingar_glas",
+          "type": "checkbox",
+          "label": {
+            "en": "Glass",
+            "sv": "Glas"
+          },
+          "value": false
+        },
+        {
+          "id": "ingar_metall",
+          "type": "checkbox",
+          "label": {
+            "en": "Metal",
+            "sv": "Metall"
+          },
+          "value": false
+        },
+        {
+          "id": "ingar_tidningar",
+          "type": "checkbox",
+          "label": {
+            "en": "Newspapers",
+            "sv": "Tidningar"
+          },
+          "value": false
+        },
+        {
+          "id": "ingar_karl",
+          "type": "checkbox",
+          "label": {
+            "en": "Multi-compartment bin",
+            "sv": "Kärl (flera avfallstyper)"
+          },
+          "value": false
+        }
+      ]
+    }
+  ]
+}

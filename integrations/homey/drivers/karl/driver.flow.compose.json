@@ -1,0 +1,181 @@
+{
+  "triggers": [
+    {
+      "id": "karl_toms_i_morgon",
+      "title": {
+        "en": "The waste bin is emptied tomorrow",
+        "sv": "Sopkärlet töms i morgon"
+      },
+      "hint": {
+        "en": "Runs once a day at the reminder time of the bin's address (18:00 unless you change it), if the bin is emptied the next day.",
+        "sv": "Går en gång om dagen vid påminnelsetiden för kärlets adress (18:00 om du inte ändrar den), om kärlet töms dagen efter."
+      },
+      "tokens": [
+        {
+          "name": "fraktioner",
+          "type": "string",
+          "title": {
+            "en": "Waste types",
+            "sv": "Avfallstyper"
+          },
+          "example": {
+            "en": "Food waste",
+            "sv": "Matavfall"
+          }
+        },
+        {
+          "name": "datum",
+          "type": "string",
+          "title": {
+            "en": "Date",
+            "sv": "Datum"
+          },
+          "example": {
+            "en": "Thu 5 Nov",
+            "sv": "tors 5 nov"
+          }
+        }
+      ]
+    },
+    {
+      "id": "karl_toms_i_dag",
+      "title": {
+        "en": "The waste bin is emptied today",
+        "sv": "Sopkärlet töms i dag"
+      },
+      "hint": {
+        "en": "Runs at the morning time of the bin's address (07:00 unless you change it) on the day the bin is emptied.",
+        "sv": "Går vid morgontiden för kärlets adress (07:00 om du inte ändrar den) den dag kärlet töms."
+      },
+      "tokens": [
+        {
+          "name": "fraktioner",
+          "type": "string",
+          "title": {
+            "en": "Waste types",
+            "sv": "Avfallstyper"
+          },
+          "example": {
+            "en": "Food waste",
+            "sv": "Matavfall"
+          }
+        },
+        {
+          "name": "datum",
+          "type": "string",
+          "title": {
+            "en": "Date",
+            "sv": "Datum"
+          },
+          "example": {
+            "en": "Thu 5 Nov",
+            "sv": "tors 5 nov"
+          }
+        }
+      ]
+    },
+    {
+      "id": "karl_stalldes_ut",
+      "title": {
+        "en": "The waste bin was put out",
+        "sv": "Sopkärlet ställdes ut"
+      }
+    }
+  ],
+  "conditions": [
+    {
+      "id": "karl_toms",
+      "title": {
+        "en": "The waste bin is !{{|not}} emptied",
+        "sv": "Sopkärlet töms !{{|inte}}"
+      },
+      "titleFormatted": {
+        "en": "The waste bin is !{{|not}} emptied [[nar]]",
+        "sv": "Sopkärlet töms !{{|inte}} [[nar]]"
+      },
+      "args": [
+        {
+          "name": "nar",
+          "type": "dropdown",
+          "title": {
+            "en": "When",
+            "sv": "När"
+          },
+          "values": [
+            {
+              "id": "0",
+              "label": {
+                "en": "today",
+                "sv": "i dag"
+              }
+            },
+            {
+              "id": "1",
+              "label": {
+                "en": "tomorrow",
+                "sv": "i morgon"
+              }
+            },
+            {
+              "id": "2",
+              "label": {
+                "en": "the day after tomorrow",
+                "sv": "i övermorgon"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "karl_utstallt",
+      "title": {
+        "en": "The waste bin is !{{|not}} put out",
+        "sv": "Sopkärlet är !{{|inte}} utställt"
+      },
+      "hint": {
+        "en": "Put out is switched off by itself the night after the bin is emptied.",
+        "sv": "Utställt slås av av sig självt natten efter att kärlet tömts."
+      }
+    }
+  ],
+  "actions": [
+    {
+      "id": "karl_satt_utstallt",
+      "title": {
+        "en": "Mark the waste bin as put out or taken in",
+        "sv": "Markera sopkärlet som utställt eller intaget"
+      },
+      "titleFormatted": {
+        "en": "Mark the waste bin as [[lage]]",
+        "sv": "Markera sopkärlet som [[lage]]"
+      },
+      "args": [
+        {
+          "name": "lage",
+          "type": "dropdown",
+          "title": {
+            "en": "State",
+            "sv": "Läge"
+          },
+          "values": [
+            {
+              "id": "ute",
+              "label": {
+                "en": "put out",
+                "sv": "utställt"
+              }
+            },
+            {
+              "id": "inne",
+              "label": {
+                "en": "taken in",
+                "sv": "intaget"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

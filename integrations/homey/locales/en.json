@@ -26,5 +26,19 @@
     "nothing": "No upcoming collections",
     "estimated": "estimated",
     "title": "Waste Collection"
+  },
+  "karl": {
+    "addressGone": "The address has been removed. Add it again or remove the bin.",
+    "noFraction": "Choose at least one waste type."
+  },
+  "pairKarl": {
+    "chooseAddress": "Which address does the bin belong to?",
+    "noAddress": "First add your address with the device Address.",
+    "notReady": "The address has not fetched its schedule yet. Try again in a while.",
+    "chooseFractions": "What goes in the bin?",
+    "icon": "Icon",
+    "iconHint": "Suggested from the waste types.",
+    "name": "Name",
+    "add": "Add"
   }
 }

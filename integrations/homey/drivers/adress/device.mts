@@ -2,8 +2,8 @@ import Homey from 'homey'
 import type SoporApp from '../../app.mjs'
 import { SoporError, type SoporSchedule } from '../../lib/api.mjs'
 import { addDays, languageOf, shortDate, stockholmTime, todayInStockholm } from '../../lib/dates.mjs'
-import { isValidTime, reminderDue } from '../../lib/reminder.mjs'
-import { changeText, collectedOn, daysToNext, fractionIds, fractionName, fractionsOn, nextText, scheduleChanges, summary, tomorrowText, withoutFractions } from '../../lib/schedule.mjs'
+import { REMINDER_TIMES, isValidTime, reminderDue } from '../../lib/reminder.mjs'
+import { KNOWN_FRACTIONS, changeText, collectedOn, daysToNext, fractionIds, fractionName, fractionsOn, nextText, scheduleChanges, summary, tomorrowText, withoutFractions } from '../../lib/schedule.mjs'
 
 const TICK_MS = 15 * 60_000
 const REMINDER_TICK_MS = 60_000
@@ -12,13 +12,10 @@ const RETRY_MS = 3_600_000
 const PREFIX = 'sopor_next.'
 const BASE_CAPABILITIES = ['sopor_summary', 'sopor_days', 'sopor_tomorrow']
 
-/** Fraktionerna som har en kryssruta "visa_<id>" i inställningarna. */
-const KNOWN_FRACTIONS = ['rest', 'mat', 'papper', 'plast', 'glas', 'metall', 'tidningar', 'karl']
-
 /** Triggerkorten som går vid en inställd tid, och dagarna framåt de gäller. */
 const REMINDERS = [
-  { card: 'hamtas_i_morgon', setting: 'paminnelsetid', fallback: '18:00', daysAhead: 1, store: 'reminded' },
-  { card: 'hamtas_i_dag', setting: 'morgontid', fallback: '07:00', daysAhead: 0, store: 'remindedToday' },
+  { card: 'hamtas_i_morgon', store: 'reminded', ...REMINDER_TIMES.tomorrow },
+  { card: 'hamtas_i_dag', store: 'remindedToday', ...REMINDER_TIMES.today },
 ]
 
 /** Capability-id får bara innehålla a–z, 0–9 och _. */
@@ -105,8 +102,13 @@ export default class AddressDevice extends Homey.Device {
 
   /** Det sparade schemat utan de fraktioner som användaren dolt. */
   get schedule(): SoporSchedule | null {
-    const schedule: SoporSchedule | null = this.getStoreValue('schedule') ?? null
+    const schedule = this.storedSchedule
     return schedule && withoutFractions(schedule, this.hiddenFractions(this.getSettings()))
+  }
+
+  /** Hela det sparade schemat. Kärlen väljer sina avfallstyper själva. */
+  get storedSchedule(): SoporSchedule | null {
+    return this.getStoreValue('schedule') ?? null
   }
 
   private hiddenFractions(settings: Record<string, unknown>): string[] {
@@ -128,6 +130,9 @@ export default class AddressDevice extends Homey.Device {
     this.nextFetch = Date.now() + REFRESH_MS
     await this.setAvailable()
     await this.render()
+    // Kärlen vid adressen ritar om direkt
+    const { schedules } = this.homey.app as SoporApp
+    schedules.emit('schedule', (this.getData() as { id: string }).id)
   }
 
   /** Behåller senaste svaret vid tillfälliga fel. Bara 404 och "inget svar än" gör enheten otillgänglig. */
