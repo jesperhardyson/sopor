@@ -30,3 +30,9 @@ public/ics/
 .vercel
 .DS_Store
 .env*
+
+# Python (Home Assistant-integrationen)
+.venv
+__pycache__
+.pytest_cache
+.ruff_cache

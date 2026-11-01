@@ -21,6 +21,8 @@ Homey-appen (`integrations/homey/`) är ett eget paket: `cd integrations/homey &
 - **Versioner:** ändra aldrig appens version för hand. Använd `npm run release` (se `integrations/homey/README.md`).
 - **Jobbnamn:** inga CI-jobb får heta `test`, utom det i `ci.yml`, eftersom det är den obligatoriska checken för `main`.
 
+Home Assistant-integrationen (`custom_components/sopor/`, tester i `integrations/home-assistant/`): `cd integrations/home-assistant && uv sync && uv run pytest`. Lint: `uv run ruff check ../../custom_components tests && uv run ruff format --check ../../custom_components tests`.
+
 `main` är skyddad: ändringar går via pull request och kräver grön CI. Arbeta på en gren.
 
 ## Arkitekturregler (bryt inte dessa)
@@ -32,7 +34,7 @@ Homey-appen (`integrations/homey/`) är ett eget paket: `cd integrations/homey &
 5. **Datum** är strängar på formen `YYYY-MM-DD`. Aritmetik görs i `src/domain/dates.ts` (UTC-midnatt). "I dag" räknas i `Europe/Stockholm`.
 6. **localStorage** används alltid med try/catch. Appen ska fungera utan lagring.
 7. **Domänlogik** (`src/domain/`) är ren TypeScript utan React, eftersom den körs både i build-skriptet och i webbläsaren.
-8. **Integrationer** (`integrations/`) är egna paket som bara pratar med det publika API:t v1. De importerar aldrig från `src/`, och API:ts stabilitetslöften är deras enda kontrakt.
+8. **Integrationer** (`integrations/` och `custom_components/`) är egna paket som bara pratar med det publika API:t v1. De importerar aldrig från `src/`, och API:ts stabilitetslöften är deras enda kontrakt.
 
 ## Design
 
