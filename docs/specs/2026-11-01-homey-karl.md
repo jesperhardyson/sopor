@@ -33,6 +33,7 @@ Sopor vet bara vilka avfallstyper en adress har, inte vilka fysiska kärl som fi
 - **Data:** `data: { id: "<källa>/<adress-id>/<slump>" }`. `<slump>` är 8 tecken a–z0–9 och skapas vid parningen. Samma adress kan ha flera kärl, även två med samma avfallstyp (till exempel två restavfallskärl).
 - **Store:** `address: "<källa>/<adress-id>"` (adressenhetens `data.id`), `fractions: string[]` (de valda avfallstyperna) och `putOutFor: "YYYY-MM-DD" | null` (se Utställt).
 - **Namn vid parning:** det användaren skriver. Förslaget är de valda avfallstypernas korta namn, till exempel "Plast & metall" (samma sammanfogning som `sopor_summary`).
+- **Ikon:** väljs vid parningen och skickas som `icon` till `Homey.createDevice`. Se Ikoner och bilder.
 
 ### Capabilities
 
@@ -43,6 +44,8 @@ Sopor vet bara vilka avfallstyper en adress har, inte vilka fysiska kärl som fi
 | `sopor_utstallt` | boolean, setable | "Utställt". Ny egen capability med `uiComponent: "toggle"` och `uiQuickAction: true`. Ett tryck på rutan i dashboarden växlar värdet. |
 
 `sopor_utstallt` är den enda booleska capabilityn och blir därför rutans tillstånd. `uiState` behövs inte, och det kräver dessutom Homey 13.5.0, medan appen stöder 12.3.0.
+
+Snabbknappen gäller inte bara dashboards: ett tryck på enhetens ruta i Homey-appens zonvy växlar också "Utställt", och ett långt tryck öppnar enheten. Ett feltryck kostar lite, eftersom värdet återställs av sig självt (se Utställt).
 
 En tömning räknas för kärlet när minst en av dess avfallstyper finns i händelsen. Ett fyrfackskärl med rest och mat töms alltså när någon av dem hämtas.
 
@@ -75,6 +78,8 @@ En tömning räknas för kärlet när minst en av dess avfallstyper finns i hän
 
 Exempel: tömning onsdag. Man ställer ut tisdag kväll, då sparas onsdagens datum. Natten mot torsdag slås "Utställt" av, och kortet "är inte utställt" fungerar igen inför nästa tömning.
 
+Tömningen sker oftast på förmiddagen. Att "Utställt" ligger kvar resten av tömningsdagen gör det möjligt att få en påminnelse om att ta in kärlet, utan något extra kort: "Klockan är 16:00 → Och sopkärlet töms i dag → Och sopkärlet är utställt → Skicka notis 'Ta in kärlet'". Den som tar in kärlet slår av "Utställt", och då går notisen inte.
+
 ## Parning
 
 Inga systemvyer behövs. Två egna vyer, och enheten skapas med `Homey.createDevice` i den sista.
@@ -84,9 +89,22 @@ Inga systemvyer behövs. Två egna vyer, och enheten skapas med `Homey.createDev
    - Finns bara en går vyn vidare direkt.
    - Saknar adressen schema: "Adressen har inte hämtat schemat än. Försök igen om en stund."
 2. **Vy `fraktioner`:** "Vad slängs i kärlet?" och en kryssruta per avfallstyp som adressen har, i schemats ordning. Under dem kommer fältet "Namn", som fylls med förslaget och uppdateras tills användaren skriver i det själv. Knappen "Lägg till" är avstängd tills minst en avfallstyp är vald.
-   - Vyn hämtar valen med `Homey.emit('fractions', addressId)` och får enheten med `Homey.emit('device', { addressId, fractions, name })`. Drivrutinen bygger `data`, `store` och `settings`, och vyn anropar `Homey.createDevice` och sedan `Homey.done()`.
+      - Under avfallstyperna finns **Ikon**: ett rutnät med kärlikonerna. Förslaget markeras och följer valen tills användaren väljer en ikon själv (se Ikoner och bilder).
+   - Vyn hämtar valen med `Homey.emit('fractions', addressId)` och får enheten med `Homey.emit('device', { addressId, fractions, name, icon })`. Drivrutinen bygger `data`, `store`, `settings` och `icon`, och vyn anropar `Homey.createDevice` och sedan `Homey.done()`.
 
-Vyerna använder Homeys egna klasser (`homey-form-checkbox`, `homey-form-input`, `homey-button-primary-full`), som adressens sökvy. De har ingen egen design.
+Vyerna är ritade på sidan "Homey · Sopkärl" i `sopor-design.pen`. Där det går används Homeys egna klasser (`homey-form-checkbox`, `homey-form-input`, `homey-button-primary-full`), som i adressens sökvy. Adressknapparna och ikonvalet är egna.
+
+## Ikoner och bilder
+
+Designen finns på sidan "Homey · Sopkärl" i `sopor-design.pen`.
+
+- **Enhetsikoner:** samma linjeritade kärl som adressens drivrutinsikon, med avfallstypens symbol mitt på kärlets framsida. Det finns nio: standard (utan symbol), rest (sopsäck), mat (äpple), papper (kartong), plast (PET-flaska med räfflor), glas (flaska och burk), metall (burk), tidningar och flerfack. Flerfack har en mittlinje och fyra små symboler.
+  - Symbolerna är egna linjeritningar i Lucides stil (24-rutnät, runda ändar), inte Lucide-ikonerna i `FractionIcon`. Lucides `cup-soda`, `wine` och `cylinder` var för otydliga för plast, glas och metall.
+  - Filer: `drivers/karl/assets/icon.svg` (standard) och `drivers/karl/assets/icons/<id>.svg`. SVG 960×960 med linjer och transparent bakgrund, enligt Homeys riktlinjer. Homey färgar ikonen själv, så den kan inte ha avfallstypens färg.
+  - **Förslaget:** en enda känd avfallstyp ger dess ikon. Flera avfallstyper, eller `karl`, ger flerfack. Annars blir det standardikonen.
+  - Ikonen sparas när enheten skapas. Den kan inte bytas i kärlets inställningar. Vill man byta tar man bort kärlet och lägger till det igen.
+- **Drivrutinsbild** (`small`, `large`, `xlarge`): det gröna kärlet från adressens bild, med en vit etikett med fyra avfallsikoner i färg. Den skiljer drivrutinen "Sopkärl" från "Adress" i listan när man lägger till en enhet.
+- **Capability-ikon** för `sopor_utstallt`: kärlet med en bock (`assets/sopor_utstallt.svg`).
 
 ## Flödeskort
 
@@ -115,11 +133,11 @@ Homey skapar egna kort för `sopor_utstallt` eftersom den är setable. Med `"ins
 - **`drivers/karl/`**: `driver.mts` (parning och kort), `device.mts` (koppling, omräkning, utställt, triggrar) och `pair/adress.html`, `pair/fraktioner.html`. Klasserna hålls tunna, som för adressen.
 - **`drivers/adress/device.mts`**: `this.emit('schedule')` efter lyckad hämtning, och en getter `storedSchedule` för det ofiltrerade schemat. Påminnelselogiken (`REMINDERS`, `reminderDue`) delas med kärlet i stället för att kopieras.
 - **`.homeycompose/capabilities/sopor_utstallt.json`** med ikon i `assets/`.
-- **Bilder:** drivrutinen behöver `small`, `large` och `xlarge`, och ikonen för `sopor_utstallt`. De ritas på sidan "Homey · Sophämtning" i `sopor-design.pen` innan bygget.
+- **Bilder och ikoner:** exporteras från sidan "Homey · Sopkärl" (se Ikoner och bilder). `lib/bin.mts` får också `suggestedIcon(fractions)`.
 
 ## Tester
 
-- `lib/bin.test.mts`: filtrering, tömning när en av flera avfallstyper hämtas, `putOutDate` med och utan kommande tömning, återställning dagen efter tömningen men inte samma dag, namnförslag på båda språken.
+- `lib/bin.test.mts`: filtrering, tömning när en av flera avfallstyper hämtas, `putOutDate` med och utan kommande tömning, återställning dagen efter tömningen men inte samma dag, namnförslag på båda språken och ikonförslag.
 - Drivrutinen och enheten testas inte direkt, som för adressen.
 - Provkörning på Homey Pro: para adress och två kärl, slå på "Utställt" från rutan, kontrollera att det slås av natten efter tömningen, ta bort och lägg tillbaka adressen.
 
@@ -129,11 +147,10 @@ En minor-version (1.1.0) med `npm run release`. Changeloggen säger att man nu k
 
 ## Öppna frågor
 
-1. **Återställningstid.** Midnatt efter tömningsdagen är enkelt men kan vara sent för den som vill få påminnelsen "ta in kärlet" på eftermiddagen. Det hör ihop med triggern i Senare.
-2. **Snabbknappen.** Ska ett tryck på rutan växla "Utställt", eller är det lätt att råka trycka? Alternativet är `uiQuickAction: false`, och då slås det bara på i enhetsvyn eller med kort.
+1. **Små storlekar.** Flerfacksikonens fyra symboler kan bli otydliga i Homeys minsta ikonstorlek. Det provas på riktig Homey, och vid behov får flerfack en enda symbol.
 
 ## Senare
 
-- Trigger "Sopkärlet har tömts" vid en inställd tid på tömningsdagen, som påminnelse om att ta in kärlet.
+- Trigger "Sopkärlet har tömts" vid en inställd tid på tömningsdagen. Flödet med "töms i dag" och "är utställt" räcker tills någon saknar den.
 - Kärl i widgeten, eller en egen widget per kärl.
 - Insights för "Utställt".
