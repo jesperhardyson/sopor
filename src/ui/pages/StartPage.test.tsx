@@ -66,6 +66,17 @@ describe('StartPage fokusläge', () => {
 })
 
 describe('StartPage innehåll', () => {
+  it('har ett eget avsnitt om smarta hem med korten', () => {
+    setup()
+    const section = screen.getByRole('region', { name: 'Påminnelse i Homey eller Home Assistant' })
+    expect(within(section).getByRole('article', { name: 'Homey' })).toBeInTheDocument()
+    expect(within(section).getByRole('article', { name: 'Home Assistant' })).toBeInTheDocument()
+    expect(within(section).getByRole('link', { name: /Läs API-guiden/ })).toHaveAttribute(
+      'href',
+      'https://github.com/jesperhardyson/sopor/blob/main/docs/api.md',
+    )
+  })
+
   it('berättar vad man får se efter sökningen', () => {
     setup()
     expect(screen.getByRole('heading', { name: 'Koll på sopdagen, utan att behöva tänka på den' })).toBeInTheDocument()

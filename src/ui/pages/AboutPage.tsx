@@ -1,10 +1,11 @@
-import { ArrowLeft, ArrowUpRight, Ban, Braces, ChevronDown, Mail, MapPin, Smartphone, UserX, type LucideIcon } from 'lucide-react'
+import { ArrowLeft, ArrowUpRight, Ban, ChevronDown, Mail, MapPin, Smartphone, UserX, type LucideIcon } from 'lucide-react'
 import { useEffect, useId, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { clearSaved, loadSaved } from '@/lib/storage'
 import { GitHubMark } from '../components/GitHubMark'
 import { ForgetAll } from '../saved/ForgetAll'
 import { Link, useLocation } from 'react-router'
+import { BuildYourOwn } from '../integrations/BuildYourOwn'
 import { IntegrationCards } from '../integrations/IntegrationCards'
 import { SITE } from '@/config'
 import { SOURCES, sourceLabel, type Source } from '@/sources'
@@ -189,13 +190,7 @@ export function AboutPage() {
         </h2>
         <p className={body}>Få veta när soporna hämtas, direkt i ditt smarta hem. Det är gratis, och du behöver inget konto.</p>
         <IntegrationCards />
-        <p className="flex items-center gap-2.5 text-[15px]">
-          <Braces className="size-[18px] shrink-0 text-text-2" aria-hidden />
-          <span className="font-bold text-text">Bygger du något eget?</span>
-          <a href={SITE.apiGuideUrl} rel="noopener" className="font-extrabold text-primary">
-            Läs API-guiden →
-          </a>
-        </p>
+        <BuildYourOwn />
       </section>
 
       <section className="flex flex-col items-start gap-3">

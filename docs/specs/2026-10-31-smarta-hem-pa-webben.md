@@ -86,6 +86,14 @@ Från 2026-11-01 (release `ha-v0.1.0`) har Home Assistant inget märke. Länken 
 
 REST-sensorn och Remote Calendar finns kvar i API-guiden, som länkas från "Bygger du något eget?".
 
+### Eget avsnitt på startsidan
+
+Många besökare frågar efter smarta hem, så startsidan har också ett eget avsnitt mellan "Det här får du" och "Bidra". Skisserna finns på samma sida, "Mobil · Start, avsnitt Smarta hem" och "Desktop · Start, avsnitt Smarta hem".
+
+- Överrubrik **SMARTA HEM**, rubrik **Påminnelse i Homey eller Home Assistant** och ingressen från Om-sidan.
+- Samma två kort som på Om-sidan (`IntegrationCards`), och raden "Bygger du något eget?" (`BuildYourOwn`).
+- Raden "Smarta hem" i "Det här får du" finns kvar med länken till Om-sidan.
+
 ## Så skriver vi om integrationerna
 
 - **Nyttan först.** Skriv vad man får ("Påminnelse kvällen innan"), inte hur det är byggt (flödeskort, capabilities, API, JSON).
