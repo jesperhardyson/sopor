@@ -19,7 +19,6 @@ from .logic import (
     hit_label,
     hit_title,
     kommun_names,
-    lang_of,
     not_found_error,
     parse_query,
     place_key,
@@ -29,20 +28,6 @@ from .logic import (
 
 MIN_LENGTH = 3
 ENTRY_KEYS = ("source", "id", "url", "street", "locality", "kommun", "detail")
-
-# Meningen om kommunerna i beskrivningen. Utan antal när /kallor inte svarar.
-COVERAGE = {
-    "sv": (
-        lambda count: f"Sopor täcker {count} svenska kommuner." if count else "Sopor täcker flera svenska kommuner.",
-        "Se vilka",
-    ),
-    "en": (
-        lambda count: (
-            f"Sopor covers {count} Swedish municipalities." if count else "Sopor covers many Swedish municipalities."
-        ),
-        "See which",
-    ),
-}
 
 
 def _hit_value(hit: SearchHit) -> str:
@@ -54,7 +39,8 @@ class SoporConfigFlow(ConfigFlow, domain=DOMAIN):
 
     def __init__(self) -> None:
         self._hits: list[SearchHit] = []
-        self._names: list[str] = []
+        # None tills /kallor är hämtad; tom lista om den misslyckades
+        self._names: list[str] | None = None
 
     async def async_step_user(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         client = SoporClient(async_get_clientsession(self.hass))
@@ -79,27 +65,28 @@ class SoporConfigFlow(ConfigFlow, domain=DOMAIN):
                     if result == "failed":
                         errors["base"] = "sources_failed"
                     else:
-                        errors["base"] = not_found_error(place, await self._kommun_names(client))
-        count = len(await self._kommun_names(client)) or ""
-        sentence, link_text = COVERAGE[lang_of(self.hass.config.language)]
+                        names = await self._kommun_names(client)
+                        # Utan kommunlista går det inte att säga om orten ingår
+                        errors["base"] = not_found_error(place, names) if names else "not_found"
+        names = await self._kommun_names(client)
+        # Utan kommunlista används ett steg med egna texter som inte nämner antalet
         return self.async_show_form(
-            step_id="user",
+            step_id="user" if names else "user_utan_antal",
             data_schema=probatio.Schema({probatio.Required("adress"): TextSelector()}),
             errors=errors,
-            description_placeholders={
-                "count": str(count),
-                "coverage": f"{sentence(count)} [{link_text}](https://sopor.hardyson.se/bidra#kommuner)",
-                "place": place,
-            },
+            description_placeholders={"count": str(len(names)) if names else "", "place": place},
         )
+
+    async def async_step_user_utan_antal(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+        return await self.async_step_user(user_input)
 
     async def _kommun_names(self, client: SoporClient) -> list[str]:
         """Kommunernas namn, hämtade en gång. Tom lista när /kallor inte svarar."""
-        if not self._names:
+        if self._names is None:
             try:
                 self._names = kommun_names(await client.sources())
             except SoporError:
-                pass
+                self._names = []
         return self._names
 
     async def async_step_ort(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:

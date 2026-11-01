@@ -20,10 +20,10 @@ def _mocka(aioclient_mock, q: str, search: Search = SOK, kallor=KALLOR):
         aioclient_mock.get(f"{BASE_URL}/kallor", json=kallor)
 
 
-async def _start(hass):
+async def _start(hass, step="user"):
     result = await hass.config_entries.flow.async_init(DOMAIN, context={"source": SOURCE_USER})
     assert result["type"] is FlowResultType.FORM
-    assert result["step_id"] == "user"
+    assert result["step_id"] == step
     return result
 
 
@@ -138,5 +138,18 @@ async def test_beskrivningen_har_antal_kommuner(hass, aioclient_mock):
 
 async def test_beskrivningen_utan_antal_nar_kallor_failar(hass, aioclient_mock):
     _mocka(aioclient_mock, "", kallor=None)
-    result = await _start(hass)
+    result = await _start(hass, "user_utan_antal")
     assert result["description_placeholders"]["count"] == ""
+
+
+async def test_ingen_traff_utan_kommunlista_ger_not_found(hass, aioclient_mock):
+    aioclient_mock.get(f"{BASE_URL}/sok", json={"addresses": [], "failed": []})
+    aioclient_mock.get(f"{BASE_URL}/kallor", status=502, text="Bad Gateway")
+    result = await hass.config_entries.flow.async_init(DOMAIN, context={"source": SOURCE_USER})
+    assert result["step_id"] == "user_utan_antal"
+    result = await hass.config_entries.flow.async_configure(result["flow_id"], {"adress": "Storgatan 2, Zzzville"})
+    assert result["step_id"] == "user_utan_antal"
+    assert result["errors"] == {"base": "not_found"}
+    # /kallor hämtas bara en gång under flödets sökning, även vid misslyckande
+    kallor = [c for c in aioclient_mock.mock_calls if str(c[1]).endswith("/kallor")]
+    assert len(kallor) == 1
