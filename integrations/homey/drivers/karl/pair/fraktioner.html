@@ -1,7 +1,7 @@
 <form id="karlForm">
   <fieldset class="homey-form-fieldset">
     <legend class="homey-form-legend" data-i18n="pairKarl.chooseFractions"></legend>
-    <div id="karlFractions" class="homey-form-group"></div>
+    <div id="karlFractions"></div>
   </fieldset>
   <div class="homey-form-group">
     <p class="homey-form-label" data-i18n="pairKarl.icon"></p>
@@ -18,10 +18,12 @@
 
 <style>
   #karlStatus:empty { display: none; }
-  #karlIcons { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-  #karlIcons button { aspect-ratio: 1; padding: 6px; border: 1px solid var(--homey-color-mono-200, #ddd); border-radius: 10px; background: none; }
-  #karlIcons button[aria-checked='true'] { border: 2px solid var(--homey-color-highlight, #157a46); }
-  #karlIcons img { width: 100%; height: 100%; }
+  #karlFractions { margin: 0; }
+  /* Rutorna är div:ar med fast höjd. Homeys egna knappstilar gav fel storlek i rutnätet. */
+  #karlIcons { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin-bottom: 8px; }
+  #karlIcons [role='radio'] { box-sizing: border-box; height: 64px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--homey-color-mono-200, #ddd); border-radius: 10px; cursor: pointer; }
+  #karlIcons [aria-checked='true'] { border: 2px solid var(--homey-color-highlight, #157a46); background: var(--homey-color-highlight-light, #e8f3ed); }
+  #karlIcons img { width: 48px; height: 48px; pointer-events: none; }
 </style>
 
 <script type="text/javascript">
@@ -47,24 +49,30 @@
 
     function showIcon(chosen) {
       icon = chosen
-      for (const button of iconBox.children) button.setAttribute('aria-checked', String(button.dataset.icon === chosen))
+      for (const tile of iconBox.children) tile.setAttribute('aria-checked', String(tile.dataset.icon === chosen))
     }
 
     iconBox.replaceChildren(
       ...ICONS.map((id) => {
-        const button = document.createElement('button')
-        button.type = 'button'
-        button.dataset.icon = id
-        button.setAttribute('role', 'radio')
+        const tile = document.createElement('div')
+        tile.dataset.icon = id
+        tile.tabIndex = 0
+        tile.setAttribute('role', 'radio')
         const image = document.createElement('img')
         image.src = iconUrl(id)
         image.alt = id
-        button.append(image)
-        button.addEventListener('click', () => {
+        tile.append(image)
+        const choose = () => {
           ownIcon = true
           showIcon(id)
+        }
+        tile.addEventListener('click', choose)
+        tile.addEventListener('keydown', (event) => {
+          if (event.key !== 'Enter' && event.key !== ' ') return
+          event.preventDefault()
+          choose()
         })
-        return button
+        return tile
       }),
     )
     showIcon(icon)
