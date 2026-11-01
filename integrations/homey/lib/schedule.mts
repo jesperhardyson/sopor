@@ -1,9 +1,8 @@
 // Räknar ur ett sparat adressvar. "I dag" skickas in, så att svaret kan vara några timmar gammalt.
 
 import type { SoporSchedule } from './api.mjs'
-import { addDays, daysBetween, relativeDayLabel, shortDate } from './dates.mjs'
-
-const NONE = 'Inga kommande hämtningar'
+import { addDays, daysBetween, relativeDayLabel, shortDate, type Lang } from './dates.mjs'
+import { TEXTS } from './texts.mjs'
 
 function upcoming(schedule: SoporSchedule, today: string) {
   return schedule.events.filter((event) => event.date >= today)
@@ -56,33 +55,34 @@ function joinShort(schedule: SoporSchedule, ids: string[]): string {
 }
 
 /** "Plast & metall – i morgon", som API:ts `summary`. */
-export function summary(schedule: SoporSchedule, today: string): string {
+export function summary(schedule: SoporSchedule, today: string, lang: Lang = 'sv'): string {
   const first = upcoming(schedule, today)[0]
-  if (!first) return NONE
-  return `${joinShort(schedule, first.fractions)} – ${relativeDayLabel(daysBetween(today, first.date))}`
+  if (!first) return TEXTS[lang].none
+  return `${joinShort(schedule, first.fractions)} – ${relativeDayLabel(daysBetween(today, first.date), lang)}`
 }
 
 /** Raden "I morgon" på enhetskortet: "Plast & metall" eller "Inget". */
-export function tomorrowText(schedule: SoporSchedule, today: string): string {
+export function tomorrowText(schedule: SoporSchedule, today: string, lang: Lang = 'sv'): string {
   const ids = fractionsOn(schedule, today, 1)
-  return ids.length ? joinShort(schedule, ids) : 'Inget'
+  return ids.length ? joinShort(schedule, ids) : TEXTS[lang].nothing
 }
 
 /** Texten i enhetens rad för en fraktion. */
-export function nextText(schedule: SoporSchedule, today: string, fraction: string): string {
+export function nextText(schedule: SoporSchedule, today: string, fraction: string, lang: Lang = 'sv'): string {
   const date = nextDate(schedule, today, fraction)
-  if (!date) return NONE
+  if (!date) return TEXTS[lang].none
   const event = upcoming(schedule, today).find((e) => e.date === date)!
-  return formatNext(daysBetween(today, date), date, event.estimated)
+  return formatNext(daysBetween(today, date), date, event.estimated, lang)
 }
 
 /**
  * Hur en kommande hämtning visas på enhetskortet: "i morgon", "om 3 dagar, ons 4 nov" eller "sön 8 nov".
  * Veckodagen räcker när hämtningen är mer än en vecka bort. `estimated` är sant när källan inte har bekräftat datumet.
  */
-export function formatNext(days: number, date: string, estimated: boolean): string {
-  const when = days <= 1 ? relativeDayLabel(days) : days < 7 ? `${relativeDayLabel(days)}, ${shortDate(date)}` : shortDate(date)
-  return estimated ? `${when} (beräknat)` : when
+export function formatNext(days: number, date: string, estimated: boolean, lang: Lang = 'sv'): string {
+  const day = shortDate(date, lang)
+  const when = days <= 1 ? relativeDayLabel(days, lang) : days < 7 ? `${relativeDayLabel(days, lang)}, ${day}` : day
+  return estimated ? `${when} (${TEXTS[lang].estimated})` : when
 }
 
 /** Dagar till nästa hämtning av någon fraktion, eller null när inget väntar. */
@@ -113,11 +113,12 @@ export function scheduleChanges(before: SoporSchedule, after: SoporSchedule, tod
 }
 
 /** "Plastförpackningar flyttas från ons 4 nov till tors 5 nov" */
-export function changeText(schedule: SoporSchedule, change: ScheduleChange): string {
+export function changeText(schedule: SoporSchedule, change: ScheduleChange, lang: Lang = 'sv'): string {
   const name = fractionName(schedule, change.fraction)
-  if (change.from && change.to) return `${name} flyttas från ${shortDate(change.from)} till ${shortDate(change.to)}`
-  if (change.from) return `${name} hämtas inte ${shortDate(change.from)}`
-  return `${name} hämtas ${shortDate(change.to!)}`
+  const t = TEXTS[lang]
+  if (change.from && change.to) return t.moved(name, shortDate(change.from, lang), shortDate(change.to, lang))
+  if (change.from) return t.cancelled(name, shortDate(change.from, lang))
+  return t.added(name, shortDate(change.to!, lang))
 }
 
 /** Schemat utan fraktioner som användaren dolt. Händelser utan kvarvarande fraktioner tas bort. */

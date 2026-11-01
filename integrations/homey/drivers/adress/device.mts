@@ -1,7 +1,7 @@
 import Homey from 'homey'
 import type SoporApp from '../../app.mjs'
 import { SoporError, type SoporSchedule } from '../../lib/api.mjs'
-import { addDays, shortDate, stockholmTime, todayInStockholm } from '../../lib/dates.mjs'
+import { addDays, languageOf, shortDate, stockholmTime, todayInStockholm } from '../../lib/dates.mjs'
 import { isValidTime, reminderDue } from '../../lib/reminder.mjs'
 import { changeText, collectedOn, daysToNext, fractionIds, fractionName, fractionsOn, nextText, scheduleChanges, summary, tomorrowText, withoutFractions } from '../../lib/schedule.mjs'
 
@@ -77,7 +77,7 @@ export default class AddressDevice extends Homey.Device {
       const tokens = {
         fraktioner: fractions.map((id) => fractionName(schedule, id)).join(', '),
         antal: fractions.length,
-        datum: shortDate(addDays(today, reminder.daysAhead)),
+        datum: shortDate(addDays(today, reminder.daysAhead), this.lang),
       }
       await this.homey.flow.getDeviceTriggerCard(reminder.card).trigger(this, tokens, { fractions })
     }
@@ -89,13 +89,18 @@ export default class AddressDevice extends Homey.Device {
     for (const change of scheduleChanges(before, after, todayInStockholm())) {
       const tokens = {
         fraktion: fractionName(after, change.fraction),
-        text: changeText(after, change),
-        tidigare: change.from ? shortDate(change.from) : '',
-        nytt: change.to ? shortDate(change.to) : '',
+        text: changeText(after, change, this.lang),
+        tidigare: change.from ? shortDate(change.from, this.lang) : '',
+        nytt: change.to ? shortDate(change.to, this.lang) : '',
         orsak: change.reason ?? '',
       }
       await card.trigger(this, tokens, { fractions: [change.fraction] })
     }
+  }
+
+  /** Homeys språk. Läses varje gång, så att texterna följer med om användaren byter. */
+  private get lang() {
+    return languageOf(this.homey.i18n.getLanguage())
   }
 
   /** Det sparade schemat utan de fraktioner som användaren dolt. */
@@ -148,10 +153,10 @@ export default class AddressDevice extends Homey.Device {
         const name = fractionName(schedule, fraction)
         await this.setCapabilityOptions(capability, { title: { en: name, sv: name } })
       }
-      await this.setCapabilityValue(capability, nextText(schedule, today, fraction))
+      await this.setCapabilityValue(capability, nextText(schedule, today, fraction, this.lang))
     }
-    await this.setCapabilityValue('sopor_summary', summary(schedule, today))
-    await this.setCapabilityValue('sopor_tomorrow', tomorrowText(schedule, today))
+    await this.setCapabilityValue('sopor_summary', summary(schedule, today, this.lang))
+    await this.setCapabilityValue('sopor_tomorrow', tomorrowText(schedule, today, this.lang))
     await this.setCapabilityValue('sopor_days', daysToNext(schedule, today))
   }
 

@@ -1,6 +1,6 @@
 import type Homey from 'homey'
 import type AddressDevice from '../../drivers/adress/device.mjs'
-import { todayInStockholm } from '../../lib/dates.mjs'
+import { languageOf, todayInStockholm } from '../../lib/dates.mjs'
 import { widgetRows, type WidgetRow } from '../../lib/widget.mjs'
 
 export default {
@@ -9,6 +9,6 @@ export default {
     const devices = homey.drivers.getDriver('adress').getDevices() as AddressDevice[]
     const device = devices.find((d) => d.getData().id === query.id) ?? devices[0]
     const schedule = device?.schedule
-    return { address: device?.getName() ?? null, rows: schedule ? widgetRows(schedule, todayInStockholm()) : [] }
+    return { address: device?.getName() ?? null, rows: schedule ? widgetRows(schedule, todayInStockholm(), languageOf(homey.i18n.getLanguage())) : [] }
   },
 }

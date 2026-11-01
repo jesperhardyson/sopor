@@ -150,3 +150,14 @@ describe('formatNext', () => {
   })
 })
 
+describe('enhetens texter på engelska', () => {
+  it('översätter allt utom avfallstypernas namn', () => {
+    expect(summary(schedule, today, 'en')).toBe('Plast & metall – tomorrow')
+    expect(summary(schedule, '2026-11-05', 'en')).toBe('No upcoming collections')
+    expect(tomorrowText(schedule, '2026-11-01', 'en')).toBe('Nothing')
+    expect(formatNext(3, '2026-11-04', true, 'en')).toBe('in 3 days, Wed 4 Nov (estimated)')
+    expect(changeText(schedule, { fraction: 'plast', from: '2026-11-04', to: '2026-11-05', reason: null }, 'en')).toBe('Plastförpackningar moves from Wed 4 Nov to Thu 5 Nov')
+    expect(changeText(schedule, { fraction: 'plast', from: '2026-11-04', to: null, reason: null }, 'en')).toBe('Plastförpackningar is not collected on Wed 4 Nov')
+    expect(changeText(schedule, { fraction: 'glas', from: null, to: '2026-11-04', reason: null }, 'en')).toBe('glas is collected on Wed 4 Nov')
+  })
+})
