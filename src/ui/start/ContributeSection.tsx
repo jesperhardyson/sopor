@@ -47,9 +47,9 @@ function kommunRows() {
 }
 
 /** Antalet kommuner i registret, namnen bakom en knapp (de är för många för att visas direkt), plus "Nästa kommun". */
-export function MunicipalityStatusList() {
+export function MunicipalityStatusList({ defaultOpen = false }: { defaultOpen?: boolean }) {
   const listId = useId()
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(defaultOpen)
   const rows = kommunRows()
   const row = 'flex items-center gap-2.5 text-[15px] font-extrabold text-text'
   return (

@@ -24,4 +24,9 @@ describe('MunicipalityStatusList', () => {
     expect(screen.getByText('Avesta kommun').parentElement).toHaveTextContent('Testdata')
     expect(screen.getByText('Nästa kommun')).toBeInTheDocument()
   })
+
+  it('kan börja utfälld', () => {
+    render(<MunicipalityStatusList defaultOpen />)
+    expect(screen.getByRole('button', { name: 'Dölj kommunerna' })).toHaveAttribute('aria-expanded', 'true')
+  })
 })

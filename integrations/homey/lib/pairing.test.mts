@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { SoporSearchHit } from './api.mjs'
-import { MAX_LIST, parseQuery, places, searchOutcome } from './pairing.mjs'
+import { MAX_LIST, kommunNames, parseQuery, placeCovered, places, searchOutcome } from './pairing.mjs'
 
 const hit = (street: string, locality: string, kommun = `${locality} kommun`): SoporSearchHit => ({
   id: `${street}-${locality}`, street, locality, kommun, source: 'x', detail: null, url: `https://sopor.hardyson.se/${street}`,
@@ -42,5 +42,28 @@ describe('parningens sökning', () => {
     expect(searchOutcome({ addresses: [], failed: ['uppsala'] }, '').result).toBe('failed')
     expect(searchOutcome({ addresses: [], failed: [] }, '').result).toBe('none')
     expect(searchOutcome({ addresses: [hit('Storgatan 2', 'Örebro')], failed: [] }, 'uppsala').result).toBe('none')
+  })
+})
+
+describe('kommunerna som finns', () => {
+  const sources = {
+    sources: [
+      { id: 'vafab', kommuner: [{ code: '1980', name: 'Västerås kommun' }, { code: '0381', name: 'Enköpings kommun' }] },
+      { id: 'uppsala', kommuner: [{ code: '0380', name: 'Uppsala kommun' }] },
+      { id: 'dubblett', kommuner: [{ code: '0380', name: 'Uppsala kommun' }] },
+    ],
+  }
+
+  it('listar varje kommun en gång, utan ordet kommun, i bokstavsordning', () => {
+    expect(kommunNames(sources)).toEqual(['Enköpings', 'Uppsala', 'Västerås'])
+  })
+
+  it('känner igen orten som en kommun som finns, också i början av namnet', () => {
+    const names = kommunNames(sources)
+    expect(placeCovered(names, 'Uppsala')).toBe(true)
+    expect(placeCovered(names, 'västerå')).toBe(true)
+    expect(placeCovered(names, 'Enköping')).toBe(true)
+    expect(placeCovered(names, 'Kommun')).toBe(false)
+    expect(placeCovered(names, 'Lillby')).toBe(false)
   })
 })

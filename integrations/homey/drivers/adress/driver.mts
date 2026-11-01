@@ -1,7 +1,7 @@
 import Homey from 'homey'
 import type SoporApp from '../../app.mjs'
 import type { SoporSearchHit } from '../../lib/api.mjs'
-import { parseQuery, placeKey, places, searchOutcome } from '../../lib/pairing.mjs'
+import { kommunNames, parseQuery, placeCovered, placeKey, places, searchOutcome } from '../../lib/pairing.mjs'
 import { ANY, fractionChoices } from '../../lib/schedule.mjs'
 import type AddressDevice from './device.mjs'
 
@@ -57,13 +57,24 @@ export default class AddressDriver extends Homey.Driver {
   async onPair(session: Homey.Driver.PairSession) {
     const { client } = this.homey.app as SoporApp
     let hits: SoporSearchHit[] = []
+    // Kommunerna hämtas en gång per parning. Utan svar visar vyn bara länken.
+    const kommuner = client.sources().then(kommunNames, () => [])
+
+    session.setHandler('coverage', async () => ({ count: (await kommuner).length }))
 
     // Svarar med resultatet, och med orterna när träffarna är för många. Vyn visar texten.
+    // Utan träff säger `covered` om orten är en kommun som finns, så att vyn vet om det är stavningen.
     session.setHandler('search', async (input: string) => {
       const { q, place } = parseQuery(input)
       const outcome = searchOutcome(await client.search(q), place)
       hits = outcome.hits
-      return { result: outcome.result, places: outcome.result === 'places' ? places(hits) : [] }
+      const names = await kommuner
+      return {
+        result: outcome.result,
+        places: outcome.result === 'places' ? places(hits) : [],
+        place,
+        covered: place && names.length ? placeCovered(names, place) : null,
+      }
     })
 
     // Användaren valde en ort bland många träffar

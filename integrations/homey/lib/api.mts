@@ -44,6 +44,10 @@ export interface SoporSchedule {
   links: { ics: string; web: string }
 }
 
+export interface SoporSources {
+  sources: { id: string; kommuner: { code: string; name: string }[] }[]
+}
+
 /** `status` 0 betyder nätfel eller timeout. `code` är API:ts felkod. */
 export class SoporError extends Error {
   constructor(
@@ -80,6 +84,7 @@ export function createClient({ fetch, userAgent, timeoutMs = 15_000 }: ClientOpt
     search: (q: string, source?: string) =>
       get<SoporSearch>(`${BASE_URL}/sok?${new URLSearchParams(source ? { q, kalla: source } : { q })}`),
     schedule: (url: string) => get<SoporSchedule>(url),
+    sources: () => get<SoporSources>(`${BASE_URL}/kallor`),
   }
 }
 

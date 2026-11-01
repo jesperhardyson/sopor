@@ -6,10 +6,14 @@
     "search": "Search",
     "searching": "Searching…",
     "tooShort": "Type at least three characters.",
-    "notFound": "No address found. Check the spelling and include the house number.",
+    "notFound": "No address found. Check the spelling and house number, and that your municipality is included.",
     "failed": "Some sources did not respond. Try again in a while.",
     "hint": "Add the town after a comma to get fewer matches.",
-    "choosePlace": "Many matches. Where is the address?"
+    "choosePlace": "Many matches. Where is the address?",
+    "notFoundCovered": "No address found in __place__. Check the spelling and house number.",
+    "notFoundElsewhere": "No address found in __place__. Check that the municipality is included.",
+    "coverage": "Sopor covers __count__ Swedish municipalities.",
+    "coverageLink": "See which"
   },
   "device": {
     "gone": "The address no longer exists at the source. Repair or remove the device.",
