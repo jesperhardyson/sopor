@@ -134,6 +134,7 @@ async def test_beskrivningen_har_antal_kommuner(hass, aioclient_mock):
     _mocka(aioclient_mock, "")
     result = await _start(hass)
     assert result["description_placeholders"]["count"] == str(len(kommun_names(KALLOR)))
+    assert result["description_placeholders"]["kommuner_url"] == "https://sopor.hardyson.se/bidra#kommuner"
 
 
 async def test_beskrivningen_utan_antal_nar_kallor_failar(hass, aioclient_mock):

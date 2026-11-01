@@ -4,7 +4,7 @@
     "step": {
       "user": {
         "title": "Add address",
-        "description": "Search for the address where your waste is collected.\n\nType the street and house number. Add the town after a comma to get fewer matches, for example Storgatan 2, Uppsala.\n\nSopor covers {count} Swedish municipalities. [See which](https://sopor.hardyson.se/bidra#kommuner)",
+        "description": "Search for the address where your waste is collected.\n\nType the street and house number. Add the town after a comma to get fewer matches, for example Storgatan 2, Uppsala.\n\nSopor covers {count} Swedish municipalities. [See which]({kommuner_url})",
         "data": {
           "adress": "Street and house number"
         },
@@ -28,7 +28,7 @@
       },
       "user_utan_antal": {
         "title": "Add address",
-        "description": "Search for the address where your waste is collected.\n\nType the street and house number. Add the town after a comma to get fewer matches, for example Storgatan 2, Uppsala.\n\nSopor covers many Swedish municipalities. [See which](https://sopor.hardyson.se/bidra#kommuner)",
+        "description": "Search for the address where your waste is collected.\n\nType the street and house number. Add the town after a comma to get fewer matches, for example Storgatan 2, Uppsala.\n\nSopor covers many Swedish municipalities. [See which]({kommuner_url})",
         "data": {
           "adress": "Street and house number"
         },

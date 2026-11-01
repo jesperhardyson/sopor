@@ -6,6 +6,7 @@ from pathlib import Path
 
 DOMAIN = "sopor"
 BASE_URL = "https://sopor.hardyson.se/api/v1"
+KOMMUNER_URL = "https://sopor.hardyson.se/bidra#kommuner"
 UPDATE_INTERVAL = timedelta(hours=6)
 TICK_INTERVAL = timedelta(minutes=15)
 TIMEOUT = 15

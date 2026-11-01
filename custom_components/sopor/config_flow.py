@@ -26,7 +26,7 @@ from homeassistant.helpers.selector import (
 )
 
 from .api import SearchHit, SoporClient, SoporError
-from .const import CONF_HIDDEN, DOMAIN
+from .const import CONF_HIDDEN, DOMAIN, KOMMUNER_URL
 from .coordinator import SoporConfigEntry, store_for
 from .logic import (
     fraction_ids,
@@ -105,7 +105,12 @@ class SoporConfigFlow(ConfigFlow, domain=DOMAIN):
             step_id=step_id,
             data_schema=probatio.Schema({probatio.Required("adress"): TextSelector()}),
             errors=errors,
-            description_placeholders={"count": str(len(names)) if names else "", "place": place},
+            description_placeholders={
+                "count": str(len(names)) if names else "",
+                "place": place,
+                # Hassfest tillåter inga länkar i översättningarna
+                "kommuner_url": KOMMUNER_URL,
+            },
         )
 
     async def async_step_user_utan_antal(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:

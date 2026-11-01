@@ -51,6 +51,8 @@ jobs:
       - uses: hacs/action@main
         with:
           category: integration
+          # Topics krävs bara för HACS standardlista, och repot är främst sajten
+          ignore: topics
 
   smoke:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'

@@ -4,7 +4,7 @@
     "step": {
       "user": {
         "title": "Lägg till adress",
-        "description": "Sök adressen där sopor hämtas.\n\nSkriv gata och husnummer. Lägg till orten efter ett kommatecken för färre träffar, till exempel Storgatan 2, Uppsala.\n\nSopor täcker {count} svenska kommuner. [Se vilka](https://sopor.hardyson.se/bidra#kommuner)",
+        "description": "Sök adressen där sopor hämtas.\n\nSkriv gata och husnummer. Lägg till orten efter ett kommatecken för färre träffar, till exempel Storgatan 2, Uppsala.\n\nSopor täcker {count} svenska kommuner. [Se vilka]({kommuner_url})",
         "data": {
           "adress": "Gata och husnummer"
         },
@@ -28,7 +28,7 @@
       },
       "user_utan_antal": {
         "title": "Lägg till adress",
-        "description": "Sök adressen där sopor hämtas.\n\nSkriv gata och husnummer. Lägg till orten efter ett kommatecken för färre träffar, till exempel Storgatan 2, Uppsala.\n\nSopor täcker flera svenska kommuner. [Se vilka](https://sopor.hardyson.se/bidra#kommuner)",
+        "description": "Sök adressen där sopor hämtas.\n\nSkriv gata och husnummer. Lägg till orten efter ett kommatecken för färre träffar, till exempel Storgatan 2, Uppsala.\n\nSopor täcker flera svenska kommuner. [Se vilka]({kommuner_url})",
         "data": {
           "adress": "Gata och husnummer"
         },
