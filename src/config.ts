@@ -9,6 +9,7 @@ export const SITE = {
   apiGuideUrl: 'https://github.com/jesperhardyson/sopor/blob/main/docs/api.md',
   /** Testversionen i Homey App Store. Byts mot appens sida när den är publicerad. */
   homeyAppUrl: 'https://homey.app/a/se.hardyson.sopor/test/',
-  homeAssistantGuideUrl: 'https://github.com/jesperhardyson/sopor/blob/main/docs/api.md#home-assistant',
+  /** Integrationens README, med installation via HACS. */
+  homeAssistantUrl: 'https://github.com/jesperhardyson/sopor/blob/main/integrations/home-assistant/README.md',
   dataGuideUrl: 'https://github.com/jesperhardyson/sopor/blob/main/docs/kommuner/hitta-kommunens-data.md',
 }
