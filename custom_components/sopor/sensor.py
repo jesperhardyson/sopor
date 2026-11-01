@@ -9,6 +9,7 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
+from .api import Event
 from .const import DOMAIN
 from .coordinator import SoporConfigEntry, SoporCoordinator
 from .entity import SoporEntity, lang
@@ -40,6 +41,18 @@ async def async_setup_entry(
         added.clear()
         added.update(current)
 
+    # Sensorer från en tidigare körning för avfallstyper som inte längre finns (dolda eller borta ur svaret)
+    if (visible := coordinator.visible) is not None:
+        prefix = f"{entry.entry_id}_next_"
+        current_ids = set(fraction_ids(visible))
+        for entity in er.async_entries_for_config_entry(registry, entry.entry_id):
+            if (
+                entity.domain == "sensor"
+                and entity.unique_id.startswith(prefix)
+                and entity.unique_id.removeprefix(prefix) not in current_ids
+            ):
+                registry.async_remove(entity.entity_id)
+
     entry.async_on_unload(coordinator.async_add_listener(sync_fractions))
     sync_fractions()
 
@@ -56,7 +69,7 @@ class SoporFractionSensor(SoporEntity, SensorEntity):
         # Namnet kommer från Sopor och är alltid svenskt. Okänd avfallstyp får sitt id som namn
         self._attr_name = fraction_name(coordinator.visible, fraction_id)
 
-    def _next(self):
+    def _next(self) -> Event | None:
         visible = self.coordinator.visible
         return next_event(visible, self.coordinator.today, self._fraction_id) if visible else None
 

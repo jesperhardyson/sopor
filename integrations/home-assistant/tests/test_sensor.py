@@ -142,3 +142,14 @@ async def test_inga_kommande(hass, setup_entry, freezer):
     assert hass.states.get(I_DAG).state == "off"
     assert hass.states.get(I_MORGON).state == "off"
     assert hass.states.get(PLAST).state == "unknown"
+
+
+async def test_dold_typ_tas_bort_ur_registret_vid_omladdning(hass, setup_entry):
+    registry = er.async_get(hass)
+    assert registry.async_get_entity_id("sensor", DOMAIN, f"{setup_entry.entry_id}_next_plast")
+    hass.config_entries.async_update_entry(setup_entry, options={"dolda": ["plast"]})
+    await hass.config_entries.async_reload(setup_entry.entry_id)
+    await hass.async_block_till_done()
+    assert registry.async_get_entity_id("sensor", DOMAIN, f"{setup_entry.entry_id}_next_plast") is None
+    assert hass.states.get(PLAST) is None
+    assert hass.states.get("sensor.storgatan_2_uppsala_metall") is not None
