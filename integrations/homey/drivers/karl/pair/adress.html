@@ -1,4 +1,4 @@
-<p class="homey-form-label" data-i18n="pairKarl.chooseAddress"></p>
+<p id="adressChoose" class="homey-form-label" data-i18n="pairKarl.chooseAddress"></p>
 <p id="adressStatus" role="status"></p>
 <div id="adressList"></div>
 
@@ -24,6 +24,7 @@
 
     Homey.emit('addresses').then((addresses) => {
       if (!addresses.length) {
+        document.getElementById('adressChoose').hidden = true
         status.textContent = Homey.__('pairKarl.noAddress')
         return
       }

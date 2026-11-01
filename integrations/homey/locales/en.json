@@ -33,12 +33,13 @@
   },
   "pairKarl": {
     "chooseAddress": "Which address does the bin belong to?",
-    "noAddress": "First add your address with the device Address.",
+    "noAddress": "You have no address in Waste Collection yet. Close this, choose Add device → Waste Collection → Address and search for your address. Then add the bin.",
     "notReady": "The address has not fetched its schedule yet. Try again in a while.",
     "chooseFractions": "What goes in the bin?",
     "icon": "Icon",
     "iconHint": "Suggested from the waste types.",
     "name": "Name",
-    "add": "Add"
+    "add": "Add",
+    "intro": "Add one bin for each waste bin you have. Tick what goes in the bin. A bin with several compartments can hold several waste types. The bin shows when it is next emptied and has a switch to mark it as put out."
   }
 }
