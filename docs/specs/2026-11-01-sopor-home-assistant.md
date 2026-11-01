@@ -119,7 +119,7 @@ Tester skrivs först.
 - **`pytest-homeassistant-custom-component`:** konfigurationsflödets alla grenar, reconfigure, alternativflödet, att senaste data behålls vid 502, `ConfigEntryNotReady` utan sparat svar, reparationsärendet vid 404, att datumsensorer läggs till och tas bort, och kalenderns händelser.
 - Fixturerna är riktiga svar från API:t. Avesta (påhittad data) används inte.
 - **Gränstest:** ingen fil i `custom_components/sopor/` refererar till `src/`.
-- **Rökprov** mot produktions-API:t: sök, hämta en adress och tolka svaret.
+- **Rökprov** mot produktions-API:t som fristående skript, `scripts/smoke.py` (inte pytest): sök, hämta en adress och tolka svaret.
 
 ## CI
 
@@ -131,7 +131,7 @@ Ett nytt workflow `home-assistant.yml`, med `paths: custom_components/**, integr
 
 ## Release
 
-- `uv run scripts/release.py <patch|minor|major>` i `integrations/home-assistant/` höjer `version` i `manifest.json`, committar och taggar `ha-v<version>`. Versionen ändras aldrig för hand.
+- `uv run scripts/release.py <version>` i `integrations/home-assistant/` sätter en uttrycklig, högre `version` i `manifest.json` (som Homeys), committar och taggar `ha-v<version>`. Versionen ändras aldrig för hand.
 - Taggen startar `home-assistant-release.yml`: kontrollerar att taggen stämmer med manifestet, kör testerna och skapar en GitHub-release med genererade release notes.
 - Ett test vaktar att inget annat workflow skapar GitHub-releaser.
 

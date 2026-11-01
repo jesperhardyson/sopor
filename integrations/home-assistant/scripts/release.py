@@ -11,7 +11,8 @@ import sys
 from pathlib import Path
 
 TAG_PREFIX = "ha-v"
-MANIFEST = Path(__file__).resolve().parents[3] / "custom_components" / "sopor" / "manifest.json"
+REPO = Path(__file__).resolve().parents[3]
+MANIFEST = REPO / "custom_components" / "sopor" / "manifest.json"
 
 
 def _parse(version: str) -> tuple[int, ...] | None:
@@ -36,7 +37,11 @@ def set_version(manifest_path: Path, version: str) -> None:
 
 
 def _git(*args: str) -> str:
-    return subprocess.run(["git", *args], check=True, capture_output=True, text=True).stdout.strip()
+    try:
+        return subprocess.run(["git", *args], cwd=REPO, check=True, capture_output=True, text=True).stdout.strip()
+    except subprocess.CalledProcessError as err:
+        _fail(f"git {' '.join(args)} misslyckades: {err.stderr.strip()}")
+        raise
 
 
 def _fail(message: str) -> None:

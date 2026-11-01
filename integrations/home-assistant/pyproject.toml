@@ -14,8 +14,6 @@ dev = [
 pythonpath = ["../.."]
 testpaths = ["tests"]
 asyncio_mode = "auto"
-addopts = "-m 'not smoke'"
-markers = ["smoke: rökprov mot produktions-API:t"]
 
 [tool.ruff]
 target-version = "py314"

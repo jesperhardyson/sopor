@@ -64,4 +64,4 @@ jobs:
         with:
           python-version: '3.14'
       - run: uv sync
-      - run: uv run pytest -m smoke
+      - run: uv run scripts/smoke.py
