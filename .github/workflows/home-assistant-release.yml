@@ -1,0 +1,42 @@
+name: Home Assistant-integrationen, release
+
+# Startas av en tagg från `uv run scripts/release.py` i integrations/home-assistant, till exempel ha-v0.2.0.
+# Det här är det enda arbetsflödet som får skapa GitHub-releaser: HACS läser den senaste releasen som version.
+
+on:
+  push:
+    tags: ['ha-v*']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: home-assistant-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: '3.14'
+      - name: Kontrollera att taggen stämmer med manifestet
+        run: |
+          VERSION=$(jq -r .version custom_components/sopor/manifest.json)
+          if [ "$GITHUB_REF_NAME" != "ha-v$VERSION" ]; then
+            echo "::error::Taggen $GITHUB_REF_NAME stämmer inte med manifestets version $VERSION"
+            exit 1
+          fi
+      - name: Testa
+        working-directory: integrations/home-assistant
+        run: |
+          uv sync --locked
+          uv run pytest
+      - name: Skapa GitHub-releasen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION=$(jq -r .version custom_components/sopor/manifest.json)
+          gh release create "$GITHUB_REF_NAME" --generate-notes --title "Home Assistant $VERSION"

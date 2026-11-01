@@ -180,6 +180,12 @@ Alla svar har `Access-Control-Allow-Origin: *`. Ett vanligt `GET` kräver ingen 
 
 Verifierat mot Home Assistants dokumentation för [RESTful](https://www.home-assistant.io/integrations/rest/), [Template](https://www.home-assistant.io/integrations/template/) och automationer. Byt ut adressen mot din egen.
 
+### Utan kod: Remote Calendar
+
+Home Assistants inbyggda integration Remote Calendar (*Inställningar → Enheter och tjänster → Lägg till integration → Remote Calendar*) kan prenumerera på schemat. Fyll i ett namn och kalenderlänken, alltså adressens `links.ics` från API:t (samma som ICS-länken på sajten), till exempel `https://sopor.hardyson.se/ics/uppsala/storgatan-2_uppsala-4004688.ics`.
+
+Kalendern får heldagshändelser med titlar som `Sopor: Plastförpackningar + Metall` och `Sopor: Plastförpackningar + Glas (beräknat)`. Den fungerar med samma kalendertrigger och förskjutning som i [integrationen](../integrations/home-assistant/README.md#automation-kvällen-innan-kl-18). Integrationen är alternativet om du också vill ha sensorer, kunna dölja avfallstyper och få händelsen "Schemat ändrades".
+
 ### REST-sensor
 
 `summary` blir sensorns tillstånd och `next` blir ett attribut med nästa hämtning per fraktion. Lägg i `configuration.yaml`:

@@ -1,0 +1,69 @@
+name: Home Assistant-integrationen
+
+on:
+  push:
+    branches: [main]
+    paths: &paths
+      - 'custom_components/**'
+      - 'integrations/home-assistant/**'
+      - 'hacs.json'
+      - '.github/workflows/home-assistant.yml'
+  pull_request:
+    paths: *paths
+  # Rökprov mot produktions-API:t varje natt, så att en API-ändring som bryter integrationen märks direkt
+  schedule:
+    - cron: '30 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  # Heter inte "test": det namnet är den obligatoriska checken för main i ci.yml
+  home-assistant:
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: integrations/home-assistant
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: '3.14'
+      - run: uv sync --locked
+      - run: uv run ruff check ../../custom_components tests
+      - run: uv run ruff format --check ../../custom_components tests
+      - run: uv run pytest
+
+  hassfest:
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: home-assistant/actions/hassfest@master
+
+  hacs:
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: hacs/action@main
+        with:
+          category: integration
+          # Topics krävs bara för HACS standardlista, och repot är främst sajten
+          ignore: topics
+
+  smoke:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: integrations/home-assistant
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: '3.14'
+      - run: uv sync --locked
+      - run: uv run scripts/smoke.py

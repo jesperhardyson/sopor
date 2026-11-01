@@ -1,0 +1,119 @@
+{
+  "title": "Sophämtning",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Lägg till adress",
+        "description": "Sök adressen där sopor hämtas.\n\nSkriv gata och husnummer. Lägg till orten efter ett kommatecken för färre träffar, till exempel Storgatan 2, Uppsala.\n\nSopor täcker {count} svenska kommuner. [Se vilka]({kommuner_url})",
+        "data": {
+          "adress": "Gata och husnummer"
+        },
+        "data_description": {
+          "adress": "Till exempel Storgatan 2, Uppsala"
+        }
+      },
+      "ort": {
+        "title": "Välj ort",
+        "description": "Många träffar. Var ligger adressen?",
+        "data": {
+          "ort": "Ort"
+        }
+      },
+      "adress": {
+        "title": "Välj adress",
+        "description": "Välj adressen där sopor hämtas.",
+        "data": {
+          "adress": "Adress"
+        }
+      },
+      "user_utan_antal": {
+        "title": "Lägg till adress",
+        "description": "Sök adressen där sopor hämtas.\n\nSkriv gata och husnummer. Lägg till orten efter ett kommatecken för färre träffar, till exempel Storgatan 2, Uppsala.\n\nSopor täcker flera svenska kommuner. [Se vilka]({kommuner_url})",
+        "data": {
+          "adress": "Gata och husnummer"
+        },
+        "data_description": {
+          "adress": "Till exempel Storgatan 2, Uppsala"
+        }
+      },
+      "reconfigure": {
+        "title": "Byt adress",
+        "description": "Sök den nya adressen där sopor hämtas.\n\nSkriv gata och husnummer. Lägg till orten efter ett kommatecken för färre träffar, till exempel Storgatan 2, Uppsala.",
+        "data": {
+          "adress": "Gata och husnummer"
+        },
+        "data_description": {
+          "adress": "Till exempel Storgatan 2, Uppsala"
+        }
+      }
+    },
+    "error": {
+      "too_short": "Skriv minst tre tecken av gatan.",
+      "sources_failed": "Några källor svarade inte. Försök igen om en stund.",
+      "not_found": "Ingen adress hittades. Kontrollera stavningen och husnumret, och att din kommun finns med.",
+      "not_found_covered": "Ingen adress hittades i {place}. Kontrollera stavningen och husnumret.",
+      "not_found_elsewhere": "Ingen adress hittades i {place}. Kontrollera att kommunen finns med.",
+      "cannot_connect": "Sopor svarar inte. Försök igen om en stund."
+    },
+    "abort": {
+      "already_configured": "Adressen är redan tillagd.",
+      "already_in_progress": "Adressen håller redan på att läggas till.",
+      "reconfigure_successful": "Adressen har bytts."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Avfallstyper",
+        "description": "Välj vilka avfallstyper som ska visas. Dolda typer försvinner ur sensorerna och kalendern.",
+        "data": {
+          "visa": "Visa avfallstyper"
+        }
+      }
+    },
+    "abort": {
+      "not_loaded": "Integrationen är inte igång. Försök igen när den har laddats."
+    }
+  },
+  "issues": {
+    "address_gone": {
+      "title": "Adressen finns inte längre",
+      "description": "Adressen {title} finns inte längre hos källan. Öppna integrationen Sophämtning och välj Konfigurera om för att byta adress."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "summary": {
+        "name": "Nästa hämtning"
+      },
+      "days": {
+        "name": "Dagar kvar"
+      }
+    },
+    "binary_sensor": {
+      "today": {
+        "name": "Hämtas i dag"
+      },
+      "tomorrow": {
+        "name": "Hämtas i morgon"
+      }
+    },
+    "calendar": {
+      "schedule": {
+        "name": "Hämtschema"
+      }
+    },
+    "event": {
+      "changed": {
+        "name": "Schemat ändrades",
+        "state_attributes": {
+          "event_type": {
+            "state": {
+              "andrat": "Ändrat"
+            }
+          }
+        }
+      }
+    }
+  }
+}
