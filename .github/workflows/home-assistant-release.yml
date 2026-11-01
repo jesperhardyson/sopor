@@ -42,8 +42,8 @@ jobs:
           gh release create "$GITHUB_REF_NAME" --generate-notes --title "Home Assistant $VERSION"
 
   # Kopierar releasen till jesperhardyson/sopor-home-assistant, som HACS standardlista pekar på.
-  # Speglingen skapar sin egen release när dess kontroller gått igenom. MIRROR_TOKEN är en fine-grained
-  # token med Contents: Read and write för just det repot.
+  # Speglingen skapar sin egen release när dess kontroller gått igenom. MIRROR_DEPLOY_KEY är den privata
+  # delen av en deploy key med skrivrätt, som bara gäller speglingsrepot.
   spegla:
     needs: release
     runs-on: ubuntu-latest
@@ -54,7 +54,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           repository: jesperhardyson/sopor-home-assistant
-          token: ${{ secrets.MIRROR_TOKEN }}
+          ssh-key: ${{ secrets.MIRROR_DEPLOY_KEY }}
           path: spegel
       - name: Kopiera, committa och tagga
         run: |
