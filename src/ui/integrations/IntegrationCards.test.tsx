@@ -19,7 +19,7 @@ describe('IntegrationCards', () => {
     expect(within(ha).getByText('Påminnelse kvällen innan, via kalendern')).toBeInTheDocument()
     expect(within(ha).getByRole('link', { name: /Installera via HACS/ })).toHaveAttribute(
       'href',
-      'https://my.home-assistant.io/redirect/hacs_repository/?owner=jesperhardyson&repository=sopor&category=integration',
+      'https://my.home-assistant.io/redirect/hacs_repository/?owner=jesperhardyson&repository=sopor-home-assistant&category=integration',
     )
   })
 })
