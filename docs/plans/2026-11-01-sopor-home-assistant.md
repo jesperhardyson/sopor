@@ -72,7 +72,7 @@ Förväntat: FAIL (filerna finns inte).
 
 - [ ] **Steg 3: Skapa paketet**
 
-- `pyproject.toml`: `requires-python = ">=3.14"`, dev-beroenden `pytest-homeassistant-custom-component` (senaste som följer Home Assistant 2026.10) och `ruff`. `[tool.pytest.ini_options]`: `pythonpath = ["../.."]`, `testpaths = ["tests"]`, `asyncio_mode = "auto"`, `addopts = "-m 'not smoke'"`, markören `smoke`. `[tool.ruff]`: `target-version = "py314"`, `line-length = 120`.
+- `pyproject.toml`: `requires-python = ">=3.14"`, dev-beroenden `pytest-homeassistant-custom-component` (senaste som följer Home Assistant 2026.10) och `ruff`. `[tool.pytest.ini_options]`: `pythonpath = ["../.."]`, `testpaths = ["tests"]`, `asyncio_mode = "auto"`. `[tool.ruff]`: `target-version = "py314"`, `line-length = 120`.
 - `manifest.json`: nycklarna i testet, `codeowners: ["@jesperhardyson"]`, `requirements: []`, `version: "0.1.0"`.
 - `hacs.json`: nycklarna i testet.
 
@@ -87,7 +87,7 @@ Byggt som `homey.yml`: `paths` = `custom_components/**`, `integrations/home-assi
 - Jobbet `home-assistant`: `astral-sh/setup-uv`, Python 3.14, `uv sync`, ruff check, ruff format --check, pytest.
 - Jobbet `hassfest`: `home-assistant/actions/hassfest@master` (körs i roten).
 - Jobbet `hacs`: `hacs/action@main` med `category: integration` (körs i roten).
-- Jobbet `smoke`: bara vid `schedule` (`30 3 * * *`) och `workflow_dispatch`: `uv run pytest -m smoke`.
+- Jobbet `smoke`: bara vid `schedule` (`30 3 * * *`) och `workflow_dispatch`: `uv run scripts/smoke.py`.
 
 - [ ] **Steg 6: AGENTS.md**
 
@@ -493,7 +493,7 @@ async def test_ny_typ_hos_kallan_syns_trots_dolda(hass, setup_entry, aioclient_m
 ### Uppgift 10: Rökprov, release och regeln om GitHub-releaser
 
 **Filer:**
-- Skapa: `integrations/home-assistant/tests/test_smoke.py`, `integrations/home-assistant/scripts/release.py`, `tests/test_release.py`, `.github/workflows/home-assistant-release.yml`
+- Skapa: `integrations/home-assistant/scripts/smoke.py`, `integrations/home-assistant/scripts/release.py`, `tests/test_release.py`, `.github/workflows/home-assistant-release.yml`
 - Ändra: `AGENTS.md` (regeln om GitHub-releaser)
 
 **Gränssnitt:**
@@ -502,9 +502,8 @@ async def test_ny_typ_hos_kallan_syns_trots_dolda(hass, setup_entry, aioclient_m
 - [ ] **Steg 1: Skriv de fallerande testerna**
 
 ```python
-@pytest.mark.smoke
-async def test_produktions_api(): ...
-    # Riktig aiohttp-session: search("Storgatan 2") har träffar; schedule(första träffens url) går att tolka med summary/fraction_ids
+# scripts/smoke.py är ett fristående skript (inget pytest-test, ingen markör):
+#   riktig aiohttp-session: search("Storgatan 2") har träffar; schedule(första träffens url) går att tolka med summary/fraction_ids
 
 def test_bump_problem(): ...
     # "0.1.0"→"0.1.0" ger fel, "0.1.0"→"0.0.9" ger fel, "0.1.0"→"0.2.0" ger None, "x" ger fel
@@ -513,7 +512,7 @@ def test_bara_home_assistant_skapar_github_releaser(): ...
     # Läs alla .github/workflows/*.yml: bara home-assistant-release.yml får innehålla "gh release" eller "softprops/action-gh-release"
 ```
 
-- [ ] **Steg 2: Kör och se dem fallera** → FAIL (rökprovet körs bara med `-m smoke`).
+- [ ] **Steg 2: Kör och se dem fallera** → FAIL.
 
 - [ ] **Steg 3: Implementera**
 
@@ -529,7 +528,7 @@ def test_bara_home_assistant_skapar_github_releaser(): ...
 
 - [ ] **Steg 4: Kör testerna**
 
-Kör: `uv run pytest -v && uv run pytest -m smoke -v`
+Kör: `uv run pytest -v && uv run scripts/smoke.py`
 Förväntat: PASS (rökprovet kräver nät).
 
 - [ ] **Steg 5: Commit** `git commit -m "Home Assistant: rökprov och release"`

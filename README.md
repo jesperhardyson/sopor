@@ -180,7 +180,11 @@ cd integrations/homey && npm install && npx homey app install
 
 ### Home Assistant
 
-Planerad. HACS kräver ett eget repo, så integrationen kommer att ligga i ett separat repo, se undersökningen. Tills dess finns REST-sensorn i [`docs/api.md`](docs/api.md#home-assistant).
+Integrationen **Sophämtning** installeras via HACS som anpassat repo. Lägg till `jesperhardyson/sopor` med kategorin *Integration*, ladda ner Sophämtning och lägg sedan till integrationen och sök upp adressen. Den ger sensorer per avfallstyp, en kalender, binära sensorer för i dag och i morgon och en händelse när schemat ändras.
+
+- **Installation, entiteter, automationsexempel, utveckling och release:** [`integrations/home-assistant/README.md`](integrations/home-assistant/README.md).
+- **Spec:** `docs/specs/2026-11-01-sopor-home-assistant.md`.
+- **Utan kod:** REST-sensorn i [`docs/api.md`](docs/api.md#home-assistant) fungerar fortfarande som alternativ.
 
 ## Versioner
 
@@ -189,7 +193,7 @@ Planerad. HACS kräver ett eget repo, så integrationen kommer att ligga i ett s
   - API:t är versionerat i sökvägen (`/api/v1`) och har ett kontraktstest mot `openapi.json`.
   - Adress-id får inte tas bort (`check:ids` i CI).
   - ICS-UID ändrar aldrig format.
-- **Integrationerna** har semver och egna releaser: Homey-appen med taggar `homey-v*`, och Home Assistant i sitt eget repo.
+- **Integrationerna** har semver och egna releaser: Homey-appen med taggar `homey-v*`, och Home Assistant med taggar `ha-v*` och GitHub-releaser i det här repot (HACS läser dem).
 
 ## Driftsättning
 
