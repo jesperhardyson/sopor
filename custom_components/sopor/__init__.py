@@ -7,7 +7,7 @@ from homeassistant.helpers.event import async_track_time_interval
 from .const import TICK_INTERVAL
 from .coordinator import SoporConfigEntry, SoporCoordinator
 
-PLATFORMS: list[Platform] = []
+PLATFORMS: list[Platform] = [Platform.SENSOR, Platform.BINARY_SENSOR]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: SoporConfigEntry) -> bool:

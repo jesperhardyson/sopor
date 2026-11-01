@@ -54,5 +54,23 @@
       "title": "Adressen finns inte längre",
       "description": "Adressen {title} finns inte längre hos källan. Öppna integrationen Sophämtning och välj Konfigurera om för att byta adress."
     }
+  },
+  "entity": {
+    "sensor": {
+      "summary": {
+        "name": "Nästa hämtning"
+      },
+      "days": {
+        "name": "Dagar kvar"
+      }
+    },
+    "binary_sensor": {
+      "today": {
+        "name": "Hämtas i dag"
+      },
+      "tomorrow": {
+        "name": "Hämtas i morgon"
+      }
+    }
   }
 }
