@@ -89,7 +89,7 @@ En enhet per konfigurationspost, med postens titel som namn. Entiteternas `uniqu
 
 - `DataUpdateCoordinator` hämtar från API:t var sjätte timme och direkt vid start. Timeout 15 s. Det håller sig gott inom "högst en gång i timmen".
 - Det senaste lyckade svaret sparas med `homeassistant.helpers.storage.Store` per post. Vid start läses det in först, så entiteterna har värden direkt, även utan nät.
-- Strax efter midnatt (00:00:30 svensk tid) och var 15:e minut räknas texterna, de binära sensorerna och "dagar kvar" om ur det sparade svaret, utan att API:t anropas.
+- Var 15:e minut räknas texterna, de binära sensorerna och "dagar kvar" om ur det sparade svaret, utan att API:t anropas. "I dag" och "i morgon" byts alltså inom en kvart efter midnatt, som i Homey.
 - **Schemat ändrades:** efter varje lyckad hämtning jämförs nästa datum per avfallstyp (räknat från i dag) med förra svaret. En händelse per typ vars datum har flyttats, försvunnit eller tillkommit. Passerade hämtningar räknas inte, och ingen händelse avfyras vid första hämtningen eller efter ett adressbyte.
 
 ## Fel
@@ -98,16 +98,16 @@ En enhet per konfigurationspost, med postens titel som namn. Entiteternas `uniqu
 |---|---|
 | 502, nätfel eller timeout | `UpdateFailed`, och coordinatorn försöker igen vid nästa intervall. Entiteterna behåller senaste data. Tillgängligheten utgår från om det finns ett sparat svar, inte från `last_update_success` |
 | Inget sparat svar alls och hämtningen misslyckas | Entiteterna är otillgängliga. Vid start ger det `ConfigEntryNotReady`, så Home Assistant försöker igen |
-| 404 (adressen finns inte längre) | Ett reparationsärende (`issue_registry`): "Adressen finns inte längre hos källan. Byt adress." Det leder till reconfigure. Senaste data visas tills dess |
+| 404 (adressen finns inte längre) | Ett reparationsärende (`issue_registry`, inte åtgärdbart i sig): "Adressen <titel> finns inte längre hos källan. Öppna integrationen Sophämtning och välj Konfigurera om för att byta adress." Senaste data visas tills dess |
 | Fel vid sökningen | Visas i formuläret, och posten skapas inte |
 
 ## Byta adress (reconfigure)
 
-Samma steg som när man lägger till en adress. Posten får ny adress och ny titel, men samma `entry_id`, så entiteternas id och automationerna behålls. Det sparade svaret raderas, och reparationsärendet tas bort. En adress som redan finns i en annan post avvisas.
+Samma steg som när man lägger till en adress. Posten får ny adress, ny titel och nytt `unique_id` (`<källa>/<adress-id>`), men samma `entry_id`, så entiteternas id och automationerna behålls. Home Assistants standardmönster (`_abort_if_unique_id_mismatch`) förutsätter att `unique_id` inte ändras. Här är bytet själva poängen, så flödet kontrollerar i stället med `_abort_if_unique_id_configured` att ingen post redan har adressen, och skickar det nya id:t till `async_update_reload_and_abort`. Det sparade svaret raderas, och reparationsärendet tas bort.
 
 ## Alternativ (options flow)
 
-- Kryssrutor för de avfallstyper som adressen har, i den ordning svarets `fractions{}` har dem. Alla är ikryssade från början. Till skillnad från Homey kan även okända typ-id döljas, eftersom listan byggs ur adressens eget svar.
+- Kryssrutor (en `SelectSelector` med flerval i listläge) för de avfallstyper som adressen har, i den ordning svarets `fractions{}` har dem. Alla är ikryssade från början. Det som sparas är de **dolda** typerna (`dolda`), så att en ny typ hos källan syns utan att användaren gör något. Till skillnad från Homey kan även okända typ-id döljas, eftersom listan byggs ur adressens eget svar.
 - En dold typ tas bort ur schemat innan något räknas: den försvinner ur sensorerna, kalendern, "Nästa hämtning", "Dagar kvar", de binära sensorerna och "Schemat ändrades". En hämtning med bara dolda typer finns inte längre. Typens datumsensor tas bort.
 - När alternativen sparas laddas posten om.
 
