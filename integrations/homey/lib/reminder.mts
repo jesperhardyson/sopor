@@ -3,6 +3,12 @@
 /** Så länge efter inställd tid som en missad påminnelse (Homey var avstängd) ändå går. */
 const CATCH_UP_MIN = 3 * 60
 
+/** Påminnelsetiderna i adressens inställningar, och dagarna framåt de gäller. Kärlen använder adressens tider. */
+export const REMINDER_TIMES = {
+  tomorrow: { setting: 'paminnelsetid', fallback: '18:00', daysAhead: 1 },
+  today: { setting: 'morgontid', fallback: '07:00', daysAhead: 0 },
+}
+
 export function isValidTime(time: string): boolean {
   return /^([01]\d|2[0-3]):[0-5]\d$/.test(time)
 }

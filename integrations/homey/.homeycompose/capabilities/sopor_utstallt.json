@@ -1,0 +1,21 @@
+{
+  "type": "boolean",
+  "title": {
+    "en": "Put out",
+    "sv": "Utställt"
+  },
+  "getable": true,
+  "setable": true,
+  "uiComponent": "toggle",
+  "uiQuickAction": true,
+  "icon": "/assets/sopor_utstallt.svg",
+  "insights": false,
+  "insightsTitleTrue": {
+    "en": "Bin put out",
+    "sv": "Kärlet ställdes ut"
+  },
+  "insightsTitleFalse": {
+    "en": "Bin taken in",
+    "sv": "Kärlet togs in"
+  }
+}

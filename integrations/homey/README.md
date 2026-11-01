@@ -37,7 +37,7 @@ git push && git push origin homey-v0.4.2
 - **`.homeyignore`** håller skript och tester utanför appen som laddas upp.
 
 - `lib/` innehåller ren logik utan Homey-beroenden. Allt som går att testa ligger där.
-- `app.mts`, `drivers/adress/driver.mts` och `device.mts` kopplar logiken till Homey och hålls tunna.
+- `app.mts` och drivrutinerna i `drivers/adress/` och `drivers/karl/` kopplar logiken till Homey och hålls tunna. Kärlen hämtar inget själva: de läser adressenhetens sparade schema och får veta om nya scheman genom `app.schedules`.
 - `widgets/nasta-hamtning/` är widgeten: `api.ts` för data, och `public/` med HTML, ikoner och typsnitt.
 - `app.json` genereras av CLI:t ur `.homeycompose/` och `drivers/*/driver*.compose.json`. Ändra i compose-filerna.
 - Ikoner och bilder kommer från sidan "Homey · Sophämtning" i `docs/design/sopor-design.pen`:
@@ -45,4 +45,5 @@ git push && git push origin homey-v0.4.2
   - **Drivrutinsikonen** och **`assets/karl.svg`** är kärlet i linjestil.
   - Ikonerna är svarta SVG:er på 960×960, eftersom Homey färgar dem själv.
   - **Bilderna** är exporterade PNG:er i Homeys storlekar.
+  - **Kärlen** kommer från sidan "Homey · Sopkärl": ikonerna i `drivers/karl/assets/icons/` och `assets/sopor_utstallt.svg` är linjeikonen med symbolernas banor inlagda, och drivrutinsbilden är exporterad därifrån.
   - **`brandColor`** är designens `primary` (#157A46).

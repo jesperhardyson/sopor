@@ -161,6 +161,7 @@ Appen **Sophämtning** för Homey Pro (SDK v3, TypeScript).
 - **När:** sopor hämtas i morgon (vid enhetens påminnelsetid), sopor hämtas i dag (vid morgontiden), hämtschemat ändrades.
 - **Och:** [fraktion] hämtas (inte) i dag, i morgon eller i övermorgon, eller om N dagar.
 - **Då:** uppdatera hämtschemat, och "vilka sopor hämtas …?" (Advanced Flow).
+- **Sopkärl:** en enhet per kärl vid adressen, med de avfallstyper man väljer. Den visar nästa tömning och har knappen "Utställt", som slås av natten efter tömningen. Korten: sopkärlet töms i morgon eller i dag, ställdes ut, töms (inte) [när], är (inte) utställt, och markera som utställt eller intaget.
 - **Widget:** "Nästa hämtning" för Homeys dashboards.
 
 Appen finns inte i Homey App Store än. Så här provar man den på en egen Homey Pro:
@@ -171,7 +172,7 @@ cd integrations/homey && npm install && npx homey app install
 ```
 
 - **Utveckling:** se `integrations/homey/README.md`.
-- **Spec:** `docs/specs/2026-10-31-sopor-homey-app.md`.
+- **Spec:** `docs/specs/2026-10-31-sopor-homey-app.md` och, för kärlen, `docs/specs/2026-11-01-homey-karl.md`.
 - **Undersökning och jämförelse med liknande appar:** `docs/specs/2026-10-31-integrationer-homey-home-assistant.md`.
 - **CI och releaser:**
   - `homey.yml` körs när `integrations/homey/` ändras, och varje natt som rökprov mot produktions-API:t.

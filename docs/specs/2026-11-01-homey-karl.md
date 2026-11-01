@@ -53,7 +53,7 @@ En tömning räknas för kärlet när minst en av dess avfallstyper finns i hän
 
 - Kärlet hittar sin adress genom att leta bland drivrutinen `adress` enheter efter `data.id === store.address`. Det letar varje gång, så kopplingen överlever omstarter och att adressen tas bort och läggs till igen.
 - Kärlet använder adressens **ofiltrerade** schema. Dolda avfallstyper på adressen gäller inte kärlet, eftersom användaren har valt kärlets avfallstyper själv.
-- Adressenheten skickar händelsen `schedule` (EventEmitter, som `Homey.Device` redan är) efter varje lyckad hämtning. Kärlen lyssnar och ritar om direkt.
+- Adressenheten skickar händelsen `schedule` med sitt id genom appen (`app.schedules`) efter varje lyckad hämtning. Kärlen lyssnar och ritar om direkt. Händelsen går genom appen och inte adressenheten, så att kärlen inte behöver lyssna på nytt när adressenheten startas om.
 - Kärlet räknar dessutom om var 15:e minut, som adressen, så att "i dag" byts strax efter midnatt.
 
 ### Fel
@@ -131,7 +131,7 @@ Homey skapar egna kort för `sopor_utstallt` eftersom den är setable. Med `"ins
   - `suggestedName(schedule, fractions, lang)`.
   - `binId(random)` för `data.id`, med den slumpade delen inskickad.
 - **`drivers/karl/`**: `driver.mts` (parning och kort), `device.mts` (koppling, omräkning, utställt, triggrar) och `pair/adress.html`, `pair/fraktioner.html`. Klasserna hålls tunna, som för adressen.
-- **`drivers/adress/device.mts`**: `this.emit('schedule')` efter lyckad hämtning, och en getter `storedSchedule` för det ofiltrerade schemat. Påminnelselogiken (`REMINDERS`, `reminderDue`) delas med kärlet i stället för att kopieras.
+- **`drivers/adress/device.mts`**: `schedules.emit('schedule', id)` efter lyckad hämtning, och en getter `storedSchedule` för det ofiltrerade schemat. Påminnelselogiken (`REMINDERS`, `reminderDue`) delas med kärlet i stället för att kopieras.
 - **`.homeycompose/capabilities/sopor_utstallt.json`** med ikon i `assets/`.
 - **Bilder och ikoner:** exporteras från sidan "Homey · Sopkärl" (se Ikoner och bilder). `lib/bin.mts` får också `suggestedIcon(fractions)`.
 

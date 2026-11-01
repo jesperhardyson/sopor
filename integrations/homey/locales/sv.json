@@ -26,5 +26,20 @@
     "nothing": "Inga kommande hämtningar",
     "estimated": "beräknat",
     "title": "Sophämtning"
+  },
+  "karl": {
+    "addressGone": "Adressen är borttagen. Lägg till den igen eller ta bort kärlet.",
+    "noFraction": "Välj minst en avfallstyp."
+  },
+  "pairKarl": {
+    "chooseAddress": "Vilken adress står kärlet vid?",
+    "noAddress": "Du har ingen adress i Sophämtning än. Stäng det här, välj Lägg till enhet → Sophämtning → Adress och sök upp din adress. Lägg sedan till kärlet.",
+    "notReady": "Adressen har inte hämtat schemat än. Försök igen om en stund.",
+    "chooseFractions": "Vad slängs i kärlet?",
+    "icon": "Ikon",
+    "iconHint": "Föreslås utifrån avfallstyperna.",
+    "name": "Namn",
+    "add": "Lägg till",
+    "intro": "Lägg till ett kärl för varje sopkärl du har. Kryssa i det som slängs i kärlet. Ett kärl med flera fack kan ha flera avfallstyper. Kärlet visar när det töms nästa gång och har en knapp för att markera att det är utställt."
   }
 }

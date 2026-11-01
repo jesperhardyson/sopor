@@ -1,8 +1,11 @@
+import { EventEmitter } from 'node:events'
 import Homey from 'homey'
 import { createClient, type SoporClient } from './lib/api.mjs'
 
 export default class SoporApp extends Homey.App {
   client!: SoporClient
+  /** "schedule" med adressenhetens id när den har hämtat ett nytt schema. Kärlen lyssnar. */
+  readonly schedules = new EventEmitter<{ schedule: [addressId: string] }>()
 
   async onInit() {
     const userAgent = `Sopor-Homey/${this.manifest.version} (+https://sopor.hardyson.se)`

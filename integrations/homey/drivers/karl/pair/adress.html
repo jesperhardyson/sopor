@@ -1,0 +1,47 @@
+<p id="adressChoose" class="homey-form-label" data-i18n="pairKarl.chooseAddress"></p>
+<p id="adressStatus" role="status"></p>
+<div id="adressList"></div>
+
+<style>
+  #adressStatus:empty { display: none; }
+  #adressList { display: flex; flex-direction: column; gap: 8px; }
+</style>
+
+<script type="text/javascript">
+  // Homey kör parningsvyerna i samma fönster. Skriptet hålls i en egen funktion, så att namnen inte krockar med andra vyers.
+  ;(() => {
+    const status = document.getElementById('adressStatus')
+    const list = document.getElementById('adressList')
+
+    async function choose(address) {
+      if (!address.ready) {
+        status.textContent = Homey.__('pairKarl.notReady')
+        return
+      }
+      await Homey.emit('address', address.id)
+      Homey.showView('fraktioner')
+    }
+
+    Homey.emit('addresses').then((addresses) => {
+      if (!addresses.length) {
+        document.getElementById('adressChoose').hidden = true
+        status.textContent = Homey.__('pairKarl.noAddress')
+        return
+      }
+      // En enda adress som har sitt schema: gå vidare direkt
+      if (addresses.length === 1 && addresses[0].ready) return choose(addresses[0])
+      list.replaceChildren(
+        ...addresses.map((address) => {
+          const button = document.createElement('button')
+          button.type = 'button'
+          button.className = 'homey-button-secondary-full'
+          button.textContent = address.name
+          button.addEventListener('click', () => choose(address))
+          return button
+        }),
+      )
+    }, (error) => {
+      status.textContent = error.message
+    })
+  })()
+</script>

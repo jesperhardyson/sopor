@@ -19,6 +19,9 @@ export function fractionName(schedule: SoporSchedule, id: string): string {
   return schedule.fractions[id]?.name ?? id
 }
 
+/** Fraktionerna som har en kryssruta i enheternas inställningar. */
+export const KNOWN_FRACTIONS = ['rest', 'mat', 'papper', 'plast', 'glas', 'metall', 'tidningar', 'karl']
+
 /** Id för "någon fraktion" i flödeskortens autocomplete. */
 export const ANY = '*'
 
@@ -46,7 +49,7 @@ export function nextDate(schedule: SoporSchedule, today: string, fraction: strin
 }
 
 /** "Plast & metall": korta namn, versal bara först. */
-function joinShort(schedule: SoporSchedule, ids: string[]): string {
+export function joinShort(schedule: SoporSchedule, ids: string[]): string {
   const names = ids.map((id, i) => {
     const short = schedule.fractions[id]?.short ?? id
     return i === 0 ? short : short.toLowerCase()
