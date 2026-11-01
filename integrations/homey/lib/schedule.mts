@@ -77,13 +77,12 @@ export function nextText(schedule: SoporSchedule, today: string, fraction: strin
 }
 
 /**
- * Hur en kommande hämtning visas på enhetskortet, till exempel "i morgon" eller "om 4 dagar, ons 4 nov".
- * `estimated` är sant när källan inte har bekräftat datumet.
+ * Hur en kommande hämtning visas på enhetskortet: "i morgon", "om 3 dagar, ons 4 nov" eller "sön 8 nov".
+ * Veckodagen räcker när hämtningen är mer än en vecka bort. `estimated` är sant när källan inte har bekräftat datumet.
  */
 export function formatNext(days: number, date: string, estimated: boolean): string {
-  // TODO(Jesper): välj formatet. Raden nedan fungerar men visar varken veckodag eller "beräknat".
-  void date, estimated, shortDate
-  return relativeDayLabel(days)
+  const when = days <= 1 ? relativeDayLabel(days) : days < 7 ? `${relativeDayLabel(days)}, ${shortDate(date)}` : shortDate(date)
+  return estimated ? `${when} (beräknat)` : when
 }
 
 /** Dagar till nästa hämtning av någon fraktion, eller null när inget väntar. */

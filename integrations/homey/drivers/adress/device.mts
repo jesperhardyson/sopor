@@ -26,12 +26,21 @@ const capabilityFor = (fraction: string) => PREFIX + fraction.toLowerCase().repl
 
 export default class AddressDevice extends Homey.Device {
   private nextFetch = 0
+  private timers: NodeJS.Timeout[] = []
 
   async onInit() {
     await this.migrate()
-    this.homey.setInterval(() => this.tick(), TICK_MS)
-    this.homey.setInterval(() => this.remind().catch(this.error), REMINDER_TICK_MS)
+    this.timers = [
+      this.homey.setInterval(() => this.tick(), TICK_MS),
+      this.homey.setInterval(() => this.remind().catch(this.error), REMINDER_TICK_MS),
+    ]
     await this.tick()
+  }
+
+  /** Homey stannar timrarna när appen stängs, men inte när en enhet tas bort. */
+  async onDeleted() {
+    for (const timer of this.timers) this.homey.clearInterval(timer)
+    this.timers = []
   }
 
   /** Äldre enheter saknar nyare rader. Fraktionsraderna läggs om så att de hamnar sist. */

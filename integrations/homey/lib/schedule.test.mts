@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { SoporSchedule } from './api.mjs'
-import { changeText, collectedOn, withoutFractions, daysToNext, fractionChoices, scheduleChanges, tomorrowText, fractionIds, fractionName, fractionsOn, nextDate, nextText, summary } from './schedule.mjs'
+import { changeText, collectedOn, withoutFractions, daysToNext, fractionChoices, scheduleChanges, tomorrowText, fractionIds, fractionName, formatNext, fractionsOn, nextDate, nextText, summary } from './schedule.mjs'
 
 const fraction = (name: string, short: string) => ({ name, short, color: '#000000', icon: 'trash-2' })
 
@@ -131,3 +131,22 @@ describe('dolda fraktioner', () => {
     expect(withoutFractions(schedule, [])).toBe(schedule)
   })
 })
+
+describe('formatNext', () => {
+  it('säger i dag och i morgon utan datum', () => {
+    expect(formatNext(0, '2026-11-01', false)).toBe('i dag')
+    expect(formatNext(1, '2026-11-02', false)).toBe('i morgon')
+  })
+
+  it('visar veckodag och datum inom en vecka, och bara datum längre fram', () => {
+    expect(formatNext(3, '2026-11-04', false)).toBe('om 3 dagar, ons 4 nov')
+    expect(formatNext(6, '2026-11-07', false)).toBe('om 6 dagar, lör 7 nov')
+    expect(formatNext(7, '2026-11-08', false)).toBe('sön 8 nov')
+  })
+
+  it('märker datum som källan inte har bekräftat', () => {
+    expect(formatNext(1, '2026-11-02', true)).toBe('i morgon (beräknat)')
+    expect(formatNext(10, '2026-11-11', true)).toBe('ons 11 nov (beräknat)')
+  })
+})
+
