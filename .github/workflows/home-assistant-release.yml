@@ -40,3 +40,30 @@ jobs:
         run: |
           VERSION=$(jq -r .version custom_components/sopor/manifest.json)
           gh release create "$GITHUB_REF_NAME" --generate-notes --title "Home Assistant $VERSION"
+
+  # Kopierar releasen till jesperhardyson/sopor-home-assistant, som HACS standardlista pekar på.
+  # Speglingen skapar sin egen release när dess kontroller gått igenom. MIRROR_TOKEN är en fine-grained
+  # token med Contents: Read and write för just det repot.
+  spegla:
+    needs: release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7
+        with:
+          repository: jesperhardyson/sopor-home-assistant
+          token: ${{ secrets.MIRROR_TOKEN }}
+          path: spegel
+      - name: Kopiera, committa och tagga
+        run: |
+          VERSION=$(jq -r .version custom_components/sopor/manifest.json)
+          integrations/home-assistant/scripts/spegla.sh spegel
+          cd spegel
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Sophämtning $VERSION" -m "Från jesperhardyson/sopor@$GITHUB_SHA"
+          git tag "v$VERSION"
+          git push origin HEAD "v$VERSION"

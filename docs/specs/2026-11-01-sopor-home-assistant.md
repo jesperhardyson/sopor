@@ -4,7 +4,7 @@ Status: utkast, 2026-11-01. Bygger på undersökningen `2026-10-31-integrationer
 
 Beslut:
 - Integrationen ligger i det här repot, inte i ett eget. HACS läser bara `custom_components/<domän>/` och `hacs.json` i repots rot (bekräftat i HACS källkod, `repositories/integration.py`). Därför ligger själva integrationen i `custom_components/sopor/`, och tester och verktyg i `integrations/home-assistant/`.
-- Installation via HACS som anpassat repo (custom repository). HACS standardlista ingår inte. Om den blir aktuell speglas koden till ett eget repo vid release, utan att något ändras för användarna.
+- Installation via HACS som anpassat repo (custom repository). Från 2026-11-01 speglas varje release till [jesperhardyson/sopor-home-assistant](https://github.com/jesperhardyson/sopor-home-assistant), som har egen beskrivning, egna topics och egna kontroller utan undantag. Det är det repot som ansöker om plats i HACS standardlista. Sopor-repot fungerar fortfarande som anpassat repo.
 - HACS tar versionen från senaste **GitHub-releasen**. Bara Home Assistant-integrationen skapar GitHub-releaser. Homey-appen har bara taggar (`homey-v*`), och så ska det förbli.
 - I texterna heter det **avfallstyp**, som i Homey. Id och kod säger `fraktion`.
 - Påminnelser byggs med Home Assistants kalendertrigger och dess förskjutning ("−6 h" före en heldagshändelse ger kvällen innan kl. 18). Integrationen har därför ingen egen påminnelsetid och inga egna triggers för "i morgon" och "i dag".
@@ -15,7 +15,6 @@ En Home Assistant-användare installerar Sophämtning via HACS, söker upp sin a
 
 ## Utanför första versionen
 
-- HACS standardlista och spegling till ett eget repo.
 - Ett eget Lovelace-kort (motsvarigheten till Homeys widget). Home Assistants vanliga kort räcker.
 - Kärnintegration i Home Assistant.
 
@@ -148,5 +147,5 @@ Ett nytt workflow `home-assistant.yml`, med `paths: custom_components/**, integr
 
 ## Senare
 
-- HACS standardlista, via spegling till ett eget repo.
+- Plats i HACS standardlista: speglingen finns, och ansökan till `hacs/default` granskas (det tar månader enligt HACS).
 - Ett Lovelace-kort med nästa hämtningar i avfallstypernas färger, efter design i `sopor-design.pen`.
