@@ -35,6 +35,16 @@
         "data_description": {
           "adress": "Till exempel Storgatan 2, Uppsala"
         }
+      },
+      "reconfigure": {
+        "title": "Byt adress",
+        "description": "Sök den nya adressen där sopor hämtas.\n\nSkriv gata och husnummer. Lägg till orten efter ett kommatecken för färre träffar, till exempel Storgatan 2, Uppsala.",
+        "data": {
+          "adress": "Gata och husnummer"
+        },
+        "data_description": {
+          "adress": "Till exempel Storgatan 2, Uppsala"
+        }
       }
     },
     "error": {
@@ -46,7 +56,22 @@
       "cannot_connect": "Sopor svarar inte. Försök igen om en stund."
     },
     "abort": {
-      "already_configured": "Adressen är redan tillagd."
+      "already_configured": "Adressen är redan tillagd.",
+      "reconfigure_successful": "Adressen är bytt."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Avfallstyper",
+        "description": "Välj vilka avfallstyper som ska visas. Dolda typer försvinner ur sensorerna och kalendern.",
+        "data": {
+          "visa": "Visa avfallstyper"
+        }
+      }
+    },
+    "abort": {
+      "not_loaded": "Integrationen är inte igång. Försök igen när den har laddats."
     }
   },
   "issues": {

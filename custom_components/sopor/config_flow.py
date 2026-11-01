@@ -1,9 +1,21 @@
-"""Konfigurationsflödet: sök adress, välj ort om det blir många träffar, välj adress."""
+"""Konfigurationsflödet: sök adress, välj ort om det blir många träffar, välj adress.
+
+Samma steg byter adress (reconfigure). Alternativen döljer avfallstyper.
+"""
 
 from typing import Any
 
 import probatio
-from homeassistant.config_entries import ConfigFlow, ConfigFlowResult
+from homeassistant.config_entries import (
+    SOURCE_RECONFIGURE,
+    ConfigEntry,
+    ConfigEntryState,
+    ConfigFlow,
+    ConfigFlowResult,
+    OptionsFlowWithReload,
+)
+from homeassistant.core import callback
+from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.selector import (
     SelectOptionDict,
@@ -14,8 +26,11 @@ from homeassistant.helpers.selector import (
 )
 
 from .api import SearchHit, SoporClient, SoporError
-from .const import DOMAIN
+from .const import CONF_HIDDEN, DOMAIN
+from .coordinator import SoporConfigEntry, store_for
 from .logic import (
+    fraction_ids,
+    fraction_name,
     hit_label,
     hit_title,
     kommun_names,
@@ -42,7 +57,18 @@ class SoporConfigFlow(ConfigFlow, domain=DOMAIN):
         # None tills /kallor är hämtad; tom lista om den misslyckades
         self._names: list[str] | None = None
 
+    @staticmethod
+    @callback
+    def async_get_options_flow(config_entry: ConfigEntry) -> SoporOptionsFlow:
+        return SoporOptionsFlow()
+
     async def async_step_user(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+        return await self._search(user_input)
+
+    async def async_step_reconfigure(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+        return await self._search(user_input)
+
+    async def _search(self, user_input: dict[str, Any] | None) -> ConfigFlowResult:
         client = SoporClient(async_get_clientsession(self.hass))
         errors: dict[str, str] = {}
         place = ""
@@ -69,9 +95,14 @@ class SoporConfigFlow(ConfigFlow, domain=DOMAIN):
                         # Utan kommunlista går det inte att säga om orten ingår
                         errors["base"] = not_found_error(place, names) if names else "not_found"
         names = await self._kommun_names(client)
-        # Utan kommunlista används ett steg med egna texter som inte nämner antalet
+        if self.source == SOURCE_RECONFIGURE:
+            # Reconfigure-stegets texter nämner inte antalet
+            step_id = "reconfigure"
+        else:
+            # Utan kommunlista används ett steg med egna texter som inte nämner antalet
+            step_id = "user" if names else "user_utan_antal"
         return self.async_show_form(
-            step_id="user" if names else "user_utan_antal",
+            step_id=step_id,
             data_schema=probatio.Schema({probatio.Required("adress"): TextSelector()}),
             errors=errors,
             description_placeholders={"count": str(len(names)) if names else "", "place": place},
@@ -123,6 +154,41 @@ class SoporConfigFlow(ConfigFlow, domain=DOMAIN):
 
     async def _finish(self, hit: SearchHit) -> ConfigFlowResult:
         """Avslutar med den valda träffen. Reconfigure grenar här."""
-        await self.async_set_unique_id(_hit_value(hit))
+        unique_id = _hit_value(hit)
+        await self.async_set_unique_id(unique_id)
         self._abort_if_unique_id_configured()
-        return self.async_create_entry(title=hit_title(hit), data={key: hit[key] for key in ENTRY_KEYS})
+        data = {key: hit[key] for key in ENTRY_KEYS}
+        if self.source != SOURCE_RECONFIGURE:
+            return self.async_create_entry(title=hit_title(hit), data=data)
+        entry = self._get_reconfigure_entry()
+        # Det gamla svaret får inte jämföras med den nya adressens (då avfyras "Schemat ändrades")
+        await store_for(self.hass, entry.entry_id).async_remove()
+        ir.async_delete_issue(self.hass, DOMAIN, f"address_gone_{entry.entry_id}")
+        # unique_id byts med avsikt: det är adressen. Därför inte _abort_if_unique_id_mismatch,
+        # utan kontrollen ovan att ingen annan post redan har den.
+        return self.async_update_reload_and_abort(entry, unique_id=unique_id, title=hit_title(hit), data=data)
+
+
+class SoporOptionsFlow(OptionsFlowWithReload):
+    """Döljer avfallstyper. Det som sparas är de dolda, så att nya typer hos källan syns."""
+
+    async def async_step_init(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+        entry: SoporConfigEntry = self.config_entry
+        if entry.state is not ConfigEntryState.LOADED or entry.runtime_data.data is None:
+            return self.async_abort(reason="not_loaded")
+        schedule = entry.runtime_data.data
+        ids = fraction_ids(schedule)
+        if user_input is not None:
+            return self.async_create_entry(data={CONF_HIDDEN: [i for i in ids if i not in user_input["visa"]]})
+        hidden = entry.runtime_data.hidden
+        options = [SelectOptionDict(value=i, label=fraction_name(schedule, i)) for i in ids]
+        return self.async_show_form(
+            step_id="init",
+            data_schema=probatio.Schema(
+                {
+                    probatio.Required("visa", default=[i for i in ids if i not in hidden]): SelectSelector(
+                        SelectSelectorConfig(options=options, multiple=True, mode=SelectSelectorMode.LIST)
+                    )
+                }
+            ),
+        )

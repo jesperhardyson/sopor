@@ -35,6 +35,16 @@
         "data_description": {
           "adress": "For example Storgatan 2, Uppsala"
         }
+      },
+      "reconfigure": {
+        "title": "Change address",
+        "description": "Search for the new address where your waste is collected.\n\nType the street and house number. Add the town after a comma to get fewer matches, for example Storgatan 2, Uppsala.",
+        "data": {
+          "adress": "Street and house number"
+        },
+        "data_description": {
+          "adress": "For example Storgatan 2, Uppsala"
+        }
       }
     },
     "error": {
@@ -46,7 +56,22 @@
       "cannot_connect": "Sopor is not responding. Try again in a while."
     },
     "abort": {
-      "already_configured": "The address has already been added."
+      "already_configured": "The address has already been added.",
+      "reconfigure_successful": "The address has been changed."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Waste types",
+        "description": "Choose which waste types to show. Hidden types are removed from the sensors and the calendar.",
+        "data": {
+          "visa": "Show waste types"
+        }
+      }
+    },
+    "abort": {
+      "not_loaded": "The integration is not running. Try again once it has loaded."
     }
   },
   "issues": {

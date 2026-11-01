@@ -5,7 +5,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.event import async_track_time_interval
 
 from .const import TICK_INTERVAL
-from .coordinator import SoporConfigEntry, SoporCoordinator
+from .coordinator import SoporConfigEntry, SoporCoordinator, store_for
 
 PLATFORMS: list[Platform] = [Platform.SENSOR, Platform.BINARY_SENSOR, Platform.CALENDAR, Platform.EVENT]
 
@@ -25,3 +25,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: SoporConfigEntry) -> boo
 
 async def async_unload_entry(hass: HomeAssistant, entry: SoporConfigEntry) -> bool:
     return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+
+
+async def async_remove_entry(hass: HomeAssistant, entry: SoporConfigEntry) -> None:
+    """Raderar postens sparade svar."""
+    await store_for(hass, entry.entry_id).async_remove()
