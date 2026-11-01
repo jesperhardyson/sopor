@@ -14,5 +14,9 @@
   "1.0.0": {
     "en": "First public version. Clearer collection dates with weekday, English texts on the device and widget, and fixed timers for removed devices.",
     "sv": "Första publika versionen. Tydligare datum med veckodag, engelska texter på enhet och widget, och rättade timrar för borttagna enheter."
+  },
+  "1.1.0": {
+    "en": "Add your waste bins: next emptying, their own flow cards and a put-out switch.",
+    "sv": "Lägg till dina sopkärl: nästa tömning, egna flödeskort och en knapp för utställt."
   }
 }
