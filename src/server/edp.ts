@@ -3,7 +3,7 @@
 
 import { isValidDate, todayInStockholm } from '../domain/dates.js'
 import { sortFractions } from '../domain/fractions.js'
-import { expandPickups } from '../domain/recurrence.js'
+import { expandPickups, type ExpandedPickup } from '../domain/recurrence.js'
 import type { FractionId, PickupEvent, Schedule } from '../domain/types.js'
 import { fetchJson } from './http.js'
 import { mapWasteType } from './fractions-map.js'
@@ -51,7 +51,7 @@ export function parseBuilding(raw: string): EdpBuilding | null {
  * kalenderprenumeration: mellanslag → "-", ", " → "_", bindestreck → "~". Å, ä och ö behålls,
  * eftersom källornas sökning skiljer på dem.
  */
-function encode(text: string): string {
+export function encode(text: string): string {
   return text
     .toLowerCase()
     .trim()
@@ -97,6 +97,34 @@ function weekdaysIn(text: string): number[] {
   return WEEKDAYS.flatMap((day, i) => (t.includes(day) ? [i + 1] : []))
 }
 
+/** En källas kärl: dess datum och vilka fraktioner det tömmer. */
+export interface PickupSeries {
+  pickups: ExpandedPickup[]
+  mapped: { fractions: FractionId[]; label?: string }
+}
+
+/** Slår ihop kärlens datum till en händelse per dag, sorterad på datum (EDP och Stockholm). */
+export function mergeSeries(series: PickupSeries[]): PickupEvent[] {
+  const byDate = new Map<string, PickupEvent>()
+  for (const { pickups, mapped } of series) {
+    for (const p of pickups) {
+      const event: PickupEvent = byDate.get(p.date) ?? { date: p.date, fractions: [], estimated: false }
+      for (const f of mapped.fractions) if (!event.fractions.includes(f)) event.fractions.push(f)
+      if (mapped.label) {
+        const labels = (event.labels ??= {})
+        labels.karl = [...new Set([...(labels.karl?.split(', ') ?? []), mapped.label])].join(', ')
+      }
+      // En dag med minst en framräknad tömning märks som beräknad: det försiktiga valet.
+      event.estimated = event.estimated || p.estimated
+      if (p.warning) event.warning = p.warning
+      byDate.set(p.date, event)
+    }
+  }
+  return [...byDate.values()]
+    .map((e) => ({ ...e, fractions: sortFractions(e.fractions as FractionId[]) }))
+    .sort((a, b) => a.date.localeCompare(b.date))
+}
+
 export async function edpSchedule(
   baseUrl: string,
   raw: string,
@@ -110,7 +138,7 @@ export async function edpSchedule(
     { fetchFn, timeoutMs },
   )
 
-  const byDate = new Map<string, PickupEvent>()
+  const items: PickupSeries[] = []
   for (const service of res.RhServices ?? []) {
     const next = service.NextWastePickup?.slice(0, 10)
     const mapped = mapWasteType(service.WasteType ?? '', service.WastePickupFrequency ?? '', service.Description ?? '')
@@ -121,22 +149,8 @@ export async function edpSchedule(
       perYear: service.WastePickupsPerYear ?? 0,
       weekdays: weekdaysIn(service.WastePickupFrequency ?? ''),
     })
-    for (const p of pickups) {
-      const event = byDate.get(p.date) ?? { date: p.date, fractions: [], estimated: false }
-      for (const f of mapped.fractions) if (!event.fractions.includes(f)) event.fractions.push(f)
-      if (mapped.label) {
-        const labels = (event.labels ??= {})
-        labels.karl = [...new Set([...(labels.karl?.split(', ') ?? []), mapped.label])].join(', ')
-      }
-      // En dag med minst en framräknad tömning märks som beräknad: det försiktiga valet.
-      event.estimated = event.estimated || p.estimated
-      if (p.warning) event.warning = p.warning
-      byDate.set(p.date, event)
-    }
+    items.push({ pickups, mapped })
   }
-
-  const events = [...byDate.values()]
-    .map((e) => ({ ...e, fractions: sortFractions(e.fractions as FractionId[]) }))
-    .sort((a, b) => a.date.localeCompare(b.date))
+  const events = mergeSeries(items)
   return { bins: [], events, updatedAt: todayInStockholm(now) }
 }

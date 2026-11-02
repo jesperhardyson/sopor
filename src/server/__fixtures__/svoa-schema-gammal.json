@@ -1,0 +1,4 @@
+{
+  "Kärl 1 - restavfall och matavfall": [{ "ExecutionDate": "2026-11-04", "FetchFrequency": "Varannan vecka", "Weekday": "Onsdag" }],
+  "Kärl 2 - papper och plast": [{ "ExecutionDate": "2026-11-12", "FetchFrequency": "Varannan vecka", "Weekday": "Torsdag" }]
+}
