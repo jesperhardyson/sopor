@@ -20,7 +20,7 @@ type Search = (
 type State =
   | { kind: 'idle' }
   | { kind: 'results'; query: string; results: Address[]; failed: string[]; pending?: boolean }
-  | { kind: 'notFound'; suggestions: Address[]; failed: string[] }
+  | { kind: 'notFound'; query: string; suggestions: Address[]; failed: string[] }
   | { kind: 'error' }
 
 const DEBOUNCE_MS = 150
@@ -162,7 +162,7 @@ export function AddressSearch({
           setState((prev) => ({ kind: 'results', query, results: keep(prev, results), failed }))
         } else {
           const suggestions = await suggest(query, controller.signal)
-          if (!controller.signal.aborted) setState({ kind: 'notFound', suggestions, failed })
+          if (!controller.signal.aborted) setState({ kind: 'notFound', query, suggestions, failed })
         }
         setActive(-1)
       } catch {
@@ -188,7 +188,11 @@ export function AddressSearch({
   const list = sections(results, expanded)
   const items = list.flatMap((s) => s.items)
   const open = results.length > 0
-  const showNotFound = state.kind === 'notFound' && (submitted || normalize(query).length >= 4)
+  // Svaret gäller frågan det kom för: en kortare fråga utan träffar får inte synas när man skrivit vidare.
+  const showNotFound =
+    state.kind === 'notFound' &&
+    normalize(query).startsWith(normalize(state.query)) &&
+    (submitted || normalize(state.query).length >= 4)
   // Bara när ingen lista syns: medan man skriver vidare står de förra träffarna kvar.
   const showSkeleton = slow && !open && !showNotFound && state.kind !== 'error'
 
