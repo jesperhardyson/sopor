@@ -5,6 +5,7 @@ import { groupByKommun, normalize, stableMerge } from '@/domain/search'
 import type { Address } from '@/domain/types'
 import { missingKommuner, searchAll, suggestAll, warmUpSearch, type SearchOptions, type SearchResult } from '@/providers/registry'
 import { getSource } from '@/sources'
+import { reportMissingKommun } from '@/lib/analytics'
 import { cn } from '@/lib/utils'
 import { Skeleton } from '../result/ResultStates'
 import { MissingKommun } from './MissingKommun'
@@ -198,6 +199,11 @@ export function AddressSearch({
     state.kind === 'notFound' &&
     normalize(query).startsWith(normalize(state.query)) &&
     (submitted || normalize(state.query).length >= 4)
+  // Räknas när läget för saknad kommun syns (se lib/analytics.ts).
+  const shownMissing = showNotFound ? state.missing : undefined
+  useEffect(() => {
+    if (shownMissing?.length) reportMissingKommun(shownMissing)
+  }, [shownMissing])
   // Bara när ingen lista syns: medan man skriver vidare står de förra träffarna kvar.
   const showSkeleton = slow && !open && !showNotFound && state.kind !== 'error'
 
