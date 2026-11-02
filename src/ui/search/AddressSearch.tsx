@@ -6,6 +6,7 @@ import type { Address } from '@/domain/types'
 import { searchAll, suggestAll, warmUpSearch, type SearchOptions, type SearchResult } from '@/providers/registry'
 import { getSource } from '@/sources'
 import { cn } from '@/lib/utils'
+import { Skeleton } from '../result/ResultStates'
 import { NotFound } from './NotFound'
 
 type Lookup = (query: string, signal?: AbortSignal) => Promise<Address[]>
@@ -23,6 +24,8 @@ type State =
   | { kind: 'error' }
 
 const DEBOUNCE_MS = 150
+/** Skelettet visas först efter så här lång väntan, så att svar ur cachen inte får det att blinka. */
+const SKELETON_MS = 150
 /** Träffar som visas per kommun innan resten fälls ihop, när träffarna ligger i flera kommuner. */
 const PER_KOMMUN = 3
 /** Adressrader i listan innan resten fälls ihop bakom "Visa N till". */
@@ -107,6 +110,7 @@ export function AddressSearch({
   const [active, setActive] = useState(-1)
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [slow, setSlow] = useState(false)
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
   const rootRef = useRef<HTMLDivElement>(null)
 
@@ -139,12 +143,15 @@ export function AddressSearch({
     if (normalize(query).length < 2) {
       setState({ kind: 'idle' })
       setLoading(false)
+      setSlow(false)
       return
     }
     const controller = new AbortController()
+    let skeleton: ReturnType<typeof setTimeout> | undefined
     const timer = setTimeout(async () => {
       try {
         setLoading(true)
+        skeleton = setTimeout(() => setSlow(true), SKELETON_MS)
         const { addresses: results, failed } = await search(query, controller.signal, (partial) => {
           if (!controller.signal.aborted && partial.addresses.length > 0) {
             setState((prev) => ({ kind: 'results', query, results: keep(prev, partial.addresses), failed: [], pending: true }))
@@ -161,20 +168,29 @@ export function AddressSearch({
       } catch {
         if (!controller.signal.aborted) setState({ kind: 'error' })
       } finally {
-        if (!controller.signal.aborted) setLoading(false)
+        clearTimeout(skeleton)
+        if (!controller.signal.aborted) {
+          setLoading(false)
+          setSlow(false)
+        }
       }
     }, DEBOUNCE_MS)
     return () => {
       clearTimeout(timer)
+      clearTimeout(skeleton)
       controller.abort()
     }
   }, [query, search, suggest])
 
-  const results = state.kind === 'results' ? state.results : []
+  // Förra träffarna står kvar medan man skriver vidare eller suddar, men inte när texten byts ut.
+  const related = (a: string, b: string) => normalize(a).startsWith(normalize(b)) || normalize(b).startsWith(normalize(a))
+  const results = state.kind === 'results' && related(query, state.query) ? state.results : []
   const list = sections(results, expanded)
   const items = list.flatMap((s) => s.items)
   const open = results.length > 0
   const showNotFound = state.kind === 'notFound' && (submitted || normalize(query).length >= 4)
+  // Bara när ingen lista syns: medan man skriver vidare står de förra träffarna kvar.
+  const showSkeleton = slow && !open && !showNotFound && state.kind !== 'error'
 
   function go(address: Address) {
     navigate(`/${address.sourceId}/${address.id}`)
@@ -370,6 +386,28 @@ export function AddressSearch({
             {state.failed.map((id) => getSource(id)?.name ?? id).join(', ')} svarar inte just nu.
           </p>
         )}
+        </div>
+      )}
+
+      {showSkeleton && (
+        <div className="absolute inset-x-0 top-full z-20 mt-3 rounded-[18px] border border-border bg-surface p-1.5 shadow-[0_12px_32px_#1B231F1F]">
+          {[
+            ['w-[132px]', 'w-[150px]'],
+            ['w-[112px]', 'w-[120px]'],
+            ['w-[144px]', 'w-24'],
+          ].map(([street, meta]) => (
+            <div key={street} aria-hidden className="flex items-center gap-3 p-3">
+              <Skeleton className="size-9 shrink-0 rounded-full" />
+              <span className="flex flex-col gap-2">
+                <Skeleton className={cn('h-4 rounded-md', street)} />
+                <Skeleton className={cn('h-3 rounded-md', meta)} />
+              </span>
+            </div>
+          ))}
+          <p role="status" className="flex items-center gap-2 px-3 pt-2 pb-2.5 text-sm font-semibold text-text-2">
+            <LoaderCircle className="size-4 animate-spin text-primary" aria-hidden />
+            Söker adresser…
+          </p>
         </div>
       )}
 

@@ -1,7 +1,8 @@
 import { LoaderCircle, Map, TriangleAlert } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
-const Skeleton = ({ className }: { className: string }) => (
-  <span className={`block animate-pulse rounded-lg bg-surface-2 ${className}`} aria-hidden />
+export const Skeleton = ({ className }: { className: string }) => (
+  <span className={cn('block animate-pulse rounded-lg bg-surface-2', className)} aria-hidden />
 )
 
 export function LoadingState({ sourceName }: { sourceName: string }) {

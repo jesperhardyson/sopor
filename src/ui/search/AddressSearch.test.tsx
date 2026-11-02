@@ -317,6 +317,68 @@ describe('AddressSearch', () => {
     expect(streets).toEqual([first.street, second.street, third.street])
   })
 
+  it('visar ett skelett medan den söker och ännu inte har några träffar', async () => {
+    let finish: () => void = () => {}
+    render(
+      <MemoryRouter>
+        <AddressSearch
+          search={(q) => new Promise((resolve) => (finish = () => resolve({ addresses: searchAddresses(q, ADDRESSES), failed: [] })))}
+          suggest={async () => []}
+        />
+      </MemoryRouter>,
+    )
+    await userEvent.type(screen.getByRole('combobox'), 'storg')
+    expect(await screen.findByRole('status')).toHaveTextContent('Söker adresser…')
+    finish()
+    expect(await screen.findAllByRole('option')).toHaveLength(3)
+    expect(screen.queryByText('Söker adresser…')).toBeNull()
+  })
+
+  it('visar inte förra frågans träffar när man skrivit något helt annat', async () => {
+    render(
+      <MemoryRouter>
+        <AddressSearch
+          search={(q) =>
+            q.startsWith('storg') ? Promise.resolve({ addresses: searchAddresses(q, ADDRESSES), failed: [] }) : new Promise(() => {})
+          }
+          suggest={async () => []}
+        />
+      </MemoryRouter>,
+    )
+    const box = screen.getByRole('combobox')
+    await userEvent.type(box, 'storg')
+    expect(await screen.findAllByRole('option')).toHaveLength(3)
+    // Markera allt och skriv över: texten byts utan att fältet blir tomt däremellan.
+    fireEvent.change(box, { target: { value: 'bergs' } })
+    expect(await screen.findByText('Söker adresser…')).toBeInTheDocument()
+    expect(screen.queryAllByRole('option')).toHaveLength(0)
+  })
+
+  it('låter förra träffarna stå kvar medan man skriver vidare', async () => {
+    render(
+      <MemoryRouter>
+        <AddressSearch
+          search={(q) => (q === 'storg' ? Promise.resolve({ addresses: searchAddresses(q, ADDRESSES), failed: [] }) : new Promise(() => {}))}
+          suggest={async () => []}
+        />
+      </MemoryRouter>,
+    )
+    const box = screen.getByRole('combobox')
+    await userEvent.type(box, 'storg')
+    expect(await screen.findAllByRole('option')).toHaveLength(3)
+    await userEvent.type(box, 'atan')
+    await new Promise((r) => setTimeout(r, 400))
+    expect(screen.getAllByRole('option')).toHaveLength(3)
+    expect(screen.queryByText('Söker adresser…')).toBeNull()
+  })
+
+  it('visar inget skelett när svaret kommer direkt', async () => {
+    await userEvent.type(setup(), 'storg')
+    await screen.findAllByRole('option')
+    await new Promise((r) => setTimeout(r, 300))
+    expect(screen.queryByText('Söker adresser…')).toBeNull()
+  })
+
   it('ber om en bredare sökning när man trycker Enter', async () => {
     const search = vi.fn(async () => ({ addresses: [], failed: [] }))
     render(
