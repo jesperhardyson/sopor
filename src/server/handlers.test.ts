@@ -54,6 +54,12 @@ describe('handleSearch', () => {
     expect(res.headers.get('Cache-Control')).toBe('public, s-maxage=60')
   })
 
+  it('cachar inte ett svar där ingen källa svarade, så att ett nytt försök når källan', async () => {
+    const res = await handleSearch(new URL('https://x/api/sok?q=Storgatan&sources=vafab'), opts)
+    expect((await res.json()).failed).toEqual(['vafab'])
+    expect(res.headers.get('Cache-Control')).toBe('no-store')
+  })
+
   it('särskiljer flera byggnader med samma adress med byggnads-id:t', async () => {
     const orebro = (async () => json(fixture('orebro-search.json'))) as unknown as typeof fetch
     const res = await handleSearch(new URL('https://x/api/sok?q=Storgatan&sources=uppsala'), { ...opts, fetchFn: orebro })

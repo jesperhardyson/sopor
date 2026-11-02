@@ -112,14 +112,28 @@ function wait(ms: number, signal?: AbortSignal): Promise<void> {
   })
 }
 
-/** Frågar en källa via /api/sok. En fråga per källa: svaren cachas och visas var för sig. */
-async function fetchSource(id: string, q: string, signal?: AbortSignal): Promise<Address[]> {
+async function askSource(id: string, q: string, signal?: AbortSignal): Promise<Address[]> {
   const res = await fetch(`/api/sok?${new URLSearchParams({ q, sources: id })}`, { signal })
   if (!res.ok) throw new Error(`/api/sok svarade ${res.status}`)
   const body = (await res.json()) as SearchResult
   if (body.failed.includes(id)) throw new Error(`${id} svarade inte`)
-  remember(id, q, body.addresses)
   return body.addresses
+}
+
+/**
+ * Frågar en källa via /api/sok. En fråga per källa: svaren cachas och visas var för sig.
+ * Källor som inte svarar har ofta bara somnat och är vakna vid nästa fråga, så de får ett nytt försök.
+ */
+async function fetchSource(id: string, q: string, signal?: AbortSignal): Promise<Address[]> {
+  let addresses: Address[]
+  try {
+    addresses = await askSource(id, q, signal)
+  } catch (error) {
+    if (signal?.aborted) throw error
+    addresses = await askSource(id, q, signal)
+  }
+  remember(id, q, addresses)
+  return addresses
 }
 
 async function searchLive(
