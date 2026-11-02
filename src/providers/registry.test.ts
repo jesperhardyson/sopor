@@ -82,12 +82,12 @@ describe('searchAll', () => {
     expect(f.mock.calls.map(([u]) => u)).toContain('/api/sok?q=storgatan&sources=uppsala')
   })
 
-  it('låter inte en källa med många träffar tränga ut de andra kommunerna', async () => {
+  it('lämnar alla träffar, så att sökrutan kan välja vilka som visas utan att listan hoppar', async () => {
     const boras: Address = { id: 'storgatan-1_boras', street: 'Storgatan 1', locality: 'Borås', sourceId: 'boras', kommun: 'Borås kommun' }
     stubFetch({ addresses: [...Array.from({ length: 11 }, (_, i) => up(`Storgatan ${i + 1}`)), boras], failed: [] })
     const { searchAll } = await import('./registry')
     const result = await searchAll('Storgatan')
-    expect(result.addresses).toHaveLength(12)
+    expect(result.addresses).toHaveLength(13)
     expect(result.addresses.map((x) => x.kommun)).toEqual(expect.arrayContaining(['Avesta kommun', 'Borås kommun']))
   })
 
@@ -224,6 +224,28 @@ describe('searchAll', () => {
     expect(partials.flat()).not.toContain('boras')
     releaseBoras()
     expect((await done).addresses.map((x) => x.sourceId)).toEqual(expect.arrayContaining(['uppsala', 'boras']))
+  })
+
+  it('samlar källornas svar en kort stund innan listan visas, så att den inte hoppar', async () => {
+    const boras: Address = { id: 'storgatan-1_boras', street: 'Storgatan 1', locality: 'Borås', sourceId: 'boras', kommun: 'Borås kommun' }
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string) => {
+        if (url === '/data/gator/st.json') return Response.json({ storgatan: ['boras', 'uppsala'] })
+        if (url === '/data/orter.json') return Response.json({})
+        if (url.endsWith('sources=uppsala')) return Response.json({ addresses: [up('Storgatan 2')], failed: [] })
+        if (url.endsWith('sources=boras')) {
+          await new Promise((r) => setTimeout(r, 100))
+          return Response.json({ addresses: [boras], failed: [] })
+        }
+        return new Response('', { status: 404 })
+      }),
+    )
+    const { searchAll } = await import('./registry')
+    const partials: string[][] = []
+    const result = await searchAll('Storgatan', undefined, (r) => partials.push(r.addresses.map((x) => x.sourceId)))
+    expect(partials.some((p) => p.includes('uppsala') && !p.includes('boras'))).toBe(false)
+    expect(result.addresses.map((x) => x.sourceId)).toEqual(expect.arrayContaining(['uppsala', 'boras']))
   })
 
   it('räknar bara en källa som misslyckad när just den inte svarar', async () => {

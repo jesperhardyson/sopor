@@ -123,3 +123,24 @@ export function fairShare(addresses: Address[], limit: number): Address[] {
     return n > 0
   })
 }
+
+/**
+ * Slår ihop listan som redan syns med ett nytt svar, så att raderna inte hoppar medan källorna
+ * svarar och medan man skriver vidare. Rader som syns och finns kvar står still; de lediga av
+ * `limit` platser fördelas per kommun bland de nya. En kommun som svarar sent får ändå minst en
+ * rad längst ner. Samma adress känns igen på `sourceId` och `id`.
+ */
+export function stableMerge(shown: Address[], incoming: Address[], limit: number): Address[] {
+  const key = (a: Address) => `${a.sourceId}/${a.id}`
+  const fresh = new Map(incoming.map((a) => [key(a), a]))
+  const kept = shown.flatMap((a) => fresh.get(key(a)) ?? [])
+  if (kept.length === 0) return fairShare(incoming, limit)
+  const keptKeys = new Set(kept.map(key))
+  const rest = incoming.filter((a) => !keptKeys.has(key(a)))
+  // Första raden för varje kommun som inte syns än, sedan resten av de lediga platserna.
+  const kommuner = new Set(kept.map((a) => a.kommun))
+  const firsts = rest.filter((a) => !kommuner.has(a.kommun) && kommuner.add(a.kommun))
+  const others = rest.filter((a) => !firsts.includes(a))
+  const chosen = new Set([...firsts, ...fairShare(others, Math.max(0, limit - kept.length - firsts.length))])
+  return [...kept, ...rest.filter((a) => chosen.has(a))]
+}

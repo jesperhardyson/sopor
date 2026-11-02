@@ -1,7 +1,7 @@
 import { ChevronDown, LoaderCircle, MapPin, Search, X } from 'lucide-react'
 import { useEffect, useId, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
-import { groupByKommun, normalize } from '@/domain/search'
+import { groupByKommun, normalize, stableMerge } from '@/domain/search'
 import type { Address } from '@/domain/types'
 import { searchAll, suggestAll, warmUpSearch, type SearchOptions, type SearchResult } from '@/providers/registry'
 import { getSource } from '@/sources'
@@ -49,6 +49,12 @@ function sections(results: Address[], expanded: Set<string>): Section[] {
     return { kommun, total: addresses.length, items }
   })
 }
+
+/** Så många träffar visas, fördelade per kommun. En kommun som svarar sent kan ge en rad till. */
+const LIMIT = 12
+
+/** Raderna som redan syns behåller sin plats när nya träffar kommer in. */
+const keep = (prev: State, incoming: Address[]) => stableMerge(prev.kind === 'results' ? prev.results : [], incoming, LIMIT)
 
 export function AddressSearch({
   search = searchAll,
@@ -111,12 +117,12 @@ export function AddressSearch({
         setLoading(true)
         const { addresses: results, failed } = await search(query, controller.signal, (partial) => {
           if (!controller.signal.aborted && partial.addresses.length > 0) {
-            setState({ kind: 'results', query, results: partial.addresses, failed: [], pending: true })
+            setState((prev) => ({ kind: 'results', query, results: keep(prev, partial.addresses), failed: [], pending: true }))
           }
         })
         if (controller.signal.aborted) return
         if (results.length > 0) {
-          setState({ kind: 'results', query, results, failed })
+          setState((prev) => ({ kind: 'results', query, results: keep(prev, results), failed }))
         } else {
           const suggestions = await suggest(query, controller.signal)
           if (!controller.signal.aborted) setState({ kind: 'notFound', suggestions, failed })

@@ -1,7 +1,7 @@
 import type { Address } from '@/domain/types'
 import { getSource, SOURCES, type Source } from '@/sources'
 import { pickLiveSources, shardKey, type StreetShard } from '@/data/street-index'
-import { fairShare, normalize } from '@/domain/search'
+import { normalize } from '@/domain/search'
 import { kommunForLocality } from '@/sources'
 import { createApiProvider } from './api'
 import { loadPlaces } from './places'
@@ -65,6 +65,8 @@ const SOURCE_LIMIT = 10
 /** Väntan innan servern frågas, utöver sökrutans debounce: halvskrivna ord ska inte kosta anrop. */
 const NETWORK_DELAY_MS = 150
 const CACHE_SIZE = 300
+/** Så länge svaren samlas innan de visas. De flesta källor hinner svara; sena läggs till efteråt. */
+const HOLD_MS = 400
 
 /** Som källorna jämför: gemener och enkla mellanslag. Källorna matchar början av adressen. */
 const liveKey = (query: string) => query.toLowerCase().replace(/\s+/g, ' ').trim()
@@ -141,13 +143,23 @@ async function searchLive(
 
   let addresses: Address[] = []
   const failed: string[] = []
+  // Svaren från nätet samlas en kort stund, så att listan inte byggs om för varje källa.
+  let holding = false
+  const report = () => {
+    if (!holding && !signal?.aborted && addresses.length > 0) onPartial({ addresses, failed: [...failed] })
+  }
   const add = (found: Address[]) => {
     addresses = [...addresses, ...found]
-    if (!signal?.aborted && found.length > 0) onPartial({ addresses, failed: [...failed] })
+    if (found.length > 0) report()
   }
   const fetched = async () => {
     // Väntan räknas från sökningens början: den löper medan gatuindexet laddas.
     await wait(Math.max(0, NETWORK_DELAY_MS - (Date.now() - started)), signal)
+    holding = true
+    const timer = setTimeout(() => {
+      holding = false
+      report()
+    }, HOLD_MS)
     await Promise.all(
       missing.map(async (id) => {
         try {
@@ -157,6 +169,7 @@ async function searchLive(
         }
       }),
     )
+    clearTimeout(timer)
     if (signal?.aborted) throw new DOMException('Avbruten', 'AbortError')
   }
   await Promise.all([
@@ -185,7 +198,7 @@ export async function searchAll(
   let localAddresses: Address[] = []
   let localDone = false
   const report = (live: SearchResult) => {
-    if (localDone && !signal?.aborted) onPartial?.({ addresses: fairShare([...localAddresses, ...live.addresses], 12), failed: [] })
+    if (localDone && !signal?.aborted) onPartial?.({ addresses: [...localAddresses, ...live.addresses], failed: [] })
   }
   let latest: SearchResult = { addresses: [], failed: [] }
   const live = searchLive(query, signal, options, (partial) => report((latest = partial)))
@@ -195,7 +208,7 @@ export async function searchAll(
   localDone = true
   report(latest)
   const { addresses, failed } = await live
-  return { addresses: fairShare([...localAddresses, ...addresses], 12), failed }
+  return { addresses: [...localAddresses, ...addresses], failed }
 }
 
 /** Förslag för "Menade du:" (bara statiska källor har listan lokalt). */

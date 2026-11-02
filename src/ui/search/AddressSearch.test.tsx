@@ -241,6 +241,28 @@ describe('AddressSearch', () => {
     await vi.waitFor(() => expect(screen.queryByText('Söker hos fler källor…')).toBeNull())
   })
 
+  it('låter raderna som syns stå kvar på sin plats när fler träffar kommer', async () => {
+    let finish: () => void = () => {}
+    const [first, second, third] = searchAddresses('storg', ADDRESSES)
+    render(
+      <MemoryRouter>
+        <AddressSearch
+          search={(_q, _signal, onPartial) => {
+            onPartial?.({ addresses: [first, second], failed: [] })
+            return new Promise((resolve) => (finish = () => resolve({ addresses: [third, second, first], failed: [] })))
+          }}
+          suggest={async () => []}
+        />
+      </MemoryRouter>,
+    )
+    await userEvent.type(screen.getByRole('combobox'), 'storg')
+    expect(await screen.findAllByRole('option')).toHaveLength(2)
+    finish()
+    await vi.waitFor(() => expect(screen.getAllByRole('option')).toHaveLength(3))
+    const streets = screen.getAllByRole('option').map((o) => within(o).getAllByText(/Storgatan/)[0].textContent)
+    expect(streets).toEqual([first.street, second.street, third.street])
+  })
+
   it('ber om en bredare sökning när man trycker Enter', async () => {
     const search = vi.fn(async () => ({ addresses: [], failed: [] }))
     render(
