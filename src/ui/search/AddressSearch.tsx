@@ -3,13 +3,15 @@ import { Fragment, useEffect, useId, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { groupByKommun, normalize, stableMerge } from '@/domain/search'
 import type { Address } from '@/domain/types'
-import { searchAll, suggestAll, warmUpSearch, type SearchOptions, type SearchResult } from '@/providers/registry'
+import { missingKommuner, searchAll, suggestAll, warmUpSearch, type SearchOptions, type SearchResult } from '@/providers/registry'
 import { getSource } from '@/sources'
 import { cn } from '@/lib/utils'
 import { Skeleton } from '../result/ResultStates'
+import { MissingKommun } from './MissingKommun'
 import { NotFound } from './NotFound'
 
 type Lookup = (query: string, signal?: AbortSignal) => Promise<Address[]>
+type Missing = (query: string, signal?: AbortSignal) => Promise<string[]>
 type Search = (
   query: string,
   signal?: AbortSignal,
@@ -20,7 +22,7 @@ type Search = (
 type State =
   | { kind: 'idle' }
   | { kind: 'results'; query: string; results: Address[]; failed: string[]; pending?: boolean }
-  | { kind: 'notFound'; query: string; suggestions: Address[]; failed: string[] }
+  | { kind: 'notFound'; query: string; suggestions: Address[]; failed: string[]; missing: string[] }
   | { kind: 'error' }
 
 const DEBOUNCE_MS = 150
@@ -92,11 +94,14 @@ const keep = (prev: State, incoming: Address[]) => stableMerge(prev.kind === 're
 export function AddressSearch({
   search = searchAll,
   suggest = suggestAll,
+  missing = missingKommuner,
   onActivate,
   onDeactivate,
 }: {
   search?: Search
   suggest?: Lookup
+  /** Kommuner som frågans ort ligger i, om Sopor inte har dem */
+  missing?: Missing
   /** Fältet fick fokus (startsidans fokusläge) */
   onActivate?: () => void
   /** Användaren tryckte Esc */
@@ -161,8 +166,8 @@ export function AddressSearch({
         if (results.length > 0) {
           setState((prev) => ({ kind: 'results', query, results: keep(prev, results), failed }))
         } else {
-          const suggestions = await suggest(query, controller.signal)
-          if (!controller.signal.aborted) setState({ kind: 'notFound', query, suggestions, failed })
+          const [suggestions, kommuner] = await Promise.all([suggest(query, controller.signal), missing(query, controller.signal)])
+          if (!controller.signal.aborted) setState({ kind: 'notFound', query, suggestions, failed, missing: kommuner })
         }
         setActive(-1)
       } catch {
@@ -180,7 +185,7 @@ export function AddressSearch({
       clearTimeout(skeleton)
       controller.abort()
     }
-  }, [query, search, suggest])
+  }, [query, search, suggest, missing])
 
   // Förra träffarna står kvar medan man skriver vidare eller suddar, men inte när texten byts ut.
   const related = (a: string, b: string) => normalize(a).startsWith(normalize(b)) || normalize(b).startsWith(normalize(a))
@@ -426,7 +431,12 @@ export function AddressSearch({
               {state.failed.map((id) => getSource(id)?.name ?? id).join(', ')} svarar inte just nu.
             </p>
           )}
-          {showNotFound && <NotFound suggestions={state.suggestions} className="shadow-[0_12px_32px_#1B231F1F]" />}
+          {showNotFound &&
+            (state.missing.length > 0 ? (
+              <MissingKommun kommuner={state.missing} className="shadow-[0_12px_32px_#1B231F1F]" />
+            ) : (
+              <NotFound suggestions={state.suggestions} className="shadow-[0_12px_32px_#1B231F1F]" />
+            ))}
           {state.kind === 'error' && (
             <p role="alert" className="rounded-2xl bg-warn-bg px-4 py-3 text-[15px] font-bold text-warn shadow-[0_12px_32px_#1B231F1F]">
               Det gick inte att söka just nu. Kontrollera anslutningen och försök igen.

@@ -14,6 +14,7 @@ npm run lint         # oxlint
 npm run build        # genererar data, typkontroll och produktionsbygge i dist/
 npm run build:data   # bara datafilerna (körs automatiskt före dev och build)
 npm run check:ids    # inga befintliga adress-id har tagits bort
+npm run build:orter  # hämtar orter i hela Sverige från Wikidata till data/sverige/ (för hand, sällan)
 ```
 
 Kör `npm run lint && npm test && npm run build` innan du skickar en pull request. CI kör samma sak.
@@ -50,6 +51,7 @@ data/<källa>/<år>/addresses.csv   ┘─► scripts/build-data.ts ┼► publi
 | `api/` | Vercel-funktionerna, med det publika API:t i `api/v1/` |
 | `src/ui/` | React-sidor och komponenter (`src/components/ui/` är shadcn/ui) |
 | `data/osm/` | gatu- och ortnamn per kommun från OpenStreetMap |
+| `data/sverige/` | orter i hela Sverige och deras kommun, från Wikidata. Ger "Vi finns inte i … än" i sökningen |
 | `integrations/` | Homey-appen och Home Assistant-integrationen, egna paket |
 
 UI:t vet aldrig om datan kommer från filer, EDP eller något annat. Genererade filer under `public/data/` och `public/ics/` checkas inte in.

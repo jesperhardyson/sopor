@@ -56,4 +56,4 @@ Integrationerna är egna paket som bara använder det publika API:t.
 
 [MIT](LICENSE). Datan om tömningar kommer från respektive kommun.
 
-Gatu- och ortnamn © [OpenStreetMaps bidragsgivare](https://www.openstreetmap.org/copyright), tillgängliga under ODbL. Indexet i `data/osm/` delas under samma licens.
+Gatu- och ortnamn © [OpenStreetMaps bidragsgivare](https://www.openstreetmap.org/copyright), tillgängliga under ODbL. Indexet i `data/osm/` delas under samma licens. Orterna i `data/sverige/` kommer från [Wikidata](https://www.wikidata.org) (CC0).

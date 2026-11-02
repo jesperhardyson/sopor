@@ -31,6 +31,7 @@ vi.mock('@/providers/registry', () => ({
   searchAll: async () => ({ addresses: [], failed: [] }),
   warmUpSearch: () => {},
   suggestAll: async () => [],
+  missingKommuner: async () => [],
 }))
 
 function makeProvider(over: Partial<WasteProvider> = {}): WasteProvider {

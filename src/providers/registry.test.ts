@@ -336,3 +336,64 @@ describe('searchAll', () => {
     expect(sokCalls(f)).toHaveLength(0)
   })
 })
+
+describe('missingKommuner', () => {
+  const sverige = {
+    kommuner: { '2083': 'Hedemora kommun', '0380': 'Uppsala kommun', '0882': 'Oskarshamns kommun' },
+    orter: { hedemora: ['2083'], uppsala: ['0380'], oskarshamn: ['0882'] },
+  }
+
+  function stubFetch(ok = true) {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string) => {
+        if (url === '/data/sverige.json') return ok ? Response.json(sverige) : new Response('', { status: 500 })
+        if (url === '/data/gator/st.json') return Response.json({ storgatan: ['avesta', 'uppsala'] })
+        return new Response('', { status: 404 })
+      }),
+    )
+  }
+
+  afterEach(async () => {
+    vi.unstubAllGlobals()
+    vi.resetModules()
+    await import('@/test/show-hidden-sources')
+  })
+
+  async function missing(query: string) {
+    const { missingKommuner } = await import('./registry')
+    return missingKommuner(query)
+  }
+
+  it('ger kommunen när orten ligger i en kommun som Sopor inte har', async () => {
+    stubFetch()
+    expect(await missing('Storgatan 12, Hedemora')).toEqual(['Hedemora kommun'])
+    expect(await missing('Storgatan 12 hedemora')).toEqual(['Hedemora kommun'])
+  })
+
+  it('ger inget för kommuner som Sopor har, helt eller delvis', async () => {
+    stubFetch()
+    expect(await missing('Storgatan 12 Uppsala')).toEqual([])
+    expect(await missing('Storgatan 12 Oskarshamn')).toEqual([])
+  })
+
+  it('ger inget utan ort eller med en okänd ort', async () => {
+    stubFetch()
+    expect(await missing('Storgatan 12')).toEqual([])
+    expect(await missing('Storgatan 12 Hedemor')).toEqual([])
+  })
+
+  it('frågar inga källor när orten ligger i en kommun som Sopor inte har', async () => {
+    stubFetch()
+    const { searchAll } = await import('./registry')
+    const result = await searchAll('Storgatan 12, Hedemora', undefined, undefined, { submitted: true })
+    expect(result.addresses.filter((a) => a.sourceId !== 'avesta')).toEqual([])
+    const calls = vi.mocked(fetch).mock.calls.map(([u]) => String(u))
+    expect(calls.filter((u) => u.startsWith('/api/sok'))).toEqual([])
+  })
+
+  it('ger inget när ortfilen inte går att hämta', async () => {
+    stubFetch(false)
+    expect(await missing('Storgatan 12, Hedemora')).toEqual([])
+  })
+})
