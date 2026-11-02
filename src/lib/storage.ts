@@ -1,3 +1,5 @@
+import type { Address, Schedule } from '@/domain/types'
+
 export interface SavedAddress {
   sourceId: string
   addressId: string
@@ -73,6 +75,7 @@ export function upsertSaved(address: SavedAddress): SavedAddress[] {
 }
 
 export function removeSaved(sourceId: string, addressId: string): SavedAddress[] {
+  forgetSchedules((key) => key === scheduleKey(sourceId, addressId))
   return store(loadSaved().filter((a) => !same(a, sourceId, addressId)))
 }
 
@@ -85,5 +88,55 @@ export function findSaved(sourceId: string, addressId: string): SavedAddress | u
 }
 
 export function clearSaved(): SavedAddress[] {
+  forgetSchedules(() => true)
   return store([])
+}
+
+/** Senast hämtade schemat för en sparad adress, som visas när källan inte svarar. */
+export interface StoredSchedule {
+  address: Address
+  schedule: Schedule
+  /** När schemat hämtades, YYYY-MM-DD */
+  fetchedAt: string
+}
+
+const SCHEDULES_KEY = 'sopor.schedules.v1'
+const scheduleKey = (sourceId: string, addressId: string) => `${sourceId}/${addressId}`
+
+function readSchedules(): Record<string, StoredSchedule> {
+  try {
+    const parsed: unknown = JSON.parse(localStorage.getItem(SCHEDULES_KEY) ?? '{}')
+    return typeof parsed === 'object' && parsed !== null ? (parsed as Record<string, StoredSchedule>) : {}
+  } catch {
+    return {}
+  }
+}
+
+function writeSchedules(all: Record<string, StoredSchedule>) {
+  try {
+    if (Object.keys(all).length === 0) localStorage.removeItem(SCHEDULES_KEY)
+    else localStorage.setItem(SCHEDULES_KEY, JSON.stringify(all))
+  } catch {
+    // Utan lagring visas felet som vanligt när källan inte svarar.
+  }
+}
+
+function forgetSchedules(match: (key: string) => boolean) {
+  const all = readSchedules()
+  writeSchedules(Object.fromEntries(Object.entries(all).filter(([key]) => !match(key))))
+}
+
+const isStored = (v: StoredSchedule | undefined): v is StoredSchedule =>
+  typeof v?.address?.street === 'string' && Array.isArray(v?.schedule?.events) && typeof v?.fetchedAt === 'string'
+
+/** Sparar schemat, men bara för sparade adresser: det ska inte samlas scheman för allt man tittat på. */
+export function storeSchedule(entry: StoredSchedule) {
+  const { sourceId, id } = entry.address
+  if (!findSaved(sourceId, id)) return
+  writeSchedules({ ...readSchedules(), [scheduleKey(sourceId, id)]: entry })
+}
+
+export function loadStoredSchedule(sourceId: string, addressId: string): StoredSchedule | undefined {
+  const entry = readSchedules()[scheduleKey(sourceId, addressId)]
+  return isStored(entry) ? entry : undefined
 }

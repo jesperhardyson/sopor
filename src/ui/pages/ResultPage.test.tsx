@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { Link, MemoryRouter, Route, Routes } from 'react-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Address, Schedule } from '@/domain/types'
+import { loadStoredSchedule, storeSchedule, upsertSaved } from '@/lib/storage'
 import type { WasteProvider } from '@/providers/types'
 import { ResultPage, ResultRoute } from './ResultPage'
 
@@ -167,6 +168,55 @@ describe('ResultPage', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Försök igen' }))
     expect(await screen.findByRole('region', { name: 'Nästa tömning' })).toBeInTheDocument()
     expect(calls).toBe(2)
+  })
+
+  describe('när källan inte svarar', () => {
+    const save = () =>
+      upsertSaved({ sourceId: 'avesta', addressId: villa.id, name: 'Hemma', street: villa.street, locality: villa.locality, savedAt: '' })
+
+    beforeEach(() => localStorage.clear())
+
+    it('sparar schemat för en sparad adress när det har hämtats', async () => {
+      save()
+      renderAt('/avesta/krylbo-storgatan-12b')
+      await vi.waitFor(() => resolveSchedule!())
+      await screen.findByRole('region', { name: 'Nästa tömning' })
+      await vi.waitFor(() =>
+        expect(loadStoredSchedule('avesta', villa.id)).toEqual({ address: villa, schedule, fetchedAt: '2026-10-30' }),
+      )
+    })
+
+    it('visar det sparade schemat med en varning, och kan försöka igen', async () => {
+      save()
+      storeSchedule({ address: villa, schedule, fetchedAt: '2026-10-29' })
+      let calls = 0
+      fake = makeProvider({
+        getAddress: async () => {
+          if (calls === 0) throw new Error('nere')
+          return villa
+        },
+        getSchedule: async () => {
+          if (calls++ === 0) throw new Error('nere')
+          return schedule
+        },
+      })
+      renderAt('/avesta/krylbo-storgatan-12b')
+      const alert = await screen.findByRole('alert')
+      expect(alert).toHaveTextContent('Avesta Vatten och Avfall svarar inte just nu. Du ser schemat som hämtades 29 oktober.')
+      expect(screen.getByRole('heading', { name: 'Storgatan 12 B', level: 1 })).toBeInTheDocument()
+      expect(screen.getByRole('region', { name: 'Nästa tömning' })).toHaveTextContent('11 november')
+      expect(screen.getByRole('button', { name: 'Lägg till i kalender' })).toBeEnabled()
+
+      await userEvent.click(within(alert).getByRole('button', { name: 'Försök igen' }))
+      await screen.findByRole('region', { name: 'Nästa tömning' })
+      await vi.waitFor(() => expect(screen.queryByRole('alert')).toBeNull())
+    })
+
+    it('visar felet som förut utan sparat schema', async () => {
+      fake = makeProvider({ getSchedule: async () => Promise.reject(new Error('nere')) })
+      renderAt('/avesta/krylbo-storgatan-12b')
+      expect(await screen.findByText('Schemat gick inte att hämta')).toBeInTheDocument()
+    })
   })
 
   it('visar ett tomt läge när alla tömningar har passerat', async () => {
