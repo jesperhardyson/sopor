@@ -5,8 +5,10 @@ import { buildIcs, buildNoticeIcs } from '../domain/ics.js'
 import { todayInStockholm } from '../domain/dates.js'
 import { normalize } from '../domain/search.js'
 import type { Address } from '../domain/types.js'
-import { kommunForLocality, SOURCES, type Source } from '../sources/index.js'
+import { matchesPlace } from '../data/street-index.js'
+import { isLive, kommunForLocality, SOURCES, type LiveSource, type Source } from '../sources/index.js'
 import { edpAddressId, edpSearch, type EdpBuilding } from './edp.js'
+import { svoaAddressId, svoaSearch } from './svoa.js'
 import { lookupAddress } from './lookup.js'
 
 export interface HandlerOptions {
@@ -25,10 +27,35 @@ export const CACHE_PARTIAL = 'public, s-maxage=60'
 const json = (body: unknown, status = 200, cache = 'no-store') =>
   Response.json(body, { status, headers: { 'Cache-Control': cache } })
 
-export function edpSources(ids: string[], sources: Source[]) {
-  return ids
-    .map((id) => sources.find((s) => s.id === id))
-    .filter((s): s is Source & { config: { system: 'edp'; baseUrl: string } } => s?.config.system === 'edp')
+export function liveSources(ids: string[], sources: Source[]): LiveSource[] {
+  return ids.map((id) => sources.find((s) => s.id === id)).filter((s): s is LiveSource => !!s && isLive(s))
+}
+
+/** EDP svarar med högst så här många adresser per sökning. */
+export const EDP_LIMIT = 10
+
+/**
+ * Källan söker på gatan. Är svaret avkortat kan rätt ort saknas, så då frågas den också med
+ * "gata, ort", som den matchar på början av adressen.
+ */
+async function edpSearchPlace(baseUrl: string, street: string, place: string, opts: HandlerOptions): Promise<EdpBuilding[]> {
+  const found = await edpSearch(baseUrl, street, opts.fetchFn, opts.timeoutMs ?? 3000)
+  if (!place || found.length < EDP_LIMIT) return found
+  const more = await edpSearch(baseUrl, `${street}, ${place}`, opts.fetchFn, opts.timeoutMs ?? 3000)
+  return [...found, ...more.filter((b) => !found.some((f) => f.buildingId === b.buildingId))]
+}
+
+/** En live-källas adresser för gatan, filtrerade på orten om den finns (sajtens sökning och API v1). */
+export async function searchLiveSource(source: LiveSource, street: string, place: string, opts: HandlerOptions): Promise<Address[]> {
+  if (source.config.system === 'svoa') {
+    const kommun = source.kommuner[0].name
+    return (await svoaSearch(street, opts.fetchFn, opts.timeoutMs ?? 3000))
+      .map((a): Address => ({ id: svoaAddressId(a), street: a.street, locality: a.locality, sourceId: source.id, kommun }))
+      .filter((a) => matchesPlace(a, place))
+  }
+  return withDetails(await edpSearchPlace(source.config.baseUrl, street, place, opts))
+    .map(([b, detail]) => toAddress(source, b, opts.places, detail))
+    .filter((a) => matchesPlace(a, place))
 }
 
 export function toAddress(source: Source, b: EdpBuilding, places: HandlerOptions['places'], detail?: string): Address {
@@ -54,15 +81,9 @@ export function withDetails(buildings: EdpBuilding[]): [EdpBuilding, string | un
 export async function handleSearch(url: URL, opts: HandlerOptions = {}): Promise<Response> {
   const q = url.searchParams.get('q') ?? ''
   if (normalize(q).length < 3) return json({ error: 'Minst tre tecken' }, 400)
-  const sources = edpSources((url.searchParams.get('sources') ?? '').split(','), opts.sources ?? SOURCES)
+  const sources = liveSources((url.searchParams.get('sources') ?? '').split(','), opts.sources ?? SOURCES)
 
-  const results = await Promise.allSettled(
-    sources.map(async (s) =>
-      withDetails(await edpSearch(s.config.baseUrl, q, opts.fetchFn, opts.timeoutMs ?? 3000)).map(([b, detail]) =>
-        toAddress(s, b, opts.places, detail),
-      ),
-    ),
-  )
+  const results = await Promise.allSettled(sources.map((s) => searchLiveSource(s, q, '', opts)))
   const failed = sources.filter((_, i) => results[i].status === 'rejected').map((s) => s.id)
   const addresses = results.flatMap((r) => (r.status === 'fulfilled' ? r.value : []))
   // Svarade ingen källa cachas inget, så att sökrutans nya försök når källan och inte ett sparat fel.

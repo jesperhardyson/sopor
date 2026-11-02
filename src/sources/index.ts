@@ -7,7 +7,7 @@ export interface Kommun {
 }
 
 /** Hur källans data hämtas. Ny leverantör = ny variant här + ny provider. */
-export type SourceConfig = { system: 'static' } | { system: 'edp'; baseUrl: string }
+export type SourceConfig = { system: 'static' } | { system: 'edp'; baseUrl: string } | { system: 'svoa' }
 
 /**
  * En datakälla för hämtschema, oftast ett avfallsbolag eller en kommun. En källa kan täcka
@@ -212,6 +212,14 @@ export const ALL_SOURCES: Source[] = [
     kommuner: [{ code: '1466', name: 'Herrljunga kommun' }, { code: '1442', name: 'Vårgårda kommun' }],
     config: { system: 'edp', baseUrl: 'https://edpfuture.remondis.se/EDPFutureWeb' },
   },
+  {
+    // Ingen EDP: SVOA:s publika tjänst, bara villor och radhus (src/server/svoa.ts).
+    id: 'stockholm',
+    name: 'Stockholm Vatten och Avfall',
+    url: 'https://www.stockholmvattenochavfall.se',
+    kommuner: [{ code: '0180', name: 'Stockholms kommun' }],
+    config: { system: 'svoa' },
+  },
 ]
 
 /** Källorna som visas på sajten. All kod utom build-skriptets validering använder den här. */
@@ -226,6 +234,10 @@ export function supportedKommuner(): Kommun[] {
   const byCode = new Map(SOURCES.flatMap((s) => s.kommuner).map((k) => [k.code, k]))
   return [...byCode.values()].sort((a, b) => a.name.localeCompare(b.name, 'sv'))
 }
+
+/** Källor som hämtas live genom Vercel-funktionerna (EDP, Stockholm), till skillnad från statiska filer. */
+export type LiveSource = Source & { config: Exclude<SourceConfig, { system: 'static' }> }
+export const isLive = (s: Source): s is LiveSource => s.config.system !== 'static'
 
 /** Kommunerna som källan täcker: "Avesta kommun", "Herrljunga kommun och Vårgårda kommun". */
 export function sourceLabel(source: Source): string {
