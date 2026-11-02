@@ -10,7 +10,6 @@ import { providerFor } from '@/providers/registry'
 import { useSchedule } from '../hooks/useSchedule'
 import { MonthCalendar } from '../result/MonthCalendar'
 import { NextPickup } from '../result/NextPickup'
-import { RemindersSoon } from '../result/RemindersSoon'
 import { SmartHomeBox } from '../integrations/SmartHomeBox'
 import { EmptyState, ErrorState, LoadingState, UnsupportedState } from '../result/ResultStates'
 import { UpcomingList } from '../result/UpcomingList'
@@ -165,7 +164,6 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
           {schedule.events.length > 0 && (
             <MonthCalendar schedule={schedule} initial={next?.date ?? today} today={today} />
           )}
-          <RemindersSoon />
           {address && <SmartHomeBox address={address} />}
         </div>
       </div>

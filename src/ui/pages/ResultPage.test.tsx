@@ -98,7 +98,15 @@ describe('ResultPage', () => {
     expect(screen.queryByText('190 l')).toBeNull()
   })
 
-  it('visar smarta hem med söktext för Homey och API-länken under påminnelserna', async () => {
+  it('visar ingen ruta om påminnelser som kommer snart, eftersom de inte ska byggas', async () => {
+    renderAt('/avesta/krylbo-storgatan-12b')
+    await vi.waitFor(() => resolveSchedule!())
+    await screen.findByRole('region', { name: 'Nästa tömning' })
+    expect(screen.queryByText('Påminnelser')).toBeNull()
+    expect(screen.queryByText(/e-post eller sms/)).toBeNull()
+  })
+
+  it('visar smarta hem med söktext för Homey och API-länken', async () => {
     renderAt('/avesta/krylbo-storgatan-12b')
     await vi.waitFor(() => resolveSchedule!())
     expect(await screen.findByRole('heading', { name: 'Smarta hem' })).toBeInTheDocument()
