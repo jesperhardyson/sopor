@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { Link } from 'react-router'
 import { daysBetween, formatShort, relativeDayLabel, todayInStockholm } from '@/domain/dates'
 import { nextPickup } from '@/domain/schedule'
+import { streetAndLocality } from '@/domain/address'
 import { clearSaved, loadSaved, removeSaved, renameSaved, type SavedAddress } from '@/lib/storage'
 import { FractionIcon } from '../components/FractionIcon'
 import { useSchedule } from '../hooks/useSchedule'
@@ -23,7 +24,7 @@ function SavedCard({ saved, today }: { saved: SavedAddress; today: string }) {
           <span className="truncate text-base font-extrabold text-text">{saved.name}</span>
         </span>
         <span className="truncate text-sm text-text-2">
-          {saved.street}, {saved.locality}
+          {streetAndLocality(saved)}
         </span>
         {next && (
           <span className="flex flex-wrap items-center gap-x-1.5 pt-1 text-sm">
@@ -74,7 +75,7 @@ export function SavedList({ today = todayInStockholm() }: { today?: string }) {
                   className="rounded-lg border border-border bg-bg px-2.5 py-1.5 text-base font-extrabold text-text"
                 />
                 <span className="text-sm text-text-2">
-                  {s.street}, {s.locality}
+                  {streetAndLocality(s)}
                 </span>
               </label>
               <button

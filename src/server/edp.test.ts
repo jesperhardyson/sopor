@@ -53,6 +53,11 @@ describe('parseBuilding', () => {
     expect(parseBuilding('STORGATAN   efter nr 103, LYCKSELE (865101)')).toMatchObject({ street: 'STORGATAN efter nr 103', locality: 'Lycksele' })
   })
 
+  it('klarar adresser helt utan ort och kommatecken', () => {
+    expect(parseBuilding('STORGATAN 11 (590406011)')).toMatchObject({ street: 'Storgatan 11', locality: '', buildingId: '590406011' })
+    expect(edpAddressId(parseBuilding('STORGATAN 11 (590406011)')!)).toBe('storgatan-11-590406011')
+  })
+
   it('ger null för text utan byggnads-id', () => {
     expect(parseBuilding('Storgatan 1')).toBeNull()
   })

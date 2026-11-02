@@ -96,7 +96,7 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
             // en del börjar en ny rad. Annars hänger "Krylbo ·" ensam när kommunen bryts på mobil.
             <div className="overflow-hidden">
               <p className="-ml-5 flex flex-wrap items-center gap-y-1.5 text-[15px] text-text-2">
-                <span className={dot}>{address.locality}</span>
+                {address.locality && <span className={dot}>{address.locality}</span>}
                 {address.detail && <span className={dot}>{address.detail}</span>}
                 <span className={dot}>
                   <span className="rounded-md bg-brand-soft px-2 py-0.5 text-[13px] font-extrabold text-brand-text">

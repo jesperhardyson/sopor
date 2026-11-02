@@ -29,11 +29,14 @@ const WEEKDAYS = ['måndag', 'tisdag', 'onsdag', 'torsdag', 'fredag', 'lördag',
 const titleCase = (s: string) =>
   s === s.toUpperCase() ? s.toLowerCase().replace(/(^|[\s-])(\p{L})/gu, (_, sep, c) => sep + c.toUpperCase()) : s
 
-/** "Storgatan 2 -4, Tormenåsgatan 1, Huskvarna (28970)" → gata, ort och byggnads-id. */
+/**
+ * "Storgatan 2 -4, Tormenåsgatan 1, Huskvarna (28970)" → gata, ort och byggnads-id.
+ * Orten kan vara tom eller saknas helt ("STORGATAN 11 (590406011)" i Lidköping).
+ */
 export function parseBuilding(raw: string): EdpBuilding | null {
-  const m = raw.match(/^(.*),\s*([^,]*?)\s*\((\w+)\)\s*$/)
+  const m = raw.match(/^(.+?)(?:,\s*([^,]*?))?\s*\((\w+)\)\s*$/)
   if (!m) return null
-  const clean = (t: string) => titleCase(t.trim().replace(/\s+/g, ' '))
+  const clean = (t = '') => titleCase(t.trim().replace(/\s+/g, ' '))
   return { raw, street: clean(m[1]), locality: clean(m[2]), buildingId: m[3] }
 }
 

@@ -1,5 +1,6 @@
 import { MapPin, SearchX } from 'lucide-react'
 import { Link } from 'react-router'
+import { streetAndLocality } from '@/domain/address'
 import type { Address } from '@/domain/types'
 import { cn } from '@/lib/utils'
 
@@ -27,7 +28,7 @@ export function NotFound({ suggestions, className }: { suggestions: Address[]; c
               className="inline-flex items-center gap-2 rounded-xl bg-brand-soft px-3.5 py-2.5 text-[15px] font-extrabold text-brand-text"
             >
               <MapPin className="size-4" aria-hidden />
-              {s.street}, {s.locality}
+              {streetAndLocality(s)}
             </Link>
           ))}
         </div>

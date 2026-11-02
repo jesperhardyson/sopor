@@ -1,3 +1,4 @@
+import { streetAndLocality } from './address.js'
 import { addDays, formatLong } from './dates.js'
 import { FRACTIONS, sortFractions } from './fractions.js'
 import type { Address, PickupEvent, Schedule } from './types.js'
@@ -55,8 +56,8 @@ export function buildIcs(input: {
     `PRODID:-//Sopor//${host}//SV`,
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
-    `X-WR-CALNAME:${escapeText(`Sopor – ${address.street}, ${address.locality}`)}`,
-    `X-WR-CALDESC:${escapeText(`Hämtschema för ${address.street}, ${address.locality} (${kommunName}). ${DISCLAIMER}`)}`,
+    `X-WR-CALNAME:${escapeText(`Sopor – ${streetAndLocality(address)}`)}`,
+    `X-WR-CALDESC:${escapeText(`Hämtschema för ${streetAndLocality(address)} (${kommunName}). ${DISCLAIMER}`)}`,
     'REFRESH-INTERVAL;VALUE=DURATION:P1D',
     'X-PUBLISHED-TTL:P1D',
   ]

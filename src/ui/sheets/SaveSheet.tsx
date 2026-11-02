@@ -1,5 +1,6 @@
 import { Smartphone } from 'lucide-react'
 import { useId, useState } from 'react'
+import { streetAndLocality } from '@/domain/address'
 import type { Address } from '@/domain/types'
 import { findSaved, upsertSaved } from '@/lib/storage'
 import { cn } from '@/lib/utils'
@@ -44,7 +45,7 @@ export function SaveSheet({
       open={open}
       onOpenChange={onOpenChange}
       title="Spara adress"
-      description={`${address.street}, ${address.locality} · ${kommunName}`}
+      description={`${streetAndLocality(address)} · ${kommunName}`}
     >
       <form
         className="flex flex-col gap-[18px]"
