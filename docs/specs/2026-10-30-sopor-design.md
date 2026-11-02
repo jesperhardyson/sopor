@@ -22,7 +22,7 @@ Det är ett hobbyprojekt. Det ska kosta så nära noll som möjligt och vara enk
 
 - Ingen backend, ingen databas och inga Vercel Functions i v1. (I v2 finns små proxyfunktioner i `api/`, se nedan.)
 - Ingen EDP-provider i v1. Gränssnittet ska däremot rymma den (se nedan). Den kom i v2.
-- Inga påminnelser (push, e-post, sms). Bara en "Påminnelser – Kommer snart"-plats i UI:t, som i designen.
+- Inga påminnelser (push, e-post, sms). De skulle kräva att servern sparar kontaktuppgifter, och det bryter mot "ingen databas och inga konton". Påminnelser fås via kalenderns VALARM och via Homey och Home Assistant.
 - Inget e-postfält i "kommunen stöds inte". Designens formulär "Meddela mig" byggs inte.
 - Inga adresser i sökningen för kommuner vi inte har schema för (t.ex. Hedemora). Designens autocomplete-rad "Hedemora kommun · Stöds inte än" byggs inte.
 
@@ -225,7 +225,7 @@ När den riktiga trakt-tabellen finns: ett kontrollskript som jämför `addresse
 - Kommande tömningar grupperade per datum, med etiketten "Nästa" och avvikelser ("Flyttad · helgdag" plus förklaringstext).
 - Månadskalender med fraktionsprickar och bläddring mellan månader (*min bedömning*: inom de månader som har data).
 - ~~Mina kärl~~: borttaget (beslut 2026-10-30). Vi vet inte hushållets abonnemang, så sajten visar bara tömningar per datum.
-- "Påminnelser – Kommer snart".
+- ~~Påminnelser – Kommer snart~~: borttaget (beslut 2026-11-02). Påminnelser byggs inte på sajten, och rutan "Smarta hem" bredvid täcker redan påminnelser kvällen innan.
 - "Spara" öppnar arket "Spara adress".
 - "Byt adress" går tillbaka till start.
 - "I dag" räknas i tidszonen Europe/Stockholm.
