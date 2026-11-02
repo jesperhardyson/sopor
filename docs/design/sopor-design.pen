@@ -4010,10 +4010,37 @@
                       ]
                     },
                     {
-                      "id": "Fx3v1",
-                      "type": "ref",
-                      "ref": "Mw6Tm",
-                      "name": "Spara-knapp"
+                      "type": "frame",
+                      "id": "GDZXM",
+                      "name": "Knappar",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "id": "m8J9Qw",
+                          "type": "ref",
+                          "ref": "Mw6Tm",
+                          "name": "Dela-knapp",
+                          "padding": [
+                            12,
+                            13
+                          ],
+                          "descendants": {
+                            "Gjg2i": {
+                              "icon": "share-2"
+                            },
+                            "E2ubmr": {
+                              "enabled": false
+                            }
+                          }
+                        },
+                        {
+                          "id": "Fx3v1",
+                          "type": "ref",
+                          "ref": "Mw6Tm",
+                          "name": "Spara-knapp"
+                        }
+                      ]
                     }
                   ]
                 }
@@ -4428,6 +4455,29 @@
                               "type": "ref",
                               "ref": "v7CoAp",
                               "name": "Chip mat"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "l669o",
+                              "name": "Beräknat",
+                              "fill": "$surface-2",
+                              "cornerRadius": 999,
+                              "padding": [
+                                2,
+                                8
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "xIrDp",
+                                  "name": "Text",
+                                  "fill": "$text-2",
+                                  "content": "beräknat",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 12,
+                                  "fontWeight": "800"
+                                }
+                              ]
                             }
                           ]
                         }
@@ -4516,6 +4566,29 @@
                               "type": "ref",
                               "ref": "v7CoAp",
                               "name": "Chip mat"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "W2TwY",
+                              "name": "Beräknat",
+                              "fill": "$surface-2",
+                              "cornerRadius": 999,
+                              "padding": [
+                                2,
+                                8
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "OJwPt",
+                                  "name": "Text",
+                                  "fill": "$text-2",
+                                  "content": "beräknat",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 12,
+                                  "fontWeight": "800"
+                                }
+                              ]
                             }
                           ]
                         }
@@ -4715,6 +4788,42 @@
                           ]
                         }
                       ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "qd0JQ",
+                  "name": "Förklaring beräknat",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "padding": [
+                    0,
+                    4
+                  ],
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "dF1TH",
+                      "name": "Ikon",
+                      "width": 16,
+                      "height": 16,
+                      "icon": "info",
+                      "library": "lucide",
+                      "fill": "$text-2"
+                    },
+                    {
+                      "type": "text",
+                      "id": "KetEy",
+                      "name": "Text",
+                      "fill": "$text-2",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Beräknat: framräknat ur kommunens tömningsintervall. En helgdag kan flytta tömningen.",
+                      "lineHeight": 1.4,
+                      "fontFamily": "$font-ui",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
                     }
                   ]
                 }
@@ -20890,10 +20999,37 @@
                       ]
                     },
                     {
-                      "id": "E79KW",
-                      "type": "ref",
-                      "ref": "Mw6Tm",
-                      "name": "Spara-knapp"
+                      "type": "frame",
+                      "id": "kMmBn",
+                      "name": "Knappar",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "id": "q0XDP",
+                          "type": "ref",
+                          "ref": "Mw6Tm",
+                          "name": "Dela-knapp",
+                          "padding": [
+                            12,
+                            13
+                          ],
+                          "descendants": {
+                            "Gjg2i": {
+                              "icon": "share-2"
+                            },
+                            "E2ubmr": {
+                              "enabled": false
+                            }
+                          }
+                        },
+                        {
+                          "id": "E79KW",
+                          "type": "ref",
+                          "ref": "Mw6Tm",
+                          "name": "Spara-knapp"
+                        }
+                      ]
                     }
                   ]
                 }
@@ -21339,6 +21475,29 @@
                                           "name": "Chip mat"
                                         }
                                       ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "q7A7GO",
+                                      "name": "Beräknat",
+                                      "fill": "$surface-2",
+                                      "cornerRadius": 999,
+                                      "padding": [
+                                        2,
+                                        8
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "CCd7B",
+                                          "name": "Text",
+                                          "fill": "$text-2",
+                                          "content": "beräknat",
+                                          "fontFamily": "$font-ui",
+                                          "fontSize": 12,
+                                          "fontWeight": "800"
+                                        }
+                                      ]
                                     }
                                   ]
                                 }
@@ -21433,6 +21592,29 @@
                                           "type": "ref",
                                           "ref": "v7CoAp",
                                           "name": "Chip mat"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "AyQmU",
+                                      "name": "Beräknat",
+                                      "fill": "$surface-2",
+                                      "cornerRadius": 999,
+                                      "padding": [
+                                        2,
+                                        8
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "hHSIH",
+                                          "name": "Text",
+                                          "fill": "$text-2",
+                                          "content": "beräknat",
+                                          "fontFamily": "$font-ui",
+                                          "fontSize": 12,
+                                          "fontWeight": "800"
                                         }
                                       ]
                                     }
@@ -21650,6 +21832,42 @@
                                   ]
                                 }
                               ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "srWki",
+                          "name": "Förklaring beräknat",
+                          "width": "fill_container",
+                          "gap": 8,
+                          "padding": [
+                            0,
+                            4
+                          ],
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "T3fyni",
+                              "name": "Ikon",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "info",
+                              "library": "lucide",
+                              "fill": "$text-2"
+                            },
+                            {
+                              "type": "text",
+                              "id": "Xpnm8",
+                              "name": "Text",
+                              "fill": "$text-2",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Beräknat: framräknat ur kommunens tömningsintervall. En helgdag kan flytta tömningen.",
+                              "lineHeight": 1.4,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
                             }
                           ]
                         }

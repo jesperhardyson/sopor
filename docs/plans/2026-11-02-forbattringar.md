@@ -10,7 +10,7 @@ Genomgång av sajten, koden och Vercel (fel och besök, 20 okt–2 nov). Punkter
 
 ## Snabbfixar
 
-- [x] **4. Sidtitel per sida.** Titeln är alltid "Sopor – när töms dina kärl?". Adressidan bör heta t.ex. "Svartbäcksgatan 10, Uppsala – Sopor", så att flikar, bokmärken och historik går att skilja åt.
+- [x] **4. Sidtitel per sida.** ([#48](https://github.com/jesperhardyson/sopor/pull/48), även punkt 5–8) Titeln är alltid "Sopor – när töms dina kärl?". Adressidan bör heta t.ex. "Svartbäcksgatan 10, Uppsala – Sopor", så att flikar, bokmärken och historik går att skilja åt.
 - [x] **5. Webbappsmanifest.** `/manifest.webmanifest` saknas (ger startsidans HTML). Med manifest kan sajten läggas på hemskärmen som en app.
 - [x] **6. Delningsbild och OG-taggar.** En delad länk visade ingen förhandsbild i Messenger, sms eller Slack. Nu finns en gemensam bild för hela sajten (ritad i designfilen). Se punkt 13 för en bild per adress.
 - [x] **7. Typsnitten från egen server.** Fredoka och Nunito hämtas från Google Fonts, vilket skickar besökarnas IP-adresser till Google. Självhosta dem (snabbare också).
@@ -18,8 +18,8 @@ Genomgång av sajten, koden och Vercel (fel och besök, 20 okt–2 nov). Punkter
 
 ## Funktioner
 
-- [ ] **9. Förklara "beräknat".** Etiketten står på nästan varje tömning. En kort förklaring (räknat fram från källans intervall, kan flyttas vid helgdagar) bygger förtroende.
-- [ ] **10. Dela-knapp på adressidan** (`navigator.share`, annars kopiera länk), för grannar och sambo.
+- [x] **9. Förklara "beräknat".** En rad under "Kommande tömningar" förklarar etiketten när schemat har beräknade datum, och etiketterna pekar på den för skärmläsare (`aria-describedby`). Förut fanns förklaringen bara som `title`, som inte syns på mobil.
+- [x] **10. Dela-knapp på adressidan.** Bredvid Spara: telefonens delningsmeny (`navigator.share`), annars kopieras länken.
 - [ ] **11. Bevakning av källorna.** Specen för hela Sverige lovar ett veckojobb som anropar varje källa och öppnar ett ärende om formatet ändras. Det finns inte. `scripts/check-source.ts` kan vara en grund.
 - [ ] **12. Fas 3: källor utanför EDP.** Alla synliga källor är EDP. Storstäderna (Stockholm, Göteborg, Malmö, Linköping …) kräver andra system, och där växer täckningen mest. En källa i taget, efter folkmängd.
 

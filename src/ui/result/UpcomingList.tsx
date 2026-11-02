@@ -1,3 +1,4 @@
+import { Info } from 'lucide-react'
 import { daysBetween, formatLong, monthShort, relativeDayLabel, weekdayShort } from '@/domain/dates'
 import type { PickupEvent } from '@/domain/types'
 import { cn } from '@/lib/utils'
@@ -12,11 +13,14 @@ export function deviationExplanation(event: PickupEvent): string | undefined {
   return `Flyttad från ${weekdayShort(d.originalDate).toLowerCase()} ${day} ${monthShort(d.originalDate)} på grund av ${d.reason}.`
 }
 
+/** Förklaringen under listan, som etiketterna pekar på för skärmläsare. */
+const ESTIMATED_NOTE_ID = 'beraknat-forklaring'
+
 /** Märkning för datum som räknats fram ur källans frekvens. */
 export function EstimatedPill({ onDark = false }: { onDark?: boolean }) {
   return (
     <span
-      title="Framräknat ur kommunens tömningsintervall. Helgdagar kan flytta tömningen."
+      aria-describedby={ESTIMATED_NOTE_ID}
       className={cn(
         'rounded-full px-2 py-0.5 text-xs font-extrabold',
         onDark ? 'bg-card-overlay text-on-primary' : 'bg-surface-2 text-text-2',
@@ -28,13 +32,14 @@ export function EstimatedPill({ onDark = false }: { onDark?: boolean }) {
 }
 
 export function UpcomingList({ events, today, limit = 6 }: { events: PickupEvent[]; today: string; limit?: number }) {
+  const shown = events.slice(0, limit)
   return (
     <section aria-labelledby="kommande-rubrik" className="flex flex-col gap-3 pt-3">
       <h2 id="kommande-rubrik" className="text-xl font-extrabold tracking-[-0.3px] text-text">
         Kommande tömningar
       </h2>
       <ol className="divide-y divide-border rounded-[20px] border border-border bg-surface">
-        {events.slice(0, limit).map((e, i) => {
+        {shown.map((e, i) => {
           const isNext = i === 0
           const moved = Boolean(e.deviation)
           const explanation = deviationExplanation(e)
@@ -75,6 +80,12 @@ export function UpcomingList({ events, today, limit = 6 }: { events: PickupEvent
           )
         })}
       </ol>
+      {shown.some((e) => e.estimated) && (
+        <p id={ESTIMATED_NOTE_ID} className="flex items-start gap-2 px-1 text-[13px] leading-[1.4] text-text-2">
+          <Info className="mt-px size-4 shrink-0" aria-hidden />
+          Beräknat: framräknat ur kommunens tömningsintervall. En helgdag kan flytta tömningen.
+        </p>
+      )}
     </section>
   )
 }
