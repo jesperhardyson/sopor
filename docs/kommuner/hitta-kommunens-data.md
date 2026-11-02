@@ -26,30 +26,22 @@ Sopor använder bara **publika källor**. Tjänster som kräver inloggning, som 
 
 Många kommuner och VA-bolag använder kundsystemet **EDP Future**. Det har en publik modul för hämtschema, *SimpleWastePickup*, som inte kräver inloggning. Finns den med data kan Sopor hämta schemat direkt per adress, utan datafiler.
 
-Kommunens "Mina sidor" ligger ofta på en adress som `minasidor.<bolag>.se`. Prova med den värden (byt `VÄRD` och adressen):
+Kommunens "Mina sidor" ligger ofta på en adress som `minasidor.<bolag>.se`. Prova värden med skriptet `check:source` (kräver Node, se [CONTRIBUTING.md](../../CONTRIBUTING.md)). Det använder samma kod som sajten:
 
 ```bash
-# 1. Sök adress
-curl -s -X POST \
-  -H "Content-Type: application/json; charset=utf-8" \
-  -d '{"searchText":"Storgatan 1"}' \
-  "https://VÄRD/EDPFutureweb/SimpleWastePickup/SearchAdress"
-
-# 2. Hämta schemat, med adressen exakt som den kom tillbaka i steg 1
-curl -s -G \
-  --data-urlencode "address=Storgatan 1, Ort" \
-  "https://VÄRD/EDPFutureweb/SimpleWastePickup/GetWastePickupSchedule"
+npm run check:source -- minasidor.vivab.info "Storgatan 1" --ort Varberg
 ```
 
-Så tolkar du svaret från steg 1:
+Skriptet provar de kända sökvägarna (`/FutureWeb`, `/FutureWebBasic`, `/EDPFutureWeb`, `/EDP/FutureWebBasic` och, med `--ort`, `/<Ort>/FutureWeb`, `/FutureWeb<Ort>` med flera) och slutar vid den första som ger adresser. Sedan skriver det ut:
 
-| Svar | Betydelse |
-|---|---|
-| `{"Succeeded":true,"Buildings":["…"]}` med adresser | Modulen finns och har data. Bästa fallet, skriv det i ärendet! |
-| `"Buildings": []` för flera olika gator | Modulen finns men är tom. Kommunen kan behöva fylla den (så är det i Avesta). |
-| HTML, 404 eller en inloggningssida | Kommunen kör inte EDP på den adressen, eller sökvägen är en annan. |
+- **baseUrl** som fungerar, färdig att klistra in i registret, och om den redan finns där
+- **adresserna** som söktjänsten hittade
+- **fraktionerna** som varje avfallstyp blir, och **okända avfallstyper** som visas som "kärl" med källans egen text
+- **svarstiden** för varje anrop
 
-Lägg till `-v` för att se om servern skickar CORS-headers (`Access-Control-Allow-Origin`). Det påverkar hur Sopor hämtar datan, men är inget hinder.
+Svarar tjänsten men utan adresser för flera olika gator är modulen tom, och kommunen kan behöva fylla den (så är det i Avesta). Hittar skriptet ingen tjänst alls kan sökvägen ha ett eget namn (som `FutureWebVKFHus` hos Vafab). Öppna då "Mina sidor" i webbläsaren, se vad adressen slutar på och ge hela adressen till skriptet: `npm run check:source -- https://VÄRD/SÖKVÄG "Storgatan 1"`.
+
+Kan du inte köra skriptet räcker det att skriva värden i ärendet, så provar någon annan.
 
 **Andra system:** visar "Mina sidor" bara en inloggning, till exempel med BankID eller i en kundportal från CGI, finns det oftast ingen publik söktjänst. Då går du vidare till steg 3.
 
