@@ -1,6 +1,7 @@
 // Ärenden för bevakningen av källorna: vilka som ska öppnas, kommenteras och stängas.
 // Bevakningen känner igen sina egna ärenden på en dold markering och rör aldrig andra.
 
+import { USER_AGENT } from '../src/server/http.js'
 import type { SourceResult, SourceState } from './source-checks.js'
 
 export interface OpenIssue {
@@ -93,4 +94,60 @@ export function planIssues(results: SourceResult[], open: OpenIssue[], today: st
     }
   }
   return actions
+}
+
+export interface GitHub {
+  /** "ägare/repo", som GITHUB_REPOSITORY */
+  repo: string
+  token: string
+  fetchFn?: typeof fetch
+}
+
+const LABELS = [
+  { name: 'källa', color: 'D93F0B', description: 'Bevakningen av källorna hittade ett problem' },
+  { name: 'avfallstyp', color: 'FBCA04', description: 'Okänd avfallstyp från en källa (lägre prioritet)' },
+]
+
+async function github(gh: GitHub, method: string, pathname: string, body?: unknown): Promise<Response> {
+  const res = await (gh.fetchFn ?? fetch)(`https://api.github.com/repos/${gh.repo}${pathname}`, {
+    method,
+    headers: {
+      Authorization: `Bearer ${gh.token}`,
+      Accept: 'application/vnd.github+json',
+      'User-Agent': USER_AGENT,
+      ...(body !== undefined && { 'Content-Type': 'application/json' }),
+    },
+    body: body === undefined ? undefined : JSON.stringify(body),
+  })
+  return res
+}
+
+async function ok(res: Promise<Response>, method: string, pathname: string, gh: GitHub): Promise<Response> {
+  const r = await res
+  if (!r.ok) throw new Error(`GitHub svarade ${r.status} ${method} /repos/${gh.repo}${pathname}`)
+  return r
+}
+
+const call = (gh: GitHub, method: string, pathname: string, body?: unknown) =>
+  ok(github(gh, method, pathname, body), method, pathname, gh)
+
+export async function listOpenIssues(gh: GitHub): Promise<OpenIssue[]> {
+  const res = await call(gh, 'GET', `/issues?state=open&labels=${encodeURIComponent('källa')}&per_page=100`)
+  const issues = (await res.json()) as { number: number; body: string | null; pull_request?: unknown }[]
+  return issues.filter((i) => !i.pull_request).map((i) => ({ number: i.number, body: i.body ?? '' }))
+}
+
+export async function ensureLabels(gh: GitHub): Promise<void> {
+  for (const label of LABELS) {
+    const res = await github(gh, 'GET', `/labels/${encodeURIComponent(label.name)}`)
+    if (res.status === 404) await call(gh, 'POST', '/labels', label)
+  }
+}
+
+export async function applyIssues(gh: GitHub, actions: IssueAction[]): Promise<void> {
+  for (const a of actions) {
+    if (a.type === 'open') await call(gh, 'POST', '/issues', { title: a.title, body: a.body, labels: a.labels })
+    else await call(gh, 'POST', `/issues/${a.number}/comments`, { body: a.body })
+    if (a.type === 'close') await call(gh, 'PATCH', `/issues/${a.number}`, { state: 'closed', state_reason: 'completed' })
+  }
 }

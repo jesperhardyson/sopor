@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import type { SourceResult } from './source-checks'
-import { parseMarker, planIssues, type OpenIssue } from './source-issues'
+import { applyIssues, ensureLabels, listOpenIssues, parseMarker, planIssues, type OpenIssue } from './source-issues'
 
 const today = '2026-11-09'
 const lidkoping = (over: Partial<SourceResult> = {}): SourceResult => ({
@@ -97,5 +97,65 @@ describe('planIssues', () => {
     expect(planIssues([], [issue(20, 'avesta', 'svarar-inte')], today)).toEqual([
       { type: 'close', number: 20, body: 'Källan kontrolleras inte längre.' },
     ])
+  })
+})
+
+describe('GitHub-anropen', () => {
+  const api = 'https://api.github.com/repos/jesperhardyson/sopor'
+
+  function fakeGitHub(respond: (method: string, url: string) => Response = () => Response.json({})) {
+    const calls: { method: string; url: string; body?: unknown; headers: Headers }[] = []
+    const fetchFn = vi.fn(async (input: string | URL | Request, init?: RequestInit) => {
+      const method = init?.method ?? 'GET'
+      const url = String(input)
+      calls.push({ method, url, body: init?.body ? JSON.parse(String(init.body)) : undefined, headers: new Headers(init?.headers) })
+      return respond(method, url)
+    }) as unknown as typeof fetch
+    return { calls, gh: { repo: 'jesperhardyson/sopor', token: 'hemlig', fetchFn } }
+  }
+
+  it('hämtar öppna ärenden med etiketten källa, utan pull requests', async () => {
+    const { calls, gh } = fakeGitHub(() =>
+      Response.json([
+        { number: 1, body: 'a' },
+        { number: 2, body: null },
+        { number: 3, body: 'pr', pull_request: {} },
+      ]),
+    )
+    expect(await listOpenIssues(gh)).toEqual([
+      { number: 1, body: 'a' },
+      { number: 2, body: '' },
+    ])
+    expect(calls[0].url).toBe(`${api}/issues?state=open&labels=k%C3%A4lla&per_page=100`)
+    expect(calls[0].headers.get('Authorization')).toBe('Bearer hemlig')
+    expect(calls[0].headers.get('Accept')).toBe('application/vnd.github+json')
+  })
+
+  it('skapar bara etiketter som saknas', async () => {
+    const { calls, gh } = fakeGitHub((method, url) =>
+      method === 'GET' && url.endsWith('/labels/avfallstyp') ? new Response('', { status: 404 }) : Response.json({}),
+    )
+    await ensureLabels(gh)
+    expect(calls.filter((c) => c.method === 'POST')).toMatchObject([{ url: `${api}/labels`, body: { name: 'avfallstyp' } }])
+  })
+
+  it('öppnar, kommenterar och stänger', async () => {
+    const { calls, gh } = fakeGitHub()
+    await applyIssues(gh, [
+      { type: 'open', title: 'T', body: 'B', labels: ['källa'] },
+      { type: 'comment', number: 5, body: 'K' },
+      { type: 'close', number: 6, body: 'S' },
+    ])
+    expect(calls.map((c) => [c.method, c.url, c.body])).toEqual([
+      ['POST', `${api}/issues`, { title: 'T', body: 'B', labels: ['källa'] }],
+      ['POST', `${api}/issues/5/comments`, { body: 'K' }],
+      ['POST', `${api}/issues/6/comments`, { body: 'S' }],
+      ['PATCH', `${api}/issues/6`, { state: 'closed', state_reason: 'completed' }],
+    ])
+  })
+
+  it('kastar ett fel med status och sökväg när GitHub säger nej', async () => {
+    const { gh } = fakeGitHub(() => new Response('nej', { status: 403 }))
+    await expect(applyIssues(gh, [{ type: 'comment', number: 5, body: 'K' }])).rejects.toThrow('403 POST /repos/jesperhardyson/sopor/issues/5/comments')
   })
 })
