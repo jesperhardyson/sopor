@@ -2,11 +2,14 @@
 // Körs varje måndag av .github/workflows/sources.yml, eller för hand: `npm run monitor:sources`.
 // Se docs/specs/2026-11-02-bevakning-av-kallor.md.
 
+import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import type { Source } from '../src/sources/index.js'
+import { todayInStockholm } from '../src/domain/dates.js'
+import { SOURCES, type Source } from '../src/sources/index.js'
 import { readYears } from './build-data.js'
 import { checkEdpSource, checkStaticSource, type SourceResult } from './source-checks.js'
+import { applyIssues, ensureLabels, listOpenIssues, planIssues } from './source-issues.js'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 
@@ -20,7 +23,7 @@ export const PROBES: Record<string, string> = {
   vafab: 'Skolgatan 8, Västerås',
   june: 'Storgatan 1, Habo',
   boras: 'Storgatan 1, Dalsjöfors',
-  lund: 'Kyrkogatan 1, LUND',
+  lund: 'Kyrkogatan 2, S SANDBY',
   nacka: 'Järnvägsgatan 7, Nacka',
   gotland: 'Storgatan 1, Hemse',
   skelleftea: 'Storgatan, Byske',
@@ -84,4 +87,32 @@ export function formatTable(results: SourceResult[]): string {
     '|---|---|---|---|',
     ...results.map((r) => `| ${cell(r.name)} | ${r.state} | ${cell(r.error)} | ${cell(r.unknownWasteTypes?.join(', '))} |`),
   ].join('\n')
+}
+
+async function main() {
+  const retry = process.env.RETRY
+  const results = await runChecks(SOURCES, todayInStockholm(), retry ? { retryDelayMs: Number(retry) } : {})
+  const table = formatTable(results)
+  console.log(table)
+  if (process.env.GITHUB_STEP_SUMMARY) fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `## Bevakning av källorna\n\n${table}\n`)
+
+  const { GITHUB_TOKEN: token, GITHUB_REPOSITORY: repo } = process.env
+  if (!token || !repo) {
+    // Lokalt: visa vad som skulle hända, utan att röra GitHub.
+    const actions = planIssues(results, [], todayInStockholm())
+    for (const a of actions) console.log(a.type === 'open' ? `Skulle öppna: ${a.title}` : `Skulle ${a.type}: #${a.number}`)
+    return
+  }
+  const gh = { repo, token }
+  await ensureLabels(gh)
+  const actions = planIssues(results, await listOpenIssues(gh), todayInStockholm())
+  await applyIssues(gh, actions)
+  console.log(`Ärenden: ${actions.length} åtgärder`)
+}
+
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main().catch((error) => {
+    console.error(`monitor-sources: ${error.message}`)
+    process.exit(1)
+  })
 }

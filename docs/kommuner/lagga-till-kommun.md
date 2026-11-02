@@ -32,6 +32,7 @@ EDP Future har en publik modul, SimpleWastePickup, som Sopor frågar direkt per 
   - `kommuner`: alla kommuner källan täcker, med SCB:s fyrsiffriga kommunkod och namnet ("Varbergs kommun").
   - `grannkommuner`: bara om söktjänsten också har en del adresser i andra kommuner (se Kretslopp Sydost).
   - `config: { system: 'edp', baseUrl: '…' }` från skriptet.
+- [ ] Lägg till en kontrolladress för källan i `PROBES` i `scripts/monitor-sources.ts`: en vanlig adress ur skriptets utskrift, med ett riktigt schema. Bevakningen av källorna söker på den varje vecka, och ett test fallerar om den saknas.
 - [ ] Kör `npm run build:streets` och checka in de nya filerna i `data/osm/`. Utan dem hittar sökningen inte källan förrän man skrivit ett husnummer, och testet i `scripts/build-street-index.test.ts` fallerar.
 - [ ] Kör `npm run lint && npm test && npm run build`, och sök på några adresser i `npm run dev`.
 - [ ] Stod kommunen i [tabellen](hitta-kommunens-data.md#vad-vi-vet-om-kommunerna-hittills) i guiden, ta bort raden. Live-kommunerna visas på [Om-sidan](https://sopor.hardyson.se/om).
