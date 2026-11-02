@@ -74,6 +74,8 @@ export function planIssues(results: SourceResult[], open: OpenIssue[], today: st
     }
     // Hämtades inte schemat går det inte att säga något om avfallstyperna den här veckan.
     if (m.kind === WASTE_TYPES && r.unknownWasteTypes === undefined) continue
+    // Svarar källan inte går det inte heller att säga något om formatet eller adresserna.
+    if (r.state === 'svarar-inte' && m.kind !== 'svarar-inte' && m.kind !== WASTE_TYPES) continue
     if (problems(r).includes(m.kind)) {
       covered.add(`${m.sourceId} ${m.kind}`)
       const detail = m.kind === WASTE_TYPES ? r.unknownWasteTypes!.join(', ') : r.error ?? m.kind
@@ -131,10 +133,18 @@ async function ok(res: Promise<Response>, method: string, pathname: string, gh: 
 const call = (gh: GitHub, method: string, pathname: string, body?: unknown) =>
   ok(github(gh, method, pathname, body), method, pathname, gh)
 
+/**
+ * Alla öppna ärenden, sida för sida. Ingen filtrering på etikett: markeringen är nyckeln, så
+ * bevakningen hittar sina ärenden även om någon tar bort etiketten.
+ */
 export async function listOpenIssues(gh: GitHub): Promise<OpenIssue[]> {
-  const res = await call(gh, 'GET', `/issues?state=open&labels=${encodeURIComponent('källa')}&per_page=100`)
-  const issues = (await res.json()) as { number: number; body: string | null; pull_request?: unknown }[]
-  return issues.filter((i) => !i.pull_request).map((i) => ({ number: i.number, body: i.body ?? '' }))
+  const all: OpenIssue[] = []
+  for (let page = 1; ; page++) {
+    const res = await call(gh, 'GET', `/issues?state=open&per_page=100&page=${page}`)
+    const issues = (await res.json()) as { number: number; body: string | null; pull_request?: unknown }[]
+    all.push(...issues.filter((i) => !i.pull_request).map((i) => ({ number: i.number, body: i.body ?? '' })))
+    if (issues.length < 100) return all
+  }
 }
 
 export async function ensureLabels(gh: GitHub): Promise<void> {

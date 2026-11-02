@@ -83,6 +83,12 @@ describe('planIssues', () => {
     expect(actions[0]).toMatchObject({ number: 12 })
   })
 
+  it.each(['nytt-format', 'tom', 'inga-tomningar'])('låter ett öppet %s-ärende vara när källan bara inte svarar', (kind) => {
+    const actions = planIssues([lidkoping()], [issue(14, 'lidkoping', kind)], today)
+    expect(actions.filter((a) => a.type !== 'open' && a.number === 14)).toEqual([])
+    expect(actions).toMatchObject([{ type: 'open', title: 'Källa: Lidköpings kommun svarar inte' }])
+  })
+
   it('rör inte ärenden utan markering', () => {
     const ok = lidkoping({ state: 'fungerar', error: undefined, unknownWasteTypes: [] })
     expect(planIssues([ok], [{ number: 7, body: 'Fel datum för Storgatan 2' }], today)).toEqual([])
@@ -114,7 +120,7 @@ describe('GitHub-anropen', () => {
     return { calls, gh: { repo: 'jesperhardyson/sopor', token: 'hemlig', fetchFn } }
   }
 
-  it('hämtar öppna ärenden med etiketten källa, utan pull requests', async () => {
+  it('hämtar alla öppna ärenden, utan pull requests, så att markeringen räcker även om etiketten tas bort', async () => {
     const { calls, gh } = fakeGitHub(() =>
       Response.json([
         { number: 1, body: 'a' },
@@ -126,9 +132,16 @@ describe('GitHub-anropen', () => {
       { number: 1, body: 'a' },
       { number: 2, body: '' },
     ])
-    expect(calls[0].url).toBe(`${api}/issues?state=open&labels=k%C3%A4lla&per_page=100`)
+    expect(calls[0].url).toBe(`${api}/issues?state=open&per_page=100&page=1`)
     expect(calls[0].headers.get('Authorization')).toBe('Bearer hemlig')
     expect(calls[0].headers.get('Accept')).toBe('application/vnd.github+json')
+  })
+
+  it('hämtar nästa sida så länge sidan är full', async () => {
+    const full = Array.from({ length: 100 }, (_, i) => ({ number: i + 1, body: '' }))
+    const { calls, gh } = fakeGitHub((_, url) => Response.json(url.endsWith('page=1') ? full : [{ number: 101, body: '' }]))
+    expect(await listOpenIssues(gh)).toHaveLength(101)
+    expect(calls.map((c) => c.url.split('&').at(-1))).toEqual(['page=1', 'page=2'])
   })
 
   it('skapar bara etiketter som saknas', async () => {

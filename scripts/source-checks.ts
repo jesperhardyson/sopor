@@ -25,10 +25,13 @@ const TIMEOUT_MS = 10000
 /** Så långt fram som tömningar och statiska scheman ska räcka. */
 const HORIZON_DAYS = 60
 
-/** Ingen kontakt eller 5xx är ett avbrott. Allt annat (404, HTML, trasig JSON) tyder på ett nytt format. */
+/**
+ * Ingen kontakt, 5xx och spärrar (403, 408, 429) är avbrott; kommunernas sajter stoppar ibland anrop
+ * från molnet. Allt annat (404, HTML, trasig JSON) tyder på ett nytt format.
+ */
 function stateForError(error: unknown): SourceState {
   const message = (error as Error).message ?? ''
-  return error instanceof SourceError && /Ingen kontakt|svarade 5\d\d/.test(message) ? 'svarar-inte' : 'nytt-format'
+  return error instanceof SourceError && /Ingen kontakt|svarade (5\d\d|403|408|429)/.test(message) ? 'svarar-inte' : 'nytt-format'
 }
 
 export async function checkEdpSource(source: Source, probe: string, today: string, fetchFn: typeof fetch = fetch): Promise<SourceResult> {

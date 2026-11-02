@@ -57,6 +57,10 @@ describe('checkEdpSource', () => {
     expect(r.unknownWasteTypes).toBeUndefined()
   })
 
+  it.each([403, 408, 429])('svarar inte när källan blockerar eller begränsar anrop (%i)', async (status) => {
+    expect((await check(fakeEdp(new Response('', { status })))).state).toBe('svarar-inte')
+  })
+
   it('har nytt format när en inloggningssida kommer i stället för JSON', async () => {
     const r = await check(fakeEdp(html()))
     expect(r.state).toBe('nytt-format')

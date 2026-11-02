@@ -31,7 +31,7 @@ För varje källa som syns på sajten (`SOURCES`, alltså inte `hidden`):
 | Läge | Hur det upptäcks | Etikett |
 |---|---|---|
 | **Fungerar** | Sökningen ger adresser, och schemat har minst en tömning de närmaste 60 dagarna. | – |
-| **Svarar inte** | Timeout, nätverksfel eller HTTP 5xx, även vid det nya försöket. | `källa` |
+| **Svarar inte** | Timeout, nätverksfel, HTTP 5xx eller en spärr (403, 408, 429), även vid det nya försöket. Kommunernas sajter stoppar ibland anrop från molnet. | `källa` |
 | **Nytt format** | Svaret är inte JSON, saknar `Buildings` eller `RhServices`, eller ingen adress går att tolka med `parseBuilding`. | `källa` |
 | **Tom** | Sökningen svarar som vanligt men utan adresser för kontrolladressen. | `källa` |
 | **Inga tömningar** | Schemat hämtas, men har ingen tömning de närmaste 60 dagarna. | `källa` |
@@ -65,10 +65,10 @@ Källor som är **Svarar inte** efter den första omgången prövas igen efter f
 
 - **Titel:** källans namn och läget, till exempel "Källa: Lidköpings kommun svarar inte" eller "Källa: Region Gotland har nytt format".
 - **Text:** källans namn och id, `baseUrl`, kontrolladressen, felet som det kom (till exempel `futureweb.lidkoping.se svarade 502`) och datum. För okända avfallstyper listas typerna. Sist står hur man provar själv: `npm run check:source -- <baseUrl> "<kontrolladress>"`.
-- **Nyckel:** en dold markering i texten, `<!-- sopor-bevakning: lidkoping svarar-inte -->`, så att skriptet hittar sitt eget ärende utan att lita på titeln.
+- **Nyckel:** en dold markering i texten, `<!-- sopor-bevakning: lidkoping svarar-inte -->`, så att skriptet hittar sitt eget ärende utan att lita på titeln eller etiketten. Skriptet läser alla öppna ärenden, sida för sida, så att en borttagen etikett inte ger dubbletter.
 - **Redan öppet ärende för samma källa och läge:** en kommentar med veckans datum och felet. Inget nytt ärende.
 - **Källan fungerar igen:** ärendet får en kommentar ("Fungerar igen 2026-11-09") och stängs.
-- **Byter läge** (till exempel från "Svarar inte" till "Nytt format"): det gamla ärendet stängs och ett nytt öppnas.
+- **Byter läge** (till exempel från "Svarar inte" till "Nytt format"): det gamla ärendet stängs och ett nytt öppnas. Undantag: när källan inte svarar lämnas öppna ärenden om format, tom källa och tömningar orörda, eftersom inget går att säga om dem den veckan.
 - **Ärenden som inte kommer från bevakningen**, till exempel en felrapport från en användare, rörs aldrig, eftersom de saknar markeringen.
 
 Etiketterna `källa` och `avfallstyp` skapas av skriptet om de saknas.
