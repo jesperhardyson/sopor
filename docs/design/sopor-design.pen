@@ -63347,6 +63347,459 @@
           ]
         }
       ]
+    },
+    {
+      "type": "frame",
+      "id": "Ct6uc",
+      "x": 5915,
+      "y": 760,
+      "name": "Mobil · Start (söker)",
+      "clip": true,
+      "width": 375,
+      "fill": "$bg",
+      "layout": "vertical",
+      "children": [
+        {
+          "id": "B3ClY8",
+          "type": "ref",
+          "ref": "gBy0W",
+          "name": "Sidhuvud",
+          "width": "fill_container"
+        },
+        {
+          "type": "frame",
+          "id": "JpkF0",
+          "name": "Hero",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 24,
+          "padding": [
+            40,
+            20,
+            0,
+            20
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "y4RfOn",
+              "x": 20,
+              "y": 40,
+              "name": "Fraktionsrad",
+              "enabled": false,
+              "gap": 8,
+              "children": [
+                {
+                  "id": "B1zv86",
+                  "type": "ref",
+                  "ref": "vPeSE",
+                  "name": "Ikon rest",
+                  "width": 36,
+                  "height": 36,
+                  "cornerRadius": 11
+                },
+                {
+                  "id": "kBC79",
+                  "type": "ref",
+                  "ref": "F5iQxg",
+                  "name": "Ikon mat",
+                  "width": 36,
+                  "height": 36,
+                  "cornerRadius": 11
+                },
+                {
+                  "id": "UPB4n",
+                  "type": "ref",
+                  "ref": "o5jApD",
+                  "name": "Ikon papper",
+                  "width": 36,
+                  "height": 36,
+                  "cornerRadius": 11
+                },
+                {
+                  "id": "XlDub",
+                  "type": "ref",
+                  "ref": "Qc4qi",
+                  "name": "Ikon plast",
+                  "width": 36,
+                  "height": 36,
+                  "cornerRadius": 11
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "oqKtL",
+              "name": "Rubrik",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "aZurx",
+                  "name": "H1",
+                  "fill": "$text",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "När töms dina kärl?",
+                  "lineHeight": 1.1,
+                  "fontFamily": "$font-ui",
+                  "fontSize": 34,
+                  "fontWeight": "800",
+                  "letterSpacing": -0.8
+                },
+                {
+                  "type": "text",
+                  "id": "T0wzjz",
+                  "name": "Ingress",
+                  "fill": "$text-2",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Skriv in adressen så ser du vilket kärl som töms härnäst. Inget konto behövs.",
+                  "lineHeight": 1.45,
+                  "fontFamily": "$font-ui",
+                  "fontSize": 17,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "zEGzo",
+              "name": "Sök",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "uF8XG",
+                  "name": "Adressfält",
+                  "width": "fill_container",
+                  "height": 62,
+                  "fill": "$surface",
+                  "cornerRadius": 18,
+                  "stroke": "$primary",
+                  "strokeWidth": 2,
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#157A4633",
+                    "blur": 10
+                  },
+                  "gap": 10,
+                  "padding": [
+                    0,
+                    16,
+                    0,
+                    18
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "GtggT",
+                      "name": "Sökikon",
+                      "width": 20,
+                      "height": 20,
+                      "icon": "search",
+                      "library": "lucide",
+                      "fill": "$primary"
+                    },
+                    {
+                      "type": "text",
+                      "id": "fjuke",
+                      "name": "Platshållare",
+                      "fill": "$text",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Storg",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 16,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "iTO1C",
+                      "name": "Rensa",
+                      "width": 28,
+                      "height": 28,
+                      "fill": "$surface-2",
+                      "cornerRadius": 999,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "fyB9L",
+                          "name": "Ikon",
+                          "width": 16,
+                          "height": 16,
+                          "icon": "x",
+                          "library": "lucide",
+                          "fill": "$text-2"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "g5LsO",
+                  "name": "Förslag",
+                  "width": "fill_container",
+                  "fill": "$surface",
+                  "cornerRadius": 18,
+                  "stroke": "$border",
+                  "strokeWidth": 1,
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#1B231F1F",
+                    "offset": {
+                      "x": 0,
+                      "y": 12
+                    },
+                    "blur": 32
+                  },
+                  "layout": "vertical",
+                  "padding": 6,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "WRtZR",
+                      "name": "Skelettrad",
+                      "width": "fill_container",
+                      "gap": 12,
+                      "padding": 12,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "qPSKJ",
+                          "name": "Skelett – ikon",
+                          "fill": "$surface-2",
+                          "width": 36,
+                          "height": 36
+                        },
+                        {
+                          "type": "frame",
+                          "id": "n6YPXI",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "rectangle",
+                              "cornerRadius": 6,
+                              "id": "CO3Gy",
+                              "name": "Skelett – adress",
+                              "fill": "$surface-2",
+                              "width": 132,
+                              "height": 16
+                            },
+                            {
+                              "type": "rectangle",
+                              "cornerRadius": 6,
+                              "id": "r5NcmR",
+                              "name": "Skelett – ort och kommun",
+                              "fill": "$surface-2",
+                              "width": 150,
+                              "height": 12
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "aYHM0",
+                      "name": "Skelettrad",
+                      "width": "fill_container",
+                      "gap": 12,
+                      "padding": 12,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "D7yMVt",
+                          "name": "Skelett – ikon",
+                          "fill": "$surface-2",
+                          "width": 36,
+                          "height": 36
+                        },
+                        {
+                          "type": "frame",
+                          "id": "mfD6h",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "rectangle",
+                              "cornerRadius": 6,
+                              "id": "S37Sk",
+                              "name": "Skelett – adress",
+                              "fill": "$surface-2",
+                              "width": 112,
+                              "height": 16
+                            },
+                            {
+                              "type": "rectangle",
+                              "cornerRadius": 6,
+                              "id": "ESzqN",
+                              "name": "Skelett – ort och kommun",
+                              "fill": "$surface-2",
+                              "width": 120,
+                              "height": 12
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "gMnN6",
+                      "name": "Skelettrad",
+                      "width": "fill_container",
+                      "gap": 12,
+                      "padding": 12,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "WmIvy",
+                          "name": "Skelett – ikon",
+                          "fill": "$surface-2",
+                          "width": 36,
+                          "height": 36
+                        },
+                        {
+                          "type": "frame",
+                          "id": "OrpYo",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "rectangle",
+                              "cornerRadius": 6,
+                              "id": "EGTsM",
+                              "name": "Skelett – adress",
+                              "fill": "$surface-2",
+                              "width": 144,
+                              "height": 16
+                            },
+                            {
+                              "type": "rectangle",
+                              "cornerRadius": 6,
+                              "id": "XwIYu",
+                              "name": "Skelett – ort och kommun",
+                              "fill": "$surface-2",
+                              "width": 96,
+                              "height": 12
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "vGHUd",
+                      "name": "Status",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "padding": [
+                        8,
+                        12,
+                        10,
+                        12
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "r7gCjf",
+                          "name": "Ikon",
+                          "width": 16,
+                          "height": 16,
+                          "icon": "loader-circle",
+                          "library": "lucide",
+                          "fill": "$primary"
+                        },
+                        {
+                          "type": "text",
+                          "id": "aCYPQ",
+                          "name": "Text",
+                          "fill": "$text-2",
+                          "content": "Söker adresser…",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "cb8AQ",
+                  "name": "Kommuninfo",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "padding": [
+                    0,
+                    4
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "qPha2",
+                      "name": "Ikon",
+                      "width": 16,
+                      "height": 16,
+                      "icon": "map-pin",
+                      "library": "lucide",
+                      "fill": "$primary"
+                    },
+                    {
+                      "type": "text",
+                      "id": "BZ8HB",
+                      "name": "Text",
+                      "fill": "$text-2",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Just nu: Avesta kommun. Fler kommuner kommer.",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "D1j3t",
+          "name": "Spacer",
+          "width": "fill_container",
+          "height": 32
+        },
+        {
+          "id": "CVLSF",
+          "type": "ref",
+          "ref": "fqF9s",
+          "name": "Sidfot",
+          "width": "fill_container"
+        }
+      ]
     }
   ],
   "themes": {
