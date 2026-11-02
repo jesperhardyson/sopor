@@ -21,7 +21,8 @@ Genomgång av sajten, koden och Vercel (fel och besök, 20 okt–2 nov). Punkter
 - [x] **9. Förklara "beräknat".** En rad under "Kommande tömningar" förklarar etiketten när schemat har beräknade datum, och etiketterna pekar på den för skärmläsare (`aria-describedby`). Förut fanns förklaringen bara som `title`, som inte syns på mobil.
 - [x] **10. Dela-knapp på adressidan.** Bredvid Spara: telefonens delningsmeny (`navigator.share`), annars kopieras länken.
 - [x] **11. Bevakning av källorna.** Ett veckojobb (`.github/workflows/sources.yml`) kontrollerar varje källa och gör problem till ärenden med etiketten `källa`. Se `docs/specs/2026-11-02-bevakning-av-kallor.md`.
-- [ ] **12. Fas 3: källor utanför EDP.** Alla synliga källor är EDP. Storstäderna (Stockholm, Göteborg, Malmö, Linköping …) kräver andra system, och där växer täckningen mest. En källa i taget, efter folkmängd.
+- [ ] **12. Fas 3: källor utanför EDP.** Storstäderna (Stockholm, Göteborg, Malmö, Linköping …) kräver andra system, och där växer täckningen mest. En källa i taget, efter folkmängd.
+  - [x] Stockholm (SVOA): villor och radhus, se `docs/specs/2026-11-02-stockholm.md`.
 
 - [ ] **13. Delningsbild per adress.** Delningstjänster kör inte JavaScript, så alla länkar får sajtens gemensamma bild. En bild med adressen (och kanske nästa tömning) kräver att servern svarar med egna `og:`-taggar för adressidorna, till exempel en Vercel-funktion för `/:källa/:adress` som fyller i taggarna i `index.html`, plus en bild som genereras av en funktion. Kostar funktionsanrop per sidvisning och behöver en design först.
 
