@@ -4,6 +4,7 @@
 import { addDays } from '../src/domain/dates.js'
 import { edpSchedule, edpSearch } from '../src/server/edp.js'
 import { fetchJson, SourceError } from '../src/server/http.js'
+import { SVOA_URL, svoaFractions, svoaSchedule, svoaSearch, svoaStep } from '../src/server/svoa.js'
 import type { Source } from '../src/sources/index.js'
 import { classifyWasteTypes } from './check-source.js'
 
@@ -65,6 +66,40 @@ export async function checkEdpSource(source: Source, probe: string, today: strin
     const unknownWasteTypes = classifyWasteTypes(services)
       .filter((w) => w.status === 'okänd')
       .map((w) => w.wasteType)
+    const end = addDays(today, HORIZON_DAYS)
+    const upcoming = schedule.events.some((e) => e.date >= today && e.date <= end)
+    return { ...base, state: upcoming ? 'fungerar' : 'inga-tomningar', unknownWasteTypes }
+  } catch (error) {
+    return { ...base, state: stateForError(error), error: (error as Error).message }
+  }
+}
+
+/** Gruppen och frekvensen i SVOA:s svar, i dagens form eller den äldre. */
+function svoaRows(raw: unknown): { group: string; frequency: string }[] {
+  if (Array.isArray(raw)) return raw.map((r) => ({ group: String(r?.group ?? ''), frequency: String(r?.fetchFrequency ?? '') }))
+  if (!raw || typeof raw !== 'object') return []
+  return Object.entries(raw).map(([group, list]) => ({ group, frequency: String((Array.isArray(list) ? list[0] : undefined)?.FetchFrequency ?? '') }))
+}
+
+/** Stockholm: adressökningen och schemat, som checkEdpSource. Okända frekvenser räknas med bland avfallstyperna. */
+export async function checkSvoaSource(source: Source, probe: string, today: string, fetchFn: typeof fetch = fetch): Promise<SourceResult> {
+  const base = { sourceId: source.id, name: source.name, baseUrl: SVOA_URL, probe }
+  let raw: unknown = null
+  const spy: typeof fetch = async (input, init) => {
+    const res = await fetchFn(input, init)
+    raw = await res.clone().json().catch(() => null)
+    return res
+  }
+  try {
+    const found = await svoaSearch(probe.split(',')[0], spy, TIMEOUT_MS)
+    if (found.length === 0) return { ...base, state: 'tom' }
+    const address = found.find((a) => a.raw === probe) ?? found[0]
+    const schedule = await svoaSchedule(address.raw, spy, TIMEOUT_MS)
+    const rows = svoaRows(raw)
+    const unknownWasteTypes = [
+      ...rows.filter((r) => svoaFractions(r.group).fractions.includes('karl') && r.group !== 'Trädgårdsavfall, villa').map((r) => r.group),
+      ...rows.filter((r) => !svoaStep(r.frequency)).map((r) => `Frekvens: ${r.frequency}`),
+    ]
     const end = addDays(today, HORIZON_DAYS)
     const upcoming = schedule.events.some((e) => e.date >= today && e.date <= end)
     return { ...base, state: upcoming ? 'fungerar' : 'inga-tomningar', unknownWasteTypes }
