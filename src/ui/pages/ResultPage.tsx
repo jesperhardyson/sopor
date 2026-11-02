@@ -166,7 +166,7 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
       )}
       <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:gap-10">
         <div className="flex min-w-0 flex-1 flex-col gap-5">
-          {next ? <NextPickup event={next} today={today} note={schedule.note} /> : <EmptyState />}
+          {next ? <NextPickup event={next} today={today} note={schedule.note} /> : <EmptyState note={source.emptyScheduleNote} />}
           <button
             type="button"
             disabled={!address}

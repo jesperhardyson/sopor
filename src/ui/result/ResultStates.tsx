@@ -107,12 +107,13 @@ export function UnsupportedState() {
   )
 }
 
-export function EmptyState() {
+/** Inga kommande tömningar. En källa kan ha en egen förklaring, som Stockholm för lägenheter. */
+export function EmptyState({ note }: { note?: { title: string; text: string } }) {
   return (
     <div className="rounded-[20px] border border-border bg-surface p-5">
-      <h2 className="text-lg font-extrabold text-text">Inga kommande tömningar i schemat än</h2>
+      <h2 className="text-lg font-extrabold text-text">{note?.title ?? 'Inga kommande tömningar i schemat än'}</h2>
       <p className="mt-1 text-[15px] leading-[1.45] text-text-2">
-        Nästa års schema läggs in så snart kommunen har publicerat det.
+        {note?.text ?? 'Nästa års schema läggs in så snart kommunen har publicerat det.'}
       </p>
     </div>
   )

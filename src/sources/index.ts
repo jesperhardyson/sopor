@@ -28,6 +28,8 @@ export interface Source {
   testData?: boolean
   /** Visas inte på sajten: inte i sökning, på Om-sidan, i API:t eller i byggd data. Datan valideras ändå vid build. */
   hidden?: boolean
+  /** Visas i stället för "Inga kommande tömningar" när en adress hos källan har ett tomt schema. */
+  emptyScheduleNote?: { title: string; text: string }
 }
 
 /** EDP-källorna kontrollerades live 2026-10-30 (SearchAdress gav träffar). Stenungsund svarade utan data. */
@@ -219,6 +221,10 @@ export const ALL_SOURCES: Source[] = [
     url: 'https://www.stockholmvattenochavfall.se',
     kommuner: [{ code: '0180', name: 'Stockholms kommun' }],
     config: { system: 'svoa' },
+    emptyScheduleNote: {
+      title: 'I Stockholm visar Sopor bara villor och radhus',
+      text: 'Bor du i lägenhet sköter fastighetsägaren sophämtningen. Fråga din hyresvärd eller bostadsrättsförening.',
+    },
   },
 ]
 
