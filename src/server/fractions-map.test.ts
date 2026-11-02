@@ -43,6 +43,17 @@ describe('mapWasteType', () => {
     expect(mapWasteType('Kärl 1', '', 'Kärl 1, MA XX. 370L')).toEqual({ fractions: ['karl'], label: 'Kärl 1' })
   })
 
+  it('läser "Hushåll" som restavfall (VIVAB: matavfallet har ett eget kärl)', () => {
+    expect(mapWasteType('Hushåll', 'Måndag jämn vecka ', '190l restavfallskärl helårstömning')).toEqual({ fractions: ['rest'] })
+    expect(mapWasteType('Hushåll', 'Fredag udda vecka ', '660l kärl14 dagars tömning helår separat matavfallskärl')).toEqual({
+      fractions: ['rest'],
+    })
+  })
+
+  it('läser inte "Hushåll" som restavfall när det är ett flerfackskärl', () => {
+    expect(mapWasteType('Hushåll', '', 'Kärl, 370 L fyrfack. Kärl 1')).toEqual({ fractions: ['karl'], label: 'Fyrfackskärl' })
+  })
+
   it('hoppar över slam', () => {
     expect(mapWasteType('Slam')).toBeNull()
   })

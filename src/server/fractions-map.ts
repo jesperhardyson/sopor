@@ -50,7 +50,10 @@ export function mapWasteType(
   const coded = fractionsFromCodes(description)
   if (coded) return { fractions: coded }
   const label = text.trim().replace(/\s+/g, ' ')
-  if (!/fyrfack|flerfack/i.test(`${label} ${frequencyText} ${description}`)) return { fractions: ['karl'], label }
+  const multi = /fyrfack|flerfack/i.test(`${label} ${frequencyText} ${description}`)
+  // VIVAB kallar restavfallskärlet "Hushåll" ("190l restavfallskärl", "… separat matavfallskärl").
+  if (/^hushåll/.test(t) && !multi) return { fractions: ['rest'] }
+  if (!multi) return { fractions: ['karl'], label }
   // Fastighetsägaren vet vad som ligger i facken; numret säger vilket kärl som ska ut.
   const number = label.match(/(\d+)\s*$/)?.[1]
   return { fractions: ['karl'], label: number ? `Fyrfackskärl ${number}` : 'Fyrfackskärl' }
