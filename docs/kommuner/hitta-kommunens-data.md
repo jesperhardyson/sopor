@@ -47,7 +47,7 @@ Kan du inte köra skriptet räcker det att skriva värden i ärendet, så provar
 
 ## Steg 3: Om bara schemat per område är publikt
 
-Det är det vanligaste fallet. Schemat kan läggas in som datafiler i Sopor (se [README](../../README.md#lägga-till-en-kommun)). Det som saknas är vilken adress som hör till vilket område.
+Det är det vanligaste fallet. Schemat kan läggas in som datafiler i Sopor (se [checklistan](lagga-till-kommun.md#b-statisk-data)). Det som saknas är vilken adress som hör till vilket område.
 
 Matcha inte adresser mot områden på egen hand utifrån ortnamn eller kartor. En gissning som blir fel får folk att missa sin tömning.
 
@@ -63,7 +63,7 @@ Berätta i ärendet att du har skickat en begäran, så att ingen annan gör sam
 
 ## Steg 5: Berätta vad du hittat
 
-Öppna ett [ärende om ny kommun](https://github.com/jesperhardyson/sopor/issues/new?template=ny-kommun.md) eller mejla support@hardyson.se med det du hittat. Kan du programmera får du gärna lägga in schemat själv enligt [CONTRIBUTING.md](../../CONTRIBUTING.md).
+Öppna ett [ärende om ny kommun](https://github.com/jesperhardyson/sopor/issues/new?template=ny-kommun.md) eller mejla support@hardyson.se med det du hittat. Kan du programmera får du gärna lägga in kommunen själv enligt [checklistan](lagga-till-kommun.md).
 
 ## Vad vi vet om kommunerna hittills
 

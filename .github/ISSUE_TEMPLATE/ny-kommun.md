@@ -12,6 +12,6 @@ labels: kommun
 
 **Var publiceras hämtschemat?** <!-- länk; PDF per område, webbsida, söktjänst … -->
 
-**Finns en publik söktjänst per adress?** <!-- t.ex. resultatet av EDP-testet i guiden, eller "bara inloggning" -->
+**Finns en publik söktjänst per adress?** <!-- t.ex. utskriften från `npm run check:source`, värden för Mina sidor, eller "bara inloggning" -->
 
 **Har du begärt ut kopplingen adress → område?** <!-- nej / ja, datum -->

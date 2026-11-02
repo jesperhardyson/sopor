@@ -51,6 +51,7 @@ Home Assistant-integrationen (`custom_components/sopor/`, tester i `integrations
 - Specifikationer: `docs/specs/`
 - Implementationsplaner: `docs/plans/`
 - Integrationer (Homey, Home Assistant): `docs/specs/2026-10-31-integrationer-homey-home-assistant.md` och `integrations/*/README.md`
+- Lägga till en kommun: `docs/kommuner/lagga-till-kommun.md` (checklistan) och `npm run check:source`
 - Kommunernas datakällor och lärdomar: `docs/kommuner/hitta-kommunens-data.md` (uppdatera tabellen när en kommun undersöks)
 
 Nya design- och plandokument läggs där, inte någon annanstans.
