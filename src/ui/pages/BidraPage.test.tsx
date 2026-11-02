@@ -17,6 +17,7 @@ describe('BidraPage', () => {
   it('förklarar hur man tar reda på var kommunens data finns, utan teknik', () => {
     setup()
     expect(screen.getByRole('heading', { level: 1, name: 'Hjälp till att få in din kommun' })).toBeInTheDocument()
+    expect(document.title).toBe('Bidra – Sopor')
     const steps = screen.getByRole('list', { name: 'Så tar du reda på var datan finns' })
     expect(within(steps).getAllByRole('listitem')).toHaveLength(4)
     expect(screen.queryByText(/curl/)).toBeNull()

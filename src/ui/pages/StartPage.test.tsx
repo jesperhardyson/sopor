@@ -67,6 +67,12 @@ describe('StartPage fokusläge', () => {
 })
 
 describe('StartPage innehåll', () => {
+  it('har sajtens titel', () => {
+    document.title = 'Bidra – Sopor'
+    setup()
+    expect(document.title).toBe('Sopor – när töms dina kärl?')
+  })
+
   it('har ett eget avsnitt om smarta hem med korten', () => {
     setup()
     const section = screen.getByRole('region', { name: 'Påminnelse i Homey eller Home Assistant' })

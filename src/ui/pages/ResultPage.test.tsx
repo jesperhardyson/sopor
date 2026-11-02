@@ -66,6 +66,11 @@ describe('ResultPage', () => {
     resolveSchedule = undefined
   })
 
+  it('har adressen i sidans titel', async () => {
+    renderAt('/avesta/krylbo-storgatan-12b')
+    await vi.waitFor(() => expect(document.title).toBe('Storgatan 12 B, Krylbo – Sopor'))
+  })
+
   it('visar särskiljaren under adressen', async () => {
     fake = makeProvider({ getAddress: async () => ({ ...villa, detail: 'Byggnad 81674' }) })
     renderAt('/avesta/krylbo-storgatan-12b')

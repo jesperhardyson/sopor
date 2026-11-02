@@ -62689,6 +62689,231 @@
           "width": "fill_container"
         }
       ]
+    },
+    {
+      "type": "frame",
+      "id": "qBomv",
+      "x": 10920,
+      "y": 0,
+      "name": "Delningsbild 1200×630",
+      "clip": true,
+      "width": 1200,
+      "height": 630,
+      "fill": "$bg",
+      "layout": "vertical",
+      "gap": 36,
+      "padding": [
+        72,
+        88
+      ],
+      "justifyContent": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "l5zwc",
+          "name": "Logo",
+          "gap": 18,
+          "alignItems": "center",
+          "children": [
+            {
+              "id": "zOAgw",
+              "type": "ref",
+              "ref": "i17qF",
+              "name": "Symbol",
+              "width": 96,
+              "height": 96
+            },
+            {
+              "type": "text",
+              "id": "j4BWGW",
+              "name": "Ordmärke",
+              "fill": "$text",
+              "content": "sopor",
+              "fontFamily": "$font-brand",
+              "fontSize": 72,
+              "fontWeight": "600",
+              "letterSpacing": -1.2
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "tPFkA",
+          "name": "Rubrik",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 18,
+          "children": [
+            {
+              "type": "text",
+              "id": "yECHC",
+              "name": "H1",
+              "fill": "$text",
+              "content": "När töms dina kärl?",
+              "lineHeight": 1.05,
+              "fontFamily": "$font-ui",
+              "fontSize": 88,
+              "fontWeight": "800",
+              "letterSpacing": -2.2
+            },
+            {
+              "type": "text",
+              "id": "aGvzY",
+              "name": "Ingress",
+              "fill": "$text-2",
+              "textGrowth": "fixed-width",
+              "width": 900,
+              "content": "Skriv in adressen så ser du vilket kärl som töms härnäst, och lägg schemat i din kalender.",
+              "lineHeight": 1.35,
+              "fontFamily": "$font-ui",
+              "fontSize": 34,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "NEyvc",
+          "name": "Fot",
+          "width": "fill_container",
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "qfWtj",
+              "name": "Fraktionsrad",
+              "gap": 14,
+              "children": [
+                {
+                  "id": "sui62",
+                  "type": "ref",
+                  "ref": "vPeSE",
+                  "name": "Ikon rest",
+                  "width": 64,
+                  "height": 64,
+                  "cornerRadius": 18,
+                  "descendants": {
+                    "mqPlK": {
+                      "width": 32,
+                      "height": 32
+                    }
+                  }
+                },
+                {
+                  "id": "u6OHk",
+                  "type": "ref",
+                  "ref": "F5iQxg",
+                  "name": "Ikon mat",
+                  "width": 64,
+                  "height": 64,
+                  "cornerRadius": 18,
+                  "descendants": {
+                    "sCI8w": {
+                      "width": 32,
+                      "height": 32
+                    }
+                  }
+                },
+                {
+                  "id": "JEuUQ",
+                  "type": "ref",
+                  "ref": "o5jApD",
+                  "name": "Ikon papper",
+                  "width": 64,
+                  "height": 64,
+                  "cornerRadius": 18,
+                  "descendants": {
+                    "mhpin": {
+                      "width": 32,
+                      "height": 32
+                    }
+                  }
+                },
+                {
+                  "id": "BWJC6",
+                  "type": "ref",
+                  "ref": "Qc4qi",
+                  "name": "Ikon plast",
+                  "width": 64,
+                  "height": 64,
+                  "cornerRadius": 18,
+                  "descendants": {
+                    "Tdn3I": {
+                      "width": 32,
+                      "height": 32
+                    }
+                  }
+                },
+                {
+                  "id": "voshF",
+                  "type": "ref",
+                  "ref": "fO6n0",
+                  "name": "Ikon glas",
+                  "width": 64,
+                  "height": 64,
+                  "cornerRadius": 18,
+                  "descendants": {
+                    "OUVki": {
+                      "width": 32,
+                      "height": 32
+                    }
+                  }
+                },
+                {
+                  "id": "V0lmY",
+                  "type": "ref",
+                  "ref": "jovKE",
+                  "name": "Ikon metall",
+                  "width": 64,
+                  "height": 64,
+                  "cornerRadius": 18,
+                  "descendants": {
+                    "mJDzF": {
+                      "width": 32,
+                      "height": 32
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "emyWH",
+              "name": "Adress",
+              "fill": "$brand-text",
+              "content": "sopor.hardyson.se",
+              "fontFamily": "$font-ui",
+              "fontSize": 30,
+              "fontWeight": "800"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "MTLCt",
+      "x": 10920,
+      "y": 720,
+      "name": "Webbapp-ikon 240 (exporteras 512, 192, 180)",
+      "clip": true,
+      "width": 240,
+      "height": 240,
+      "fill": "$bg",
+      "layout": "none",
+      "children": [
+        {
+          "id": "t6xGby",
+          "type": "ref",
+          "ref": "n8pQe",
+          "name": "Symbol",
+          "x": 42,
+          "y": 42,
+          "width": 156,
+          "height": 156
+        }
+      ]
     }
   ],
   "themes": {

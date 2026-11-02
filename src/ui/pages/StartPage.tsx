@@ -8,6 +8,7 @@ import { ContributeSection } from '../start/ContributeSection'
 import { ServicesSection } from '../start/ServicesSection'
 import { SmartHomeSection } from '../start/SmartHomeSection'
 import { AddressSearch } from '../search/AddressSearch'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 const HERO_FRACTIONS = ['rest', 'mat', 'papper', 'plast'] as const
 
@@ -23,6 +24,7 @@ const focusTop = () => (window.matchMedia?.('(min-width: 1024px)').matches ? 96 
 
 export function StartPage() {
   const searchRef = useRef<HTMLDivElement>(null)
+  usePageTitle()
   const [focus, setFocus] = useState(false)
 
   // Sidan scrollas i stället för att fältet flyttas med transform. Mobilen scrollar själv när

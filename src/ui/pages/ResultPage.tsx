@@ -1,6 +1,7 @@
 import { ArrowLeft, Bookmark, CalendarPlus } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router'
+import { streetAndLocality } from '@/domain/address'
 import { formatLong, todayInStockholm } from '@/domain/dates'
 import { nextPickup, upcoming } from '@/domain/schedule'
 import type { Address } from '@/domain/types'
@@ -17,6 +18,7 @@ import { AddressSearch } from '../search/AddressSearch'
 import { CalendarSheet } from '../sheets/CalendarSheet'
 import { SaveSheet } from '../sheets/SaveSheet'
 import { NotFound } from '../search/NotFound'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 const dot = "inline-flex items-center before:inline-block before:w-5 before:text-center before:content-['·']"
 const page = 'mx-auto flex w-full max-w-[920px] flex-col gap-5 px-5 pt-1 pb-8 md:px-8 md:pt-4 lg:gap-7 lg:px-0 lg:pb-20'
@@ -64,6 +66,7 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
   const address = fetched ?? (state.status === 'stale' ? state.address : undefined)
   const [sheet, setSheet] = useState<'calendar' | 'save' | null>(null)
   const [savedName, setSavedName] = useState(() => findSaved(sourceId, addressId)?.name)
+  usePageTitle(address ? `${streetAndLocality(address)} – Sopor` : undefined)
 
   // Sparade adresser behåller senast hämtade schemat, som visas om källan inte svarar nästa gång.
   const fresh = state.status === 'ok' ? state.schedule : undefined

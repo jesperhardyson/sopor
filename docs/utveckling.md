@@ -88,7 +88,7 @@ Vercel (Hobby). Vercel kör `npm test && npm run build`, så röda tester når a
 - **Projekt:** `sopor` i Vercel-teamet `badvatten-s-projects`, kopplat till GitHub-repot. Varje push till `main` driftsätts, och varje pull request får en egen preview-deploy.
 - **Domän:** `sopor.hardyson.se`. DNS ligger hos Cloudflare: `A sopor 76.76.21.21`, satt till *DNS only* (inte proxad).
 - **Öppen sajt:** Vercel Authentication är avstängd, så både sajten och preview-adresserna är publika. Bidragsgivare kan alltså testa sina ändringar live. Pull requests från forkar byggs inte förrän förvaltaren godkänt dem i Vercel.
-- **Testversion:** en varningsbanderoll visas överst på alla sidor (`src/ui/layout/TestDataBanner.tsx`).
+- **Delningsbild och ikoner:** `public/og.png`, `public/icon-*.png` och `public/apple-touch-icon.png` exporteras från ramarna "Delningsbild 1200×630" och "Webbapp-ikon 240" i designfilen.
 - **Dolda källor:** en källa med `hidden: true` syns inte i sökningen, på Om-sidan, i API:t eller i byggd data, men build-skriptet validerar ändå dess datafiler.
 
 ## Design
