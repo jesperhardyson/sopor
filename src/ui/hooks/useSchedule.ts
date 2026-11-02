@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
-import type { Schedule } from '@/domain/types'
+import type { Address, Schedule } from '@/domain/types'
+import { loadStoredSchedule } from '@/lib/storage'
 import { getSource } from '@/sources'
 import { providerFor } from '@/providers/registry'
 
@@ -8,6 +9,8 @@ export type ScheduleState =
   | { status: 'ok'; schedule: Schedule }
   | { status: 'missing' }
   | { status: 'error' }
+  /** Källan svarar inte; schemat som sparades senast för den sparade adressen */
+  | { status: 'stale'; schedule: Schedule; address: Address; fetchedAt: string }
 
 export function useSchedule(sourceId: string, addressId: string) {
   const [state, setState] = useState<ScheduleState>({ status: 'loading' })
@@ -22,7 +25,11 @@ export function useSchedule(sourceId: string, addressId: string) {
       .getSchedule(addressId, controller.signal)
       .then(
         (schedule) => setState(schedule ? { status: 'ok', schedule } : { status: 'missing' }),
-        () => !controller.signal.aborted && setState({ status: 'error' }),
+        () => {
+          if (controller.signal.aborted) return
+          const stored = loadStoredSchedule(sourceId, addressId)
+          setState(stored ? { status: 'stale', ...stored } : { status: 'error' })
+        },
       )
     return () => controller.abort()
   }, [sourceId, addressId, attempt])

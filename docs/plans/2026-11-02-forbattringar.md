@@ -6,7 +6,7 @@ Genomgång av sajten, koden och Vercel (fel och besök, 20 okt–2 nov). Punkter
 
 - [x] **1. Saknad kommun i sökningen.** ([#45](https://github.com/jesperhardyson/sopor/pull/45)) Söker man "Drottninggatan 50 Stockholm" får man "Vi hittade inte adressen. Kolla stavningen…". De flesta svenskar bor i kommuner som inte är med än, så det är vanligt. Visa designens läge "Kommunen stöds inte" (utan e-postformulär, se specen v1) när orten ligger i en kommun som Sopor inte har, med länk till `/bidra`. Orterna kommer från Wikidata (`data/sverige/`), eftersom Overpass inte orkade med hela landet. Sökningen hoppar också över live-källorna när orten ligger i en kommun som saknas (från cirka 8 s till 0,4 s).
 - [x] **2. Mät sökningar på saknade kommuner.** Egna händelser (`track`) kräver Vercels Pro-plan, så sökningen skickar i stället en sidvisning av `/saknas/<kommun>` när läget för saknad kommun visas. Bara kommunnamnet skickas, en gång per kommun och sidbesök. Se vilka kommuner som efterfrågas under Pages i Vercel Analytics (filtrera på `/saknas/`). Sökningar utan ort räknas inte.
-- [ ] **3. Senast hämtade schemat när källan ligger nere.** `/api/schema` svarar 502 vid timeout (Lidköping, 3 st den 2 nov), och sidan blir tom. Spara senast hämtade schemat för sparade adresser i localStorage och visa det med "Senast hämtat …, källan svarar inte just nu".
+- [x] **3. Senast hämtade schemat när källan ligger nere.** `/api/schema` svarade 502 vid timeout (Lidköping, 3 st den 2 nov), och sidan blev tom. Nu sparas senast hämtade schemat för sparade adresser (`sopor.schedules.v1`), och adressidan visar det med "… svarar inte just nu. Du ser schemat som hämtades …" och "Försök igen". Bara sparade adresser, så lagringen inte växer med allt man tittat på.
 
 ## Snabbfixar
 

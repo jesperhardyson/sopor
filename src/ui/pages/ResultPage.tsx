@@ -1,17 +1,17 @@
 import { ArrowLeft, Bookmark, CalendarPlus } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router'
-import { todayInStockholm } from '@/domain/dates'
+import { formatLong, todayInStockholm } from '@/domain/dates'
 import { nextPickup, upcoming } from '@/domain/schedule'
 import type { Address } from '@/domain/types'
-import { findSaved } from '@/lib/storage'
+import { findSaved, storeSchedule } from '@/lib/storage'
 import { getSource, type Source } from '@/sources'
 import { providerFor } from '@/providers/registry'
 import { useSchedule } from '../hooks/useSchedule'
 import { MonthCalendar } from '../result/MonthCalendar'
 import { NextPickup } from '../result/NextPickup'
 import { SmartHomeBox } from '../integrations/SmartHomeBox'
-import { EmptyState, ErrorState, LoadingState, UnsupportedState } from '../result/ResultStates'
+import { EmptyState, ErrorState, LoadingState, StaleNotice, UnsupportedState } from '../result/ResultStates'
 import { UpcomingList } from '../result/UpcomingList'
 import { AddressSearch } from '../search/AddressSearch'
 import { CalendarSheet } from '../sheets/CalendarSheet'
@@ -59,9 +59,17 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
   const { sourceId = '', addressId = '' } = useParams()
   const source = getSource(sourceId)
   const [state, retry, attempt] = useSchedule(sourceId, addressId)
-  const address = useAddress(source, addressId, attempt)
+  const fetched = useAddress(source, addressId, attempt)
+  // När källan inte svarar kommer adressen från det sparade schemat.
+  const address = fetched ?? (state.status === 'stale' ? state.address : undefined)
   const [sheet, setSheet] = useState<'calendar' | 'save' | null>(null)
   const [savedName, setSavedName] = useState(() => findSaved(sourceId, addressId)?.name)
+
+  // Sparade adresser behåller senast hämtade schemat, som visas om källan inte svarar nästa gång.
+  const fresh = state.status === 'ok' ? state.schedule : undefined
+  useEffect(() => {
+    if (fresh && fetched && savedName) storeSchedule({ address: fetched, schedule: fresh, fetchedAt: today })
+  }, [fresh, fetched, savedName, today])
 
   if (!source) {
     return (
@@ -73,7 +81,7 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
     )
   }
 
-  if (address === null || state.status === 'missing') {
+  if (fetched === null || state.status === 'missing') {
     return (
       <div className={page}>
         <BackLink />
@@ -146,6 +154,9 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
   return (
     <div className={page}>
       {header}
+      {state.status === 'stale' && (
+        <StaleNotice sourceName={source.name} fetchedAt={formatLong(state.fetchedAt)} onRetry={retry} />
+      )}
       <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:gap-10">
         <div className="flex min-w-0 flex-1 flex-col gap-5">
           {next ? <NextPickup event={next} today={today} note={schedule.note} /> : <EmptyState />}

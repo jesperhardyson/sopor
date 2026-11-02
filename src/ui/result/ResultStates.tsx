@@ -61,6 +61,36 @@ export function ErrorState({ onRetry }: { onRetry: () => void }) {
   )
 }
 
+/** Källan svarar inte, så sidan visar schemat som sparades senast för den sparade adressen. */
+export function StaleNotice({
+  sourceName,
+  fetchedAt,
+  onRetry,
+}: {
+  sourceName: string
+  fetchedAt: { day: number; month: string }
+  onRetry: () => void
+}) {
+  return (
+    <div
+      role="alert"
+      className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-warn-bg px-4 py-3"
+    >
+      <p className="flex min-w-0 flex-1 items-start gap-2 text-[15px] font-semibold text-warn">
+        <TriangleAlert className="mt-0.5 size-[18px] shrink-0" aria-hidden />
+        {sourceName} svarar inte just nu. Du ser schemat som hämtades {fetchedAt.day} {fetchedAt.month}.
+      </p>
+      <button
+        type="button"
+        onClick={onRetry}
+        className="rounded-xl border border-border bg-surface px-3.5 py-2 text-sm font-bold text-text"
+      >
+        Försök igen
+      </button>
+    </div>
+  )
+}
+
 export function UnsupportedState() {
   return (
     <div className="flex flex-col gap-3.5 rounded-[20px] border border-border bg-surface p-5">

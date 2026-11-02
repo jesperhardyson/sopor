@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { loadSaved, removeSaved, renameSaved, upsertSaved, type SavedAddress } from './storage'
+import type { Address, Schedule } from '@/domain/types'
+import { loadSaved, loadStoredSchedule, removeSaved, renameSaved, storeSchedule, upsertSaved, type SavedAddress, type StoredSchedule } from './storage'
 
 const hemma: SavedAddress = {
   sourceId: 'avesta',
@@ -87,5 +88,56 @@ describe('äldre sparade adresser', () => {
       JSON.stringify([{ municipalityId: 'avesta', addressId: 'a', name: 'Hemma', street: 'S 1', locality: 'A', savedAt: '' }]),
     )
     expect(loadSaved()).toEqual([{ sourceId: 'avesta', addressId: 'a', name: 'Hemma', street: 'S 1', locality: 'A', savedAt: '' }])
+  })
+})
+
+describe('sparade scheman', () => {
+  const address: Address = { id: 'krylbo-storgatan-12b', street: 'Storgatan 12 B', locality: 'Krylbo', sourceId: 'avesta', kommun: 'Avesta kommun' }
+  const schedule: Schedule = { bins: [], events: [{ date: '2026-11-11', fractions: ['rest'] }], updatedAt: '2026-11-02' }
+  const entry: StoredSchedule = { address, schedule, fetchedAt: '2026-11-02' }
+
+  beforeEach(() => localStorage.clear())
+  afterEach(() => vi.restoreAllMocks())
+
+  it('sparar schemat för en sparad adress', () => {
+    upsertSaved(hemma)
+    storeSchedule(entry)
+    expect(loadStoredSchedule('avesta', 'krylbo-storgatan-12b')).toEqual(entry)
+  })
+
+  it('sparar inte schemat för adresser som inte är sparade', () => {
+    storeSchedule(entry)
+    expect(loadStoredSchedule('avesta', 'krylbo-storgatan-12b')).toBeUndefined()
+  })
+
+  it('glömmer schemat när adressen tas bort', () => {
+    upsertSaved(hemma)
+    storeSchedule(entry)
+    removeSaved('avesta', 'krylbo-storgatan-12b')
+    expect(loadStoredSchedule('avesta', 'krylbo-storgatan-12b')).toBeUndefined()
+  })
+
+  it('glömmer alla scheman när alla adresser glöms', async () => {
+    const { clearSaved } = await import('./storage')
+    upsertSaved(hemma)
+    storeSchedule(entry)
+    clearSaved()
+    expect(loadStoredSchedule('avesta', 'krylbo-storgatan-12b')).toBeUndefined()
+  })
+
+  it('tål trasig och otillgänglig lagring', () => {
+    localStorage.setItem('sopor.schedules.v1', '{trasig')
+    expect(loadStoredSchedule('avesta', 'krylbo-storgatan-12b')).toBeUndefined()
+    localStorage.setItem('sopor.schedules.v1', JSON.stringify({ 'avesta/krylbo-storgatan-12b': { schedule: 1 } }))
+    expect(loadStoredSchedule('avesta', 'krylbo-storgatan-12b')).toBeUndefined()
+    upsertSaved(hemma)
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('QuotaExceeded')
+    })
+    expect(() => storeSchedule(entry)).not.toThrow()
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+      throw new Error('SecurityError')
+    })
+    expect(loadStoredSchedule('avesta', 'krylbo-storgatan-12b')).toBeUndefined()
   })
 })
