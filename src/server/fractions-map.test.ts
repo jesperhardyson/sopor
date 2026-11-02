@@ -12,6 +12,9 @@ describe('mapWasteType', () => {
     ['Glasförp.ofärg', 'glas'],
     ['Metallförp.', 'metall'],
     ['Tidningar', 'tidningar'],
+    // Kungälv (säckar med osorterat) och Boden (brännbart kärl bredvid matavfallskärlet)
+    ['Osorterat', 'rest'],
+    ['Brännbart', 'rest'],
   ])('%s blir %s', (text, fraction) => {
     expect(mapWasteType(text)).toEqual({ fractions: [fraction] })
   })
