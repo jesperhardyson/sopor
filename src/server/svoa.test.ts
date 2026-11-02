@@ -87,6 +87,15 @@ describe('svoaStep', () => {
   it('känner inte igen andra texter', () => {
     expect(svoaStep('Var 14:e dag')).toBeNull()
   })
+
+  it('läser säsongen även med tankstreck', () => {
+    expect(svoaStep('Varannan vecka (april–nov)')).toEqual({ stepDays: 14, inMonths: [4, 5, 6, 7, 8, 9, 10, 11] })
+  })
+
+  // Hellre bara källans datum än trädgårdsavfall hela vintern.
+  it.each(['Varannan vecka april-nov', 'Var 4:e vecka (v 14-46)', 'Varannan vecka (sommar)'])('gissar inte på en säsong den inte förstår: %s', (text) => {
+    expect(svoaStep(text)).toBeNull()
+  })
 })
 
 describe('svoaSearch', () => {

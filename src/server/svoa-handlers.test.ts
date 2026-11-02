@@ -66,6 +66,26 @@ describe('Stockholm i sajtens API', () => {
     expect(await res.text()).not.toContain('-saknas@')
   })
 
+  it('ger kalenderprenumerationen 502 när schemat är tomt, så att kalendern behåller sina tömningar', async () => {
+    const res = await handleIcs(url(`/api/ics?source=stockholm&file=${encodeURIComponent(ID)}.ics`), opts(fakeSvoa({ schedule: '[]' })))
+    expect(res.status).toBe(502)
+  })
+
+  it('söker en gång till med orten när första svaret är fullt utan adressen', async () => {
+    const five = JSON.stringify([30, 31, 32, 33, 34].map((n) => ({ value: `Hjortronvägen ${n}, Bromma, 168 59`, data: '168 59' })))
+    const queries: string[] = []
+    const fetchFn = vi.fn(async (input: string | URL | Request) => {
+      const u = new URL(String(input))
+      if (!u.pathname.endsWith('/AutoCompleteMe')) return json(fixture('svoa-schema.json'))
+      const q = u.searchParams.get('query')!
+      queries.push(q)
+      return json(q.includes(',') ? fixture('svoa-adresser.json') : five)
+    }) as unknown as typeof fetch
+    const res = await handleSchedule(url(`/api/schema?source=stockholm&id=${encodeURIComponent(ID)}`), opts(fetchFn))
+    expect(res.status).toBe(200)
+    expect(queries).toEqual(['hjortronvägen 3', 'hjortronvägen 3, bromma'])
+  })
+
   it('ger 502 när tjänsten svarar med okänd form', async () => {
     for (const fetchFn of [fakeSvoa({ addresses: '{"x":1}' }), fakeSvoa({ schedule: '{"x":1}' })]) {
       expect((await handleSchedule(url(`/api/schema?source=stockholm&id=${encodeURIComponent(ID)}`), opts(fetchFn))).status).toBe(502)

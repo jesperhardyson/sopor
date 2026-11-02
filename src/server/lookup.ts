@@ -5,7 +5,7 @@ import type { Address, Schedule } from '../domain/types.js'
 import type { AddressIndexFile, ScheduleFile } from '../data/static-format.js'
 import { needsPlaces, type Source } from '../sources/index.js'
 import { edpSchedule, edpSearch, queryFromAddressId, type EdpBuilding } from './edp.js'
-import { queryFromSvoaId, sameSvoaAddress, svoaSchedule, svoaSearch } from './svoa.js'
+import { queryFromSvoaId, sameSvoaAddress, SVOA_LIMIT, svoaSchedule, svoaSearch, type SvoaAddress } from './svoa.js'
 import { searchCandidates, toAddress, withDetails, type HandlerOptions } from './handlers.js'
 import { loadServerPlaces, siteJson } from './site.js'
 
@@ -55,7 +55,13 @@ async function lookupEdp(source: Source, baseUrl: string, id: string, origin: st
 async function lookupSvoa(source: Source, id: string, opts: HandlerOptions): Promise<Lookup> {
   const parsed = queryFromSvoaId(id)
   if (!parsed) return { status: 502 }
-  const found = (await svoaSearch(parsed.query, opts.fetchFn, opts.timeoutMs ?? 3000)).find((a) => sameSvoaAddress(id, a))
+  // Adressökningen ger högst fem svar. Är svaret fullt utan adressen frågas den också med orten.
+  let found: SvoaAddress | undefined
+  for (const q of [parsed.query, queryFromAddressId(id)!.query]) {
+    const hits = await svoaSearch(q, opts.fetchFn, opts.timeoutMs ?? 3000)
+    found = hits.find((a) => sameSvoaAddress(id, a))
+    if (found || hits.length < SVOA_LIMIT) break
+  }
   if (!found) return { status: 502 }
   const schedule = await svoaSchedule(found.raw, opts.fetchFn, opts.timeoutMs ?? 5000)
   const kommun = source.kommuner[0].name

@@ -224,6 +224,13 @@ describe('checkSvoaSource', () => {
     expect((await checkSvoa(svoa([]))).state).toBe('tom')
   })
 
+  it('har nytt format när kontrolladressen inte längre matchar, som uppslaget kräver', async () => {
+    const changed = [{ value: 'Hjortronvägen 3A, Bromma, 168 59', data: '168 59' }]
+    const r = await checkSvoa(svoa(changed))
+    expect(r.state).toBe('nytt-format')
+    expect(r.error).toContain('Hjortronvägen 3, Bromma, 168 59')
+  })
+
   it('har inga tömningar när kontrolladressen saknar villatjänst', async () => {
     expect((await checkSvoa(svoa(fixture('svoa-adresser.json'), []))).state).toBe('inga-tomningar')
   })

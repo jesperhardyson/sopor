@@ -4,7 +4,7 @@
 import { addDays } from '../src/domain/dates.js'
 import { edpSchedule, edpSearch } from '../src/server/edp.js'
 import { fetchJson, SourceError } from '../src/server/http.js'
-import { SVOA_URL, svoaFractions, svoaSchedule, svoaSearch, svoaStep } from '../src/server/svoa.js'
+import { parseSvoaAddress, sameSvoaAddress, svoaAddressId, SVOA_URL, svoaFractions, svoaSchedule, svoaSearch, svoaStep } from '../src/server/svoa.js'
 import type { Source } from '../src/sources/index.js'
 import { classifyWasteTypes } from './check-source.js'
 
@@ -93,7 +93,10 @@ export async function checkSvoaSource(source: Source, probe: string, today: stri
   try {
     const found = await svoaSearch(probe.split(',')[0], spy, TIMEOUT_MS)
     if (found.length === 0) return { ...base, state: 'tom' }
-    const address = found.find((a) => a.raw === probe) ?? found[0]
+    // Samma matchning som uppslaget gör: ändrar SVOA hur adresserna skrivs ska bevakningen larma.
+    const probeAddress = parseSvoaAddress(probe)
+    const address = probeAddress && found.find((a) => sameSvoaAddress(svoaAddressId(probeAddress), a))
+    if (!address) return { ...base, state: 'nytt-format', error: `Kontrolladressen ${probe} hittades inte, bara t.ex. ${found[0].raw}` }
     const schedule = await svoaSchedule(address.raw, spy, TIMEOUT_MS)
     const rows = svoaRows(raw)
     const unknownWasteTypes = [

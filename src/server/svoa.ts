@@ -9,6 +9,9 @@ import { encode, mergeSeries, queryFromAddressId } from './edp.js'
 import { mapWasteType } from './fractions-map.js'
 import { fetchJson, SourceError } from './http.js'
 
+/** Adressökningen svarar med högst så här många adresser. */
+export const SVOA_LIMIT = 5
+
 export const SVOA_URL = 'https://www.stockholmvattenochavfall.se/villa-och-radhus/avfallstjanster/nar-kommer-sopbilen'
 
 const unknownFormat = () => new SourceError('stockholmvattenochavfall.se svarade med ett okänt format')
@@ -60,22 +63,25 @@ export function svoaFractions(group: string): { fractions: FractionId[]; label?:
 }
 
 const STEPS: [RegExp, number][] = [
-  [/^varje vecka/, 7],
-  [/^varannan vecka/, 14],
-  [/^var 3:e vecka/, 21],
-  [/^var 4:e vecka/, 28],
+  [/^varje vecka$/, 7],
+  [/^varannan vecka$/, 14],
+  [/^var 3:e vecka$/, 21],
+  [/^var 4:e vecka$/, 28],
 ]
 const MONTHS = ['jan', 'feb', 'mar', 'apr', 'maj', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec']
 
-/** "Varannan vecka (april-nov)" → 14 dagar i april–november. null för en frekvens vi inte känner igen. */
+/**
+ * "Varannan vecka (april-nov)" → 14 dagar i april–november. Hela texten måste kännas igen: en
+ * säsong vi inte förstår ger null (bara källans datum), aldrig tömningar året runt.
+ */
 export function svoaStep(frequency: string): { stepDays: number; inMonths?: number[] } | null {
-  const text = frequency.trim().toLowerCase()
-  const step = STEPS.find(([pattern]) => pattern.test(text))?.[1]
-  if (!step) return null
-  const season = text.match(/\((\p{L}+)\s*-\s*(\p{L}+)\)/u)
+  const m = frequency.trim().toLowerCase().match(/^(.+?)(?:\s*\((\p{L}+)\s*[-–]\s*(\p{L}+)\))?$/u)
+  const step = m && STEPS.find(([pattern]) => pattern.test(m[1]))?.[1]
+  if (!m || !step) return null
+  const season = m[2] ? m : null
   if (!season) return { stepDays: step }
-  const from = MONTHS.indexOf(season[1].slice(0, 3)) + 1
-  const to = MONTHS.indexOf(season[2].slice(0, 3)) + 1
+  const from = MONTHS.indexOf(season[2].slice(0, 3)) + 1
+  const to = MONTHS.indexOf(season[3].slice(0, 3)) + 1
   if (!from || !to) return null
   const inMonths = Array.from({ length: ((to - from + 12) % 12) + 1 }, (_, i) => ((from - 1 + i) % 12) + 1)
   return { stepDays: step, inMonths }

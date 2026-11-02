@@ -129,8 +129,12 @@ export async function handleSchedule(url: URL, opts: HandlerOptions = {}): Promi
 export async function handleIcs(url: URL, opts: HandlerOptions = {}): Promise<Response> {
   const id = decodeId((url.searchParams.get('file') ?? '').replace(/\.ics$/, ''))
   const r = await lookup(url, opts, id)
-  // Källan nere: svara med fel så att kalenderappen behåller det den har.
-  if (r.status === 502) return new Response('Källan svarar inte just nu', { status: 502, headers: { 'Cache-Control': 'no-store' } })
+  // Källan nere, eller ett tomt schema från en live-källa (kan vara ett nytt format hos källan):
+  // svara med fel så att kalenderappen behåller det den har i stället för att tömmas.
+  const live = (opts.sources ?? SOURCES).find((s) => s.id === url.searchParams.get('source'))
+  if (r.status === 502 || (r.status === 200 && r.schedule.events.length === 0 && live && isLive(live))) {
+    return new Response('Källan svarar inte just nu', { status: 502, headers: { 'Cache-Control': 'no-store' } })
+  }
   if (r.status === 404) {
     const known = (opts.sources ?? SOURCES).some((s) => s.id === url.searchParams.get('source'))
     if (!known) return new Response('Hittades inte', { status: 404, headers: { 'Cache-Control': CACHE_PARTIAL } })
