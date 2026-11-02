@@ -228,6 +228,38 @@ describe('AddressSearch', () => {
     expect(screen.queryByText(/officiella hämtschema/)).toBeNull()
   })
 
+  it('visar inte hittades inte för en kortare fråga medan den nya söks', async () => {
+    render(
+      <MemoryRouter>
+        <AddressSearch
+          search={(q) => (q === 'sto' ? Promise.resolve({ addresses: [], failed: [] }) : new Promise(() => {}))}
+          suggest={async () => []}
+        />
+      </MemoryRouter>,
+    )
+    const box = screen.getByRole('combobox')
+    await userEvent.type(box, 'sto')
+    await new Promise((r) => setTimeout(r, 300))
+    await userEvent.type(box, 'r')
+    expect(screen.queryByText('Vi hittade inte adressen')).toBeNull()
+  })
+
+  it('låter hittades inte stå kvar medan man skriver vidare', async () => {
+    render(
+      <MemoryRouter>
+        <AddressSearch
+          search={(q) => (q === 'storgx' ? Promise.resolve({ addresses: [], failed: [] }) : new Promise(() => {}))}
+          suggest={async () => []}
+        />
+      </MemoryRouter>,
+    )
+    const box = screen.getByRole('combobox')
+    await userEvent.type(box, 'storgx')
+    expect(await screen.findByText('Vi hittade inte adressen')).toBeInTheDocument()
+    await userEvent.type(box, 'y')
+    expect(screen.getByText('Vi hittade inte adressen')).toBeInTheDocument()
+  })
+
   it('rensar fältet med rensa-knappen', async () => {
     const input = setup()
     await userEvent.type(input, 'storg')

@@ -65,7 +65,9 @@ export async function handleSearch(url: URL, opts: HandlerOptions = {}): Promise
   )
   const failed = sources.filter((_, i) => results[i].status === 'rejected').map((s) => s.id)
   const addresses = results.flatMap((r) => (r.status === 'fulfilled' ? r.value : []))
-  return json({ addresses, failed }, 200, failed.length > 0 ? CACHE_PARTIAL : CACHE_SEARCH)
+  // Svarade ingen källa cachas inget, så att sökrutans nya försök når källan och inte ett sparat fel.
+  const cache = failed.length === 0 ? CACHE_SEARCH : failed.length < sources.length ? CACHE_PARTIAL : 'no-store'
+  return json({ addresses, failed }, 200, cache)
 }
 
 /**

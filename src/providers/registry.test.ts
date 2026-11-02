@@ -130,7 +130,28 @@ describe('searchAll', () => {
     const { searchAll } = await import('./registry')
     await searchAll('Storgatan')
     await searchAll('Storgatan')
-    expect(sokCalls(f)).toHaveLength(2)
+    expect(sokCalls(f)).toHaveLength(4) // ett nytt försök per sökning
+  })
+
+  it('frågar en källa som inte svarade en gång till, eftersom den ofta bara var sömnig', async () => {
+    let attempts = 0
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string) => {
+        if (url === '/data/gator/st.json') return Response.json({ storgatan: ['uppsala'] })
+        if (url === '/data/orter.json') return Response.json({})
+        if (url.startsWith('/api/sok')) {
+          attempts++
+          return Response.json(attempts === 1 ? { addresses: [], failed: ['uppsala'] } : { addresses: [up('Storgatan 2')], failed: [] })
+        }
+        return new Response('', { status: 404 })
+      }),
+    )
+    const { searchAll } = await import('./registry')
+    const result = await searchAll('Storgatan')
+    expect(attempts).toBe(2)
+    expect(result.failed).toEqual([])
+    expect(result.addresses.map((x) => x.street)).toContain('Storgatan 2')
   })
 
   it('skickar inget anrop om sökningen avbryts medan den väntar', async () => {
@@ -149,7 +170,7 @@ describe('searchAll', () => {
     const result = await searchAll('Okändgatan 3')
     const live = SOURCES.filter((x) => x.config.system !== 'static').map((x) => x.id)
     const asked = sokCalls(f).map((u) => new URL(u, 'http://x').searchParams.get('sources'))
-    expect(asked.sort()).toEqual([...live].sort())
+    expect([...new Set(asked)].sort()).toEqual([...live].sort())
     expect(result.failed).toEqual(['uppsala'])
   })
 
