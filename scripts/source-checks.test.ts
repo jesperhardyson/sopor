@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import type { Source } from '../src/sources/index.js'
-import { checkEdpSource, checkStaticSource } from './source-checks'
+import { checkEdpSource, checkStaticSource, checkViaSite, unreachableFromHere } from './source-checks'
 
 const json = (body: unknown) =>
   new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json; charset=utf-8' } })
@@ -98,6 +98,75 @@ describe('checkEdpSource', () => {
       state: 'fungerar',
       unknownWasteTypes: ['Trädgårdsavfall'],
     })
+  })
+})
+
+describe('unreachableFromHere', () => {
+  const base = { sourceId: 'test', name: 'Testkommun' }
+
+  it('gäller källor som inte svarar och svar som inte är JSON, som en brandväggs spärrsida', () => {
+    expect(unreachableFromHere({ ...base, state: 'svarar-inte', error: 'Ingen kontakt med edp.example.se: timeout' })).toBe(true)
+    expect(unreachableFromHere({ ...base, state: 'nytt-format', error: 'edp.example.se svarade inte med JSON' })).toBe(true)
+  })
+
+  it('gäller inte svar som kom fram men är fel', () => {
+    expect(unreachableFromHere({ ...base, state: 'nytt-format', error: 'edp.example.se svarade 404' })).toBe(false)
+    expect(unreachableFromHere({ ...base, state: 'nytt-format', error: 'Svaret saknar Buildings' })).toBe(false)
+    expect(unreachableFromHere({ ...base, state: 'tom' })).toBe(false)
+    expect(unreachableFromHere({ ...base, state: 'fungerar' })).toBe(false)
+  })
+})
+
+describe('checkViaSite', () => {
+  const site = 'https://sopor.example.se'
+  const addressUrl = `${site}/api/v1/adress/test/storgatan-1_test-1`
+  const hit = { apiVersion: '1', addresses: [{ id: 'storgatan-1_test-1', url: addressUrl }], failed: [] }
+  const schedule = (dates: string[]) => ({ apiVersion: '1', today, events: dates.map((date) => ({ date, fractions: ['rest'] })) })
+
+  /** Svarar på sajtens sökning och adressida. Ett Response skickas som det är. */
+  function fakeSite(search: unknown, address: unknown = schedule(['2026-11-10'])) {
+    return vi.fn(async (input: string | URL | Request) => {
+      const body = new URL(String(input)).pathname === '/api/v1/sok' ? search : address
+      return body instanceof Response ? body : json(body)
+    }) as unknown as typeof fetch
+  }
+  const viaSite = (fetchFn: typeof fetch) => checkViaSite(source, probe, today, fetchFn, site)
+
+  it('fungerar när sajten hittar adressen och schemat har tömningar framåt', async () => {
+    expect(await viaSite(fakeSite(hit))).toMatchObject({ sourceId: 'test', state: 'fungerar', via: 'sajten' })
+  })
+
+  it('frågar bara den här källan och går förbi CDN-cachen', async () => {
+    const fetchFn = fakeSite(hit)
+    await viaSite(fetchFn)
+    const [search, address] = vi.mocked(fetchFn).mock.calls.map(([input]) => new URL(String(input)))
+    expect(search.searchParams.get('q')).toBe(probe)
+    expect(search.searchParams.get('kalla')).toBe('test')
+    expect(search.searchParams.get('kontroll')).toBeTruthy()
+    expect(`${address.origin}${address.pathname}`).toBe(addressUrl)
+    expect(address.searchParams.get('kontroll')).toBeTruthy()
+  })
+
+  it('vet inget om avfallstyperna, eftersom sajten inte visar källans råa svar', async () => {
+    expect((await viaSite(fakeSite(hit))).unknownWasteTypes).toBeUndefined()
+  })
+
+  it('svarar inte när sajten säger att källan inte svarade på sökningen', async () => {
+    const r = await viaSite(fakeSite({ ...hit, addresses: [], failed: ['test'] }))
+    expect(r).toMatchObject({ state: 'svarar-inte', error: 'Sajten fick inget svar från källan' })
+  })
+
+  it('svarar inte när sajten inte får något schema', async () => {
+    const r = await viaSite(fakeSite(hit, new Response('{}', { status: 502 })))
+    expect(r).toMatchObject({ state: 'svarar-inte', error: 'sopor.example.se svarade 502' })
+  })
+
+  it('är tom när sajten inte hittar adressen', async () => {
+    expect((await viaSite(fakeSite({ ...hit, addresses: [] }))).state).toBe('tom')
+  })
+
+  it('har inga tömningar när ingen ligger inom 60 dagar', async () => {
+    expect((await viaSite(fakeSite(hit, schedule(['2027-03-01'])))).state).toBe('inga-tomningar')
   })
 })
 

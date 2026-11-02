@@ -15,7 +15,7 @@ En trasig källa märks därför först när någon hör av sig. Den 2 november 
 - **Okända avfallstyper** ger också ett ärende, men med lägre prioritet (egen etikett), så att `src/server/fractions-map.ts` kan kompletteras.
 - **Samma kod som sajten.** Bevakningen anropar `edpSearch` och `edpSchedule` i `src/server/edp.ts`, så att det som testas är det som körs i produktion.
 - **Bara publika anrop**, som allt annat (AGENTS.md regel 4): User-Agent `Sopor/1.0 (+https://sopor.hardyson.se)`, en sökning och ett schema per källa, och ett nytt försök bara för källor som inte svarade.
-- **Ingen ändring på sajten och inga anrop till Vercel.** Bevakningen körs i GitHub Actions och kostar ingenting.
+- **Ingen ändring på sajten.** Bevakningen körs i GitHub Actions och kostar ingenting. Sajtens API anropas bara för källor som inte nås från GitHub (se nedan), några anrop i veckan.
 
 ## Utanför
 
@@ -56,6 +56,20 @@ const PROBES: Record<string, string> = {
 - Ett test kräver att varje källa i `SOURCES` med `system: 'edp'` har en kontrolladress, så att en ny källa inte glöms bort. Checklistan i `docs/kommuner/lagga-till-kommun.md` får en rad om det.
 - Adresserna väljs bland dem som `check:source` visar när källan läggs till. För befintliga källor tas de fram en gång när skriptet skrivs.
 - Sökningen använder hela kontrolladressen, och schemat hämtas för den första adressen i svaret.
+
+### Källor som stänger ute GitHub
+
+Vissa kommuner spärrar datacentret där GitHubs servrar står, men släpper fram sajten (Vercel, Stockholm). Den första körningen (2026-11-02) gav fyra sådana falska larm: Bodens, Kirunas och Lidköpings brandväggar släppte inte ens fram en anslutning, och Nackas brandvägg svarade med en spärrsida i HTML ("Request Rejected"). Från en vanlig dator och från sajten svarade alla fyra.
+
+Därför kontrolleras en källa en gång till via sajtens publika API när den **svarar inte** eller svarar med något annat än JSON:
+
+1. `GET /api/v1/sok?q=<kontrolladress>&kalla=<id>&kontroll=<tid>` och sedan adressens `url` med samma `kontroll`. Den unika parametern går förbi CDN-cachen, så att svaret är färskt. Sajtens server sparar inga gamla scheman, så svaret är levande.
+2. **Fungerar källan via sajten** blir läget *fungerar*, och tabellen visar "fungerar via sajten" med felet från GitHub. Inget ärende, och ett öppet ärende stängs med en förklaring.
+3. **Fungerar den inte via sajten heller** blir läget det som GitHub såg, med båda felen i ärendet.
+
+Via sajten går det inte att se okända avfallstyper, eftersom API:t inte visar källans råa svar. De räknas då som okända, och öppna ärenden om avfallstyper lämnas orörda, som när källan inte svarar.
+
+Alternativen som valdes bort: att köra bevakningen som Vercel Cron (kräver en GitHub-token med skrivrätt i Vercel och gör Vercel till mer än proxy och cache) och en fast lista med värdar som inte kontrolleras från GitHub (då bevakas de inte alls).
 
 ### Nytt försök
 

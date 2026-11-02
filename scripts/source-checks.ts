@@ -3,7 +3,7 @@
 
 import { addDays } from '../src/domain/dates.js'
 import { edpSchedule, edpSearch } from '../src/server/edp.js'
-import { SourceError } from '../src/server/http.js'
+import { fetchJson, SourceError } from '../src/server/http.js'
 import type { Source } from '../src/sources/index.js'
 import { classifyWasteTypes } from './check-source.js'
 
@@ -19,7 +19,11 @@ export interface SourceResult {
   error?: string
   /** undefined = schemat hämtades inte, så avfallstyperna är okända */
   unknownWasteTypes?: string[]
+  /** 'sajten' = källan nåddes inte härifrån men fungerar från sajtens servrar */
+  via?: 'sajten'
 }
+
+export const SITE_URL = 'https://sopor.hardyson.se'
 
 const TIMEOUT_MS = 10000
 /** Så långt fram som tömningar och statiska scheman ska räcka. */
@@ -66,6 +70,44 @@ export async function checkEdpSource(source: Source, probe: string, today: strin
     return { ...base, state: upcoming ? 'fungerar' : 'inga-tomningar', unknownWasteTypes }
   } catch (error) {
     return { ...base, state: stateForError(error), error: (error as Error).message }
+  }
+}
+
+/**
+ * Fel som kan bero på varifrån anropet görs. Vissa kommuners brandväggar stänger ute GitHubs
+ * datacenter, antingen helt eller med en spärrsida i HTML, men släpper fram sajten.
+ */
+export function unreachableFromHere(r: SourceResult): boolean {
+  return r.state === 'svarar-inte' || (r.state === 'nytt-format' && /svarade inte med JSON/.test(r.error ?? ''))
+}
+
+/**
+ * Samma kontroll via sajtens publika API, alltså från sajtens servrar. En unik parameter går förbi
+ * CDN-cachen, så att svaret är färskt. Sajten visar inte källans råa svar, så avfallstyperna är okända.
+ */
+export async function checkViaSite(
+  source: Source,
+  probe: string,
+  today: string,
+  fetchFn: typeof fetch = fetch,
+  siteUrl = SITE_URL,
+): Promise<SourceResult> {
+  const base = { sourceId: source.id, name: source.name, via: 'sajten' as const }
+  const kontroll = String(Date.now())
+  try {
+    const search = new URL('/api/v1/sok', siteUrl)
+    search.search = new URLSearchParams({ q: probe, kalla: source.id, kontroll }).toString()
+    const found = await fetchJson<{ addresses: { url: string }[]; failed: string[] }>(search.toString(), {}, { fetchFn, timeoutMs: TIMEOUT_MS })
+    if (found.failed.includes(source.id)) return { ...base, state: 'svarar-inte', error: 'Sajten fick inget svar från källan' }
+    if (found.addresses.length === 0) return { ...base, state: 'tom' }
+
+    const address = new URL(found.addresses[0].url)
+    address.searchParams.set('kontroll', kontroll)
+    const { events } = await fetchJson<{ events: { date: string }[] }>(address.toString(), {}, { fetchFn, timeoutMs: TIMEOUT_MS })
+    const end = addDays(today, HORIZON_DAYS)
+    return { ...base, state: events.some((e) => e.date >= today && e.date <= end) ? 'fungerar' : 'inga-tomningar' }
+  } catch (error) {
+    return { ...base, state: 'svarar-inte', error: (error as Error).message }
   }
 }
 
