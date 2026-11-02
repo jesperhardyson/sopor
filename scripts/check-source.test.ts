@@ -49,13 +49,15 @@ describe('classifyWasteTypes', () => {
       { WasteType: 'Fyrfack 1', WastePickupFrequency: '' },
       { WasteType: 'Kärl 2', WastePickupFrequency: '', Description: 'Kärl 2, RE PL GF GO. 370L' },
       { WasteType: 'Trädgårdsavfall', WastePickupFrequency: '' },
+      { WasteType: 'Grovavfall', WastePickupFrequency: '' },
       { WasteType: 'Slam', WastePickupFrequency: '' },
     ])
     expect(rows.map((r) => [r.wasteType, r.status, r.fractions])).toEqual([
       ['Restavfall', 'känd', ['rest']],
       ['Fyrfack 1', 'känd', ['karl']],
       ['Kärl 2', 'känd', ['rest', 'plast', 'glas']],
-      ['Trädgårdsavfall', 'okänd', ['karl']],
+      ['Trädgårdsavfall', 'känd', ['karl']],
+      ['Grovavfall', 'okänd', ['karl']],
       ['Slam', 'hoppas över', []],
     ])
   })
@@ -64,7 +66,7 @@ describe('classifyWasteTypes', () => {
 describe('checkSource', () => {
   const services = [
     { WasteType: 'Matavfall', WastePickupFrequency: 'Måndag varannan vecka', NextWastePickup: '2026-11-09', WastePickupsPerYear: 26 },
-    { WasteType: 'Trädgårdsavfall', WastePickupFrequency: '', NextWastePickup: '2026-11-12', WastePickupsPerYear: 8 },
+    { WasteType: 'Grovavfall', WastePickupFrequency: '', NextWastePickup: '2026-11-12', WastePickupsPerYear: 8 },
   ]
 
   it('hittar sökvägen som har data, hämtar schemat för första adressen och slutar sedan', async () => {
@@ -102,7 +104,7 @@ describe('checkSource', () => {
     expect(text).toContain("baseUrl: 'https://edp.example.se/FutureWeb'")
     expect(text).toContain('Storgatan 1, Byn (123)')
     expect(text).toMatch(/Matavfall\s+→ mat/)
-    expect(text).toMatch(/Okända avfallstyper.*Trädgårdsavfall/s)
+    expect(text).toMatch(/Okända avfallstyper.*Grovavfall/s)
     expect(text).toMatch(/\d+ ms/)
   })
 
