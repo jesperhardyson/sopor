@@ -22,7 +22,8 @@
     "lint": "oxlint",
     "check:ids": "tsx scripts/check-address-ids.ts",
     "build:streets": "tsx scripts/build-street-index.ts",
-    "check:source": "tsx scripts/check-source.ts"
+    "check:source": "tsx scripts/check-source.ts",
+    "build:orter": "tsx scripts/build-sweden-places.ts"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",

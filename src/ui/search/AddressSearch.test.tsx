@@ -43,6 +43,7 @@ function setup(addresses = ADDRESSES) {
               <AddressSearch
                 search={async (q) => ({ addresses: searchAddresses(q, addresses, 12), failed })}
                 suggest={async (q) => suggest(q, addresses)}
+                missing={async (q) => (/hedemora/i.test(q) ? ['Hedemora kommun'] : /kil$/i.test(q) ? ['Kils kommun', 'Danderyds kommun'] : [])}
                 onDeactivate={onDeactivate}
               />
               <p>Utanför</p>
@@ -226,6 +227,26 @@ describe('AddressSearch', () => {
     const link = screen.getByRole('link', { name: 'Storgatan 12, Avesta' })
     expect(link).toHaveAttribute('href', '/avesta/avesta-storgatan-12')
     expect(screen.queryByText(/officiella hämtschema/)).toBeNull()
+  })
+
+  it('pekar vidare till bidra-sidan när adressen inte hittas', async () => {
+    await userEvent.type(setup(), 'Storgtan 12{Enter}')
+    await screen.findByText('Vi hittade inte adressen')
+    expect(screen.getByRole('link', { name: 'Tipsa om din kommun' })).toHaveAttribute('href', '/bidra')
+  })
+
+  it('säger att kommunen saknas när orten ligger i en kommun som Sopor inte har', async () => {
+    await userEvent.type(setup(), 'Storgatan 12, Hedemora{Enter}')
+    expect(await screen.findByRole('heading', { name: 'Vi finns inte i Hedemora kommun än' })).toBeInTheDocument()
+    expect(screen.getByText(/Adressen ligger i Hedemora kommun, som Sopor inte har än/)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Tipsa om din kommun' })).toHaveAttribute('href', '/bidra')
+    expect(screen.queryByText('Vi hittade inte adressen')).toBeNull()
+  })
+
+  it('räknar upp kommunerna när orten ligger i flera', async () => {
+    await userEvent.type(setup(), 'Storgatan 12 Kil{Enter}')
+    expect(await screen.findByRole('heading', { name: 'Vi finns inte där än' })).toBeInTheDocument()
+    expect(screen.getByText(/Orten ligger i Kils kommun och Danderyds kommun, som Sopor inte har än/)).toBeInTheDocument()
   })
 
   it('visar inte hittades inte för en kortare fråga medan den nya söks', async () => {

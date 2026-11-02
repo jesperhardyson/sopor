@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 import { streetAndLocality } from '@/domain/address'
 import type { Address } from '@/domain/types'
 import { cn } from '@/lib/utils'
+import { supportedKommuner } from '@/sources'
 
 export function NotFound({ suggestions, className }: { suggestions: Address[]; className?: string }) {
   return (
@@ -33,6 +34,12 @@ export function NotFound({ suggestions, className }: { suggestions: Address[]; c
           ))}
         </div>
       )}
+      <p className="border-t border-border pt-3.5 text-sm font-semibold text-text-2">
+        Sopor finns i {supportedKommuner().length} kommuner. Saknas din?{' '}
+        <Link to="/bidra" className="font-extrabold text-brand-text underline underline-offset-2">
+          Tipsa om din kommun
+        </Link>
+      </p>
     </div>
   )
 }

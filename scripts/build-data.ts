@@ -6,6 +6,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { buildMunicipality, DataError, parseAddressesCsv, parseSchedulesFile } from '../src/data/static-format'
 import { buildStreetIndex, type OsmKommun } from '../src/data/street-index'
+import { buildPlaceLookup, type SwedenPlacesFile } from '../src/data/sweden-places'
 import { ALL_SOURCES, SOURCES } from '../src/sources/index.js'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
@@ -47,8 +48,18 @@ function writeStreetIndex() {
   console.log(`build-data: gatuindex: ${Object.keys(shards).length} delfiler från ${osm.length} kommuner`)
 }
 
+/** Orter i hela Sverige från data/sverige/orter.json → public/data/sverige.json */
+function writeSwedenPlaces() {
+  const file = path.join(root, 'data', 'sverige', 'orter.json')
+  if (!fs.existsSync(file)) return
+  const lookup = buildPlaceLookup(JSON.parse(fs.readFileSync(file, 'utf8')) as SwedenPlacesFile)
+  writeFile(path.join(root, 'public', 'data', 'sverige.json'), JSON.stringify(lookup))
+  console.log(`build-data: orter i Sverige: ${Object.keys(lookup.orter).length}`)
+}
+
 function main() {
   writeStreetIndex()
+  writeSwedenPlaces()
   for (const municipality of ALL_SOURCES) {
     if (municipality.config.system !== 'static') continue
     const dataDir = path.join(root, 'data', municipality.id)

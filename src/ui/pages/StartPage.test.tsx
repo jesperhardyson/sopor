@@ -8,6 +8,7 @@ vi.mock('@/providers/registry', () => ({
   searchAll: async () => ({ addresses: [], failed: [] }),
   warmUpSearch: () => {},
   suggestAll: async () => [],
+  missingKommuner: async () => [],
   providerFor: () => ({ getSchedule: async () => null }),
 }))
 

@@ -1,10 +1,11 @@
 import type { Address } from '@/domain/types'
-import { getSource, SOURCES, type Source } from '@/sources'
+import { getSource, placeKommuner, SOURCES, type Source } from '@/sources'
 import { matchesPlace, pickLiveSources, shardKey, splitPlace, type QueryParts, type StreetShard } from '@/data/street-index'
+import { kommunerForPlace } from '@/data/sweden-places'
 import { normalize } from '@/domain/search'
 import { kommunForLocality } from '@/sources'
 import { createApiProvider } from './api'
-import { loadPlaces } from './places'
+import { loadPlaces, loadSwedenPlaces } from './places'
 import { createStaticProvider } from './static'
 import type { WasteProvider } from './types'
 
@@ -59,6 +60,8 @@ async function liveSourcesFor(query: string, { submitted = false }: SearchOption
   const shard = await loadShard(shardKey(query))
   const parts = splitPlace(shard, query)
   if (normalize(parts.street).length < 3) return none
+  // Ingen källa har adresser i en kommun som Sopor saknar: svara direkt i stället för att fråga alla.
+  if (parts.place && (await missingForPlace(parts.place)).length > 0) return { ...parts, sources: [] }
   return { sources: pickLiveSources(shard, query, live, submitted), ...parts }
 }
 
@@ -242,6 +245,23 @@ export async function searchAll(
   report(latest)
   const { addresses, failed } = await live
   return { addresses: [...localAddresses, ...addresses], failed }
+}
+
+/**
+ * Kommunerna som frågans ort ligger i, om Sopor inte har någon av dem ("Storgatan 12, Hedemora").
+ * Tom lista utan ort, för okända orter och för orter i kommuner som Sopor har, helt eller delvis.
+ */
+export async function missingKommuner(query: string, signal?: AbortSignal): Promise<string[]> {
+  const { place } = splitPlace(await loadShard(shardKey(query)), query)
+  return place && !signal?.aborted ? missingForPlace(place) : []
+}
+
+async function missingForPlace(place: string): Promise<string[]> {
+  const lookup = await loadSwedenPlaces()
+  if (!lookup) return []
+  const codes = kommunerForPlace(lookup, place)
+  const covered = new Set(SOURCES.flatMap(placeKommuner).map((k) => k.code))
+  return codes.some((code) => covered.has(code)) ? [] : codes.map((code) => lookup.kommuner[code])
 }
 
 /** Förslag för "Menade du:" (bara statiska källor har listan lokalt). */
