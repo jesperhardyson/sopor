@@ -83,7 +83,12 @@ export function planIssues(results: SourceResult[], open: OpenIssue[], today: st
     } else if (m.kind === WASTE_TYPES) {
       actions.push({ type: 'close', number: issue.number, body: `Inga okända avfallstyper längre (${today}).` })
     } else {
-      const body = r.state === 'fungerar' ? `Fungerar igen ${today}.` : `Nytt läge: ${r.state} (${today}).`
+      const body =
+        r.state !== 'fungerar'
+          ? `Nytt läge: ${r.state} (${today}).`
+          : r.via
+            ? `Fungerar ${today} via sajten. Källan stänger ute GitHubs servrar, så bevakningen frågar sajten i stället.`
+            : `Fungerar igen ${today}.`
       actions.push({ type: 'close', number: issue.number, body })
     }
   }

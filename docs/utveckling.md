@@ -97,6 +97,7 @@ Vercel (Hobby). Vercel kör `npm test && npm run build`, så röda tester når a
 `.github/workflows/sources.yml` kör `npm run monitor:sources` natten mot måndag (och för hand under Actions). Skriptet söker på en känd adress per källa (`PROBES` i `scripts/monitor-sources.ts`) och hämtar schemat, med samma kod som sajten. Resultatet blir en tabell i jobbets sammanfattning. Se `docs/specs/2026-11-02-bevakning-av-kallor.md`.
 
 - **Ärenden:** ett per källa och problem, med etiketten `källa` (okända avfallstyper också `avfallstyp`). Ärendet får en kommentar varje vecka problemet finns kvar och stängs av sig självt när källan fungerar igen. Bevakningen känner igen sina ärenden på en dold markering och rör aldrig andra ärenden.
+- **Spärrar mot GitHub:** vissa kommuner stänger ute GitHubs servrar. Svarar en källa inte, eller svarar med HTML, frågar bevakningen sajtens API i stället, och fungerar det där blir läget "fungerar via sajten" utan ärende.
 - **Lägen:** *svarar inte* (även efter ett nytt försök fem minuter senare), *nytt format*, *ger inga adresser*, *inga tömningar framåt* (60 dagar) och, för statiska källor, *schemat tar slut*.
 - **Själv:** `RETRY=0 npm run monitor:sources` skriver tabellen och vilka ärenden som skulle öppnas, utan att röra GitHub. `npm run check:source -- <baseUrl> "<adress>"` visar detaljer för en källa.
 - **Tyst?** GitHub stänger av schemalagda arbetsflöden i publika repon efter 60 dagar utan aktivitet. Starta det igen under Actions.

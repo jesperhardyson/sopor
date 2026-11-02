@@ -70,6 +70,13 @@ describe('planIssues', () => {
     ])
   })
 
+  it('säger varför när källan bara fungerar via sajten', () => {
+    const ok = lidkoping({ state: 'fungerar', via: 'sajten', unknownWasteTypes: undefined })
+    expect(planIssues([ok], [issue(12, 'lidkoping', 'svarar-inte')], today)).toEqual([
+      { type: 'close', number: 12, body: 'Fungerar 2026-11-09 via sajten. Källan stänger ute GitHubs servrar, så bevakningen frågar sajten i stället.' },
+    ])
+  })
+
   it('stänger ärendet när källan fungerar igen', () => {
     const ok = lidkoping({ state: 'fungerar', error: undefined, unknownWasteTypes: [] })
     expect(planIssues([ok], [issue(12, 'lidkoping', 'svarar-inte')], today)).toEqual([

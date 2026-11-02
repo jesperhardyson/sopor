@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url'
 import { todayInStockholm } from '../src/domain/dates.js'
 import { SOURCES, type Source } from '../src/sources/index.js'
 import { readYears } from './build-data.js'
-import { checkEdpSource, checkStaticSource, type SourceResult } from './source-checks.js'
+import { checkEdpSource, checkStaticSource, checkViaSite, unreachableFromHere, type SourceResult } from './source-checks.js'
 import { applyIssues, ensureLabels, listOpenIssues, planIssues } from './source-issues.js'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
@@ -49,15 +49,26 @@ const RETRY_DELAY_MS = 5 * 60 * 1000
 const readValidToFromData = (sourceId: string) =>
   readYears(path.join(root, 'data', sourceId)).map((y) => y.schedules.validTo)
 
-async function checkOne(source: Source, today: string, probes: Record<string, string>, fetchFn: typeof fetch, readValidTo: (id: string) => string[]) {
-  return source.config.system === 'edp'
-    ? checkEdpSource(source, probes[source.id], today, fetchFn)
-    : checkStaticSource(source, readValidTo(source.id), today)
+async function checkOne(
+  source: Source,
+  today: string,
+  probes: Record<string, string>,
+  fetchFn: typeof fetch,
+  readValidTo: (id: string) => string[],
+): Promise<SourceResult> {
+  if (source.config.system !== 'edp') return checkStaticSource(source, readValidTo(source.id), today)
+  const direct = await checkEdpSource(source, probes[source.id], today, fetchFn)
+  if (!unreachableFromHere(direct)) return direct
+  // Fungerar källan från sajten är det bara GitHub som stängs ute, och det är inget att larma om.
+  const site = await checkViaSite(source, probes[source.id], today, fetchFn)
+  if (site.state === 'fungerar') return { ...direct, ...site, error: direct.error }
+  return { ...direct, error: `${direct.error}. Via sajten: ${site.error ?? site.state}` }
 }
 
 /**
- * Kontrollerar källorna en i taget, så att ingen värd får flera anrop samtidigt. Källor som inte
- * svarade prövas igen efter en stund, så att ett tillfälligt avbrott inte blir ett ärende.
+ * Kontrollerar källorna en i taget, så att ingen värd får flera anrop samtidigt. En källa som inte
+ * nås härifrån kontrolleras också via sajten. Källor som inte svarade prövas igen efter en stund,
+ * så att ett tillfälligt avbrott inte blir ett ärende.
  */
 export async function runChecks(
   sources: Source[],
@@ -85,7 +96,7 @@ export function formatTable(results: SourceResult[]): string {
   return [
     '| Källa | Läge | Fel | Okända avfallstyper |',
     '|---|---|---|---|',
-    ...results.map((r) => `| ${cell(r.name)} | ${r.state} | ${cell(r.error)} | ${cell(r.unknownWasteTypes?.join(', '))} |`),
+    ...results.map((r) => `| ${cell(r.name)} | ${r.state}${r.via ? ` via ${r.via}` : ''} | ${cell(r.error)} | ${cell(r.unknownWasteTypes?.join(', '))} |`),
   ].join('\n')
 }
 

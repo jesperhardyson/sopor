@@ -54,6 +54,63 @@ describe('runChecks', () => {
     expect(calls.filter((h) => h === 'flaky.example.se')).toHaveLength(3)
   })
 
+  /** Källan "spärrad" når bara sajten; sajten själv svarar som anges. */
+  function blockedFromGitHub(site: { failed?: string[]; edp?: 'html' } = {}) {
+    const hosts: string[] = []
+    const fetchFn = vi.fn(async (input: string | URL | Request) => {
+      const url = new URL(String(input))
+      hosts.push(url.host)
+      if (url.host === 'sopor.hardyson.se') {
+        return url.pathname === '/api/v1/sok'
+          ? json({ addresses: site.failed ? [] : [{ id: 'a-1', url: 'https://sopor.hardyson.se/api/v1/adress/sparrad/a-1' }], failed: site.failed ?? [] })
+          : json({ events: [{ date: '2026-11-10', fractions: ['rest'] }] })
+      }
+      if (url.host === 'sparrad.example.se') {
+        if (site.edp === 'html') return new Response('<html>Request Rejected</html>', { headers: { 'Content-Type': 'text/html' } })
+        throw new TypeError('fetch failed')
+      }
+      return url.pathname.endsWith('/SearchAdress') ? json({ Buildings: ['Storgatan 1, Test (1)'] }) : json({ RhServices: [rest] })
+    }) as unknown as typeof fetch
+    return { fetchFn, hosts }
+  }
+  const probes = { sparrad: 'Storgatan 1', stable: 'Storgatan 1' }
+
+  it('frågar sajten när en källa inte svarar härifrån, och då blir det inget ärende', async () => {
+    const { fetchFn, hosts } = blockedFromGitHub()
+    const results = await runChecks([edp('sparrad'), edp('stable')], '2026-11-02', { fetchFn, retryDelayMs: 0, probes })
+    expect(results[0]).toMatchObject({ sourceId: 'sparrad', state: 'fungerar', via: 'sajten' })
+    expect(results[0].error).toContain('Ingen kontakt med sparrad.example.se')
+    // Inget nytt försök behövs när sajten har svarat.
+    expect(hosts.filter((h) => h === 'sparrad.example.se')).toHaveLength(1)
+    expect(hosts.filter((h) => h === 'sopor.hardyson.se')).toHaveLength(2)
+  })
+
+  it('frågar sajten när en brandvägg svarar med en HTML-sida', async () => {
+    const { fetchFn } = blockedFromGitHub({ edp: 'html' })
+    const [r] = await runChecks([edp('sparrad')], '2026-11-02', { fetchFn, retryDelayMs: 0, probes })
+    expect(r).toMatchObject({ state: 'fungerar', via: 'sajten' })
+  })
+
+  it('räknar källan som avbruten när den inte svarar via sajten heller, med båda felen', async () => {
+    const { fetchFn } = blockedFromGitHub({ failed: ['sparrad'] })
+    const [r] = await runChecks([edp('sparrad')], '2026-11-02', { fetchFn, retryDelayMs: 0, probes })
+    expect(r.state).toBe('svarar-inte')
+    expect(r.via).toBeUndefined()
+    expect(r.error).toContain('Ingen kontakt med sparrad.example.se')
+    expect(r.error).toContain('Via sajten: Sajten fick inget svar från källan')
+  })
+
+  it('frågar inte sajten när källan svarade men med fel innehåll', async () => {
+    const hosts: string[] = []
+    const fetchFn = vi.fn(async (input: string | URL | Request) => {
+      hosts.push(new URL(String(input)).host)
+      return new Response('Not found', { status: 404 })
+    }) as unknown as typeof fetch
+    const [r] = await runChecks([edp('stable')], '2026-11-02', { fetchFn, retryDelayMs: 0, probes })
+    expect(r.state).toBe('nytt-format')
+    expect(hosts).not.toContain('sopor.hardyson.se')
+  })
+
   it('läser statiska källors datafiler och gör inga anrop', async () => {
     const fetchFn = vi.fn() as unknown as typeof fetch
     const results = await runChecks([{ ...edp('fil'), config: { system: 'static' } }], '2026-11-02', {
@@ -70,6 +127,7 @@ describe('formatTable', () => {
     const results: SourceResult[] = [
       { sourceId: 'a', name: 'Uppsala Vatten', state: 'fungerar', unknownWasteTypes: ['Trädgårdsavfall'] },
       { sourceId: 'b', name: 'Lidköpings kommun', state: 'svarar-inte', error: 'futureweb.lidkoping.se svarade 502' },
+      { sourceId: 'c', name: 'Bodens kommun', state: 'fungerar', via: 'sajten', error: 'Ingen kontakt med edpmobile.boden.se' },
     ]
     expect(formatTable(results)).toBe(
       [
@@ -77,6 +135,7 @@ describe('formatTable', () => {
         '|---|---|---|---|',
         '| Uppsala Vatten | fungerar |  | Trädgårdsavfall |',
         '| Lidköpings kommun | svarar-inte | futureweb.lidkoping.se svarade 502 |  |',
+        '| Bodens kommun | fungerar via sajten | Ingen kontakt med edpmobile.boden.se |  |',
       ].join('\n'),
     )
   })
