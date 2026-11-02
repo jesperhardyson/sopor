@@ -15,6 +15,7 @@ npm run build        # genererar data, typkontroll och produktionsbygge i dist/
 npm run build:data   # bara datafilerna (körs automatiskt före dev och build)
 npm run check:ids    # inga befintliga adress-id har tagits bort
 npm run build:orter  # hämtar orter i hela Sverige från Wikidata till data/sverige/ (för hand, sällan)
+RETRY=0 npm run monitor:sources  # kontrollerar alla källor på riktigt (utan GITHUB_TOKEN skapas inga ärenden)
 ```
 
 Kör `npm run lint && npm test && npm run build` innan du skickar en pull request. CI kör samma sak.
@@ -90,6 +91,15 @@ Vercel (Hobby). Vercel kör `npm test && npm run build`, så röda tester når a
 - **Öppen sajt:** Vercel Authentication är avstängd, så både sajten och preview-adresserna är publika. Bidragsgivare kan alltså testa sina ändringar live. Pull requests från forkar byggs inte förrän förvaltaren godkänt dem i Vercel.
 - **Delningsbild och ikoner:** `public/og.png`, `public/icon-*.png` och `public/apple-touch-icon.png` exporteras från ramarna "Delningsbild 1200×630" och "Webbapp-ikon 240" i designfilen.
 - **Dolda källor:** en källa med `hidden: true` syns inte i sökningen, på Om-sidan, i API:t eller i byggd data, men build-skriptet validerar ändå dess datafiler.
+
+## Bevakning av källorna
+
+`.github/workflows/sources.yml` kör `npm run monitor:sources` natten mot måndag (och för hand under Actions). Skriptet söker på en känd adress per källa (`PROBES` i `scripts/monitor-sources.ts`) och hämtar schemat, med samma kod som sajten. Resultatet blir en tabell i jobbets sammanfattning. Se `docs/specs/2026-11-02-bevakning-av-kallor.md`.
+
+- **Ärenden:** ett per källa och problem, med etiketten `källa` (okända avfallstyper också `avfallstyp`). Ärendet får en kommentar varje vecka problemet finns kvar och stängs av sig självt när källan fungerar igen. Bevakningen känner igen sina ärenden på en dold markering och rör aldrig andra ärenden.
+- **Lägen:** *svarar inte* (även efter ett nytt försök fem minuter senare), *nytt format*, *ger inga adresser*, *inga tömningar framåt* (60 dagar) och, för statiska källor, *schemat tar slut*.
+- **Själv:** `RETRY=0 npm run monitor:sources` skriver tabellen och vilka ärenden som skulle öppnas, utan att röra GitHub. `npm run check:source -- <baseUrl> "<adress>"` visar detaljer för en källa.
+- **Tyst?** GitHub stänger av schemalagda arbetsflöden i publika repon efter 60 dagar utan aktivitet. Starta det igen under Actions.
 
 ## Design
 

@@ -1,0 +1,27 @@
+name: Bevakning av källorna
+
+# Kontrollerar varje källa på sajten en gång i veckan och gör problem till ärenden med etiketten
+# "källa". Se docs/specs/2026-11-02-bevakning-av-kallor.md.
+on:
+  schedule:
+    - cron: '15 3 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  # Heter inte "test": det namnet är den obligatoriska checken för main i ci.yml
+  sources:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run monitor:sources
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

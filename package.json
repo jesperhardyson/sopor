@@ -23,7 +23,8 @@
     "check:ids": "tsx scripts/check-address-ids.ts",
     "build:streets": "tsx scripts/build-street-index.ts",
     "check:source": "tsx scripts/check-source.ts",
-    "build:orter": "tsx scripts/build-sweden-places.ts"
+    "build:orter": "tsx scripts/build-sweden-places.ts",
+    "monitor:sources": "tsx scripts/monitor-sources.ts"
   },
   "dependencies": {
     "@fontsource/fredoka": "^5.3.0",
