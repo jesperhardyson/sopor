@@ -49,7 +49,7 @@ export interface SvoaAddress {
 }
 export function parseSvoaAddress(raw: string): SvoaAddress | null
 export async function svoaSearch(q: string, fetchFn?: typeof fetch, timeoutMs?: number): Promise<SvoaAddress[]>   // AutoCompleteMe
-export async function svoaSchedule(raw: string, fetchFn?: typeof fetch, now?: Date, timeoutMs?: number): Promise<Schedule>  // Search
+export async function svoaSchedule(raw: string, fetchFn?: typeof fetch, timeoutMs?: number): Promise<Schedule>  // Search
 export function svoaAddressId(a: SvoaAddress): string
 export function queryFromSvoaId(id: string): { query: string; postcode: string } | null
 ```
@@ -130,7 +130,8 @@ Texten ligger i källan, som ett nytt valfritt fält: `Source.emptyScheduleNote?
 ## Bevakningen och integrationerna
 
 - **Bevakningen** (#50): `checkSvoaSource` i `scripts/source-checks.ts` med samma lägen som EDP, och kontrolladressen `stockholm: 'Hjortronvägen 3, Bromma, 168 59'` i `PROBES`. Testet för kontrolladresser utökas till alla live-källor, inte bara EDP. Okända frekvenser rapporteras tillsammans med okända avfallstyper. Bevakningen fångar ändringar inom en vecka; mellan körningarna skyddar reglerna ovan användarna.
-- **API v1, Homey och Home Assistant:** inga ändringar. Stockholm syns i `/api/v1/kallor` och fungerar i båda integrationerna, eftersom de bara pratar med API:t.
+- **API v1:** sökningen i `src/server/v1.ts` behandlar i dag alla källor som inte är EDP som statiska. Den använder samma sökfunktion för live-källor som `handleSearch`, så att Stockholm går att söka fram i API:t.
+- **Homey och Home Assistant:** inga ändringar. De pratar bara med API:t, och Stockholm syns i `/api/v1/kallor`.
 
 ## Test
 
