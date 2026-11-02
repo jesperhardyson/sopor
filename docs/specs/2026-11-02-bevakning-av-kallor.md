@@ -63,7 +63,7 @@ Källor som är **Svarar inte** efter den första omgången prövas igen efter f
 
 ## Ärenden
 
-- **Titel:** "Källa: Lidköping svarar inte", "Källa: Gotland har nytt format", "Källa: Varberg har okända avfallstyper".
+- **Titel:** källans namn och läget, till exempel "Källa: Lidköpings kommun svarar inte" eller "Källa: Region Gotland har nytt format".
 - **Text:** källans namn och id, `baseUrl`, kontrolladressen, felet som det kom (till exempel `futureweb.lidkoping.se svarade 502`) och datum. För okända avfallstyper listas typerna. Sist står hur man provar själv: `npm run check:source -- <baseUrl> "<kontrolladress>"`.
 - **Nyckel:** en dold markering i texten, `<!-- sopor-bevakning: lidkoping svarar-inte -->`, så att skriptet hittar sitt eget ärende utan att lita på titeln.
 - **Redan öppet ärende för samma källa och läge:** en kommentar med veckans datum och felet. Inget nytt ärende.
