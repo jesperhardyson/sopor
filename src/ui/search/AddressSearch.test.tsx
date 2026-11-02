@@ -147,6 +147,60 @@ describe('AddressSearch', () => {
     expect(screen.getByRole('combobox')).toHaveFocus()
   })
 
+  describe('många kommuner', () => {
+    const spread = (n: number) => Array.from({ length: n }, (_, i) => s(`id-${i}`, `Storgatan ${i + 1}`, `Kommun ${i + 1}`))
+    const renderWith = (addresses: Address[]) =>
+      render(
+        <MemoryRouter>
+          <AddressSearch search={async () => ({ addresses, failed: [] })} suggest={async () => []} />
+        </MemoryRouter>,
+      )
+
+    it('visar högst 15 rader och resten bakom en rad', async () => {
+      renderWith(spread(18))
+      await userEvent.type(screen.getByRole('combobox'), 'storg')
+      const options = await screen.findAllByRole('option')
+      expect(options).toHaveLength(16)
+      expect(options[15]).toHaveTextContent('Visa 3 till')
+    })
+
+    it('fäller ut resten och behåller fokus i sökfältet', async () => {
+      renderWith(spread(18))
+      await userEvent.type(screen.getByRole('combobox'), 'storg')
+      await userEvent.click(await screen.findByRole('option', { name: 'Visa 3 till' }))
+      expect(screen.getAllByRole('option')).toHaveLength(18)
+      expect(screen.getByRole('combobox')).toHaveFocus()
+    })
+
+    it('håller taket även för en enda rad till, så att en rad som syns aldrig försvinner', async () => {
+      renderWith(spread(16))
+      await userEvent.type(screen.getByRole('combobox'), 'storg')
+      const options = await screen.findAllByRole('option')
+      expect(options).toHaveLength(16)
+      expect(options[15]).toHaveTextContent('Visa 1 till')
+    })
+
+    it('ger en kommun som klipps sin egen rad för resten', async () => {
+      const kommunA = Array.from({ length: 2 }, (_, i) => s(`a-${i}`, `Storgatan ${i + 50}`, 'Kommun A'))
+      const kommunB = Array.from({ length: 4 }, (_, i) => s(`b-${i}`, `Storgatan ${i + 60}`, 'Kommun B'))
+      renderWith([...spread(12), ...kommunA, ...kommunB])
+      await userEvent.type(screen.getByRole('combobox'), 'storg')
+      const options = await screen.findAllByRole('option')
+      expect(options.map((o) => o.textContent).filter((t) => t?.startsWith('Visa'))).toEqual(['Visa 3 till i Kommun B'])
+      await userEvent.click(screen.getByRole('option', { name: 'Visa 3 till i Kommun B' }))
+      expect(within(screen.getByRole('group', { name: 'Kommun B' })).getAllByRole('option')).toHaveLength(4)
+    })
+
+    it('räknar de rader som syns, inte de som en kommun har fällt ihop', async () => {
+      const kommunA = Array.from({ length: 5 }, (_, i) => s(`a-${i}`, `Storgatan ${i + 50}`, 'Kommun A'))
+      renderWith([...kommunA, ...spread(12)])
+      await userEvent.type(screen.getByRole('combobox'), 'storg')
+      const options = await screen.findAllByRole('option')
+      // Tre rader för Kommun A och tolv för de andra: precis 15, så ingen rad för hela listan.
+      expect(options.map((o) => o.textContent).filter((t) => t?.startsWith('Visa'))).toEqual(['Visa 2 till i Kommun A'])
+    })
+  })
+
   it('stegar mellan grupperna med tangentbordet och fäller ut med Enter', async () => {
     const input = setup(MANY_KOMMUNER)
     await userEvent.type(input, 'storg')

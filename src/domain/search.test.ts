@@ -130,43 +130,23 @@ describe('stableMerge', () => {
 
   it('behåller ordningen för rader som redan syns och lägger nya sist', () => {
     const shown = [x('a'), x('b', 'boras')]
-    expect(ids(stableMerge(shown, [x('c', 'orebro'), x('b', 'boras'), x('a')], 12))).toEqual(['uppsala/a', 'boras/b', 'orebro/c'])
+    expect(ids(stableMerge(shown, [x('c', 'orebro'), x('b', 'boras'), x('a')]))).toEqual(['uppsala/a', 'boras/b', 'orebro/c'])
   })
 
   it('tar bort rader som inte längre finns i svaret, t.ex. när man skrivit vidare', () => {
-    expect(ids(stableMerge([x('a'), x('b')], [x('b'), x('c')], 12))).toEqual(['uppsala/b', 'uppsala/c'])
+    expect(ids(stableMerge([x('a'), x('b')], [x('b'), x('c')]))).toEqual(['uppsala/b', 'uppsala/c'])
   })
 
   it('skiljer på samma id från olika källor', () => {
-    expect(ids(stableMerge([x('a', 'boras')], [x('a'), x('a', 'boras')], 12))).toEqual(['boras/a', 'uppsala/a'])
+    expect(ids(stableMerge([x('a', 'boras')], [x('a'), x('a', 'boras')]))).toEqual(['boras/a', 'uppsala/a'])
   })
 
   it('använder det nya svarets data, t.ex. kommunen, för rader som står kvar', () => {
     const fresh = { ...x('a'), kommun: 'Uppsala kommun' }
-    expect(stableMerge([x('a')], [fresh], 12)[0].kommun).toBe('Uppsala kommun')
+    expect(stableMerge([x('a')], [fresh])[0].kommun).toBe('Uppsala kommun')
   })
 
-  it('fördelar platserna per kommun när inget syns än', () => {
-    const many = [...Array.from({ length: 11 }, (_, i) => x(`u${i}`)), x('b', 'boras')]
-    const merged = stableMerge([], many, 4)
-    expect(merged).toHaveLength(4)
-    expect(ids(merged)).toContain('boras/b')
-  })
-
-  it('håller sig till gränsen första gången, även med fler kommuner än platser', () => {
-    const kommuner = Array.from({ length: 6 }, (_, i) => x('a', `k${i}`))
-    expect(stableMerge([], kommuner, 4)).toHaveLength(4)
-  })
-
-  it('tar aldrig bort en rad som syns för att ge plats åt en annan kommun', () => {
-    const shown = [x('u1'), x('u2'), x('u3')]
-    const merged = stableMerge(shown, [...shown, x('u4'), x('b', 'boras')], 3)
-    expect(ids(merged).slice(0, 3)).toEqual(['uppsala/u1', 'uppsala/u2', 'uppsala/u3'])
-  })
-
-  it('ger en kommun som svarar sent en rad längst ner, även när listan är full', () => {
-    const shown = [x('u1'), x('u2'), x('u3')]
-    const merged = stableMerge(shown, [...shown, x('u4'), x('b', 'boras')], 3)
-    expect(ids(merged)).toEqual(['uppsala/u1', 'uppsala/u2', 'uppsala/u3', 'boras/b'])
+  it('ger det nya svaret som det är när inget syns', () => {
+    expect(ids(stableMerge([], [x('b'), x('a')]))).toEqual(['uppsala/b', 'uppsala/a'])
   })
 })

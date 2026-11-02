@@ -25,8 +25,13 @@ type State =
 const DEBOUNCE_MS = 150
 /** Träffar som visas per kommun innan resten fälls ihop, när träffarna ligger i flera kommuner. */
 const PER_KOMMUN = 3
+/** Adressrader i listan innan resten fälls ihop bakom "Visa N till". */
+const MAX_ROWS = 15
+/** Nyckeln i `expanded` för hela listan (kommunnamn är aldrig tomma). */
+const ALL = ''
 
-type Item = { kind: 'address'; address: Address } | { kind: 'more'; kommun: string; count: number }
+/** `kommun` saknas på raden som fäller ut hela listan. */
+type Item = { kind: 'address'; address: Address } | { kind: 'more'; kommun?: string; count: number }
 interface Section {
   /** Saknas när alla träffar ligger i en kommun: då visas listan utan rubriker. */
   kommun?: string
@@ -35,6 +40,34 @@ interface Section {
 }
 
 function sections(results: Address[], expanded: Set<string>): Section[] {
+  const list = byKommun(results, expanded)
+  const rows = (section: Section) => section.items.filter((i) => i.kind === 'address').length
+  // Inget undantag för en ensam rad till: då skulle rad 16 försvinna när den 17:e kommer.
+  if (expanded.has(ALL) || list.reduce((n, section) => n + rows(section), 0) <= MAX_ROWS) return list
+  // Sena källor hamnar sist och fälls ihop här, så att listan inte växer medan man tittar.
+  let left = MAX_ROWS
+  let hidden = 0
+  const shown: Section[] = []
+  for (const section of list) {
+    // En kommun man själv fällt ut visas hel.
+    if (rows(section) <= left || (section.kommun && expanded.has(section.kommun))) {
+      shown.push(section)
+      left = Math.max(0, left - rows(section))
+    } else if (left > 0 && section.kommun) {
+      // En kommun som klipps behåller sin egen rad för resten.
+      const items: Item[] = [...section.items.slice(0, left), { kind: 'more', kommun: section.kommun, count: section.total - left }]
+      shown.push({ ...section, items })
+      left = 0
+    } else {
+      if (left > 0) shown.push({ ...section, items: section.items.slice(0, left) })
+      hidden += section.total - left
+      left = 0
+    }
+  }
+  return hidden > 0 ? [...shown, { total: hidden, items: [{ kind: 'more', count: hidden }] }] : shown
+}
+
+function byKommun(results: Address[], expanded: Set<string>): Section[] {
   const groups = groupByKommun(results)
   const toItems = (list: Address[]): Item[] => list.map((address) => ({ kind: 'address', address }))
   // Rubriker gör bara nytta när någon kommun har flera träffar. Annars står kommunen på raden.
@@ -50,11 +83,8 @@ function sections(results: Address[], expanded: Set<string>): Section[] {
   })
 }
 
-/** Så många träffar visas, fördelade per kommun. En kommun som svarar sent kan ge en rad till. */
-const LIMIT = 12
-
 /** Raderna som redan syns behåller sin plats när nya träffar kommer in. */
-const keep = (prev: State, incoming: Address[]) => stableMerge(prev.kind === 'results' ? prev.results : [], incoming, LIMIT)
+const keep = (prev: State, incoming: Address[]) => stableMerge(prev.kind === 'results' ? prev.results : [], incoming)
 
 export function AddressSearch({
   search = searchAll,
@@ -152,7 +182,7 @@ export function AddressSearch({
 
   function choose(item: Item) {
     if (item.kind === 'address') go(item.address)
-    else setExpanded((prev) => new Set(prev).add(item.kommun))
+    else setExpanded((prev) => new Set(prev).add(item.kommun ?? ALL))
   }
 
   function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -195,14 +225,14 @@ export function AddressSearch({
     if (item.kind === 'more') {
       return (
         <li
-          key={`fler/${item.kommun}`}
+          key={`fler/${item.kommun ?? 'alla'}`}
           {...props}
           className={cn(
             'flex min-h-11 cursor-pointer items-center gap-1.5 rounded-xl py-2 pr-3 pl-[60px] text-sm font-extrabold text-primary',
             i === active && 'bg-surface-2',
           )}
         >
-          Visa {item.count} till i {item.kommun}
+          Visa {item.count} till{item.kommun && ` i ${item.kommun}`}
           <ChevronDown className="size-4" aria-hidden />
         </li>
       )
