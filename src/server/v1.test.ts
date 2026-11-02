@@ -299,6 +299,19 @@ describe('handleV1Search', () => {
     expect(hosts()).not.toContain('trog.test')
   })
 
+  it('söker på gatan och filtrerar på orten eller kommunen efter den', async () => {
+    calls.mockClear()
+    const body = await (await search(q('Storgatan 2 Uppsala'))).json()
+    const edpBodies = vi
+      .mocked(fetchFn)
+      .mock.calls.filter(([i]) => String(i).includes('SearchAdress'))
+      .map(([, init]) => JSON.parse(String(init?.body)))
+    // Fixturen har tio träffar, alltså ett avkortat svar: då frågas källan också med orten.
+    expect(edpBodies).toEqual([{ searchText: 'storgatan 2' }, { searchText: 'storgatan 2, uppsala' }])
+    expect(body.addresses.length).toBeGreaterThan(0)
+    expect((await (await search(q('Storgatan 2 Lund'))).json()).addresses).toEqual([])
+  })
+
   it('kalla hoppar över gatuindexet', async () => {
     calls.mockClear()
     const res = await search(q('Storgatan 2', '&kalla=uppsala'))

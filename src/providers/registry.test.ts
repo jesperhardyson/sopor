@@ -248,6 +248,48 @@ describe('searchAll', () => {
     expect(result.addresses.map((x) => x.sourceId)).toEqual(expect.arrayContaining(['uppsala', 'boras']))
   })
 
+  it('söker på gatan och filtrerar på orten när man skriver den efter', async () => {
+    const lund: Address = { id: 'storgatan-2_lund-1', street: 'Storgatan 2', locality: 'Lund', sourceId: 'uppsala', kommun: 'Lunds kommun' }
+    const f = stubFetch({ addresses: [up('Storgatan 2'), lund], failed: [] })
+    const { searchAll } = await import('./registry')
+    const result = await searchAll('Storgatan 2 Lund')
+    expect(new URL(sokCalls(f)[0], 'http://x').searchParams.get('q')).toBe('storgatan 2')
+    expect(result.addresses.filter((x) => x.sourceId === 'uppsala').map((x) => x.locality)).toEqual(['Lund'])
+  })
+
+  it('använder svaret för gatan när man lägger till orten', async () => {
+    const f = stubFetch({ addresses: [up('Storgatan 2')], failed: [] })
+    const { searchAll } = await import('./registry')
+    await searchAll('Storgatan 2')
+    await searchAll('Storgatan 2, Upps')
+    expect(sokCalls(f)).toHaveLength(1)
+  })
+
+  it('frågar också med orten när svaret för gatan var avkortat', async () => {
+    const others = Array.from({ length: 10 }, (_, i) => ({ ...up(`Storgatan 1${i}`), locality: 'Storvreta' }))
+    const grillby: Address = { ...up('Storgatan 1'), id: 'storgatan-1_grillby-1', locality: 'Grillby' }
+    const f = vi.fn(async (url: string) => {
+      if (url === '/data/gator/st.json') return Response.json({ storgatan: ['uppsala'] })
+      if (url === '/data/orter.json') return Response.json({})
+      const q = url.startsWith('/api/sok') ? new URL(url, 'http://x').searchParams.get('q') : null
+      if (q === 'storgatan 1') return Response.json({ addresses: others, failed: [] })
+      if (q === 'storgatan 1, grillby') return Response.json({ addresses: [grillby], failed: [] })
+      return new Response('', { status: 404 })
+    })
+    vi.stubGlobal('fetch', f)
+    const { searchAll } = await import('./registry')
+    const result = await searchAll('Storgatan 1 Grillby')
+    expect(result.addresses.map((x) => x.locality)).toEqual(['Grillby'])
+    expect(sokCalls(f).map((u) => new URL(u, 'http://x').searchParams.get('q'))).toEqual(['storgatan 1', 'storgatan 1, grillby'])
+  })
+
+  it('frågar inte med orten när svaret för gatan var komplett', async () => {
+    const f = stubFetch({ addresses: [up('Storgatan 2')], failed: [] })
+    const { searchAll } = await import('./registry')
+    await searchAll('Storgatan 2 Grillby')
+    expect(sokCalls(f)).toHaveLength(1)
+  })
+
   it('räknar bara en källa som misslyckad när just den inte svarar', async () => {
     vi.stubGlobal(
       'fetch',

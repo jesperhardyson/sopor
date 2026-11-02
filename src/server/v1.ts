@@ -7,10 +7,10 @@ import { nextPerFraction, pickupSummary } from '../domain/next.js'
 import { upcoming } from '../domain/schedule.js'
 import { normalize, searchAddresses } from '../domain/search.js'
 import type { Address, FractionId, Schedule } from '../domain/types.js'
-import { pickLiveSources, shardKey, type StreetShard } from '../data/street-index.js'
+import { matchesPlace, pickLiveSources, shardKey, splitPlace, type StreetShard } from '../data/street-index.js'
 import type { AddressIndexFile } from '../data/static-format.js'
 import { needsPlaces, SOURCES, type Source } from '../sources/index.js'
-import { edpSearch } from './edp.js'
+import { edpSearch, type EdpBuilding } from './edp.js'
 import { CACHE_PARTIAL, CACHE_SEARCH, decodeId, toAddress, withDetails, type HandlerOptions } from './handlers.js'
 import { lookupAddress } from './lookup.js'
 import { loadServerPlaces, siteJson } from './site.js'
@@ -165,6 +165,17 @@ async function streetShard(q: string, origin: string, opts: HandlerOptions): Pro
   }
 }
 
+/**
+ * Källan söker på gatan. Är svaret avkortat kan rätt ort saknas, så då frågas den också med
+ * "gata, ort", som den matchar på början av adressen.
+ */
+async function edpSearchPlace(baseUrl: string, street: string, place: string, opts: HandlerOptions): Promise<EdpBuilding[]> {
+  const found = await edpSearch(baseUrl, street, opts.fetchFn, opts.timeoutMs ?? 3000)
+  if (!place || found.length < SEARCH_LIMIT) return found
+  const more = await edpSearch(baseUrl, `${street}, ${place}`, opts.fetchFn, opts.timeoutMs ?? 3000)
+  return [...found, ...more.filter((b) => !found.some((f) => f.buildingId === b.buildingId))]
+}
+
 /** GET /api/v1/sok?q=storgatan 2[&kalla=uppsala] */
 export const handleV1Search: V1Handler = async (request, opts = {}) => {
   const url = new URL(request.url)
@@ -174,6 +185,8 @@ export const handleV1Search: V1Handler = async (request, opts = {}) => {
   const visible = visibleSources(opts)
   const kalla = url.searchParams.get('kalla')
   let sources: Source[]
+  // Källorna söker bara på gatan; orten eller kommunen efter den filtreras här.
+  let parts = splitPlace(null, q)
   if (kalla) {
     const only = visible.find((s) => s.id === kalla)
     if (!only) return v1Error(404, 'not_found', 'Källan finns inte')
@@ -181,18 +194,21 @@ export const handleV1Search: V1Handler = async (request, opts = {}) => {
   } else {
     const live = visible.filter((s) => s.config.system === 'edp')
     const shard = await streetShard(q, url.origin, opts)
+    parts = splitPlace(shard, q)
     const picked = pickLiveSources(shard, q, live.map((s) => s.id), false)
     sources = [...live.filter((s) => picked.includes(s.id)), ...visible.filter((s) => s.config.system !== 'edp')]
   }
+  const { street, place } = parts
 
   const places =
     opts.places ?? (sources.some((s) => s.config.system === 'edp' && needsPlaces(s)) ? await loadServerPlaces(url.origin, opts.fetchFn) : undefined)
   const results = await Promise.allSettled(
     sources.map(async (s) =>
       s.config.system === 'edp'
-        ? withDetails(await edpSearch(s.config.baseUrl, q, opts.fetchFn, opts.timeoutMs ?? 3000))
-            .slice(0, SEARCH_LIMIT)
+        ? withDetails(await edpSearchPlace(s.config.baseUrl, street, place, opts))
             .map(([b, detail]) => toAddress(s, b, places, detail))
+            .filter((a) => matchesPlace(a, place))
+            .slice(0, SEARCH_LIMIT)
         : await searchStatic(s, q, url.origin, opts),
     ),
   )

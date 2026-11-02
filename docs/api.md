@@ -100,7 +100,7 @@ Id:t får skickas procentkodat. Okänd källa eller adress ger `404 not_found`.
 
 ### `GET /api/v1/sok?q=…&kalla=…`
 
-Adresssökning, se [Kom igång](#alternativ-2-sök-med-api). Högst tio träffar per källa.
+Adresssökning, se [Kom igång](#alternativ-2-sök-med-api). Högst tio träffar per källa. Ort eller kommun får stå efter gatan (`storgatan 2 uppsala` eller `storgatan 2, uppsala`): källorna söker då på gatan och träffarna filtreras på början av orten eller kommunen.
 
 ### `GET /api/v1/kallor`
 

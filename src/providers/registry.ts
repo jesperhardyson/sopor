@@ -1,6 +1,6 @@
 import type { Address } from '@/domain/types'
 import { getSource, SOURCES, type Source } from '@/sources'
-import { pickLiveSources, shardKey, type StreetShard } from '@/data/street-index'
+import { matchesPlace, pickLiveSources, shardKey, splitPlace, type QueryParts, type StreetShard } from '@/data/street-index'
 import { normalize } from '@/domain/search'
 import { kommunForLocality } from '@/sources'
 import { createApiProvider } from './api'
@@ -50,14 +50,16 @@ export interface SearchOptions {
   submitted?: boolean
 }
 
-/** Live-källor att fråga för sökningen; valet görs av `pickLiveSources`. */
-async function liveSourcesFor(query: string, { submitted = false }: SearchOptions): Promise<string[]> {
+/** Live-källor att fråga (valda av `pickLiveSources`), och frågan uppdelad i gata och plats. */
+async function liveSourcesFor(query: string, { submitted = false }: SearchOptions): Promise<{ sources: string[] } & QueryParts> {
   const live = SOURCES.filter((s) => s.config.system !== 'static').map((s) => s.id)
-  if (live.length === 0 || normalize(query).length < 2) return []
+  const none = { sources: [], street: query, place: '' }
+  if (live.length === 0 || normalize(query).length < 2) return none
   // Delfilen hämtas redan vid två tecken, så att den finns när frågan blir lång nog att skickas.
   const shard = await loadShard(shardKey(query))
-  if (normalize(query).length < 3) return []
-  return pickLiveSources(shard, query, live, submitted)
+  const parts = splitPlace(shard, query)
+  if (normalize(parts.street).length < 3) return none
+  return { sources: pickLiveSources(shard, query, live, submitted), ...parts }
 }
 
 /** EDP svarar med högst så här många adresser per källa. Färre betyder att svaret är komplett. */
@@ -128,17 +130,34 @@ async function searchLive(
 ): Promise<SearchResult> {
   const started = Date.now()
   const placesPromise = loadPlaces() // parallellt med sökningen
-  const q = liveKey(query)
-  const sources = await liveSourcesFor(q, options)
-  const hits = sources.map((id) => ({ id, cached: fromCache(id, q) }))
+  const { sources, street, place } = await liveSourcesFor(liveKey(query), options)
+  // Källorna söker på gatan, och orten eller kommunen efter den filtreras här. Är svaret avkortat
+  // kan rätt ort saknas; då frågas källan också med "gata, ort", som den matchar på början.
+  const q = liveKey(street)
+  const withPlace = liveKey(`${street}, ${place}`)
+  const merge = (base: Address[], extra: Address[]) => [...base, ...extra.filter((a) => !base.some((b) => b.id === a.id))]
+  const cachedFor = (id: string) => {
+    const base = fromCache(id, q)
+    if (!base || !place || base.length < SOURCE_LIMIT) return base
+    const extra = fromCache(id, withPlace)
+    return extra && merge(base, extra)
+  }
+  const fetchFor = async (id: string) => {
+    const base = fromCache(id, q) ?? (await fetchSource(id, q, signal))
+    if (!place || base.length < SOURCE_LIMIT) return base
+    return merge(base, fromCache(id, withPlace) ?? (await fetchSource(id, withPlace, signal)))
+  }
+  const hits = sources.map((id) => ({ id, cached: cachedFor(id) }))
   const missing = hits.filter((h) => !h.cached).map((h) => h.id)
   // Ort-tabellen behövs först när svaren ska visas, så den får inte hålla tillbaka anropen.
   const withKommun = async (list: Address[]) => {
     const places = await placesPromise
-    return list.map((a) => {
-      const source = getSource(a.sourceId)
-      return source ? { ...a, kommun: kommunForLocality(source, a.locality, places[source.id]) } : a
-    })
+    return list
+      .map((a) => {
+        const source = getSource(a.sourceId)
+        return source ? { ...a, kommun: kommunForLocality(source, a.locality, places[source.id]) } : a
+      })
+      .filter((a) => matchesPlace(a, place))
   }
 
   let addresses: Address[] = []
@@ -163,7 +182,7 @@ async function searchLive(
     await Promise.all(
       missing.map(async (id) => {
         try {
-          add(await withKommun(await fetchSource(id, q, signal)))
+          add(await withKommun(await fetchFor(id)))
         } catch {
           failed.push(id)
         }
