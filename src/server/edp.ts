@@ -26,8 +26,14 @@ interface EdpService {
 
 const WEEKDAYS = ['måndag', 'tisdag', 'onsdag', 'torsdag', 'fredag', 'lördag', 'söndag']
 
+const capitalize = (s: string) => s.toLowerCase().replace(/(^|[\s-])(\p{L})/gu, (_, sep, c) => sep + c.toUpperCase())
+
+/**
+ * "SKOLVÄGEN 1" → "Skolvägen 1". När resten har gemener skrivs bara orden före dem om, så att
+ * förkortningar längre fram står kvar: "STORGATAN Fritid vid ÅVS" → "Storgatan Fritid vid ÅVS".
+ */
 const titleCase = (s: string) =>
-  s === s.toUpperCase() ? s.toLowerCase().replace(/(^|[\s-])(\p{L})/gu, (_, sep, c) => sep + c.toUpperCase()) : s
+  s === s.toUpperCase() ? capitalize(s) : s.replace(/^[^\p{Ll}]+(?=\s)/u, capitalize)
 
 /**
  * "Storgatan 2 -4, Tormenåsgatan 1, Huskvarna (28970)" → gata, ort och byggnads-id.
