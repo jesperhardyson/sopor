@@ -93,10 +93,10 @@ describe('checkEdpSource', () => {
   })
 
   it('listar okända avfallstyper men fungerar ändå', async () => {
-    const garden = { ...rest, WasteType: 'Trädgårdsavfall' }
-    expect(await check(fakeEdp(found, { RhServices: [rest, garden] }))).toMatchObject({
+    const bulky = { ...rest, WasteType: 'Grovavfall' }
+    expect(await check(fakeEdp(found, { RhServices: [rest, bulky] }))).toMatchObject({
       state: 'fungerar',
-      unknownWasteTypes: ['Trädgårdsavfall'],
+      unknownWasteTypes: ['Grovavfall'],
     })
   })
 })

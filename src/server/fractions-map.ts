@@ -10,11 +10,19 @@ const PATTERNS: [RegExp, FractionId][] = [
   [/^papp/, 'papper'],
   [/^plast/, 'plast'],
   [/^glas/, 'glas'],
-  [/^metall/, 'metall'],
+  // "Metal" i Danderyds "Glas/Glas/Metal"
+  [/^metal/, 'metall'],
   [/^tidning/, 'tidningar'],
 ]
 
 const SKIP = [/^slam/, /^latrin/, /^fett/]
+
+/** Kärl som visas med källans egen text utan att vara okända: trädgårdsavfall (Danderyd) och batteriholkar (Lycksele). */
+const KNOWN_BINS = [/^trädgård/i, /^batteri/i]
+
+export const isKnownBin = (label: string) => KNOWN_BINS.some((p) => p.test(label.trim()))
+
+const fractionFor = (t: string) => PATTERNS.find(([pattern]) => pattern.test(t))?.[1]
 
 /** Koderna Uppsala Vatten skriver i flerfackskärlens beskrivning: "Kärl 2, RE PL GF GO. 370L …". */
 const CODES: Record<string, FractionId> = {
@@ -49,15 +57,24 @@ export function mapWasteType(
 ): { fractions: FractionId[]; label?: string } | null {
   const t = text.trim().toLowerCase()
   if (SKIP.some((p) => p.test(t))) return null
-  for (const [pattern, fraction] of PATTERNS) if (pattern.test(t)) return { fractions: [fraction] }
+  const label = text.trim().replace(/\s+/g, ' ')
+  // Lund skriver "4-fackskärl" och kallar kärl 1 "Rest/matavfall", fast det har fler fack.
+  const multi = /fyrfack|flerfack|4-fack/i.test(`${label} ${frequencyText} ${description}`)
+  const parts = t.split('/').map((p) => p.trim())
+  if (parts.length === 1) {
+    const fraction = fractionFor(t)
+    if (fraction) return { fractions: [fraction] }
+  } else if (!multi) {
+    // Ett delat kärl ("Papper/Plast", "Mat-/Restavfall"): varje del för sig, eller ingen gissning.
+    const fractions = parts.map(fractionFor)
+    if (fractions.every((f) => f !== undefined)) return { fractions: [...new Set(fractions)] }
+  }
   const coded = fractionsFromCodes(description)
   if (coded) return { fractions: coded }
-  const label = text.trim().replace(/\s+/g, ' ')
-  const multi = /fyrfack|flerfack/i.test(`${label} ${frequencyText} ${description}`)
   // VIVAB kallar restavfallskärlet "Hushåll" ("190l restavfallskärl", "… separat matavfallskärl").
   if (/^hushåll/.test(t) && !multi) return { fractions: ['rest'] }
   if (!multi) return { fractions: ['karl'], label }
   // Fastighetsägaren vet vad som ligger i facken; numret säger vilket kärl som ska ut.
-  const number = label.match(/(\d+)\s*$/)?.[1]
+  const number = label.match(/(\d+)\s*$/)?.[1] ?? description.match(/kärl\s*(\d+)/i)?.[1]
   return { fractions: ['karl'], label: number ? `Fyrfackskärl ${number}` : 'Fyrfackskärl' }
 }

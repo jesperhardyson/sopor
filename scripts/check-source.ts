@@ -6,7 +6,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import type { FractionId } from '../src/domain/types.js'
 import { edpSchedule, edpSearch, type EdpBuilding } from '../src/server/edp.js'
-import { mapWasteType } from '../src/server/fractions-map.js'
+import { isKnownBin, mapWasteType } from '../src/server/fractions-map.js'
 import { ALL_SOURCES } from '../src/sources/index.js'
 
 const TIMEOUT_MS = 10000
@@ -49,7 +49,7 @@ export function classifyWasteTypes(services: RawService[]): WasteTypeRow[] {
     const wasteType = (s.WasteType ?? '').trim()
     const mapped = mapWasteType(wasteType, s.WastePickupFrequency ?? '', s.Description ?? '')
     if (!mapped) return { wasteType, fractions: [], status: 'hoppas över' }
-    const unknown = mapped.fractions.includes('karl') && !mapped.label?.startsWith('Fyrfackskärl')
+    const unknown = mapped.fractions.includes('karl') && !mapped.label?.startsWith('Fyrfackskärl') && !isKnownBin(mapped.label ?? '')
     return { wasteType, fractions: mapped.fractions, label: mapped.label, status: unknown ? 'okänd' : 'känd' }
   })
 }

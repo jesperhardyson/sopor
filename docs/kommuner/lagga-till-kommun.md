@@ -25,7 +25,7 @@ Svarar EDP-tjänsten men utan adresser för flera gator är den tom. Då gäller
 EDP Future har en publik modul, SimpleWastePickup, som Sopor frågar direkt per adress. Ingen datafil behövs.
 
 - [ ] Kör `npm run check:source -- <värd> "<en gata i kommunen>"`. Ange `--ort <Ort>` om sökvägen kan innehålla ortnamnet (`/Uppsala/FutureWeb`, `/FutureWebVarberg`), eller hela adressen om den har ett eget namn (`https://services.vafabmiljo.se/FutureWebVKFHus`). Skriptet skriver ut den baseUrl som fungerar.
-- [ ] Titta på fraktionerna i utskriften. Blir en vanlig fraktion "okänd" (och därmed `karl`), lägg till ett mönster i `src/server/fractions-map.ts`, med ett test i `fractions-map.test.ts`.
+- [ ] Titta på fraktionerna i utskriften. Blir en vanlig fraktion "okänd" (och därmed `karl`), lägg till ett mönster i `src/server/fractions-map.ts`, med ett test i `fractions-map.test.ts`. Delade kärl ("Papper/Plast") mappas del för del, och kärl som ska visas med källans egen text utan att vara en fraktion (trädgårdsavfall, batterier) läggs i `KNOWN_BINS`. Välj en kontrolladress som är en bostad, inte en återvinningsstation.
 - [ ] Lägg till källan i `ALL_SOURCES` i `src/sources/index.ts`:
   - `id`: kort, gemener, bindestreck (`kretslopp-sydost`). Den används i URL:er och kalenderprenumerationer och får **aldrig** ändras.
   - `name` och `url`: bolaget eller kommunen som sköter hämtningen.
