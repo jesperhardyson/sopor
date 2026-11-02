@@ -437,4 +437,17 @@ describe('AddressSearch', () => {
     expect(within(options[0]).getByText('Byggnad 1')).toBeInTheDocument()
     expect(within(options[1]).getByText('Byggnad 2')).toBeInTheDocument()
   })
+
+  it('visar ingen tom rad och ingen ensam punkt när orten saknas', async () => {
+    const lidkoping = (id: string, street: string): Address => ({ id, street, locality: '', sourceId: 'lidkoping', kommun: 'Lidköpings kommun' })
+    const hits = [lidkoping('storgatan-11-1', 'Storgatan 11'), a('avesta-storgatan-12', 'Storgatan 12', 'Avesta')]
+    render(
+      <MemoryRouter>
+        <AddressSearch search={async () => ({ addresses: hits, failed: [] })} suggest={async () => []} />
+      </MemoryRouter>,
+    )
+    await userEvent.type(screen.getByRole('combobox'), 'storgatan')
+    const options = await screen.findAllByRole('option')
+    expect(options[0]).toHaveTextContent(/^Storgatan 11Lidköpings kommun$/)
+  })
 })

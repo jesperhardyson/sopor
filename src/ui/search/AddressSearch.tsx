@@ -1,5 +1,5 @@
 import { ChevronDown, LoaderCircle, MapPin, Search, X } from 'lucide-react'
-import { useEffect, useId, useRef, useState } from 'react'
+import { Fragment, useEffect, useId, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { groupByKommun, normalize, stableMerge } from '@/domain/search'
 import type { Address } from '@/domain/types'
@@ -258,6 +258,16 @@ export function AddressSearch({
       )
     }
     const r = item.address
+    // Orten kan saknas (Lidköping), och då ska raden varken börja med en punkt eller stå tom.
+    const parts = [
+      r.locality && <span key="locality">{r.locality}</span>,
+      r.detail && <span key="detail">{r.detail}</span>,
+      showKommun && (
+        <span key="kommun" className="rounded-md bg-brand-soft px-2 py-0.5 text-[13px] font-extrabold text-brand-text">
+          {r.kommun}
+        </span>
+      ),
+    ].filter(Boolean)
     return (
       <li
         key={`${r.sourceId}/${r.id}`}
@@ -269,23 +279,16 @@ export function AddressSearch({
         </span>
         <span className="flex min-w-0 flex-col gap-1">
           <span className="text-base font-extrabold text-text">{r.street}</span>
-          <span className="flex flex-wrap items-center gap-2 text-sm text-text-2">
-            <span>{r.locality}</span>
-            {r.detail && (
-              <>
-                <span aria-hidden>·</span>
-                <span>{r.detail}</span>
-              </>
-            )}
-            {showKommun && (
-              <>
-                <span aria-hidden>·</span>
-                <span className="rounded-md bg-brand-soft px-2 py-0.5 text-[13px] font-extrabold text-brand-text">
-                  {r.kommun}
-                </span>
-              </>
-            )}
-          </span>
+          {parts.length > 0 && (
+            <span className="flex flex-wrap items-center gap-2 text-sm text-text-2">
+              {parts.map((part, n) => (
+                <Fragment key={n}>
+                  {n > 0 && <span aria-hidden>·</span>}
+                  {part}
+                </Fragment>
+              ))}
+            </span>
+          )}
         </span>
       </li>
     )

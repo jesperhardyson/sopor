@@ -50,7 +50,19 @@ describe('parseBuilding', () => {
   it('klarar tom ort, gator i versaler och extra mellanslag', () => {
     expect(parseBuilding('KYRKOGATAN 2,  (590510011)')).toMatchObject({ street: 'Kyrkogatan 2', locality: '', buildingId: '590510011' })
     expect(parseBuilding('SKOLVÄGEN 1, HENÅN (50000493)')).toMatchObject({ street: 'Skolvägen 1', locality: 'Henån' })
-    expect(parseBuilding('STORGATAN   efter nr 103, LYCKSELE (865101)')).toMatchObject({ street: 'STORGATAN efter nr 103', locality: 'Lycksele' })
+    expect(parseBuilding('STORGATAN   efter nr 103, LYCKSELE (865101)')).toMatchObject({ street: 'Storgatan efter nr 103', locality: 'Lycksele' })
+  })
+
+  it('skriver bara om de inledande versalorden när resten har gemener', () => {
+    expect(parseBuilding('STORGATAN   Fritid vid ÅVS (040209090)')?.street).toBe('Storgatan Fritid vid ÅVS')
+    expect(parseBuilding('NORRA STORGATAN 4 efter bron, LYCKSELE (1)')?.street).toBe('Norra Storgatan 4 efter bron')
+    expect(parseBuilding('Storgatan 1, Grillby (909273)')?.street).toBe('Storgatan 1')
+    expect(edpAddressId(parseBuilding('STORGATAN   efter nr 103, LYCKSELE (865101)')!)).toBe('storgatan-efter-nr-103_lycksele-865101')
+  })
+
+  it('klarar adresser helt utan ort och kommatecken', () => {
+    expect(parseBuilding('STORGATAN 11 (590406011)')).toMatchObject({ street: 'Storgatan 11', locality: '', buildingId: '590406011' })
+    expect(edpAddressId(parseBuilding('STORGATAN 11 (590406011)')!)).toBe('storgatan-11-590406011')
   })
 
   it('ger null för text utan byggnads-id', () => {
