@@ -11,6 +11,7 @@ import { SITE } from '@/config'
 import { SOURCES, sourceLabel, type Source } from '@/sources'
 import { providerFor } from '@/providers/registry'
 import { formatLong } from '@/domain/dates'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 const FACTS: [LucideIcon, string][] = [
   [UserX, 'Inget konto eller inloggning'],
@@ -105,6 +106,7 @@ function useScrollToHash() {
 export function AboutPage() {
   const [savedCount, setSavedCount] = useState(() => loadSaved().length)
   useScrollToHash()
+  usePageTitle('Om Sopor')
   return (
     <div className="mx-auto flex w-full max-w-[640px] flex-col gap-9 px-5 pt-1 pb-10 md:px-0 md:pt-6 md:pb-20">
       <div className="flex flex-col gap-3">

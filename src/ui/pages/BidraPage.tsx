@@ -4,6 +4,7 @@ import { Link, useLocation } from 'react-router'
 import { SITE } from '@/config'
 import { GitHubMark } from '../components/GitHubMark'
 import { ContributeWays, MunicipalityStatusList } from '../start/ContributeSection'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 /** Exempeltext för att begära ut kopplingen adress → område. Samma text som i guiden på GitHub. */
 export const REQUEST_TEXT = `Hej! Jag begär ut den förteckning som visar vilket hämtområde (trakt/tur) varje adress i kommunen tillhör för hushållsavfall, helst i ett maskinläsbart format som CSV eller Excel. Jag vill också fråga om ni har något emot att uppgifterna återpubliceras i den ideella tjänsten Sopor (sopor.hardyson.se), som visar hämtdagar per adress.
@@ -77,6 +78,7 @@ function CopyRequest() {
 export function BidraPage() {
   // Homey-appen länkar hit för att visa vilka kommuner som finns
   const { hash } = useLocation()
+  usePageTitle('Bidra – Sopor')
   return (
     <div className="mx-auto flex w-full max-w-[640px] flex-col gap-9 px-5 pt-1 pb-10 md:px-0 md:pt-6 md:pb-20">
       <div className="flex flex-col gap-3">

@@ -17,6 +17,7 @@ describe('AboutPage', () => {
       </MemoryRouter>,
     )
     expect(screen.getByRole('heading', { name: 'Om Sopor', level: 1 })).toBeInTheDocument()
+    expect(document.title).toBe('Om Sopor')
     expect(screen.getByRole('link', { name: /Avesta Vatten och Avfall/ })).toHaveAttribute('href', 'https://www.avestavatten.se')
     expect(await screen.findAllByText('Hämtat 29 okt')).toHaveLength(1)
     expect(screen.queryByText('Lantmäteriet')).toBeNull()
