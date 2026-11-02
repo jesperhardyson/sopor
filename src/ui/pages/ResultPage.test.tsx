@@ -71,6 +71,12 @@ describe('ResultPage', () => {
     await vi.waitFor(() => expect(document.title).toBe('Storgatan 12 B, Krylbo – Sopor'))
   })
 
+  it('har en dela-knapp bredvid spara-knappen', async () => {
+    renderAt('/avesta/krylbo-storgatan-12b')
+    expect(await screen.findByRole('button', { name: 'Dela' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Spara' })).toBeInTheDocument()
+  })
+
   it('visar särskiljaren under adressen', async () => {
     fake = makeProvider({ getAddress: async () => ({ ...villa, detail: 'Byggnad 81674' }) })
     renderAt('/avesta/krylbo-storgatan-12b')

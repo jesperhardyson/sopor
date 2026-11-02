@@ -13,6 +13,7 @@ import { MonthCalendar } from '../result/MonthCalendar'
 import { NextPickup } from '../result/NextPickup'
 import { SmartHomeBox } from '../integrations/SmartHomeBox'
 import { EmptyState, ErrorState, LoadingState, StaleNotice, UnsupportedState } from '../result/ResultStates'
+import { ShareButton } from '../result/ShareButton'
 import { UpcomingList } from '../result/UpcomingList'
 import { AddressSearch } from '../search/AddressSearch'
 import { CalendarSheet } from '../sheets/CalendarSheet'
@@ -118,16 +119,19 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
             </div>
           )}
         </div>
-        <button
-          type="button"
-          disabled={!address}
-          onClick={() => setSheet('save')}
-          aria-label={savedName ? `Sparad som ${savedName}` : 'Spara'}
-          className="inline-flex shrink-0 items-center gap-2 rounded-[14px] border border-border bg-surface px-4 py-3 text-[15px] font-bold text-text"
-        >
-          <Bookmark className={savedName ? 'size-[18px] fill-primary text-primary' : 'size-[18px]'} aria-hidden />
-          {savedName ?? 'Spara'}
-        </button>
+        <div className="flex shrink-0 items-center gap-2">
+          {address && <ShareButton title={streetAndLocality(address)} url={`${window.location.origin}${window.location.pathname}`} />}
+          <button
+            type="button"
+            disabled={!address}
+            onClick={() => setSheet('save')}
+            aria-label={savedName ? `Sparad som ${savedName}` : 'Spara'}
+            className="inline-flex shrink-0 items-center gap-2 rounded-[14px] border border-border bg-surface px-4 py-3 text-[15px] font-bold text-text"
+          >
+            <Bookmark className={savedName ? 'size-[18px] fill-primary text-primary' : 'size-[18px]'} aria-hidden />
+            {savedName ?? 'Spara'}
+          </button>
+        </div>
       </div>
     </div>
   )

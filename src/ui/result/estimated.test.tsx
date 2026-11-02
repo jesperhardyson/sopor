@@ -19,6 +19,17 @@ describe('beräknade datum i UI:t', () => {
     expect(within(rows[1]).getByText('Infaller på julafton – kan flyttas.')).toBeInTheDocument()
   })
 
+  it('förklarar under listan vad beräknat betyder, kopplat till etiketterna', () => {
+    render(<UpcomingList events={events} today="2026-12-10" />)
+    const note = screen.getByText('Beräknat: framräknat ur kommunens tömningsintervall. En helgdag kan flytta tömningen.')
+    expect(screen.getByText('beräknat')).toHaveAccessibleDescription(note.textContent!)
+  })
+
+  it('förklarar inte beräknat när inga datum är beräknade', () => {
+    render(<UpcomingList events={[events[0]]} today="2026-12-10" />)
+    expect(screen.queryByText(/framräknat ur kommunens/)).toBeNull()
+  })
+
   it('märker nästa tömning som beräknad när den är det', () => {
     render(<NextPickup event={events[1]} today="2026-12-10" />)
     expect(screen.getByText('beräknat')).toBeInTheDocument()
