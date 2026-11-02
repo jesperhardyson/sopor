@@ -1,4 +1,4 @@
-# Sopor för Home Assistant
+# Sophämtning för Home Assistant
 
 Anpassad integration (custom component) som visar sophämtningen för en adress: sensorer, en kalender och en händelse när schemat ändras. Specen finns i `docs/specs/2026-11-01-sopor-home-assistant.md`.
 

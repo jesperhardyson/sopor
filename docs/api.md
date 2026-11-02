@@ -54,7 +54,7 @@ Svaret:
 
 Tänk på:
 
-- Skriv med **husnummer** (`storgatan 2`) eller ange **`kalla`**. Utan husnummer och utan `kalla` kan svaret bli en tom lista om gatan inte finns i Soporas gatuindex. Tom lista betyder alltså inte alltid att adressen saknas.
+- Skriv med **husnummer** (`storgatan 2`) eller ange **`kalla`**. Utan husnummer och utan `kalla` kan svaret bli en tom lista om gatan inte finns i Sopors gatuindex. Tom lista betyder alltså inte alltid att adressen saknas.
 - `q` måste vara minst tre tecken.
 - Flera träffar kan ha samma gata och ort. Då skiljer `detail` dem åt (till exempel `"Byggnad 4062411"`). Låt användaren välja.
 - Sökningen frågar flera källor. Svarar inte alla får du ändå **200** med de träffar som kom, och de källor som inte svarade står i `failed`. Svarar ingen källa får du ändå 200, med tom `addresses` och alla källor i `failed`. **502** betyder ett oväntat fel hos Sopor. En tom `addresses` med icke-tom `failed` betyder alltså "försök igen", inte "adressen finns inte".
@@ -178,17 +178,17 @@ Alla svar har `Access-Control-Allow-Origin: *`. Ett vanligt `GET` kräver ingen 
 
 ## Home Assistant
 
-Verifierat mot Home Assistants dokumentation för [RESTful](https://www.home-assistant.io/integrations/rest/), [Template](https://www.home-assistant.io/integrations/template/) och automationer. Byt ut adressen mot din egen.
+**Enklast är integrationen Sophämtning**, som installeras via HACS. Den ger sensorer per avfallstyp, en kalender och en händelse när schemat ändras. Se [installationen](../integrations/home-assistant/README.md#installation-via-hacs).
 
 ### Utan kod: Remote Calendar
 
 Home Assistants inbyggda integration Remote Calendar (*Inställningar → Enheter och tjänster → Lägg till integration → Remote Calendar*) kan prenumerera på schemat. Fyll i ett namn och kalenderlänken, alltså adressens `links.ics` från API:t (samma som ICS-länken på sajten), till exempel `https://sopor.hardyson.se/ics/uppsala/storgatan-2_uppsala-4004688.ics`.
 
-Kalendern får heldagshändelser med titlar som `Sopor: Plastförpackningar + Metall` och `Sopor: Plastförpackningar + Glas (beräknat)`. Den fungerar med samma kalendertrigger och förskjutning som i [integrationen](../integrations/home-assistant/README.md#automation-kvällen-innan-kl-18). Integrationen är alternativet om du också vill ha sensorer, kunna dölja avfallstyper och få händelsen "Schemat ändrades".
+Kalendern får heldagshändelser med titlar som `Sopor: Plastförpackningar + Metall` och `Sopor: Plastförpackningar + Glas (beräknat)`. Den fungerar med samma kalendertrigger och förskjutning som i [integrationen](../integrations/home-assistant/README.md#automation-kvällen-innan-kl-18).
 
-### REST-sensor
+### Eget: REST-sensor
 
-`summary` blir sensorns tillstånd och `next` blir ett attribut med nästa hämtning per fraktion. Lägg i `configuration.yaml`:
+Vill du bygga själv kan en REST-sensor läsa adressen direkt. `summary` blir tillståndet och `next` ett attribut med nästa hämtning per fraktion. I `configuration.yaml`:
 
 ```yaml
 rest:
@@ -206,41 +206,10 @@ rest:
           - next
 ```
 
-Sensorn heter `sensor.sophamtning`, med tillståndet `Plast & metall – om 4 dagar` och attributen `today` och `next`. Ta inte med `events` som attribut. Det är en lång lista, och Home Assistant sparar bara attribut upp till 16 kB.
+- Mallen behåller förra tillståndet när svaret saknar `summary`, till exempel vid `502`. Vid nätverksfel blir sensorn `unavailable` tills nästa lyckade hämtning.
+- Ta inte med `events` som attribut. Det är en lång lista, och Home Assistant sparar bara attribut upp till 16 kB.
 
-**Vid fel.** Det här följer av Home Assistants källkod (`homeassistant/components/rest/data.py`) och dokumentation:
-
-- Nätverksfel och timeout ger `unavailable` (dokumentationen anger det för timeout, och i koden nollas svaret).
-- Ett svar med felstatus, till exempel Soporas `502`, kastas **inte** bort. Svarskroppen (felet i JSON-form) skickas till mallen som vanligt. En enkel `{{ value_json.summary }}` ger då inget användbart tillstånd.
-- Mallen ovan faller därför tillbaka på `this.state` (sensorns förra tillstånd, `this` finns i REST-sensorns mallar enligt dokumentationen) när svaret saknar `summary`. Då ska det senaste lyckade tillståndet bestå vid 502 (mallen är inte provkörd i en riktig Home Assistant). Vid nätverksfel blir sensorn ändå `unavailable` tills nästa lyckade hämtning.
-- Attributen (`today`, `next`) kan försvinna eller nollställas under ett felsvar. Det har inte verifierats. Mallsensorn och automationen nedan har `or []` och blir då `unavailable` respektive skickar ingen notis, så inget går sönder.
-
-Är svaret ett tomt schema är tillståndet `Inga kommande hämtningar` och `next` är `[]`.
-
-### Mallsensor: dagar kvar för en fraktion
-
-`daysUntil` i svaret är räknat vid hämtningen och kan vara en timme gammalt. Räkna därför om från `date`. Den här sensorn visar dagar till nästa restavfall:
-
-```yaml
-template:
-  - sensor:
-      - name: "Dagar till restavfall"
-        unique_id: sopor_dagar_rest
-        unit_of_measurement: "d"
-        availability: >
-          {{ (state_attr('sensor.sophamtning', 'next') or [])
-             | selectattr('fraction', 'eq', 'rest') | list | count > 0 }}
-        state: >
-          {% set n = (state_attr('sensor.sophamtning', 'next') or [])
-             | selectattr('fraction', 'eq', 'rest') | first %}
-          {{ (strptime(n.date, '%Y-%m-%d').date() - now().date()).days }}
-```
-
-Byt `rest` mot `mat`, `papper`, `plast`, `glas`, `metall` eller `tidningar`. Har adressen inte fraktionen, eller inga hämtningar väntar (`next` är `[]`), blir sensorn `unavailable`.
-
-### Automation: notis kl. 19 kvällen innan
-
-Skickar en notis när någon fraktion hämtas i morgon:
+En notis kvällen innan, när någon fraktion hämtas i morgon:
 
 ```yaml
 automation:
@@ -262,22 +231,18 @@ automation:
                | selectattr('isTomorrow') | map(attribute='name') | join(', ') }}
 ```
 
-Villkoret går på `isTomorrow` i alla poster, inte bara `next[0]`. Första posten är den tidigaste hämtningen, och det kan vara dagens.
+Titta på `isTomorrow` i alla poster, inte bara `next[0]`. Första posten är den tidigaste hämtningen, och det kan vara dagens.
 
 ## Homey
 
-**Appen Sophämtning** för Homey Pro är under utveckling i [`integrations/homey/`](../integrations/homey/). Med den lägger man till adressen genom att söka, och får färdiga flödeskort och en widget utan egen kod. Den är inte publicerad i Homey App Store än, så den går bara att installera med Homeys CLI (se [README](../README.md#homey-integrationshomey)). Tills den är publicerad fungerar receptet nedan.
+**Enklast är appen Sophämtning**, som finns som testversion i Homey App Store. Den ger enheter per adress och sopkärl, flödeskort och en widget utan egen kod. Se [appens README](../integrations/homey/README.md).
 
-### Med HomeyScript
+### Eget: HomeyScript
 
-Homey har inget inbyggt flödeskort som hämtar JSON från en URL och plockar ut ett fält. Appen "HTTP request flow cards" ska enligt användare på Homeys forum inte fungera på nyare Homey Pro. Det enklaste som fungerar är appen **HomeyScript** (gratis från Homey App Store, för Homey Pro, Homey Pro mini, Homey Cloud och Self-Hosted Server).
-
-HomeyScripts flödeskort heter enligt appens sida bland annat *Run Code and return Yes/No-tag*, *Run Code and return Text-tag* och *Run Code and return Number-tag*. Namnen kan vara översatta i din app.
-
-Ett flöde som varje kväll kl. 19 säger till om det hämtas något i morgon:
+Vill du bygga själv går det med appen **HomeyScript**. Ett flöde som varje kväll kl. 19 säger till om det hämtas något i morgon:
 
 1. **När:** ett tidskort som startar flödet varje dag kl. 19:00.
-2. **Då:** HomeyScript, *Run Code and return Yes/No-tag*, med koden:
+2. **Då:** HomeyScript, *Run Code and return Yes/No-tag* (namnet kan vara översatt i din app), med koden:
 
    ```js
    const res = await fetch('https://sopor.hardyson.se/api/v1/adress/uppsala/storgatan-2_uppsala-4004688');
@@ -288,15 +253,9 @@ Ett flöde som varje kväll kl. 19 säger till om det hämtas något i morgon:
 
 3. **Då:** skicka en notis, med ett villkor som kräver att taggen från skriptet är *Ja*.
 
-Vill du ha namnen i notisen kör du i stället *Run Code and return Text-tag* och returnerar:
+Vill du ha namnen i notisen kör du i stället *Run Code and return Text-tag* och returnerar `data.next.filter((n) => n.isTomorrow).map((n) => n.name).join(', ')`.
 
-```js
-return data.next.filter((n) => n.isTomorrow).map((n) => n.name).join(', ');
-```
-
-Samma sökväg som i Home Assistant: `next[].isTomorrow`. Använd `.some(…)` och inte bara `next[0].isTomorrow`. Första posten är den tidigaste hämtningen, och det kan vara dagens, så hämtas något i dag och något annat i morgon missar du i morgon-hämtningen. Skriptet kör bara en gång per dag här, vilket håller dig långt under gränsen på en fråga i timmen.
-
-Flödeskort som tar emot JSON-text och pekar ut ett fält med JSON-sökväg finns i community-appar. Kontrollera själv att en sådan app fungerar på just din Homey innan du bygger på den.
+Som i Home Assistant: titta på `isTomorrow` i alla poster, inte bara `next[0]`.
 
 ## Bygga en integration
 
