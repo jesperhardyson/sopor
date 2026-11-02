@@ -14,7 +14,7 @@ Sopor är en **inofficiell** hobbytjänst. Den är inte kopplad till någon komm
 
 Sopor är öppen källkod, och bidrag är välkomna, särskilt **fler kommuner**:
 
-- Saknar du din kommun? Börja med [guiden om att hitta kommunens data](docs/kommuner/hitta-kommunens-data.md), och lägg sedan in den enligt [Lägga till en kommun](#lägga-till-en-kommun). Använd bara publika källor, som kommunens hämtschema eller en publik söktjänst.
+- Saknar du din kommun? Följ [checklistan för att lägga till en kommun](docs/kommuner/lagga-till-kommun.md). Använd bara publika källor, som kommunens hämtschema eller en publik söktjänst.
 - Hittat ett fel i schemat? Öppna ett issue med adress, datum och länk till kommunens uppgift.
 - Kör `npm run lint && npm test && npm run build` innan du skickar en pull request. GitHub Actions kör samma kontroller på varje pull request, och stoppar även ändringar som tar bort eller byter namn på ett befintligt adress-id (`npm run check:ids`).
 - Vercel kör testerna före varje bygge, så röda tester når aldrig produktion.
@@ -55,7 +55,7 @@ src/sources/         källregistret: avfallsbolag/kommuner, system och vilka kom
 src/server/          logiken bakom Vercel-funktionerna (EDP-klient, sök, schema, kalenderfiler)
 api/                 Vercel-funktionerna (sok, schema, ics och det publika API:t i api/v1/)
 data/osm/            gatu- och ortnamn per kommun från OpenStreetMap (ODbL)
-src/providers/       WasteProvider-gränssnittet och implementationerna (static nu)
+src/providers/       WasteProvider-gränssnittet: static (filer) och api (live via Vercel-funktionerna)
 src/ui/              React-sidor och komponenter
 src/components/ui/   shadcn/ui-primitiver
 docs/design/         designen (Pencil, .pen)
@@ -93,7 +93,7 @@ UI:t pratar bara med `WasteProvider` (`src/providers/types.ts`). Det vet aldrig 
 }
 ```
 
-- `fractions` får vara `rest`, `mat`, `papper`, `plast`, `glas` eller `metall` (`src/domain/fractions.ts`).
+- `fractions` får vara `rest`, `mat`, `papper`, `plast`, `glas`, `metall`, `tidningar` eller `karl` (kärl med flera fraktioner, som fyrfack) (`src/domain/fractions.ts`).
 - `bins` är valfritt och visas inte på sajten i dag, eftersom vi inte vet vilket abonnemang varje hushåll har.
 - Avvikelser, till exempel helgdagar, skrivs in som de står i kommunens schema. Sopor räknar inte ut helgdagar.
 - `validFrom` och `validTo` anger vilka datum filen gäller. Ett schema kan gå över årsskiftet.
@@ -113,7 +113,9 @@ Build-skriptet stoppar med ett tydligt fel vid okända fraktioner, ogiltiga datu
 
 ## Uppdatera årets schema
 
-1. Skapa `data/avesta/<nytt år>/` med `schedules.json` och `addresses.csv`.
+Gäller källor med statisk data (`config: { system: 'static' }`). EDP-källorna hämtas live och behöver inget.
+
+1. Skapa `data/<källans id>/<nytt år>/` med `schedules.json` och `addresses.csv`.
 2. Sätt `validFrom` till det datum då det nya schemat börjar gälla. Från det datumet ersätter den nya filen den gamla, även för adresser som byter trakt.
 3. Behåll samma adress-id som förra året. Nya adresser får nya id.
 4. Låt förra årets mapp ligga kvar, eftersom kalendrar visar historiken.
@@ -125,30 +127,19 @@ Påminnelsen kvällen innan (`VALARM`) följer med i filen, men Google ignorerar
 
 ## Lägga till en kommun
 
-1. Lägg till källan i `src/sources/index.ts` (id, namn, länk, kommuner med SCB-kod, `config: { system: 'static' }`).
-2. Skapa `data/<id>/<år>/` med de två filerna.
-3. Kör `npm test && npm run build`. Kommunens adresser dyker upp i sökningen och på Om-sidan.
+Följ [checklistan i `docs/kommuner/lagga-till-kommun.md`](docs/kommuner/lagga-till-kommun.md). Den börjar med ett beslutsträd: har kommunen en EDP-söktjänst med data (en rad i registret), finns schemat som statisk data, eller behöver kopplingen adress → område begäras ut som allmän handling.
 
-## Lägga till en EDP-källa
+`npm run check:source -- <värd> "Storgatan 1"` provar om en värd har EDP Futures publika söktjänst, med samma kod som sajten.
 
-Många kommuner och avfallsbolag kör EDP Future med den publika modulen SimpleWastePickup. Då räcker en rad i registret:
+## Lägga till en ny typ av datakälla
 
-1. Testa att modulen har data (se [guiden](docs/kommuner/hitta-kommunens-data.md#steg-2-finns-en-publik-söktjänst-per-adress)).
-2. Lägg till källan i `src/sources/index.ts` med `config: { system: 'edp', baseUrl: 'https://<värd>/<sökväg till FutureWeb>' }` och alla kommuner den täcker (SCB-kod och namn).
-3. Kör `npm run build:streets` för att hämta gatunamnen för de nya kommunerna från OpenStreetMap, och checka in `data/osm/`.
-4. Kör `npm test && npm run build` och prova sökningen i `npm run dev`.
-
-EDP ger nästa tömning och en frekvens. Sopor räknar fram kommande datum i 12 månader och märker dem *beräknat*; datum som infaller på röda dagar får en varning.
-
-## Lägga till en ny datakälla (provider-typ)
-
-Exempel: EDP Future "SimpleWastePickup", som många kommuner använder.
+För ett nytt system, alltså inte EDP Future (som redan finns) eller statiska filer. Exempel: ett annat kundsystem med en publik söktjänst per adress.
 
 1. Lägg till en variant i `SourceConfig` (`src/sources/index.ts`).
 2. Implementera `WasteProvider` i `src/providers/<typ>.ts` och koppla in den i `providerFor` (`src/providers/registry.ts`).
-3. Om källan saknar CORS (troligt för EDP) behövs en liten Vercel Function i `/api` som proxar och cachar, och som genererar `.ics` live med `buildIcs` från `src/domain/ics.ts`. Providerns `icsUrl` pekar då på funktionen.
+3. Saknar källan CORS-headers behövs en proxy i Vercel-funktionerna. Lägg logiken i `src/server/` (se `edp.ts` och `handlers.ts`) och generera `.ics` live med `buildIcs` från `src/domain/ics.ts`. Providerns `icsUrl` pekar då på funktionen.
 
-Inget utanför `src/providers/` och `scripts/` får känna till trakter, EDP eller andra källdetaljer.
+Inget utanför `src/providers/`, `src/server/`, `src/data/` och `scripts/` får känna till trakter, EDP eller andra källdetaljer (regel 1 i `AGENTS.md`).
 
 ## Integrationer
 
