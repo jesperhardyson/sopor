@@ -10,6 +10,9 @@ Sopor använder bara **publika källor**. Tjänster som kräver inloggning, som 
 Har kommunen en EDP-söktjänst med data?          npm run check:source -- <värd> "Storgatan 1"
 ├─ Ja ─────────────────────────────────────────► A. EDP: en rad i registret
 └─ Nej
+   Har kommunen en annan publik söktjänst per adress (utan inloggning)?
+   ├─ Ja ──────────────────────────────────────► D. Ny källtyp (som Stockholm)
+   └─ Nej
    Finns schemat publikt per område (trakt, tur, veckodag)?
    ├─ Nej ─────────────────────────────────────► Öppna ett ärende om ny kommun och berätta vad du hittat
    └─ Ja
@@ -57,6 +60,16 @@ Varje år behöver schemat förnyas, se [Uppdatera årets schema](#uppdatera-år
 Listan över vilka adresser som hör till vilket område är oftast en allmän handling. Skicka en begäran till kommunens eller avfallsbolagets registrator, med exempeltexten i [guiden](hitta-kommunens-data.md#steg-4-begär-kopplingen-från-kommunen). Matcha aldrig adresser mot områden på egen hand utifrån ortnamn eller kartor. En gissning som blir fel får folk att missa sin tömning.
 
 Skriv in kommunen i tabellen i guiden med läget "Begärd som allmän handling", så att ingen annan gör samma sak. När tabellen har kommit fortsätter du med B.
+
+## D. Ny källtyp
+
+Stockholm Vatten och Avfall (`src/server/svoa.ts`, spec `docs/specs/2026-11-02-stockholm.md`) är mönstret för en källa med en egen söktjänst:
+
+- [ ] En klient i `src/server/<system>.ts` med sökning, schema och adress-id, testad mot sparade svar i `src/server/__fixtures__/`. Okänd form på svaret kastar `SourceError`, aldrig en tom lista.
+- [ ] En ny variant i `SourceConfig` och en gren i `searchLiveSource` (`src/server/handlers.ts`) och `lookupAddress` (`src/server/lookup.ts`). Ett id som inte längre ger träff ska ge 502, inte 404, så att kalenderprenumerationer inte töms.
+- [ ] En kontroll i bevakningen (`scripts/source-checks.ts`) och en kontrolladress i `PROBES`.
+- [ ] `npm run build:streets` för källans kommuner.
+- [ ] Berätta för källan att Sopor använder deras publika tjänst, med en kontaktadress (för Stockholm: ett mejl till SVOA:s kundtjänst, som förvaltaren skickar).
 
 ## Dataformatet
 

@@ -230,6 +230,19 @@ describe('ResultPage', () => {
     })
   })
 
+  it('visar källans besked när schemat är tomt (Stockholm: lägenheter)', async () => {
+    fake = makeProvider({
+      getAddress: async (id) => ({ ...villa, id, sourceId: 'stockholm', kommun: 'Stockholms kommun' }),
+      getSchedule: async () => ({ bins: [], events: [], updatedAt: '2026-11-02' }),
+    })
+    renderAt('/stockholm/drottninggatan-50_stockholm-11121')
+    expect(await screen.findByRole('heading', { name: 'I Stockholm visar Sopor bara villor och radhus' })).toBeInTheDocument()
+    expect(
+      screen.getByText('Bor du i lägenhet sköter fastighetsägaren sophämtningen. Fråga din hyresvärd eller bostadsrättsförening.'),
+    ).toBeInTheDocument()
+    expect(screen.queryByText('Inga kommande tömningar i schemat än')).toBeNull()
+  })
+
   it('visar ett tomt läge när alla tömningar har passerat', async () => {
     renderAt('/avesta/krylbo-storgatan-12b', '2027-03-01')
     await vi.waitFor(() => resolveSchedule!())

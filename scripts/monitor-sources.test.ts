@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { SOURCES, type Source } from '../src/sources/index.js'
+import { isLive, SOURCES, type Source } from '../src/sources/index.js'
 import { formatTable, PROBES, runChecks } from './monitor-sources'
 import type { SourceResult } from './source-checks'
 
@@ -16,10 +16,14 @@ const edp = (id: string): Source => ({
 const rest = { WasteType: 'Restavfall', NextWastePickup: '2026-11-10', WastePickupsPerYear: 26, WastePickupFrequency: 'Varannan vecka' }
 
 describe('kontrolladresserna', () => {
-  const live = SOURCES.filter((s) => s.config.system === 'edp').map((s) => s.id)
+  const live = SOURCES.filter(isLive).map((s) => s.id)
 
   it.each(live)('finns för %s. Lägg till en i PROBES i scripts/monitor-sources.ts', (id) => {
     expect(PROBES[id]).toBeTruthy()
+  })
+
+  it('har Stockholms kontrolladress', () => {
+    expect(PROBES.stockholm).toBe('Hjortronvägen 3, Bromma, 168 59')
   })
 
   it('finns bara för källor som finns', () => {

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { expandPickups } from './recurrence'
+import { addDays } from './dates'
+import { expandEvery, expandPickups } from './recurrence'
 
 describe('expandPickups', () => {
   it('räknar varannan vecka och märker kommande datum som beräknade', () => {
@@ -46,5 +47,27 @@ describe('expandPickups', () => {
     const r = expandPickups({ next: '2026-11-11', perYear: 26 })
     expect(r.at(-1)!.date <= '2027-11-11').toBe(true)
     expect(r.length).toBe(27)
+  })
+})
+
+describe('expandEvery', () => {
+  it('räknar fram var 14:e dag i ett år, med källans datum först', () => {
+    const dates = expandEvery({ next: '2026-11-04', stepDays: 14 })
+    expect(dates[0]).toEqual({ date: '2026-11-04', estimated: false })
+    expect(dates[1]).toEqual({ date: '2026-11-18', estimated: true })
+    expect(dates.at(-1)!.date <= addDays('2026-11-04', 365)).toBe(true)
+    expect(dates.length).toBeGreaterThan(25)
+  })
+
+  it('räknar bara fram datum i säsongens månader', () => {
+    const dates = expandEvery({ next: '2026-11-11', stepDays: 14, inMonths: [4, 5, 6, 7, 8, 9, 10, 11] }).map((d) => d.date)
+    expect(dates.filter((d) => ['12', '01', '02', '03'].includes(d.slice(5, 7)))).toEqual([])
+    const after = dates.find((d) => d > '2026-11-25')
+    expect(after?.slice(0, 7)).toBe('2027-04')
+  })
+
+  it('varnar för beräknade datum på helgdagar', () => {
+    const christmas = expandEvery({ next: '2026-12-11', stepDays: 14 }).find((d) => d.date === '2026-12-25')
+    expect(christmas).toEqual({ date: '2026-12-25', estimated: true, warning: 'Infaller på juldagen – kan flyttas.' })
   })
 })

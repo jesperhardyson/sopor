@@ -39,6 +39,11 @@ export function expandPickups(input: {
     dates.push(next)
   }
 
+  return withWarnings(dates, next)
+}
+
+/** Källans eget datum är bekräftat; framräknade datum på en röd dag får en varning. */
+function withWarnings(dates: string[], next: string): ExpandedPickup[] {
   return dates.map((date) => {
     if (date === next) return { date, estimated: false }
     const holiday = holidayOn(date)
@@ -46,4 +51,18 @@ export function expandPickups(input: {
       ? { date, estimated: true, warning: `Infaller på ${holiday.name} – kan flyttas.` }
       : { date, estimated: true }
   })
+}
+
+/**
+ * Var `stepDays`:e dag från `next` i `months` månader (Stockholm m.fl.). Med `inMonths` (1–12)
+ * räknas bara datum i de månaderna, för tömningar med säsong som "april-nov".
+ */
+export function expandEvery(input: { next: string; stepDays: number; months?: number; inMonths?: number[] }): ExpandedPickup[] {
+  const { next, stepDays, months = 12, inMonths } = input
+  const end = addDays(next, Math.round(months * 30.44))
+  const dates: string[] = []
+  for (let d = next; d <= end; d = addDays(d, stepDays)) {
+    if (d === next || !inMonths || inMonths.includes(Number(d.slice(5, 7)))) dates.push(d)
+  }
+  return withWarnings(dates, next)
 }

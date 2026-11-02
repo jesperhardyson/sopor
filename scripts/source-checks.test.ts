@@ -1,6 +1,9 @@
+import { readFileSync } from 'node:fs'
+import path from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
+import { SVOA_URL } from '../src/server/svoa.js'
 import type { Source } from '../src/sources/index.js'
-import { checkEdpSource, checkStaticSource, checkViaSite, unreachableFromHere } from './source-checks'
+import { checkEdpSource, checkSvoaSource, checkStaticSource, checkViaSite, unreachableFromHere } from './source-checks'
 
 const json = (body: unknown) =>
   new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json; charset=utf-8' } })
@@ -183,5 +186,63 @@ describe('checkStaticSource', () => {
 
   it('säger till när det inte finns någon datafil', () => {
     expect(checkStaticSource(staticSource, [], today)).toMatchObject({ state: 'schemat-tar-slut' })
+  })
+})
+
+describe('checkSvoaSource', () => {
+  const fixture = (name: string) => readFileSync(path.resolve(import.meta.dirname, '../src/server/__fixtures__', name), 'utf8')
+  const stockholm: Source = { ...source, id: 'stockholm', name: 'Stockholm Vatten och Avfall', config: { system: 'svoa' } }
+  const probe = 'Hjortronvägen 3, Bromma, 168 59'
+  const svoa = (addresses: unknown, schedule: unknown = fixture('svoa-schema.json')) =>
+    vi.fn(async (input: string | URL | Request) => {
+      const body = new URL(String(input)).pathname.endsWith('/AutoCompleteMe') ? addresses : schedule
+      if (body instanceof Error) throw body
+      return body instanceof Response ? body : new Response(typeof body === 'string' ? body : JSON.stringify(body), { headers: { 'Content-Type': 'application/json' } })
+    }) as unknown as typeof fetch
+  const checkSvoa = (fetchFn: typeof fetch) => checkSvoaSource(stockholm, probe, today, fetchFn)
+
+  it('fungerar med de sparade svaren', async () => {
+    expect(await checkSvoa(svoa(fixture('svoa-adresser.json')))).toMatchObject({
+      sourceId: 'stockholm',
+      state: 'fungerar',
+      baseUrl: SVOA_URL,
+      probe,
+      unknownWasteTypes: [],
+    })
+  })
+
+  it('svarar inte vid timeout', async () => {
+    expect((await checkSvoa(svoa(new TypeError('fetch failed')))).state).toBe('svarar-inte')
+  })
+
+  it('har nytt format när svaret har okänd form', async () => {
+    expect((await checkSvoa(svoa({ x: 1 }))).state).toBe('nytt-format')
+    expect((await checkSvoa(svoa(fixture('svoa-adresser.json'), { x: 1 }))).state).toBe('nytt-format')
+  })
+
+  it('är tom när adressökningen inte hittar något', async () => {
+    expect((await checkSvoa(svoa([]))).state).toBe('tom')
+  })
+
+  it('har nytt format när kontrolladressen inte längre matchar, som uppslaget kräver', async () => {
+    const changed = [{ value: 'Hjortronvägen 3A, Bromma, 168 59', data: '168 59' }]
+    const r = await checkSvoa(svoa(changed))
+    expect(r.state).toBe('nytt-format')
+    expect(r.error).toContain('Hjortronvägen 3, Bromma, 168 59')
+  })
+
+  it('har inga tömningar när kontrolladressen saknar villatjänst', async () => {
+    expect((await checkSvoa(svoa(fixture('svoa-adresser.json'), []))).state).toBe('inga-tomningar')
+  })
+
+  it('rapporterar okända grupper och frekvenser', async () => {
+    const schedule = [
+      { group: 'Kärl 1 - restavfall och matavfall', fetchFrequency: 'Var 14:e dag', executionDate: '2026-11-04' },
+      { group: 'Kärl 9 - farligt avfall', fetchFrequency: 'Varannan vecka', executionDate: '2026-11-05' },
+    ]
+    expect((await checkSvoa(svoa(fixture('svoa-adresser.json'), schedule))).unknownWasteTypes).toEqual([
+      'Kärl 9 - farligt avfall',
+      'Frekvens: Var 14:e dag',
+    ])
   })
 })
