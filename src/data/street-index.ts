@@ -106,3 +106,39 @@ export function pickLiveSources(shard: StreetShard | null, query: string, live: 
   if (candidates.length > 0) return candidates
   return submitted || /\d/.test(query) ? live : []
 }
+
+/** Frågan uppdelad: gatan som källorna söker på och platsen (ort eller kommun) som träffarna filtreras på. */
+export interface QueryParts {
+  street: string
+  place: string
+}
+
+/**
+ * "Storgatan 1 Uppsala" → gatan "storgatan 1" och platsen "uppsala". Källorna jämför bara början
+ * av adressen, så en plats efter gatan ger annars inga träffar. Platsen står efter ett kommatecken,
+ * efter husnumret (och en ensam husbokstav), eller utan nummer efter den längsta början som är ett
+ * känt gatunamn. Utan gatuindex gissas ingen plats utan nummer.
+ */
+export function splitPlace(shard: StreetShard | null, query: string): QueryParts {
+  const clean = (t: string) => t.toLowerCase().replace(/\s+/g, ' ').trim()
+  const comma = query.indexOf(',')
+  if (comma >= 0) return { street: clean(query.slice(0, comma)), place: clean(query.slice(comma + 1)) }
+
+  const words = clean(query).split(' ')
+  const split = (end: number) => ({ street: words.slice(0, end).join(' '), place: words.slice(end).join(' ') })
+  const number = words.findIndex((w) => /^\d/.test(w))
+  if (number > 0) return split(/^\p{L}$/u.test(words[number + 1] ?? '') ? number + 2 : number + 1)
+
+  const keys = shard ? Object.keys(shard) : []
+  for (let end = words.length; end > 0; end--) {
+    const prefix = normalize(words.slice(0, end).join(' '), false)
+    if (keys.some((k) => k.startsWith(prefix))) return split(end)
+  }
+  return split(words.length)
+}
+
+/** Om adressen ligger på platsen: början av orten eller kommunen. Utan plats matchar allt. */
+export function matchesPlace(a: { locality: string; kommun: string }, place: string): boolean {
+  const p = normalize(place, false)
+  return !p || [a.locality, a.kommun].some((name) => normalize(name, false).startsWith(p))
+}

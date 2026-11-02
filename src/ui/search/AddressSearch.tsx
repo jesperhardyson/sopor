@@ -1,11 +1,12 @@
 import { ChevronDown, LoaderCircle, MapPin, Search, X } from 'lucide-react'
 import { useEffect, useId, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
-import { groupByKommun, normalize } from '@/domain/search'
+import { groupByKommun, normalize, stableMerge } from '@/domain/search'
 import type { Address } from '@/domain/types'
 import { searchAll, suggestAll, warmUpSearch, type SearchOptions, type SearchResult } from '@/providers/registry'
 import { getSource } from '@/sources'
 import { cn } from '@/lib/utils'
+import { Skeleton } from '../result/ResultStates'
 import { NotFound } from './NotFound'
 
 type Lookup = (query: string, signal?: AbortSignal) => Promise<Address[]>
@@ -23,10 +24,17 @@ type State =
   | { kind: 'error' }
 
 const DEBOUNCE_MS = 150
+/** Skelettet visas först efter så här lång väntan, så att svar ur cachen inte får det att blinka. */
+const SKELETON_MS = 150
 /** Träffar som visas per kommun innan resten fälls ihop, när träffarna ligger i flera kommuner. */
 const PER_KOMMUN = 3
+/** Adressrader i listan innan resten fälls ihop bakom "Visa N till". */
+const MAX_ROWS = 15
+/** Nyckeln i `expanded` för hela listan (kommunnamn är aldrig tomma). */
+const ALL = ''
 
-type Item = { kind: 'address'; address: Address } | { kind: 'more'; kommun: string; count: number }
+/** `kommun` saknas på raden som fäller ut hela listan. */
+type Item = { kind: 'address'; address: Address } | { kind: 'more'; kommun?: string; count: number }
 interface Section {
   /** Saknas när alla träffar ligger i en kommun: då visas listan utan rubriker. */
   kommun?: string
@@ -35,6 +43,34 @@ interface Section {
 }
 
 function sections(results: Address[], expanded: Set<string>): Section[] {
+  const list = byKommun(results, expanded)
+  const rows = (section: Section) => section.items.filter((i) => i.kind === 'address').length
+  // Inget undantag för en ensam rad till: då skulle rad 16 försvinna när den 17:e kommer.
+  if (expanded.has(ALL) || list.reduce((n, section) => n + rows(section), 0) <= MAX_ROWS) return list
+  // Sena källor hamnar sist och fälls ihop här, så att listan inte växer medan man tittar.
+  let left = MAX_ROWS
+  let hidden = 0
+  const shown: Section[] = []
+  for (const section of list) {
+    // En kommun man själv fällt ut visas hel.
+    if (rows(section) <= left || (section.kommun && expanded.has(section.kommun))) {
+      shown.push(section)
+      left = Math.max(0, left - rows(section))
+    } else if (left > 0 && section.kommun) {
+      // En kommun som klipps behåller sin egen rad för resten.
+      const items: Item[] = [...section.items.slice(0, left), { kind: 'more', kommun: section.kommun, count: section.total - left }]
+      shown.push({ ...section, items })
+      left = 0
+    } else {
+      if (left > 0) shown.push({ ...section, items: section.items.slice(0, left) })
+      hidden += section.total - left
+      left = 0
+    }
+  }
+  return hidden > 0 ? [...shown, { total: hidden, items: [{ kind: 'more', count: hidden }] }] : shown
+}
+
+function byKommun(results: Address[], expanded: Set<string>): Section[] {
   const groups = groupByKommun(results)
   const toItems = (list: Address[]): Item[] => list.map((address) => ({ kind: 'address', address }))
   // Rubriker gör bara nytta när någon kommun har flera träffar. Annars står kommunen på raden.
@@ -49,6 +85,9 @@ function sections(results: Address[], expanded: Set<string>): Section[] {
     return { kommun, total: addresses.length, items }
   })
 }
+
+/** Raderna som redan syns behåller sin plats när nya träffar kommer in. */
+const keep = (prev: State, incoming: Address[]) => stableMerge(prev.kind === 'results' ? prev.results : [], incoming)
 
 export function AddressSearch({
   search = searchAll,
@@ -71,6 +110,7 @@ export function AddressSearch({
   const [active, setActive] = useState(-1)
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [slow, setSlow] = useState(false)
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
   const rootRef = useRef<HTMLDivElement>(null)
 
@@ -103,20 +143,23 @@ export function AddressSearch({
     if (normalize(query).length < 2) {
       setState({ kind: 'idle' })
       setLoading(false)
+      setSlow(false)
       return
     }
     const controller = new AbortController()
+    let skeleton: ReturnType<typeof setTimeout> | undefined
     const timer = setTimeout(async () => {
       try {
         setLoading(true)
+        skeleton = setTimeout(() => setSlow(true), SKELETON_MS)
         const { addresses: results, failed } = await search(query, controller.signal, (partial) => {
           if (!controller.signal.aborted && partial.addresses.length > 0) {
-            setState({ kind: 'results', query, results: partial.addresses, failed: [], pending: true })
+            setState((prev) => ({ kind: 'results', query, results: keep(prev, partial.addresses), failed: [], pending: true }))
           }
         })
         if (controller.signal.aborted) return
         if (results.length > 0) {
-          setState({ kind: 'results', query, results, failed })
+          setState((prev) => ({ kind: 'results', query, results: keep(prev, results), failed }))
         } else {
           const suggestions = await suggest(query, controller.signal)
           if (!controller.signal.aborted) setState({ kind: 'notFound', suggestions, failed })
@@ -125,20 +168,29 @@ export function AddressSearch({
       } catch {
         if (!controller.signal.aborted) setState({ kind: 'error' })
       } finally {
-        if (!controller.signal.aborted) setLoading(false)
+        clearTimeout(skeleton)
+        if (!controller.signal.aborted) {
+          setLoading(false)
+          setSlow(false)
+        }
       }
     }, DEBOUNCE_MS)
     return () => {
       clearTimeout(timer)
+      clearTimeout(skeleton)
       controller.abort()
     }
   }, [query, search, suggest])
 
-  const results = state.kind === 'results' ? state.results : []
+  // Förra träffarna står kvar medan man skriver vidare eller suddar, men inte när texten byts ut.
+  const related = (a: string, b: string) => normalize(a).startsWith(normalize(b)) || normalize(b).startsWith(normalize(a))
+  const results = state.kind === 'results' && related(query, state.query) ? state.results : []
   const list = sections(results, expanded)
   const items = list.flatMap((s) => s.items)
   const open = results.length > 0
   const showNotFound = state.kind === 'notFound' && (submitted || normalize(query).length >= 4)
+  // Bara när ingen lista syns: medan man skriver vidare står de förra träffarna kvar.
+  const showSkeleton = slow && !open && !showNotFound && state.kind !== 'error'
 
   function go(address: Address) {
     navigate(`/${address.sourceId}/${address.id}`)
@@ -146,7 +198,7 @@ export function AddressSearch({
 
   function choose(item: Item) {
     if (item.kind === 'address') go(item.address)
-    else setExpanded((prev) => new Set(prev).add(item.kommun))
+    else setExpanded((prev) => new Set(prev).add(item.kommun ?? ALL))
   }
 
   function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -189,14 +241,14 @@ export function AddressSearch({
     if (item.kind === 'more') {
       return (
         <li
-          key={`fler/${item.kommun}`}
+          key={`fler/${item.kommun ?? 'alla'}`}
           {...props}
           className={cn(
             'flex min-h-11 cursor-pointer items-center gap-1.5 rounded-xl py-2 pr-3 pl-[60px] text-sm font-extrabold text-primary',
             i === active && 'bg-surface-2',
           )}
         >
-          Visa {item.count} till i {item.kommun}
+          Visa {item.count} till{item.kommun && ` i ${item.kommun}`}
           <ChevronDown className="size-4" aria-hidden />
         </li>
       )
@@ -334,6 +386,28 @@ export function AddressSearch({
             {state.failed.map((id) => getSource(id)?.name ?? id).join(', ')} svarar inte just nu.
           </p>
         )}
+        </div>
+      )}
+
+      {showSkeleton && (
+        <div className="absolute inset-x-0 top-full z-20 mt-3 rounded-[18px] border border-border bg-surface p-1.5 shadow-[0_12px_32px_#1B231F1F]">
+          {[
+            ['w-[132px]', 'w-[150px]'],
+            ['w-[112px]', 'w-[120px]'],
+            ['w-[144px]', 'w-24'],
+          ].map(([street, meta]) => (
+            <div key={street} aria-hidden className="flex items-center gap-3 p-3">
+              <Skeleton className="size-9 shrink-0 rounded-full" />
+              <span className="flex flex-col gap-2">
+                <Skeleton className={cn('h-4 rounded-md', street)} />
+                <Skeleton className={cn('h-3 rounded-md', meta)} />
+              </span>
+            </div>
+          ))}
+          <p role="status" className="flex items-center gap-2 px-3 pt-2 pb-2.5 text-sm font-semibold text-text-2">
+            <LoaderCircle className="size-4 animate-spin text-primary" aria-hidden />
+            Söker adresser…
+          </p>
         </div>
       )}
 

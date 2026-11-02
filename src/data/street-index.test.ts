@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Source } from '@/sources'
-import { buildStreetIndex, candidateSources, pickLiveSources, shardKey, type OsmKommun } from './street-index'
+import { buildStreetIndex, candidateSources, matchesPlace, pickLiveSources, shardKey, splitPlace, type OsmKommun } from './street-index'
 
 const src = (id: string, kommuner: [string, string][]): Source => ({
   id,
@@ -109,5 +109,49 @@ describe('pickLiveSources', () => {
     expect(pickLiveSources(null, 'storgatan', live, false)).toEqual([])
     expect(pickLiveSources(null, 'storgatan 2', live, false)).toEqual(live)
     expect(pickLiveSources(null, 'storgatan', live, true)).toEqual(live)
+  })
+})
+
+describe('splitPlace', () => {
+  const index = buildStreetIndex(OSM, SOURCES)
+
+  it('tar platsen efter husnumret', () => {
+    expect(splitPlace(index.shards.st, 'Storgatan 1 Uppsala')).toEqual({ street: 'storgatan 1', place: 'uppsala' })
+    expect(splitPlace(index.shards.st, 'storgatan 12 b uppsala')).toEqual({ street: 'storgatan 12 b', place: 'uppsala' })
+    expect(splitPlace(index.shards.st, 'storgatan 2-4 upplands väsby')).toEqual({ street: 'storgatan 2-4', place: 'upplands väsby' })
+  })
+
+  it('tar platsen efter kommatecknet', () => {
+    expect(splitPlace(index.shards.st, 'storgatan 1, uppsala')).toEqual({ street: 'storgatan 1', place: 'uppsala' })
+    expect(splitPlace(index.shards.ku, 'kungsgatan, enköping')).toEqual({ street: 'kungsgatan', place: 'enköping' })
+  })
+
+  it('tar platsen efter ett känt gatunamn när numret saknas', () => {
+    expect(splitPlace(index.shards.ku, 'kungsgatan enköping')).toEqual({ street: 'kungsgatan', place: 'enköping' })
+  })
+
+  it('ger ingen plats för en gata som skrivs eller en adress utan plats', () => {
+    expect(splitPlace(index.shards.ku, 'kungsg')).toEqual({ street: 'kungsg', place: '' })
+    expect(splitPlace(index.shards.st, 'Storgatan  1 ')).toEqual({ street: 'storgatan 1', place: '' })
+    expect(splitPlace(index.shards.sk, 'Skultuna 4')).toEqual({ street: 'skultuna 4', place: '' })
+  })
+
+  it('gissar inte utan gatuindex när numret saknas', () => {
+    expect(splitPlace(null, 'kungsgatan enköping')).toEqual({ street: 'kungsgatan enköping', place: '' })
+  })
+})
+
+describe('matchesPlace', () => {
+  const marstrand = { locality: 'Marstrand', kommun: 'Kungälvs kommun' }
+
+  it('matchar början av orten eller kommunen', () => {
+    expect(matchesPlace(marstrand, 'marstr')).toBe(true)
+    expect(matchesPlace(marstrand, 'kungälv')).toBe(true)
+    expect(matchesPlace(marstrand, 'Kungalv')).toBe(false) // å, ä och ö är egna bokstäver
+    expect(matchesPlace(marstrand, 'uppsala')).toBe(false)
+  })
+
+  it('släpper igenom allt när platsen saknas', () => {
+    expect(matchesPlace(marstrand, '')).toBe(true)
   })
 })

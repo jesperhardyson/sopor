@@ -123,3 +123,16 @@ export function fairShare(addresses: Address[], limit: number): Address[] {
     return n > 0
   })
 }
+
+/**
+ * Slår ihop listan som redan syns med ett nytt svar, så att raderna inte hoppar medan källorna
+ * svarar och medan man skriver vidare: rader som syns och finns kvar står still, nya läggs sist.
+ * Samma adress känns igen på `sourceId` och `id`.
+ */
+export function stableMerge(shown: Address[], incoming: Address[]): Address[] {
+  const key = (a: Address) => `${a.sourceId}/${a.id}`
+  const fresh = new Map(incoming.map((a) => [key(a), a]))
+  const kept = shown.flatMap((a) => fresh.get(key(a)) ?? [])
+  const keptKeys = new Set(kept.map(key))
+  return [...kept, ...incoming.filter((a) => !keptKeys.has(key(a)))]
+}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { fairShare, groupByKommun, normalize, searchAddresses, suggest } from './search'
+import { fairShare, groupByKommun, normalize, searchAddresses, stableMerge, suggest } from './search'
 import type { Address } from './types'
 
 const a = (id: string, street: string, locality: string): Address => ({ id, street, locality, sourceId: 'avesta', kommun: 'Avesta kommun' })
@@ -121,5 +121,32 @@ describe('fairShare', () => {
   it('lämnar listan orörd när den ryms', () => {
     const list = [k('u1', 'Uppsala kommun'), k('b0', 'Borås kommun')]
     expect(fairShare(list, 12)).toEqual(list)
+  })
+})
+
+describe('stableMerge', () => {
+  const x = (id: string, sourceId = 'uppsala'): Address => ({ id, street: id, locality: 'x', sourceId, kommun: sourceId })
+  const ids = (list: Address[]) => list.map((r) => `${r.sourceId}/${r.id}`)
+
+  it('behåller ordningen för rader som redan syns och lägger nya sist', () => {
+    const shown = [x('a'), x('b', 'boras')]
+    expect(ids(stableMerge(shown, [x('c', 'orebro'), x('b', 'boras'), x('a')]))).toEqual(['uppsala/a', 'boras/b', 'orebro/c'])
+  })
+
+  it('tar bort rader som inte längre finns i svaret, t.ex. när man skrivit vidare', () => {
+    expect(ids(stableMerge([x('a'), x('b')], [x('b'), x('c')]))).toEqual(['uppsala/b', 'uppsala/c'])
+  })
+
+  it('skiljer på samma id från olika källor', () => {
+    expect(ids(stableMerge([x('a', 'boras')], [x('a'), x('a', 'boras')]))).toEqual(['boras/a', 'uppsala/a'])
+  })
+
+  it('använder det nya svarets data, t.ex. kommunen, för rader som står kvar', () => {
+    const fresh = { ...x('a'), kommun: 'Uppsala kommun' }
+    expect(stableMerge([x('a')], [fresh])[0].kommun).toBe('Uppsala kommun')
+  })
+
+  it('ger det nya svaret som det är när inget syns', () => {
+    expect(ids(stableMerge([], [x('b'), x('a')]))).toEqual(['uppsala/b', 'uppsala/a'])
   })
 })

@@ -217,7 +217,7 @@
             "name": "q",
             "in": "query",
             "required": true,
-            "description": "Sökfras, minst tre tecken, t.ex. \"storgatan 2\".",
+            "description": "Sökfras, minst tre tecken, t.ex. \"storgatan 2\". Ort eller kommun får stå efter gatan: \"storgatan 2 uppsala\".",
             "schema": {
               "type": "string",
               "minLength": 3
