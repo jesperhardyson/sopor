@@ -3,6 +3,9 @@ import type { FractionId } from '../domain/types.js'
 /** Ordningen spelar roll: "matavfall" ska inte fångas av något bredare mönster först. */
 const PATTERNS: [RegExp, FractionId][] = [
   [/^rest/, 'rest'],
+  // Kungälv kallar restavfallet "Osorterat", Boden "Brännbart" (matavfallet har eget kärl där).
+  [/^osorterat/, 'rest'],
+  [/^brännbart/, 'rest'],
   [/^mat/, 'mat'],
   [/^papp/, 'papper'],
   [/^plast/, 'plast'],
