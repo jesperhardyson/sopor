@@ -4,7 +4,10 @@ import { MemoryRouter, Route, Routes, useParams } from 'react-router'
 import { describe, expect, it, vi } from 'vitest'
 import { searchAddresses, suggest } from '@/domain/search'
 import type { Address } from '@/domain/types'
+import { reportMissingKommun } from '@/lib/analytics'
 import { AddressSearch } from './AddressSearch'
+
+vi.mock('@/lib/analytics', () => ({ reportMissingKommun: vi.fn() }))
 
 const a = (id: string, street: string, locality: string): Address => ({ id, street, locality, sourceId: 'avesta', kommun: 'Avesta kommun' })
 const ADDRESSES = [
@@ -241,6 +244,18 @@ describe('AddressSearch', () => {
     expect(screen.getByText(/Adressen ligger i Hedemora kommun, som Sopor inte har än/)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Tipsa om din kommun' })).toHaveAttribute('href', '/bidra')
     expect(screen.queryByText('Vi hittade inte adressen')).toBeNull()
+  })
+
+  it('räknar sökningen när kommunen saknas, men inte vanliga felstavningar', async () => {
+    vi.mocked(reportMissingKommun).mockClear()
+    const input = setup()
+    await userEvent.type(input, 'Storgtan 12{Enter}')
+    await screen.findByText('Vi hittade inte adressen')
+    expect(reportMissingKommun).not.toHaveBeenCalled()
+    await userEvent.clear(input)
+    await userEvent.type(input, 'Storgatan 12, Hedemora{Enter}')
+    await screen.findByRole('heading', { name: 'Vi finns inte i Hedemora kommun än' })
+    expect(reportMissingKommun).toHaveBeenCalledWith(['Hedemora kommun'])
   })
 
   it('räknar upp kommunerna när orten ligger i flera', async () => {
