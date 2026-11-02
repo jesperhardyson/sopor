@@ -8,5 +8,5 @@
 
 ## Kontroll
 
-- [ ] `npm test` och `npm run build` går igenom
+- [ ] `npm run lint && npm test && npm run build` går igenom
 - [ ] Adress-id har inte ändrats eller återanvänts

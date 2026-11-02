@@ -1,8 +1,28 @@
-# Sopor för Homey
+# Sophämtning för Homey
 
-Homey Pro-app (SDK v3, TypeScript som ESM) som visar sophämtningen för en adress och ger flödeskort. Specen finns i `docs/specs/2026-10-31-sopor-homey-app.md`.
+Appen **Sophämtning** för Homey Pro visar sophämtningen för en adress och ger flödeskort för påminnelser. Datan kommer från [Sopor](https://sopor.hardyson.se).
 
-Appen är ett eget npm-paket och använder bara det publika API:t (`https://sopor.hardyson.se/api/v1`). Den importerar ingenting från repots `src/`.
+## Installera
+
+Appen finns som testversion i Homey App Store: [homey.app/a/se.hardyson.sopor/test](https://homey.app/a/se.hardyson.sopor/test/). Lägg sedan till enheten *Adress* och sök upp din adress.
+
+## Det här får du
+
+- **Adress:** en enhet per adress. Den visar nästa hämtning, "Dagar kvar", "I morgon" och en rad per avfallstyp. Avfallstyper du inte har kan döljas.
+- **Sopkärl:** en enhet per kärl, med de avfallstyper du väljer. Den visar nästa tömning och har knappen "Utställt", som slås av natten efter tömningen.
+- **Flödeskort:**
+  - *När:* sopor hämtas i morgon (vid enhetens påminnelsetid) eller i dag (vid morgontiden), hämtschemat ändrades, ett sopkärl töms i morgon eller i dag, eller ställdes ut.
+  - *Och:* en avfallstyp hämtas (inte) i dag, i morgon, i övermorgon eller om N dagar, och ett sopkärl är (inte) utställt.
+  - *Då:* uppdatera hämtschemat, markera ett sopkärl som utställt eller intaget, och "vilka sopor hämtas …?" (Advanced Flow).
+- **Widget:** "Nästa hämtning" för Homeys dashboards.
+
+Vilka kommuner som finns syns på [sopor.hardyson.se/bidra](https://sopor.hardyson.se/bidra#kommuner).
+
+## Utveckling
+
+Appen (SDK v3, TypeScript som ESM) är ett eget npm-paket och använder bara det publika API:t (`https://sopor.hardyson.se/api/v1`). Den importerar ingenting från repots `src/`. Specen finns i `docs/specs/2026-10-31-sopor-homey-app.md` och, för kärlen, `docs/specs/2026-11-01-homey-karl.md`.
+
+För att installera från källkoden på en egen Homey Pro behövs Homeys CLI: `npm install -g homey && homey login && homey select`.
 
 ```bash
 cd integrations/homey
@@ -35,6 +55,8 @@ git push && git push origin homey-v0.4.2
 - **Varje natt** kör samma arbetsflöde `npm run smoke` mot produktions-API:t. En källa som inte svarar ger en varning, men ett ändrat svarsformat ger ett fel.
 - **Testet `scripts/boundary.test.mts`** fäller bygget om appen importerar något utanför `integrations/homey/` (regel 8).
 - **`.homeyignore`** håller skript och tester utanför appen som laddas upp.
+
+## Struktur
 
 - `lib/` innehåller ren logik utan Homey-beroenden. Allt som går att testa ligger där.
 - `app.mts` och drivrutinerna i `drivers/adress/` och `drivers/karl/` kopplar logiken till Homey och hålls tunna. Kärlen hämtar inget själva: de läser adressenhetens sparade schema och får veta om nya scheman genom `app.schedules`.

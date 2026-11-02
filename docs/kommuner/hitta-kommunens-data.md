@@ -26,7 +26,7 @@ Sopor använder bara **publika källor**. Tjänster som kräver inloggning, som 
 
 Många kommuner och VA-bolag använder kundsystemet **EDP Future**. Det har en publik modul för hämtschema, *SimpleWastePickup*, som inte kräver inloggning. Finns den med data kan Sopor hämta schemat direkt per adress, utan datafiler.
 
-Kommunens "Mina sidor" ligger ofta på en adress som `minasidor.<bolag>.se`. Prova värden med skriptet `check:source` (kräver Node, se [CONTRIBUTING.md](../../CONTRIBUTING.md)). Det använder samma kod som sajten:
+Kommunens "Mina sidor" ligger ofta på en adress som `minasidor.<bolag>.se`. Prova värden med skriptet `check:source` (kräver Node, se [Kom igång](../../README.md#kom-igång)). Det använder samma kod som sajten:
 
 ```bash
 npm run check:source -- minasidor.vivab.info "Storgatan 1" --ort Varberg

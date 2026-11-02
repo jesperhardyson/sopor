@@ -40,7 +40,7 @@ EDP ger nästa tömning och en frekvens. Sopor räknar fram kommande datum i 12 
 
 ## B. Statisk data
 
-Schemat och kopplingen adress → område läggs in som filer i repot. Formatet beskrivs i [README](../../README.md#dataformatet).
+Schemat och kopplingen adress → område läggs in som filer i repot. Formatet beskrivs [längre ner](#dataformatet).
 
 - [ ] Lägg till källan i `ALL_SOURCES` i `src/sources/index.ts` som ovan, men med `config: { system: 'static' }`.
 - [ ] Skapa `data/<id>/<år>/schedules.json` och `data/<id>/<år>/addresses.csv`. Skriv in flyttade tömningar vid helgdagar som de står i kommunens schema.
@@ -49,13 +49,69 @@ Schemat och kopplingen adress → område läggs in som filer i repot. Formatet 
 - [ ] Prova några adresser i `npm run dev`.
 - [ ] Ta bort kommunens rad ur tabellen i guiden, som för A.
 
-Varje år behöver schemat förnyas, se [Uppdatera årets schema](../../README.md#uppdatera-årets-schema).
+Varje år behöver schemat förnyas, se [Uppdatera årets schema](#uppdatera-årets-schema).
 
 ## C. Begär ut kopplingen
 
 Listan över vilka adresser som hör till vilket område är oftast en allmän handling. Skicka en begäran till kommunens eller avfallsbolagets registrator, med exempeltexten i [guiden](hitta-kommunens-data.md#steg-4-begär-kopplingen-från-kommunen). Matcha aldrig adresser mot områden på egen hand utifrån ortnamn eller kartor. En gissning som blir fel får folk att missa sin tömning.
 
 Skriv in kommunen i tabellen i guiden med läget "Begärd som allmän handling", så att ingen annan gör samma sak. När tabellen har kommit fortsätter du med B.
+
+## Dataformatet
+
+Gäller bara statiska källor (B).
+
+### `data/<id>/<år>/schedules.json`
+
+```json
+{
+  "year": 2026,
+  "source": "Avesta Vatten och Avfall, hämtschema 2026",
+  "validFrom": "2026-01-01",
+  "validTo": "2027-01-10",
+  "updatedAt": "2026-10-29",
+  "note": "Påminnelse: ställ ut kärlen senast 06.00 på tömningsdagen.",
+  "schedules": {
+    "onsdag-jamn": {
+      "name": "Trakt 4 – onsdag, varannan vecka",
+      "bins": [{ "fraction": "rest", "sizeLiters": 190, "frequencyText": "Var 6:e vecka · onsdagar" }],
+      "events": [
+        { "date": "2026-11-11", "fractions": ["rest", "mat"] },
+        { "date": "2027-01-07", "fractions": ["papper", "mat"],
+          "deviation": { "originalDate": "2027-01-06", "reason": "trettondedag jul" } }
+      ]
+    }
+  }
+}
+```
+
+- `fractions` får vara `rest`, `mat`, `papper`, `plast`, `glas`, `metall`, `tidningar` eller `karl` (kärl med flera fraktioner, som fyrfack). Listan finns i `src/domain/fractions.ts`.
+- `bins` är valfritt och visas inte på sajten, eftersom vi inte vet vilket abonnemang varje hushåll har.
+- Avvikelser, till exempel vid helgdagar, skrivs in som de står i kommunens schema. Sopor räknar inte ut helgdagar själv.
+- `validFrom` och `validTo` anger vilka datum filen gäller. Ett schema kan gå över årsskiftet.
+
+### `data/<id>/<år>/addresses.csv`
+
+```csv
+# Rader som börjar med # är kommentarer
+id,street,locality,schedule
+krylbo-storgatan-12b,Storgatan 12 B,Krylbo,onsdag-jamn
+```
+
+- `id` är adressens stabila id, `<ort>-<gata>-<nummer><bokstav>` utan å, ä och ö. Det används i URL:en och i kalenderprenumerationen. **Ett id får aldrig ändras eller återanvändas**, inte heller om stavningen av gatan rättas.
+- `schedule` pekar på en nyckel i samma års `schedules.json`.
+
+## Uppdatera årets schema
+
+Gäller statiska källor. EDP-källorna hämtas live och behöver inget.
+
+- [ ] Skapa `data/<id>/<nytt år>/` med `schedules.json` och `addresses.csv`.
+- [ ] Sätt `validFrom` till det datum då det nya schemat börjar gälla. Från det datumet ersätter den nya filen den gamla, även för adresser som byter trakt.
+- [ ] Behåll samma adress-id som förra året. Nya adresser får nya id.
+- [ ] Låt förra årets mapp ligga kvar, eftersom kalendrar visar historiken.
+- [ ] Kör `npm run lint && npm test && npm run build` och kontrollera några adresser i `npm run dev`.
+
+Prenumererade kalendrar hämtar den nya filen själva.
 
 ## Pull request
 

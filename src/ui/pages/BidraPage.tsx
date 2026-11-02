@@ -138,8 +138,8 @@ export function BidraPage() {
           För utvecklare
         </h2>
         <p className={body}>
-          Hur du testar om kommunen har en publik söktjänst, dataformatet och vad vi vet om varje kommun finns i den
-          tekniska guiden.
+          Hur du testar om kommunen har en publik söktjänst, och vad vi vet om varje kommun, finns i den tekniska
+          guiden. Den länkar vidare till checklistan för att lägga in kommunen.
         </p>
         <a
           href={SITE.dataGuideUrl}
