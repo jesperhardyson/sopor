@@ -63,7 +63,8 @@ export function queryFromSvoaId(id: string): { query: string; postcode: string }
 Format: gatan, orten och postnumret, kodade som EDP:s id (`encode` i `src/server/edp.ts`, som då exporteras), med postnumret utan mellanslag sist i stället för EDP:s byggnads-id. Exempel: `hjortronvägen-3_bromma-16859`. Uppslaget kan därför återanvända `queryFromAddressId`.
 
 - Id:t får aldrig ändra format (AGENTS.md regel 3). Ett test låser exemplet ovan.
-- Uppslag från id: `queryFromSvoaId` ger söksträngen `hjortronvägen 3` och postnumret `16859`. `svoaSearch` körs med söksträngen, och den träff vars `svoaAddressId` är lika med id:t används. Ingen träff ger 404.
+- Uppslag från id: `queryFromSvoaId` ger söksträngen `hjortronvägen 3` och postnumret `16859`. `svoaSearch` körs med söksträngen, och den träff vars gata och postnummer är samma som id:ts används. Orten jämförs inte, så att en ändrad stavning av orten inte tappar adressen.
+- **Ingen träff ger 502, inte 404** (se Om källan ändras).
 
 ### Fraktioner
 
@@ -93,6 +94,22 @@ Okända grupper blir `karl` med källans text, som för EDP.
 
 Okänd frekvens ger bara källans eget datum. Helgdagar hanteras som för EDP: ett beräknat datum på en helgdag får en varning, inte ett flyttat datum.
 
+## Om källan ändras
+
+Tjänsten är inte dokumenterad och har redan bytt format en gång. Grundregeln: **när Sopor inte förstår svaret visar vi hellre ett fel, eller det senast kända schemat, än fel datum.** Ett fel syns och går över; fel datum gör att någon missar en tömning.
+
+| Ändring hos SVOA | Vad användaren märker | Hur |
+|---|---|---|
+| Nytt fältnamn eller ny form på svaret | Sparade adresser visar senast hämtade schemat med varning (#47). Andra ser "Schemat gick inte att hämta". Kalenderprenumerationer behåller det de har. | `svoaSearch` och `svoaSchedule` kastar `SourceError` för okänd form, även för `AutoCompleteMe`. Aldrig en tom lista, som skulle tolkas som "inga adresser" eller "inget schema". Lookup ger 502, och `handleIcs` svarar 502 så att kalenderappen behåller sina händelser. |
+| Datum i ett annat format | Som ovan | Ett `executionDate` som inte är `YYYY-MM-DD` kastar `SourceError`. Gruppen hoppas inte över i tysthet. |
+| Adresserna skrivs annorlunda (ort, postnummer, versaler) | Ingenting, så länge gata, nummer och postnummer finns kvar | Matchning på gata och postnummer (se Adress-id). Ger det ändå ingen träff blir det **502, inte 404**: en 404 från en live-källa ersätter hela kalenderprenumerationen med en uppmaning att söka upp adressen igen (`buildNoticeIcs`), och det får inte hända alla stockholmare samtidigt för att SVOA ändrat en stavning. |
+| Ny eller omdöpt kärlgrupp | Kärlet visas som "Kärl" med SVOA:s egen text | `mapWasteType` som för EDP. Bevakningen öppnar ett ärende om okända avfallstyper. |
+| Ny frekvenstext | Bara nästa datum visas, inga beräknade | Okänd frekvens ger bara källans eget datum, aldrig en gissning. Bevakningen räknar okända frekvenser som okända avfallstyper (samma ärende, frekvensen i texten). |
+| Ny adress till tjänsten (404) | Som "nytt fältnamn" | Bevakningen öppnar ett ärende om nytt format. |
+| Tjänsten stängs | Som ovan, tills källan döljs | `hidden: true` på källan tar bort Stockholm ur sökningen. Kalenderfilerna svarar då 404 utan uppmaning, eftersom källan är okänd. |
+
+Senast kända schemat finns bara i webbläsaren för sparade adresser (#47); Sopor har ingen databas. CDN:en (`s-maxage` och `stale-while-revalidate` i `handlers.ts`) visar ett tidigare svar en tid, men Vercel dokumenterar inte att ett gammalt svar visas när en ny hämtning misslyckas, så specen räknar inte med det.
+
 ## Sökning och sajten
 
 - `handleSearch` (`src/server/handlers.ts`) frågar `svoa`-källor med `svoaSearch`, på samma sätt som EDP-källor. `edpSources` byter namn till `liveSources` och tar med båda typerna.
@@ -112,13 +129,14 @@ Texten ligger i källan, som ett nytt valfritt fält: `Source.emptyScheduleNote?
 
 ## Bevakningen och integrationerna
 
-- **Bevakningen** (#50): `checkSvoaSource` i `scripts/source-checks.ts` med samma lägen som EDP, och kontrolladressen `stockholm: 'Hjortronvägen 3, Bromma, 168 59'` i `PROBES`. Testet för kontrolladresser utökas till alla live-källor, inte bara EDP.
+- **Bevakningen** (#50): `checkSvoaSource` i `scripts/source-checks.ts` med samma lägen som EDP, och kontrolladressen `stockholm: 'Hjortronvägen 3, Bromma, 168 59'` i `PROBES`. Testet för kontrolladresser utökas till alla live-källor, inte bara EDP. Okända frekvenser rapporteras tillsammans med okända avfallstyper. Bevakningen fångar ändringar inom en vecka; mellan körningarna skyddar reglerna ovan användarna.
 - **API v1, Homey och Home Assistant:** inga ändringar. Stockholm syns i `/api/v1/kallor` och fungerar i båda integrationerna, eftersom de bara pratar med API:t.
 
 ## Test
 
 - `parseSvoaAddress`, `svoaAddressId` och `queryFromSvoaId`, inklusive att exempel-id:t är låst.
 - `svoaSchedule` mot sparade svar i `src/server/__fixtures__/` (`stockholm-search.json`, `stockholm-schedule.json`, båda formaten, tomt svar och okänt format).
+- Varje rad i tabellen Om källan ändras: okänd form och datumformat kastar, en ändrad ort hittar ändå adressen, ingen träff ger 502 från `/api/schema` och `/ics/…` (inte 404 och inte uppmaningskalendern), och en okänd frekvens ger bara källans datum.
 - Fraktioner för varje rad i tabellen ovan, och frekvenserna, inklusive säsong (inga datum i december–mars för `(april-nov)`).
 - `handleSearch` och `lookupAddress` med en `svoa`-källa och ett falskt `fetch`.
 - `EmptyState` med och utan `emptyScheduleNote`.
