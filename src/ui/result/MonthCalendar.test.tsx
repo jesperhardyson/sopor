@@ -42,6 +42,23 @@ describe('MonthCalendar', () => {
     expect(screen.getByTestId('forklaring')).toHaveTextContent('Hushåll')
   })
 
+  it('visar varje kärl med eget namn i förklaringen, även när de är samma fraktion', () => {
+    const tvaKarl: Schedule = {
+      ...schedule,
+      events: [
+        { date: '2026-12-08', fractions: ['karl'], labels: { karl: 'Fyrfackskärl 2' } },
+        { date: '2026-12-09', fractions: ['karl', 'rest'], labels: { karl: 'Fyrfackskärl 1' } },
+        { date: '2026-12-23', fractions: ['karl'], labels: { karl: 'Fyrfackskärl 1' } },
+      ],
+    }
+    render(<MonthCalendar schedule={tvaKarl} initial="2026-12-09" today="2026-12-01" />)
+    const forklaring = screen.getByTestId('forklaring')
+    expect(forklaring).toHaveTextContent('Fyrfackskärl 1')
+    expect(forklaring).toHaveTextContent('Fyrfackskärl 2')
+    expect(forklaring).toHaveTextContent('Rest')
+    expect(forklaring.children).toHaveLength(3)
+  })
+
   it('har månadsknappar som är stora nog att träffa med fingret', () => {
     render(<MonthCalendar schedule={schedule} initial="2026-12-09" today="2026-12-01" />)
     expect(screen.getByRole('button', { name: 'Nästa månad' })).toHaveClass('after:-inset-1')
@@ -60,6 +77,23 @@ describe('MonthCalendar', () => {
     render(<MonthCalendar schedule={schedule} initial="2026-12-09" today="2026-12-01" />)
     await userEvent.click(screen.getByRole('button', { name: '9 december: Restavfall' }))
     expect(within(screen.getByRole('dialog')).getByText('beräknat')).toBeInTheDocument()
+  })
+
+  it('visar tömningsdagarna som gröna rundlar', () => {
+    render(<MonthCalendar schedule={schedule} initial="2026-12-09" today="2026-12-01" />)
+    expect(screen.getByRole('button', { name: '9 december: Restavfall' }).querySelector('.bg-primary')).toHaveTextContent('9')
+  })
+
+  it('markerar dagens datum', () => {
+    render(<MonthCalendar schedule={schedule} initial="2026-12-09" today="2026-12-03" />)
+    const idag = document.querySelector('[aria-current="date"]')
+    expect(idag).toHaveTextContent(/^3$/)
+  })
+
+  it('tonar ned dagar som redan har varit', () => {
+    render(<MonthCalendar schedule={schedule} initial="2026-12-09" today="2026-12-03" />)
+    expect(screen.getByText('1')).toHaveClass('opacity-55')
+    expect(screen.getByText('4')).not.toHaveClass('opacity-55')
   })
 
   it('gör bara dagar med tömning klickbara', () => {

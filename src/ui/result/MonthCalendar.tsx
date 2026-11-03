@@ -40,10 +40,18 @@ export function MonthCalendar({ schedule, initial, today }: { schedule: Schedule
   ]
   while (cells.length % 7 !== 0) cells.push(null)
 
-  const shown = new Set<FractionId>(schedule.events.flatMap((e) => e.fractions))
-  const legend = (Object.keys(FRACTIONS) as FractionId[]).filter((f) => shown.has(f))
-  // Samma namn som etiketterna när källan har ett eget (t.ex. "Hushåll" för kärl).
-  const legendName = (f: FractionId) => schedule.events.find((e) => e.labels?.[f])?.labels?.[f] ?? FRACTIONS[f].short
+  // En rad per namn: källans egna (t.ex. "Fyrfackskärl 1" och "Fyrfackskärl 2") kan dela fraktion.
+  const order = Object.keys(FRACTIONS) as FractionId[]
+  const names = new Map<string, { fraction: FractionId; name: string }>()
+  for (const e of schedule.events) {
+    for (const f of e.fractions) {
+      const name = e.labels?.[f] ?? FRACTIONS[f].short
+      names.set(`${f}|${name}`, { fraction: f, name })
+    }
+  }
+  const legend = [...names.values()].sort(
+    (a, b) => order.indexOf(a.fraction) - order.indexOf(b.fraction) || a.name.localeCompare(b.name, 'sv', { numeric: true }),
+  )
   // Rundeln är 36 px som i designen, tryckytan 44 px.
   const navButton =
     'relative inline-flex size-9 items-center justify-center rounded-full border border-border text-text after:absolute after:-inset-1 disabled:opacity-35'
@@ -71,22 +79,35 @@ export function MonthCalendar({ schedule, initial, today }: { schedule: Schedule
         </div>
         <div className="grid grid-cols-7 gap-y-1">
           {cells.map((day, i) => {
-            if (day === null) return <span key={i} className="h-[46px]" />
+            if (day === null) return <span key={i} className="h-[52px]" />
             const date = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
             const fractions = events.get(date)
             const holiday = holidayOn(date)
             const parts = [...(fractions?.map((f) => FRACTIONS[f].name) ?? []), ...(holiday ? [holiday.name] : [])]
             const label = parts.length > 0 ? `${day} ${MONTHS[month - 1]}: ${parts.join(', ')}` : undefined
-            const cell = cn(
-              'flex h-[46px] flex-col items-center justify-center gap-1 rounded-xl text-[15px]',
-              fractions ? 'bg-brand-soft font-extrabold' : 'font-medium',
-              holiday?.kind === 'röd' ? 'font-extrabold text-warn' : holiday ? 'text-warn/70' : 'text-text',
-              date === today && 'ring-2 ring-primary ring-inset',
+            const cell = 'flex h-[52px] flex-col items-center justify-center gap-1 rounded-xl'
+            // Tömningsdagen är en grön rundel, i dag en ring och det som har varit tonas ned.
+            const circle = cn(
+              'flex size-8 items-center justify-center rounded-full text-[15px]',
+              fractions
+                ? 'bg-primary font-extrabold text-on-primary'
+                : holiday?.kind === 'röd'
+                  ? 'font-extrabold text-warn'
+                  : holiday
+                    ? 'font-medium text-warn/70'
+                    : 'font-medium text-text',
+              date === today &&
+                (fractions ? 'ring-2 ring-primary ring-offset-2 ring-offset-surface' : 'font-extrabold text-primary ring-[1.5px] ring-primary ring-inset'),
+              date < today && !fractions && 'text-text-2',
+              date < today && 'opacity-55',
             )
+            const current = date === today ? ('date' as const) : undefined
             const content = (
               <>
-                <span aria-hidden={Boolean(label)}>{day}</span>
-                <span className="flex h-3 items-center gap-0.5" aria-hidden>
+                <span aria-hidden={Boolean(label)} className={circle}>
+                  {day}
+                </span>
+                <span className="flex h-3.5 items-center gap-0.5" aria-hidden>
                   {fractions && <DayIcons fractions={fractions} />}
                 </span>
               </>
@@ -99,6 +120,7 @@ export function MonthCalendar({ schedule, initial, today }: { schedule: Schedule
                   aria-label={label}
                   title={holiday ? capitalize(holiday.name) : undefined}
                   data-holiday={holiday?.kind}
+                  aria-current={current}
                   role={label ? 'img' : undefined}
                   className={cell}
                 >
@@ -112,12 +134,13 @@ export function MonthCalendar({ schedule, initial, today }: { schedule: Schedule
                   type="button"
                   aria-label={label}
                   aria-haspopup="dialog"
+                  aria-current={current}
                   data-holiday={holiday?.kind}
                   onClick={() => {
                     setSelected(event)
                     setSheetOpen(true)
                   }}
-                  className={cn(cell, 'w-full cursor-pointer outline-none hover:brightness-110 focus-visible:ring-2 focus-visible:ring-primary')}
+                  className={cn(cell, 'w-full cursor-pointer outline-none hover:bg-surface-2 focus-visible:ring-2 focus-visible:ring-primary')}
                 >
                   {content}
                 </button>
@@ -127,12 +150,12 @@ export function MonthCalendar({ schedule, initial, today }: { schedule: Schedule
           })}
         </div>
         <div data-testid="forklaring" className="mt-1 flex flex-wrap gap-x-4 gap-y-1 border-t border-border px-2 pt-2.5">
-          {legend.map((f) => {
-            const Icon = FRACTION_ICON[f]
+          {legend.map(({ fraction, name }) => {
+            const Icon = FRACTION_ICON[fraction]
             return (
-              <span key={f} className="flex items-center gap-1.5 text-[13px] font-semibold text-text-2">
-                <Icon className={cn('size-3.5', FRACTION_CLASS[f].fg)} aria-hidden />
-                {legendName(f)}
+              <span key={`${fraction}|${name}`} className="flex items-center gap-1.5 text-[13px] font-semibold text-text-2">
+                <Icon className={cn('size-4', FRACTION_CLASS[fraction].fg)} aria-hidden />
+                {name}
               </span>
             )
           })}
@@ -221,7 +244,7 @@ function DayIcons({ fractions }: { fractions: FractionId[] }) {
     <>
       {shown.map((f) => {
         const Icon = FRACTION_ICON[f]
-        return <Icon key={f} className={cn('size-3 max-[359px]:size-2.5', FRACTION_CLASS[f].fg)} />
+        return <Icon key={f} className={cn('size-3.5 max-[359px]:size-3', FRACTION_CLASS[f].fg)} />
       })}
       {more > 0 && <span className="text-[10px] leading-none font-extrabold text-text-2">+{more}</span>}
     </>
