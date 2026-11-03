@@ -73,12 +73,27 @@ Kommunerna som redan är live på sajten listas på [Om-sidan](https://sopor.har
 |---|---|---|---|---|---|
 | Avesta | Avesta Vatten och Avfall AB | PDF per trakt (1–10), en per år | EDP Future SimpleWastePickup finns men är tom | Begärd som allmän handling | Dold på sajten (påhittad testdata), väntar på tabellen |
 | Säter | Kommunen själv (inte Dala Vatten och Avfall) | Webbsida med områden per veckodag och jämn/udda vecka, plus veckoschema för fraktionerna | Nej. Mina sidor (`minasidorva.sater.se`) är en kundportal från CGI som kräver inloggning | Saknas, behöver begäras | Inte påbörjad |
-| Stenungsund | – | – | EDP Future SimpleWastePickup svarar men är tom (2026-10-30) | – | Inte med |
+| Mölndal | – | – | EDP Future svarar men är tom (`future.molndal.se/FutureWeb`, 2026-11-03) | – | Inte med |
+| Östersund | – | – | EDP Future svarar men är tom (`edp.ostersund.se/FutureWeb`, 2026-11-03) | – | Inte med |
+| Upplands Väsby | Kommunen | – | EDP Future svarar men är tom (`edpfuture.upplandsvasby.se/FutureWeb`). Kommunen hänvisar till inloggning på Mina sidor | – | Inte med |
+| Täby | Kommunen (Verdis) | – | Egen JSON i Sitevision-appen `garbageTruckFetcher` på taby.se (`/appresource/…/getAddresses` och `getContainer`), ger datum per fraktion ungefär ett år fram | – | Kandidat för egen källtyp (fas 3) |
+| Vallentuna | Kommunen (PreZero) | – | Bara Avfallsapp (`vallentuna.avfallsapp.se`), som kräver en anonym enhetsregistrering | – | Inte med, beslut behövs om enhetsregistreringen |
+| Tyresö | Kommunen (Verdis) | – | Bara app (Kretsloppsappen). Ingen publik webbsökning | – | Inte med |
+| Järfälla | Kommunen | – | Nej, e-tjänsten kräver e-legitimation | – | Inte med |
+| Sollentuna | SEOM | – | Nej, Mina sidor (`minasidor.seom.se`) kräver inloggning | – | Inte med |
+| Sundbyberg | SAVAB | PDF för ReTuren, inget per adress | Nej, e-tjänsten kräver inloggning | – | Inte med |
+| Solna | Staden (PreZero, Ragn-Sells) | – | Nej, hänvisar till entreprenörernas kundtjänst | – | Inte med |
+| Trelleborg | – | – | EDP Future svarar men är tom (`futureweb.trelleborg.se/EDPFutureWeb`, 2026-11-03) | – | Inte med |
+| Kävlinge | – | – | EDP Future svarar men är tom (`future.kavlinge.se/FutureWeb`, 2026-11-03) | – | Inte med |
+| Mariestad | – | – | EDP Future svarar men är tom (`edp.mariestad.se/FutureWebMariestad`, 2026-11-03) | – | Inte med |
+| Knivsta | – | – | EDP Future svarar men är tom (`futureweb.knivsta.se/FutureWeb`, 2026-11-03) | – | Inte med |
+| Sjöbo | – | – | EDP Future svarar men är tom (`edp.sjobo.se/FutureWeb`, 2026-11-03) | – | Inte med |
+| Håbo | – | – | EDP Future svarar men är tom (`edpmobile.habo.se/FutureWeb`, 2026-11-03) | – | Inte med |
 
 Lärdomar så här långt:
 
 - **Båda kommunerna landar i samma modell.** Schemat är publikt per område, och kommunen behöver lämna ut kopplingen från adress till område. Sopors statiska datafiler (`data/<kommun>/<år>/`) är byggda för just det.
-- **En publik söktjänst är en bonus, inte regel.** Även när EDP:s modul finns kan den vara tom (Avesta, Stenungsund).
+- **En publik söktjänst är en bonus, inte regel.** Även när EDP:s modul finns kan den vara tom (Avesta och nio kommuner till vid svepet 2026-11-03). Det kan också finnas flera värdar: Stenungsund var tom hos Remondis men har data på kommunens egen värd.
 - **Där EDP:s modul har data räcker en rad i registret** (och gatunamnen från OpenStreetMap). Ett 25-tal källor med ett 50-tal kommuner svarade med data vid kontrollen 2026-10-30. Modulen ger nästa tömning och en frekvens, så kommande datum räknas fram och märks *beräknat*.
 - **Lantmäteriets adressregister** säger vilka adresser som finns, men inte vilket område de tillhör. Licensen är dessutom oklar för återpublicering. Det ersätter alltså inte kommunens tabell.
 
