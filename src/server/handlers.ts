@@ -9,6 +9,7 @@ import { matchesPlace } from '../data/street-index.js'
 import { isLive, kommunForLocality, SOURCES, type LiveSource, type Source } from '../sources/index.js'
 import { edpAddressId, edpSearch, type EdpBuilding } from './edp.js'
 import { svoaAddressId, svoaSearch } from './svoa.js'
+import { vasydSearch } from './vasyd.js'
 import { lookupAddress } from './lookup.js'
 
 export interface HandlerOptions {
@@ -53,7 +54,11 @@ export async function searchLiveSource(source: LiveSource, street: string, place
       .map((a): Address => ({ id: svoaAddressId(a), street: a.street, locality: a.locality, sourceId: source.id, kommun }))
       .filter((a) => matchesPlace(a, place))
   }
-  return withDetails(await edpSearchPlace(source.config.baseUrl, street, place, opts))
+  const buildings =
+    source.config.system === 'vasyd'
+      ? await vasydSearch(street, opts.fetchFn, opts.timeoutMs ?? 3000)
+      : await edpSearchPlace(source.config.baseUrl, street, place, opts)
+  return withDetails(buildings)
     .map(([b, detail]) => toAddress(source, b, opts.places, detail))
     .filter((a) => matchesPlace(a, place))
 }

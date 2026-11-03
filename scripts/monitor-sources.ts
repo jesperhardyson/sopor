@@ -43,6 +43,7 @@ export const PROBES: Record<string, string> = {
   mark: 'Kyrkogatan 2, KINNA',
   'herrljunga-vargarda': 'Storgatan 5, Herrljunga',
   stockholm: 'Hjortronvägen 3, Bromma, 168 59',
+  vasyd: 'Limhamnsvägen 50, Malmö',
 }
 
 const RETRY_DELAY_MS = 5 * 60 * 1000
