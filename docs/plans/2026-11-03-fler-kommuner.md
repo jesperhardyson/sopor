@@ -67,7 +67,7 @@ Ordnade efter invånare. Varje rad är en egen spec och plan som `stockholm` och
 
 | Ordning | Källa | Kommuner | Invånare | Andel | Format (*overifierat*) |
 |---|---|---|---|---|---|
-| 1 | **NSR** | Helsingborg, Ängelholm, Höganäs, Båstad, Bjuv, Åstorp | 274 000 | 2,6 % | JSON, `nsr.se/api/wastecalendar`, även ICS |
+| 1 | **NSR** (klar, `docs/specs/2026-11-03-nsr.md`) | Helsingborg, Ängelholm, Höganäs, Båstad, Bjuv, Åstorp | 274 000 | 2,6 % | JSON för sökningen, ICS för schemat |
 | 2 | **SRV återvinning** | Huddinge, Haninge, Botkyrka, Nynäshamn, Salem | 359 000 | 3,4 % | JSON, `srvatervinning.se/rest-api/core/sewagePickup/search` |
 | 3 | **Avfallsapp/Nova** (utan token) | Sigtuna, Motala, Upplands-Bro, Söderköping (+ Skaraborg?) | 144 000 | 1,4 % | JSON, `<kund>.avfallsapp.se/wp-json/nova/v1/`. Kunder som kräver token (Nodra, Vänersborg, Teknik i Väst) tas inte med |
 | 4 | **Appbolaget** | Kristianstad, Hässleholm | 138 000 | 1,3 % | JSON, `api-universal.appbolaget.se/waste/…` |
