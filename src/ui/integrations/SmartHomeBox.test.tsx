@@ -27,7 +27,7 @@ describe('homeySearchText', () => {
 describe('SmartHomeBox', () => {
   it('visar Homey och Home Assistant med länkar', () => {
     render(<SmartHomeBox address={address} />)
-    expect(screen.getByRole('heading', { name: 'Smarta hem' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Integrationer' })).toBeInTheDocument()
     expect(screen.getByText('Få en påminnelse kvällen innan, i Homey eller Home Assistant.')).toBeInTheDocument()
     expect(screen.getByText('Testversion')).toBeInTheDocument()
     expect(screen.queryByText('Kommer snart')).not.toBeInTheDocument()

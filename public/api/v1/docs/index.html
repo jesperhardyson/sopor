@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>API – Sopor</title>
+    <meta name="description" content="Dokumentation för Sopors öppna API: sök adress, hämtschema och kalender som JSON." />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <style>
+      /* Sajtens gröna färg och typsnitt; Scalar sköter resten */
+      .light-mode { --scalar-color-accent: #157a46; }
+      .dark-mode { --scalar-color-accent: #4cc384; }
+      :root { --scalar-font: ui-sans-serif, system-ui, sans-serif; }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <!-- Låst version: uppdatera versionen och integrity-hashen tillsammans -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@1.75.1/dist/browser/standalone.js"
+      integrity="sha384-G+2Q2i9l3PPfmYkk0b4BAIUrs7xb/DNaTL1wCYYab4c9dIKlCyiqzC0Qx3eq9Wf6"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      Scalar.createApiReference('#app', {
+        url: '/api/v1/openapi.json',
+        telemetry: false,
+        agent: { disabled: true },
+        withDefaultFonts: false,
+        hideClientButton: true,
+        favicon: '/favicon.svg',
+      })
+    </script>
+  </body>
+</html>

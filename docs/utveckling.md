@@ -78,6 +78,7 @@ Påminnelsen kvällen innan (`VALARM`) följer med i filen, men Google ignorerar
 - **Webben** har inga versionsnummer. Varje push till `main` driftsätts, och CI (`ci.yml`, den obligatoriska checken `test`) ska vara grön innan dess.
 - Det som måste vara stabilt har egna kontrakt:
   - API:t är versionerat i sökvägen (`/api/v1`) och har ett kontraktstest mot `openapi.json`.
+  - `/api/v1/docs` är en statisk sida (`public/api/v1/docs/index.html`) som visar `openapi.json` med Scalar. Scalar laddas från jsDelivr i en låst version med integrity-hash; byt version och hash tillsammans.
   - Adress-id får inte tas bort (`check:ids` i CI).
   - ICS-UID ändrar aldrig format.
 - **Integrationerna** har semver och egna releaser: Homey-appen med taggar `homey-v*`, och Home Assistant med taggar `ha-v*` och GitHub-releaser. Hur man släpper en version står i respektive README.

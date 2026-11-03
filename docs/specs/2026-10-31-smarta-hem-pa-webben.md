@@ -1,6 +1,6 @@
 # Spec: Smarta hem på webben
 
-Status: byggd, 2026-10-31. Home Assistant uppdaterad 2026-11-01, när integrationen släpptes (se "Home Assistant släppt"). Skisserna finns på sidan "Smarta hem på webben · skiss" i `docs/design/sopor-design.pen`.
+Status: byggd, 2026-10-31. Ersatt av avsnittet Integrationer 2026-11-03, se `2026-11-03-integrationer.md`. Home Assistant uppdaterad 2026-11-01, när integrationen släpptes (se "Home Assistant släppt"). Skisserna finns på sidan "Smarta hem på webben · skiss" i `docs/design/sopor-design.pen`.
 
 ## Mål
 

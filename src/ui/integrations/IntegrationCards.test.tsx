@@ -22,4 +22,16 @@ describe('IntegrationCards', () => {
       'https://my.home-assistant.io/redirect/hacs_repository/?owner=jesperhardyson&repository=sopor-home-assistant&category=integration',
     )
   })
+
+  it('har ett kort för API:t med länk till dokumentationen och API-guiden', () => {
+    render(<IntegrationCards />)
+    const api = screen.getByRole('article', { name: 'API' })
+    expect(within(api).getByText('Öppet JSON-API · v1')).toBeInTheDocument()
+    expect(within(api).getByText('Inga nycklar och inget konto')).toBeInTheDocument()
+    expect(within(api).getByRole('link', { name: /Utforska API:t/ })).toHaveAttribute('href', '/api/v1/docs')
+    expect(within(api).getByRole('link', { name: /Läs API-guiden/ })).toHaveAttribute(
+      'href',
+      'https://github.com/jesperhardyson/sopor/blob/main/docs/api.md',
+    )
+  })
 })

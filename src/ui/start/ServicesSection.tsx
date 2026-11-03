@@ -13,9 +13,9 @@ const BENEFITS: { icon: LucideIcon; title: string; text: string; more?: { to: st
   { icon: Bookmark, title: 'Spara adresser', text: 'Hemma, stugan eller jobbet. Inget konto, sparas bara på din enhet.' },
   {
     icon: HouseWifi,
-    title: 'Smarta hem',
+    title: 'Integrationer',
     text: 'Påminnelser i Homey och Home Assistant, kvällen innan.',
-    more: { to: '/om#smarta-hem', label: 'Läs mer om smarta hem' },
+    more: { to: '/om#integrationer', label: 'Läs mer om integrationer' },
   },
 ]
 

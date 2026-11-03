@@ -64,7 +64,7 @@ export function SmartHomeBox({ address, origin = defaultOrigin() }: { address: A
           <HouseWifi className="size-5" aria-hidden />
         </span>
         <div className="flex flex-col gap-[3px]">
-          <h2 className="text-base font-extrabold text-text">Smarta hem</h2>
+          <h2 className="text-base font-extrabold text-text">Integrationer</h2>
           <p className="text-sm leading-[1.4] text-text-2">Få en påminnelse kvällen innan, i Homey eller Home Assistant.</p>
         </div>
       </div>

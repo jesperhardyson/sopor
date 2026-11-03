@@ -22,10 +22,11 @@ function soporApi(): Plugin {
         // Riktig värd, så att url.origin stämmer för hämtningar mot sajten själv och för länkar
         const url = new URL(req.url ?? '/', `http://${req.headers.host}`)
 
-        // /api/v1/… som rewritesen i vercel.json (openapi.json serveras statiskt från public/)
+        // /api/v1/… som rewritesen i vercel.json (openapi.json och docs/ serveras statiskt från public/)
         const v1 = url.pathname.match(/^\/api\/v1(?:\/(.*))?$/)
         const rest = v1?.[1] ?? ''
-        if (v1 && rest !== 'openapi.json') {
+        if (/^docs\/?$/.test(rest)) req.url = '/api/v1/docs/index.html'
+        if (v1 && rest !== 'openapi.json' && !rest.startsWith('docs')) {
           let name = Object.hasOwn(v1Routes, rest) ? v1Routes[rest] : 'handleV1NotFound'
           const adress = rest.match(/^adress\/([^/]+)\/([^/]+)$/)
           if (adress) {
