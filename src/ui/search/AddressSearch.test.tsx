@@ -33,9 +33,11 @@ const MANY_KOMMUNER = [
 ]
 
 let onDeactivate = vi.fn()
+let prefetch = vi.fn()
 
 function setup(addresses = ADDRESSES) {
   onDeactivate = vi.fn()
+  prefetch = vi.fn()
   render(
     <MemoryRouter>
       <Routes>
@@ -48,6 +50,7 @@ function setup(addresses = ADDRESSES) {
                 suggest={async (q) => suggest(q, addresses)}
                 missing={async (q) => (/hedemora/i.test(q) ? ['Hedemora kommun'] : /kil$/i.test(q) ? ['Kils kommun', 'Danderyds kommun'] : [])}
                 onDeactivate={onDeactivate}
+                prefetch={prefetch}
               />
               <p>Utanför</p>
             </>
@@ -61,6 +64,14 @@ function setup(addresses = ADDRESSES) {
 }
 
 describe('AddressSearch', () => {
+  it('börjar hämta adressen när fingret landar på en träff, före klicket', async () => {
+    await userEvent.type(setup(), 'storg')
+    const [first] = await screen.findAllByRole('option')
+    fireEvent.pointerDown(first)
+    expect(prefetch).toHaveBeenCalledWith('avesta', 'avesta-storgatan-12')
+    expect(screen.queryByText(/Resultat/)).toBeNull()
+  })
+
   it('visar träffar med gata, ort och kommun', async () => {
     await userEvent.type(setup(), 'storg')
     const options = await screen.findAllByRole('option')

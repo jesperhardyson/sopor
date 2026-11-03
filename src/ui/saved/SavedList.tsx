@@ -12,7 +12,8 @@ import { NameIcon } from './NameIcon'
 
 function SavedCard({ saved, today }: { saved: SavedAddress; today: string }) {
   const [state] = useSchedule(saved.sourceId, saved.addressId)
-  const next = state.status === 'ok' ? nextPickup(state.schedule, today) : null
+  // Även det sparade schemat, så att kortet inte blinkar till medan källan frågas
+  const next = 'schedule' in state ? nextPickup(state.schedule, today) : null
   return (
     <Link
       to={`/${saved.sourceId}/${saved.addressId}`}

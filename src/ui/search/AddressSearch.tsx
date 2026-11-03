@@ -3,7 +3,7 @@ import { Fragment, useEffect, useId, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { groupByKommun, normalize, stableMerge } from '@/domain/search'
 import type { Address } from '@/domain/types'
-import { missingKommuner, searchAll, suggestAll, warmUpSearch, type SearchOptions, type SearchResult } from '@/providers/registry'
+import { missingKommuner, prefetchAddress, searchAll, suggestAll, warmUpSearch, type SearchOptions, type SearchResult } from '@/providers/registry'
 import { getSource } from '@/sources'
 import { reportMissingKommun } from '@/lib/analytics'
 import { cn } from '@/lib/utils'
@@ -96,6 +96,7 @@ export function AddressSearch({
   search = searchAll,
   suggest = suggestAll,
   missing = missingKommuner,
+  prefetch = prefetchAddress,
   onActivate,
   onDeactivate,
 }: {
@@ -103,6 +104,8 @@ export function AddressSearch({
   suggest?: Lookup
   /** Kommuner som frågans ort ligger i, om Sopor inte har dem */
   missing?: Missing
+  /** Börjar hämta en adress innan den väljs */
+  prefetch?: (sourceId: string, addressId: string) => void
   /** Fältet fick fokus (startsidans fokusläge) */
   onActivate?: () => void
   /** Användaren tryckte Esc */
@@ -252,6 +255,7 @@ export function AddressSearch({
       onMouseDown: (e: React.MouseEvent) => e.preventDefault(),
       onClick: () => choose(item),
       onMouseEnter: () => setActive(i),
+      onPointerDown: () => item.kind === 'address' && prefetch(item.address.sourceId, item.address.id),
     }
     if (item.kind === 'more') {
       return (

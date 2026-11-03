@@ -20,6 +20,15 @@ export function providerFor(m: Source): WasteProvider {
   return provider
 }
 
+/** Börjar hämta adressen och schemat innan sidan visas, t.ex. när fingret landar på en länk. */
+export function prefetchAddress(sourceId: string, addressId: string): void {
+  const source = getSource(sourceId)
+  if (!source) return
+  const provider = providerFor(source)
+  provider.getAddress(addressId).catch(() => {})
+  provider.getSchedule(addressId).catch(() => {})
+}
+
 /** Slår ihop svar från flera kommuner. En kommun som inte svarar får inte fälla de andra. */
 export function mergeResults(results: PromiseSettledResult<Address[]>[], limit: number): Address[] {
   const ok = results.filter((r) => r.status === 'fulfilled')

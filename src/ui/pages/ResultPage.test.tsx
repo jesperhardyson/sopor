@@ -31,6 +31,7 @@ vi.mock('@/providers/registry', () => ({
   getAddress: (_m: string, id: string) => fake.getAddress(id),
   searchAll: async () => ({ addresses: [], failed: [] }),
   warmUpSearch: () => {},
+  prefetchAddress: () => {},
   suggestAll: async () => [],
   missingKommuner: async () => [],
 }))
