@@ -7,6 +7,7 @@ import { fetchJson, SourceError } from '../src/server/http.js'
 import { isKnownBin } from '../src/server/fractions-map.js'
 import { vasydRule, vasydSchedule, vasydSearch, VASYD_URL } from '../src/server/vasyd.js'
 import { NSR_URL, nsrSchedule, nsrSearch } from '../src/server/nsr.js'
+import { isKnownSrvJob, SRV_URL, srvFind, srvSchedule, srvSearch, srvWasteType } from '../src/server/srv.js'
 import { parseSvoaAddress, sameSvoaAddress, svoaAddressId, SVOA_URL, svoaFractions, svoaSchedule, svoaSearch, svoaStep } from '../src/server/svoa.js'
 import type { Source } from '../src/sources/index.js'
 import { classifyWasteTypes } from './check-source.js'
@@ -163,6 +164,38 @@ export async function checkNsrSource(source: Source, probe: string, today: strin
     const unknownWasteTypes = classifyWasteTypes(types.map((t) => ({ WasteType: t, Description: /^kärl \d+$/i.test(t) ? 'fyrfack' : '' })))
       .filter((w) => w.status === 'okänd')
       .map((w) => w.wasteType)
+    const end = addDays(today, HORIZON_DAYS)
+    const upcoming = schedule.events.some((e) => e.date >= today && e.date <= end)
+    return { ...base, state: upcoming ? 'fungerar' : 'inga-tomningar', unknownWasteTypes }
+  } catch (error) {
+    return { ...base, state: stateForError(error), error: (error as Error).message }
+  }
+}
+
+/**
+ * SRV: kontrolladressen är ett adress-id med kundnumret. Okända jobb rapporteras också, så att en
+ * ny sorts tömning inte försvinner tyst (bara jobb med "tömning" i namnet blir tömningar).
+ */
+export async function checkSrvSource(source: Source, probe: string, today: string, fetchFn: typeof fetch = fetch): Promise<SourceResult> {
+  const base = { sourceId: source.id, name: source.name, baseUrl: SRV_URL, probe }
+  try {
+    const found = await srvFind(probe, fetchFn, TIMEOUT_MS)
+    if (!found) {
+      const street = queryFromAddressId(probe)?.query.split(',')[0].trim() ?? probe
+      const hits = await srvSearch(street, fetchFn, TIMEOUT_MS)
+      if (hits.length === 0) return { ...base, state: 'tom' }
+      return { ...base, state: 'nytt-format', error: `Kontrolladressen ${probe} hittades inte (nytt kundnummer hos SRV?), bara t.ex. ${edpAddressId(hits[0])}` }
+    }
+    const types = found.containers.flatMap((c) => {
+      const mapped = srvWasteType(c)
+      const unknown = mapped?.fractions.includes('karl') && !isKnownBin(mapped.label ?? '')
+      if (!unknown) return []
+      // "Kärl 2" säger ingenting utan kärltypen.
+      return [/^kärl \d+$/i.test(c.contentType.trim()) ? `${c.contentType} (${c.containerType})` : c.contentType]
+    })
+    const jobs = found.containers.flatMap((c) => c.calendars.map((cal) => cal.jobTemplate)).filter((j) => !isKnownSrvJob(j))
+    const unknownWasteTypes = [...new Set([...types, ...jobs.map((j) => `Jobb: ${j}`)])]
+    const schedule = srvSchedule(found.containers, today)
     const end = addDays(today, HORIZON_DAYS)
     const upcoming = schedule.events.some((e) => e.date >= today && e.date <= end)
     return { ...base, state: upcoming ? 'fungerar' : 'inga-tomningar', unknownWasteTypes }
