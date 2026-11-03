@@ -1,10 +1,12 @@
 // Slår upp en adress (källa + id) och hämtar dess schema, oavsett om källan är EDP eller statisk.
 
+import { todayInStockholm } from '../domain/dates.js'
 import { mergeParts } from '../domain/schedule.js'
 import type { Address, Schedule } from '../domain/types.js'
 import type { AddressIndexFile, ScheduleFile } from '../data/static-format.js'
 import { needsPlaces, type Source } from '../sources/index.js'
-import { edpSchedule, edpSearch, queryFromAddressId, type EdpBuilding } from './edp.js'
+import { edpAddressId, edpSchedule, edpSearch, queryFromAddressId, type EdpBuilding } from './edp.js'
+import { nsrDetails, nsrSchedule, nsrSearch } from './nsr.js'
 import { vasydSchedule, vasydSearch } from './vasyd.js'
 import { queryFromSvoaId, sameSvoaAddress, SVOA_LIMIT, svoaSchedule, svoaSearch, type SvoaAddress } from './svoa.js'
 import { searchCandidates, toAddress, withDetails, type HandlerOptions } from './handlers.js'
@@ -27,6 +29,7 @@ export async function lookupAddress(
     if (source.config.system === 'edp') return await lookupEdp(source, source.config.baseUrl, id, origin, opts)
     if (source.config.system === 'svoa') return await lookupSvoa(source, id, opts)
     if (source.config.system === 'vasyd') return await lookupVasyd(source, id, origin, opts)
+    if (source.config.system === 'nsr') return await lookupNsr(source, id, origin, opts)
     return await lookupStatic(source, id, origin, opts)
   } catch (e) {
     console.error('Uppslagning av adress misslyckades', e)
@@ -87,6 +90,26 @@ async function lookupVasyd(source: Source, id: string, origin: string, opts: Han
   const schedule = await vasydSchedule(building, opts.fetchFn, opts.timeoutMs ?? 5000)
   const places = opts.places ?? (needsPlaces(source) ? await loadServerPlaces(origin, opts.fetchFn) : undefined)
   return { status: 200, address: toAddress(source, building, places, detail), schedule }
+}
+
+/**
+ * NSR: som VA Syd, men NSR:s id är inte unikt, så hela adress-id:t (gata, ort och id) måste
+ * stämma. Sökningen tar bara gatan; med orten blir det inga träffar.
+ */
+async function lookupNsr(source: Source, id: string, origin: string, opts: HandlerOptions): Promise<Lookup> {
+  const parsed = queryFromAddressId(id)
+  if (!parsed) return { status: 502 }
+  const street = parsed.query.split(',')[0].trim()
+  for (const q of [...new Set([street, street.replace(/^st /, 's:t ')])]) {
+    const hits = await nsrSearch(q, opts.fetchFn, opts.timeoutMs ?? 3000)
+    const index = hits.findIndex((h) => edpAddressId(h.building) === id)
+    if (index < 0) continue
+    const [building, detail] = nsrDetails(hits)[index]
+    const schedule = await nsrSchedule(hits[index], opts.fetchFn, opts.timeoutMs ?? 5000, todayInStockholm(opts.now))
+    const places = opts.places ?? (needsPlaces(source) ? await loadServerPlaces(origin, opts.fetchFn) : undefined)
+    return { status: 200, address: toAddress(source, building, places, detail), schedule }
+  }
+  return { status: 502 }
 }
 
 async function lookupStatic(source: Source, id: string, origin: string, opts: HandlerOptions): Promise<Lookup> {

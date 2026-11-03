@@ -10,6 +10,7 @@ import { isLive, kommunForLocality, SOURCES, type LiveSource, type Source } from
 import { edpAddressId, edpSearch, type EdpBuilding } from './edp.js'
 import { svoaAddressId, svoaSearch } from './svoa.js'
 import { vasydSearch } from './vasyd.js'
+import { nsrDetails, nsrSearch } from './nsr.js'
 import { lookupAddress } from './lookup.js'
 
 export interface HandlerOptions {
@@ -53,6 +54,13 @@ export async function searchLiveSource(source: LiveSource, street: string, place
     return (await svoaSearch(street, opts.fetchFn, opts.timeoutMs ?? 3000))
       .map((a): Address => ({ id: svoaAddressId(a), street: a.street, locality: a.locality, sourceId: source.id, kommun }))
       .filter((a) => matchesPlace(a, place))
+  }
+  if (source.config.system === 'nsr') {
+    // NSR hittar inget med orten i sökningen, så den filtreras fram här.
+    const [streetOnly, typedPlace = ''] = street.split(',').map((p) => p.trim())
+    return nsrDetails(await nsrSearch(streetOnly, opts.fetchFn, opts.timeoutMs ?? 3000))
+      .map(([b, detail]) => toAddress(source, b, opts.places, detail))
+      .filter((a) => matchesPlace(a, place || typedPlace))
   }
   const buildings =
     source.config.system === 'vasyd'

@@ -3,8 +3,9 @@ import path from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
 import { SVOA_URL } from '../src/server/svoa.js'
 import { VASYD_URL } from '../src/server/vasyd.js'
+import { NSR_URL } from '../src/server/nsr.js'
 import type { Source } from '../src/sources/index.js'
-import { checkEdpSource, checkSvoaSource, checkVasydSource, checkStaticSource, checkViaSite, unreachableFromHere } from './source-checks'
+import { checkEdpSource, checkNsrSource, checkSvoaSource, checkVasydSource, checkStaticSource, checkViaSite, unreachableFromHere } from './source-checks'
 
 const json = (body: unknown) =>
   new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json; charset=utf-8' } })
@@ -291,5 +292,49 @@ describe('checkVasydSource', () => {
       { wasteType: 'Trädgårdsavfall', wastePickupFrequency: 'Onsdag jämn vecka trädgård', nextWastePickup: '2026-11-11' },
     ])
     expect((await checkVasyd(respond(hit, schedule))).unknownWasteTypes).toEqual(['Grovavfall', 'Frekvens: Varannan onsdag'])
+  })
+})
+
+describe('checkNsrSource', () => {
+  const fixture = (name: string) => readFileSync(path.resolve(import.meta.dirname, '../src/server/__fixtures__', name), 'utf8')
+  const nsr: Source = { ...source, id: 'nsr', name: 'NSR', config: { system: 'nsr' } }
+  const probe = 'rosenvägen-3_helsingborg-71d627516ce56271010a40fdb5d01eed'
+  const respond = (search: unknown, ics: unknown = fixture('nsr-kalender.ics')) =>
+    vi.fn(async (input: string | URL | Request) => {
+      const isIcs = String(input).includes('/calendar?')
+      const body = isIcs ? ics : search
+      if (body instanceof Error) throw body
+      const type = isIcs ? 'text/calendar' : 'application/json'
+      return new Response(typeof body === 'string' ? body : JSON.stringify(body), { headers: { 'Content-Type': type } })
+    }) as unknown as typeof fetch
+  const checkNsr = (fetchFn: typeof fetch) => checkNsrSource(nsr, probe, '2026-11-03', fetchFn)
+
+  it('fungerar med de sparade svaren, och söker på gatan i adress-id:t', async () => {
+    const fetchFn = respond(fixture('nsr-adresser.json'))
+    expect(await checkNsr(fetchFn)).toMatchObject({ state: 'fungerar', baseUrl: NSR_URL, probe, unknownWasteTypes: [] })
+    expect(String((fetchFn as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0])).toContain('query=rosenv%C3%A4gen+3')
+  })
+
+  it('svarar inte vid timeout', async () => {
+    expect((await checkNsr(respond(new TypeError('fetch failed')))).state).toBe('svarar-inte')
+  })
+
+  it('har nytt format vid okänd form', async () => {
+    expect((await checkNsr(respond({ x: 1 }))).state).toBe('nytt-format')
+  })
+
+  it('är tom när sökningen inte hittar något', async () => {
+    expect((await checkNsr(respond({ fp: [], q: 'x' }))).state).toBe('tom')
+  })
+
+  it('har nytt format när kontrolladressens id inte längre finns', async () => {
+    const r = await checkNsr(respond(fixture('nsr-adresser.json').replace('71d627516ce56271010a40fdb5d01eed', 'ny')))
+    expect(r.state).toBe('nytt-format')
+    expect(r.error).toContain('nytt id hos NSR')
+  })
+
+  it('rapporterar okända avfallstyper, men inte fyrfackskärl och trädgårdsavfall', async () => {
+    const search = { fp: [{ id: '71d627516ce56271010a40fdb5d01eed', Adress: 'Rosenvägen 3', Ort: 'Helsingborg', Exec: { Datum: ['2026-11-04', '2026-11-05', '2026-11-06'], AvfallsTyp: ['Grovavfall', 'KÄRL 1', 'Trädgårdsavfall'] } }] }
+    expect((await checkNsr(respond(search))).unknownWasteTypes).toEqual(['Grovavfall'])
   })
 })

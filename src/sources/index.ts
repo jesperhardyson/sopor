@@ -7,7 +7,7 @@ export interface Kommun {
 }
 
 /** Hur källans data hämtas. Ny leverantör = ny variant här + ny provider. */
-export type SourceConfig = { system: 'static' } | { system: 'edp'; baseUrl: string } | { system: 'svoa' } | { system: 'vasyd' }
+export type SourceConfig = { system: 'static' } | { system: 'edp'; baseUrl: string } | { system: 'svoa' } | { system: 'vasyd' } | { system: 'nsr' }
 
 /**
  * En datakälla för hämtschema, oftast ett avfallsbolag eller en kommun. En källa kan täcka
@@ -262,6 +262,21 @@ export const ALL_SOURCES: Source[] = [
     url: 'https://www.vasyd.se',
     kommuner: [{ code: '1280', name: 'Malmö kommun' }, { code: '1231', name: 'Burlövs kommun' }],
     config: { system: 'vasyd' },
+  },
+  {
+    // Ingen EDP: tömningskalendern på nsr.se (src/server/nsr.ts), med ICS-fil per adress.
+    id: 'nsr',
+    name: 'NSR',
+    url: 'https://nsr.se',
+    kommuner: [
+      { code: '1283', name: 'Helsingborgs kommun' },
+      { code: '1292', name: 'Ängelholms kommun' },
+      { code: '1284', name: 'Höganäs kommun' },
+      { code: '1278', name: 'Båstads kommun' },
+      { code: '1260', name: 'Bjuvs kommun' },
+      { code: '1277', name: 'Åstorps kommun' },
+    ],
+    config: { system: 'nsr' },
   },
 ]
 

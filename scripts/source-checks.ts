@@ -2,10 +2,11 @@
 // Samma anrop som sajten gör, så att det som kontrolleras är det som körs i produktion.
 
 import { addDays } from '../src/domain/dates.js'
-import { edpSchedule, edpSearch } from '../src/server/edp.js'
+import { edpAddressId, edpSchedule, edpSearch, queryFromAddressId } from '../src/server/edp.js'
 import { fetchJson, SourceError } from '../src/server/http.js'
 import { isKnownBin } from '../src/server/fractions-map.js'
 import { vasydRule, vasydSchedule, vasydSearch, VASYD_URL } from '../src/server/vasyd.js'
+import { NSR_URL, nsrSchedule, nsrSearch } from '../src/server/nsr.js'
 import { parseSvoaAddress, sameSvoaAddress, svoaAddressId, SVOA_URL, svoaFractions, svoaSchedule, svoaSearch, svoaStep } from '../src/server/svoa.js'
 import type { Source } from '../src/sources/index.js'
 import { classifyWasteTypes } from './check-source.js'
@@ -146,11 +147,36 @@ export async function checkVasydSource(source: Source, probe: string, today: str
 }
 
 /**
+ * NSR: kontrolladressen är ett adress-id. NSR:s id ingår i alla sparade adresser och
+ * kalenderprenumerationer, så ett nytt id hos NSR är ett nytt format, inte en småsak.
+ */
+export async function checkNsrSource(source: Source, probe: string, today: string, fetchFn: typeof fetch = fetch): Promise<SourceResult> {
+  const base = { sourceId: source.id, name: source.name, baseUrl: NSR_URL, probe }
+  try {
+    const street = queryFromAddressId(probe)?.query.split(',')[0].trim() ?? probe
+    const hits = await nsrSearch(street, fetchFn, TIMEOUT_MS)
+    if (hits.length === 0) return { ...base, state: 'tom' }
+    const hit = hits.find((h) => edpAddressId(h.building) === probe)
+    if (!hit) return { ...base, state: 'nytt-format', error: `Kontrolladressen ${probe} hittades inte (nytt id hos NSR?), bara t.ex. ${edpAddressId(hits[0].building)}` }
+    const schedule = await nsrSchedule(hit, fetchFn, TIMEOUT_MS, today)
+    const types = [...new Set(hit.pickups.map((p) => p.type))]
+    const unknownWasteTypes = classifyWasteTypes(types.map((t) => ({ WasteType: t, Description: /^kärl \d+$/i.test(t) ? 'fyrfack' : '' })))
+      .filter((w) => w.status === 'okänd')
+      .map((w) => w.wasteType)
+    const end = addDays(today, HORIZON_DAYS)
+    const upcoming = schedule.events.some((e) => e.date >= today && e.date <= end)
+    return { ...base, state: upcoming ? 'fungerar' : 'inga-tomningar', unknownWasteTypes }
+  } catch (error) {
+    return { ...base, state: stateForError(error), error: (error as Error).message }
+  }
+}
+
+/**
  * Fel som kan bero på varifrån anropet görs. Vissa kommuners brandväggar stänger ute GitHubs
  * datacenter, antingen helt eller med en spärrsida i HTML, men släpper fram sajten.
  */
 export function unreachableFromHere(r: SourceResult): boolean {
-  return r.state === 'svarar-inte' || (r.state === 'nytt-format' && /svarade inte med JSON/.test(r.error ?? ''))
+  return r.state === 'svarar-inte' || (r.state === 'nytt-format' && /svarade inte med (JSON|ICS)/.test(r.error ?? ''))
 }
 
 /**

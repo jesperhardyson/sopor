@@ -65,6 +65,8 @@ Skriv in kommunen i tabellen i guiden med läget "Begärd som allmän handling",
 
 Stockholm Vatten och Avfall (`src/server/svoa.ts`, spec `docs/specs/2026-11-02-stockholm.md`) och VA Syd (`src/server/vasyd.ts`, spec `docs/specs/2026-11-03-malmo-vasyd.md`) är mönstret för en källa med en egen söktjänst. Liknar svaren EDP:s (byggnad med id, nästa tömning), som VA Syd:s, kan klienten ge `EdpBuilding` och återanvända `edpAddressId`, `withDetails` och ortindexet.
 
+NSR (`src/server/nsr.ts`, spec `docs/specs/2026-11-03-nsr.md`) är exemplet på en källa med en ICS-fil per adress: riktiga datum för hela året, inga beräknade. Kontrollera att källans id är unikt. NSR:s är det inte, så där pekar gata, ort och id ut adressen tillsammans.
+
 - [ ] En klient i `src/server/<system>.ts` med sökning, schema och adress-id, testad mot sparade svar i `src/server/__fixtures__/`. Okänd form på svaret kastar `SourceError`, aldrig en tom lista.
 - [ ] En ny variant i `SourceConfig` och en gren i `searchLiveSource` (`src/server/handlers.ts`) och `lookupAddress` (`src/server/lookup.ts`). Ett id som inte längre ger träff ska ge 502, inte 404, så att kalenderprenumerationer inte töms.
 - [ ] En kontroll i bevakningen (`scripts/source-checks.ts`) och en kontrolladress i `PROBES`.
