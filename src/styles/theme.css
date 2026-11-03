@@ -169,6 +169,14 @@
   body {
     @apply bg-bg text-text antialiased;
     }
+  /* Tailwind v4 ger knappar pilen; på webben förväntar man sig handen på det som går att klicka */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  summary,
+  select,
+  label:has(input[type="checkbox"]) {
+    cursor: pointer;
+  }
   html {
     @apply font-sans;
     /* Som en app: ingen grå blink vid tryck och ingen väntan på dubbeltryck för zoom */

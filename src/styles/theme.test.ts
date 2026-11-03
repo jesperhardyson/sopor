@@ -40,6 +40,13 @@ describe('theme.css', () => {
     expect(css).toMatch(/@utility tryck \{[\s\S]*:active[\s\S]*scale/)
   })
 
+  it('visar pekhand på allt klickbart, men inte på avstängda knappar (Tailwind v4 har pil som standard)', () => {
+    const rule = css.match(/([^{}]*)\{\s*cursor: pointer;\s*\}/)?.[1] ?? ''
+    for (const sel of ['button:not(:disabled)', '[role="button"]', 'summary', 'select', 'label:has(input[type="checkbox"])']) {
+      expect(rule).toContain(sel)
+    }
+  })
+
   it('håller innehållet borta från notch och hemindikator', () => {
     for (const side of ['top', 'right', 'bottom', 'left']) expect(block('.bg-live')).toContain(`env(safe-area-inset-${side})`)
   })
