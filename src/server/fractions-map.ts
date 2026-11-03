@@ -10,15 +10,18 @@ const PATTERNS: [RegExp, FractionId][] = [
   [/^papp/, 'papper'],
   [/^plast/, 'plast'],
   [/^glas/, 'glas'],
+  // NSR: "Färgat glas", "Ofärgat glas", "Blandglas"
+  [/^(?:o?färgat |bland)glas/, 'glas'],
   // "Metal" i Danderyds "Glas/Glas/Metal"
   [/^metal/, 'metall'],
-  [/^tidning/, 'tidningar'],
+  // "Tidn." i NSR:s "Tidn./glas/metall"
+  [/^tidn/, 'tidningar'],
 ]
 
 const SKIP = [/^slam/, /^latrin/, /^fett/]
 
-/** Kärl som visas med källans egen text utan att vara okända: trädgårdsavfall (Danderyd) och batteriholkar (Lycksele). */
-const KNOWN_BINS = [/^trädgård/i, /^batteri/i]
+/** Kärl som visas med källans egen text utan att vara okända: trädgårdsavfall (Danderyd), batteriholkar (Lycksele) och miljöboxar (NSR). */
+const KNOWN_BINS = [/^trädgård/i, /^batteri/i, /^miljöfarlig/i]
 
 export const isKnownBin = (label: string) => KNOWN_BINS.some((p) => p.test(label.trim()))
 
@@ -63,7 +66,8 @@ export function mapWasteType(
   // Ale skriver det delade kärlet "Plast,Papp", Lidingö "PlastPapper". Ett komma kan också följas av en volym, så bara hela träffar räknas.
   const joined = label.split(/\s*,\s*|(?<=[a-zåäö])(?=[A-ZÅÄÖ])/).map((p) => fractionFor(p.toLowerCase()))
   if (!multi && joined.length > 1 && joined.every((f) => f !== undefined)) return { fractions: [...new Set(joined)] }
-  const parts = t.split('/').map((p) => p.trim())
+  // NSR skriver det delade kärlet "Mat + Rest".
+  const parts = t.split(/[/+]/).map((p) => p.trim())
   if (parts.length === 1) {
     const fraction = fractionFor(t)
     if (fraction) return { fractions: [fraction] }

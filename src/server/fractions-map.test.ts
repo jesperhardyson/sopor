@@ -43,6 +43,17 @@ describe('mapWasteType', () => {
     expect(mapWasteType('Mat-/Restavfall', '', '240 l tvåfackskärl/14 dgr')).toEqual({ fractions: ['mat', 'rest'] })
   })
 
+  it('läser NSR:s avfallstyper', () => {
+    expect(mapWasteType('KÄRL 1', '', 'fyrfack')).toEqual({ fractions: ['karl'], label: 'Fyrfackskärl 1' })
+    expect(mapWasteType('Färgat glas')).toEqual({ fractions: ['glas'] })
+    expect(mapWasteType('Ofärgat glas')).toEqual({ fractions: ['glas'] })
+    expect(mapWasteType('Blandglas')).toEqual({ fractions: ['glas'] })
+    expect(mapWasteType('Mat + Rest')).toEqual({ fractions: ['mat', 'rest'] })
+    expect(mapWasteType('Tidn./glas/metall')).toEqual({ fractions: ['tidningar', 'glas', 'metall'] })
+    expect(mapWasteType('Miljöfarligt avfall')).toEqual({ fractions: ['karl'], label: 'Miljöfarligt avfall' })
+    expect(isKnownBin('Miljöfarligt avfall')).toBe(true)
+  })
+
   it('gissar inte när en del av ett delat kärl är okänd', () => {
     expect(mapWasteType('Papper/Textil')).toEqual({ fractions: ['karl'], label: 'Papper/Textil' })
   })
