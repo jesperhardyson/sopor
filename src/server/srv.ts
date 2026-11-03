@@ -1,9 +1,10 @@
 // SRV återvinning (Huddinge, Botkyrka, Haninge, Nynäshamn och Salem): söktjänsten på
 // srvatervinning.se. Förslagen ger adresser med kundnummer, och kundnumret ger kärlen med ett års
-// tömningar. Adresserna blir EdpBuilding och får EDP:s adress-id. Allt vi inte känner igen blir ett
-// fel i stället för ett tomt svar. Se docs/specs/2026-11-03-srv.md.
+// tömningar. Adresserna blir EdpBuilding och får EDP:s adress-id, med en hash av kundnumret i
+// stället för numret. Allt vi inte känner igen blir ett fel i stället för ett tomt svar.
+// Se docs/specs/2026-11-03-srv.md.
 
-import { isValidDate } from '../domain/dates.js'
+import { formatShort, isValidDate } from '../domain/dates.js'
 import type { Schedule } from '../domain/types.js'
 import { edpAddressId, mergeSeries, queryFromAddressId, titleCase, type EdpBuilding, type PickupSeries } from './edp.js'
 import { mapWasteType } from './fractions-map.js'
@@ -19,34 +20,43 @@ export interface SrvContainer {
   calendars: { startDate: string; jobTemplate: string; isActive: boolean }[]
 }
 
+/** En adress ur förslagen. Kundnumret lämnar aldrig servern: id:t har bara dess hash. */
+export interface SrvAddress {
+  building: EdpBuilding
+  customerId: string
+}
+
 const unknownFormat = () => new SourceError('srvatervinning.se svarade med ett okänt format')
 
 const isText = (v: unknown): v is string => typeof v === 'string'
 
-const toBuilding = (address: string, city: string, customerId: string, raw = `${address}, ${city}`): EdpBuilding => ({
-  raw,
-  street: address.trim().replace(/\s+/g, ' '),
-  locality: titleCase(city.trim()),
-  buildingId: customerId,
+/**
+ * Kundnumrets plats i adress-id:t (FNV-1a, 32 bitar, base 36). Kundnumret syns inte i länkar och
+ * kalendrar, men hashen skyddar det inte: numren är korta, och SRV visar dem i sökrutan.
+ * Får aldrig ändras (regel 3).
+ */
+export function srvKey(customerId: string): string {
+  let h = 0x811c9dc5
+  for (const c of customerId) h = Math.imul(h ^ c.charCodeAt(0), 0x01000193) >>> 0
+  return h.toString(36)
+}
+
+const toAddress = (address: string, city: string, customerId: string): SrvAddress => ({
+  building: { raw: `${address}, ${city}`, street: address.trim().replace(/\s+/g, ' '), locality: titleCase(city.trim()), buildingId: srvKey(customerId) },
+  customerId,
 })
 
+const samePlace = (a: EdpBuilding, b: EdpBuilding) => a.street.toLowerCase() === b.street.toLowerCase() && a.locality.toLowerCase() === b.locality.toLowerCase()
+
 /** Förslagen är det enda som ger flera träffar. Orten följer inte med: med den blir det inga. */
-export async function srvSearch(q: string, fetchFn?: typeof fetch, timeoutMs = 3000): Promise<EdpBuilding[]> {
+export async function srvSearch(q: string, fetchFn?: typeof fetch, timeoutMs = 3000): Promise<SrvAddress[]> {
   const res = await fetchJson<{ results?: unknown }>(`${SRV_URL}/getSuggestions?${new URLSearchParams({ query: q.trim() })}`, {}, { fetchFn, timeoutMs })
   if (!Array.isArray(res?.results)) throw unknownFormat()
   return res.results.map((r: Record<string, unknown>) => {
-    const { name, customerId, address, city } = r ?? {}
-    if (!isText(customerId) || !/^\w+$/.test(customerId) || !isText(address) || !address.trim() || !isText(city) || !isText(name)) throw unknownFormat()
-    return toBuilding(address, city, customerId, name)
+    const { customerId, address, city } = r ?? {}
+    if (!isText(customerId) || !/^\w+$/.test(customerId) || !isText(address) || !address.trim() || !isText(city)) throw unknownFormat()
+    return toAddress(address, city, customerId)
   })
-}
-
-/** Flera kunder på samma adress får kundnumret som särskiljare. Det står på fakturan. */
-export function srvDetails(buildings: EdpBuilding[]): [EdpBuilding, string | undefined][] {
-  const key = (b: EdpBuilding) => `${b.street}|${b.locality}`
-  const count = new Map<string, number>()
-  for (const b of buildings) count.set(key(b), (count.get(key(b)) ?? 0) + 1)
-  return buildings.map((b) => [b, count.get(key(b))! > 1 ? `Kundnummer ${b.buildingId}` : undefined])
 }
 
 function containersOf(value: unknown): SrvContainer[] {
@@ -66,39 +76,36 @@ interface CustomerResponse {
   results?: { address?: unknown; city?: unknown; containers?: unknown }[]
 }
 
-/** Kundens adress med id:t, eller null. En kund med flera adresser svarar bara med den första. */
-async function byCustomer(id: string, customerId: string, fetchFn: typeof fetch | undefined, timeoutMs: number) {
+/** Kärlen på kundens adress, eller null. En kund med flera adresser svarar bara med den första. */
+export async function srvContainers({ building, customerId }: SrvAddress, fetchFn?: typeof fetch, timeoutMs = 5000): Promise<SrvContainer[] | null> {
   const opts = { fetchFn, timeoutMs }
   const res = await fetchJson<CustomerResponse>(`${SRV_URL}/search?${new URLSearchParams({ query: customerId, city: '' })}`, {}, opts)
   if (typeof res?.multipleAddresses !== 'boolean' || !Array.isArray(res.customerAddresses) || !Array.isArray(res.results)) throw unknownFormat()
-  const matches = (address: unknown, city: unknown) => isText(address) && isText(city) && edpAddressId(toBuilding(address, city, customerId)) === id
+  const matches = (address: unknown, city: unknown) => isText(address) && isText(city) && samePlace(toAddress(address, city, customerId).building, building)
 
   const first = res.results[0]
-  if (first && matches(first.address, first.city)) {
-    return { building: toBuilding(first.address as string, first.city as string, customerId), containers: containersOf(first.containers) }
-  }
+  if (first && matches(first.address, first.city)) return containersOf(first.containers)
   const other = res.multipleAddresses ? res.customerAddresses.find((a) => matches(a.address, a.city)) : undefined
   if (!other) return null
-  const { address, city, zip } = other as { address: string; city: string; zip: unknown }
-  const params = new URLSearchParams({ address, zipCode: String(zip ?? ''), city, customerId })
+  const params = new URLSearchParams({ address: String(other.address), zipCode: String(other.zip ?? ''), city: String(other.city), customerId })
   const found = await fetchJson<{ containers?: unknown }>(`${SRV_URL}/searchByCustomerAndAddress?${params}`, {}, opts)
-  return { building: toBuilding(address, city, customerId), containers: containersOf(found?.containers) }
+  return containersOf(found?.containers)
 }
 
 /**
- * Adressen och kärlen för ett adress-id. Har kundnumret inte adressen längre (huset har fått en ny
- * kund) används den nya kunden, om den är ensam på adressen: id:t pekar ju på adressen.
+ * Adressen och kärlen för ett adress-id. Förslagen för gatan ger kundnumret vars hash står i id:t.
+ * Finns det inte längre (huset har fått en ny kund) används den nya kunden, om den är ensam på
+ * adressen: id:t pekar ju på adressen.
  */
 export async function srvFind(id: string, fetchFn?: typeof fetch, timeoutMs = 5000): Promise<{ building: EdpBuilding; containers: SrvContainer[] } | null> {
   const parsed = queryFromAddressId(id)
   if (!parsed) return null
-  const found = await byCustomer(id, parsed.buildingId, fetchFn, timeoutMs)
-  if (found) return found
   const street = parsed.query.split(',')[0].trim()
-  const same = (await srvSearch(street, fetchFn, timeoutMs)).filter((b) => edpAddressId({ ...b, buildingId: parsed.buildingId }) === id)
-  if (same.length !== 1) return null
-  const moved = await byCustomer(edpAddressId(same[0]), same[0].buildingId, fetchFn, timeoutMs)
-  return moved && { ...moved, building: { ...moved.building, buildingId: parsed.buildingId } }
+  const here = (await srvSearch(street, fetchFn, timeoutMs)).filter((a) => edpAddressId({ ...a.building, buildingId: parsed.buildingId }) === id)
+  const found = here.find((a) => a.building.buildingId === parsed.buildingId) ?? (here.length === 1 ? here[0] : undefined)
+  if (!found) return null
+  const containers = await srvContainers(found, fetchFn, timeoutMs)
+  return containers && { building: { ...found.building, buildingId: parsed.buildingId }, containers }
 }
 
 /** Villornas "Kärl 1" och "Kärl 2" säger vad de innehåller i kärltypen: "Kärl 370 liter kärl 1 restavfall". */
@@ -123,4 +130,29 @@ export function srvSchedule(containers: SrvContainer[], today: string): Schedule
     return mapped ? { pickups, mapped } : null
   })
   return { bins: [], events: mergeSeries(series.filter((s) => s !== null)), updatedAt: today }
+}
+
+/**
+ * Flera kunder på samma adress får kärlen som särskiljare, och har de samma kärl också nästa
+ * tömning (som NSR). Kärlen hämtas bara för de adresserna. Kundnumret visas aldrig.
+ */
+export async function srvDetails(addresses: SrvAddress[], today: string, fetchFn?: typeof fetch, timeoutMs = 5000): Promise<[EdpBuilding, string | undefined][]> {
+  const shared = addresses.filter((a) => addresses.some((o) => o !== a && samePlace(o.building, a.building)))
+  const info = new Map(
+    await Promise.all(
+      shared.map(async (a) => {
+        const containers = (await srvContainers(a, fetchFn, timeoutMs)) ?? []
+        const kinds = containers.filter((c) => c.calendars.some((cal) => cal.isActive && isSrvPickup(cal.jobTemplate)))
+        const bins = [...new Set(kinds.map((c) => c.contentType.trim()))].sort((a, b) => a.localeCompare(b, 'sv')).join(', ')
+        return [a, { bins, next: srvSchedule(containers, today).events[0]?.date }] as const
+      }),
+    ),
+  )
+  return addresses.map((a) => {
+    const own = info.get(a)
+    if (!own) return [a.building, undefined]
+    const sameBins = shared.some((o) => o !== a && samePlace(o.building, a.building) && info.get(o)?.bins === own.bins)
+    if (!own.bins) return [a.building, 'Inga tömningar just nu']
+    return [a.building, sameBins && own.next ? `${own.bins}, nästa ${formatShort(own.next)}` : own.bins]
+  })
 }

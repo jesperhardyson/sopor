@@ -195,8 +195,8 @@
      "validDays": 1
     }
    ],
-   "customerId": "146603",
-   "containerId": "94672021",
+   "customerId": "300001",
+   "containerId": "900008",
    "contentType": "Restavfall",
    "propertyNumber": ""
   },
@@ -395,8 +395,8 @@
      "validDays": 1
     }
    ],
-   "customerId": "146603",
-   "containerId": "94672022",
+   "customerId": "300001",
+   "containerId": "900009",
    "contentType": "Restavfall",
    "propertyNumber": ""
   },
@@ -595,8 +595,8 @@
      "validDays": 1
     }
    ],
-   "customerId": "146603",
-   "containerId": "94672023",
+   "customerId": "300001",
+   "containerId": "900010",
    "contentType": "Restavfall",
    "propertyNumber": ""
   }

@@ -243,8 +243,8 @@
        "validDays": 1
       }
      ],
-     "customerId": "146603",
-     "containerId": "300552901",
+     "customerId": "300001",
+     "containerId": "900004",
      "contentType": "Matavfall",
      "propertyNumber": ""
     },
@@ -443,8 +443,8 @@
        "validDays": 1
       }
      ],
-     "customerId": "146603",
-     "containerId": "300552902",
+     "customerId": "300001",
+     "containerId": "900005",
      "contentType": "Matavfall",
      "propertyNumber": ""
     },
@@ -559,8 +559,8 @@
        "validDays": 1
       }
      ],
-     "customerId": "146603",
-     "containerId": "300552903",
+     "customerId": "300001",
+     "containerId": "900006",
      "contentType": "Restavfall",
      "propertyNumber": ""
     },
@@ -675,8 +675,8 @@
        "validDays": 1
       }
      ],
-     "customerId": "146603",
-     "containerId": "300552904",
+     "customerId": "300001",
+     "containerId": "900007",
      "contentType": "Restavfall",
      "propertyNumber": ""
     }

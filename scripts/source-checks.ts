@@ -184,7 +184,7 @@ export async function checkSrvSource(source: Source, probe: string, today: strin
       const street = queryFromAddressId(probe)?.query.split(',')[0].trim() ?? probe
       const hits = await srvSearch(street, fetchFn, TIMEOUT_MS)
       if (hits.length === 0) return { ...base, state: 'tom' }
-      return { ...base, state: 'nytt-format', error: `Kontrolladressen ${probe} hittades inte (nytt kundnummer hos SRV?), bara t.ex. ${edpAddressId(hits[0])}` }
+      return { ...base, state: 'nytt-format', error: `Kontrolladressen ${probe} hittades inte (nytt kundnummer hos SRV?), bara t.ex. ${edpAddressId(hits[0].building)}` }
     }
     const types = found.containers.flatMap((c) => {
       const mapped = srvWasteType(c)

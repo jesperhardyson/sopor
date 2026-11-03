@@ -28,7 +28,7 @@ describe('kontrolladresserna', () => {
 
   it('har NSR:s och SRV:s kontrolladresser som adress-id', () => {
     expect(PROBES.nsr).toBe('rosenvägen-3_helsingborg-71d627516ce56271010a40fdb5d01eed')
-    expect(PROBES.srv).toBe('kommunalvägen-28_huddinge-149614')
+    expect(PROBES.srv).toBe('kommunalvägen-28_huddinge-iokpga')
   })
 
   it('har Stockholms kontrolladress', () => {

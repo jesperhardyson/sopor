@@ -52,7 +52,7 @@ export const PROBES: Record<string, string> = {
   // NSR: ett adress-id, så att bevakningen märker om NSR byter id (docs/specs/2026-11-03-nsr.md).
   nsr: 'rosenvägen-3_helsingborg-71d627516ce56271010a40fdb5d01eed',
   // SRV: Huddinge kommunhus, med kommunen som kund (docs/specs/2026-11-03-srv.md).
-  srv: 'kommunalvägen-28_huddinge-149614',
+  srv: 'kommunalvägen-28_huddinge-iokpga',
 }
 
 /** Väntan före varje ny omgång för källor som inte svarade: 5, 15 och 30 minuter. */

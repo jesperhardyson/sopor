@@ -11,7 +11,7 @@
  ],
  "results": [
   {
-   "customerId": "343265",
+   "customerId": "200001",
    "zipCode": "14131",
    "containers": [
     {
@@ -23,7 +23,7 @@
      "firstCalendarDate": "2026-11-04",
      "frequency": false,
      "searchByClient": true,
-     "propertyCode": "SPACKELN 6",
+     "propertyCode": "FASTIGHET 1",
      "hasFrequency": false,
      "calendars": [
       {
@@ -139,8 +139,8 @@
        "validDays": 1
       }
      ],
-     "customerId": 343265,
-     "containerId": "209461201",
+     "customerId": "200001",
+     "containerId": "900001",
      "contentType": "Kärl 2",
      "propertyNumber": ""
     },
@@ -153,7 +153,7 @@
      "firstCalendarDate": "2026-11-04",
      "frequency": false,
      "searchByClient": true,
-     "propertyCode": "SPACKELN 6",
+     "propertyCode": "FASTIGHET 1",
      "hasFrequency": false,
      "calendars": [
       {
@@ -269,8 +269,8 @@
        "validDays": 1
       }
      ],
-     "customerId": 343265,
-     "containerId": "209461202",
+     "customerId": "200001",
+     "containerId": "900002",
      "contentType": "Kärl 1",
      "propertyNumber": ""
     },
@@ -283,7 +283,7 @@
      "firstCalendarDate": "2026-11-25",
      "frequency": "Varje månad",
      "searchByClient": true,
-     "propertyCode": "SPACKELN 6",
+     "propertyCode": "FASTIGHET 1",
      "hasFrequency": true,
      "calendars": [
       {
@@ -329,8 +329,8 @@
        "validDays": 1
       }
      ],
-     "customerId": 343265,
-     "containerId": "209461203",
+     "customerId": "200001",
+     "containerId": "900003",
      "contentType": "Papper och Plast",
      "propertyNumber": ""
     }

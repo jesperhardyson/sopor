@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { SVOA_URL } from '../src/server/svoa.js'
 import { VASYD_URL } from '../src/server/vasyd.js'
 import { NSR_URL } from '../src/server/nsr.js'
-import { SRV_URL } from '../src/server/srv.js'
+import { SRV_URL, srvKey } from '../src/server/srv.js'
 import type { Source } from '../src/sources/index.js'
 import { checkEdpSource, checkNsrSource, checkSrvSource, checkSvoaSource, checkVasydSource, checkStaticSource, checkViaSite, unreachableFromHere } from './source-checks'
 
@@ -343,8 +343,9 @@ describe('checkNsrSource', () => {
 describe('checkSrvSource', () => {
   const fixture = (name: string) => readFileSync(path.resolve(import.meta.dirname, '../src/server/__fixtures__', name), 'utf8')
   const srv: Source = { ...source, id: 'srv', name: 'SRV återvinning', config: { system: 'srv' } }
-  const probe = 'ringvägen-10_huddinge-343265'
-  const respond = (kund: unknown, forslag: unknown = { results: [] }) =>
+  const probe = `ringvägen-10_huddinge-${srvKey('200001')}`
+  const suggestion = (customerId: string) => ({ name: 'Ringvägen 10, HUDDINGE', customerId, address: 'Ringvägen 10', city: 'HUDDINGE' })
+  const respond = (kund: unknown, forslag: unknown = { results: [suggestion('200001')] }) =>
     vi.fn(async (input: string | URL | Request) => {
       const body = String(input).includes('/getSuggestions?') ? forslag : kund
       if (body instanceof Error) throw body
@@ -358,27 +359,26 @@ describe('checkSrvSource', () => {
     calendars: [{ startDate: '2026-11-05', jobTemplate, isActive: true }],
   })
 
-  it('fungerar med de sparade svaren, och frågar med kundnumret i adress-id:t', async () => {
+  it('fungerar med de sparade svaren, och söker på gatan i adress-id:t', async () => {
     const fetchFn = respond(fixture('srv-kund.json'))
     expect(await checkSrv(fetchFn)).toMatchObject({ state: 'fungerar', baseUrl: SRV_URL, probe, unknownWasteTypes: [] })
-    expect(String((fetchFn as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0])).toContain('query=343265')
+    expect(String((fetchFn as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0])).toContain('query=ringv%C3%A4gen+10')
   })
 
   it('svarar inte vid timeout', async () => {
-    expect((await checkSrv(respond(new TypeError('fetch failed')))).state).toBe('svarar-inte')
+    expect((await checkSrv(respond(new TypeError('fetch failed'), new TypeError('fetch failed')))).state).toBe('svarar-inte')
   })
 
   it('har nytt format vid okänd form', async () => {
     expect((await checkSrv(respond({ x: 1 }))).state).toBe('nytt-format')
   })
 
-  it('är tom när varken kundnumret eller adressen hittas', async () => {
-    expect((await checkSrv(respond({ multipleAddresses: false, customerAddresses: [], results: [] }))).state).toBe('tom')
+  it('är tom när förslagen inte hittar adressen', async () => {
+    expect((await checkSrv(respond(fixture('srv-kund.json'), { results: [] }))).state).toBe('tom')
   })
 
-  it('har nytt format när kontrolladressen inte längre har kundnumret', async () => {
-    const forslag = { results: [{ name: 'Ringvägen 10', customerId: '1', address: 'Ringvägen 10', city: 'HUDDINGE' }, { name: 'Ringvägen 10', customerId: '2', address: 'Ringvägen 10', city: 'HUDDINGE' }] }
-    const r = await checkSrv(respond({ multipleAddresses: false, customerAddresses: [], results: [] }, forslag))
+  it('har nytt format när kontrolladressen har fått ett nytt kundnummer och inte är ensam', async () => {
+    const r = await checkSrv(respond(fixture('srv-kund.json'), { results: [suggestion('1'), suggestion('2')] }))
     expect(r.state).toBe('nytt-format')
     expect(r.error).toContain('nytt kundnummer hos SRV')
   })

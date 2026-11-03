@@ -60,13 +60,15 @@ export async function searchLiveSource(source: LiveSource, street: string, place
     // NSR och SRV hittar inget med orten i sökningen, så den filtreras fram här.
     const [streetOnly, typedPlace = ''] = street.split(',').map((p) => p.trim())
     const timeoutMs = opts.timeoutMs ?? 3000
-    const found =
-      source.config.system === 'nsr'
-        ? nsrDetails(await nsrSearch(streetOnly, opts.fetchFn, timeoutMs))
-        : srvDetails(await srvSearch(streetOnly, opts.fetchFn, timeoutMs))
-    return found
-      .map(([b, detail]) => toAddress(source, b, opts.places, detail))
-      .filter((a) => matchesPlace(a, place || typedPlace))
+    const inPlace = (b: EdpBuilding) => matchesPlace(toAddress(source, b, opts.places), place || typedPlace)
+    if (source.config.system === 'nsr') {
+      return nsrDetails(await nsrSearch(streetOnly, opts.fetchFn, timeoutMs))
+        .filter(([b]) => inPlace(b))
+        .map(([b, detail]) => toAddress(source, b, opts.places, detail))
+    }
+    // SRV:s särskiljare kräver kärlen, så orten filtreras först.
+    const found = (await srvSearch(streetOnly, opts.fetchFn, timeoutMs)).filter((a) => inPlace(a.building))
+    return (await srvDetails(found, todayInStockholm(opts.now), opts.fetchFn, timeoutMs)).map(([b, detail]) => toAddress(source, b, opts.places, detail))
   }
   const buildings =
     source.config.system === 'vasyd'
