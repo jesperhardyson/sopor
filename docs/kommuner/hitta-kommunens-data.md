@@ -96,6 +96,7 @@ Lärdomar så här långt:
 - **En publik söktjänst är en bonus, inte regel.** Även när EDP:s modul finns kan den vara tom (Avesta och nio kommuner till vid svepet 2026-11-03). Det kan också finnas flera värdar: Stenungsund var tom hos Remondis men har data på kommunens egen värd.
 - **Där EDP:s modul har data räcker en rad i registret** (och gatunamnen från OpenStreetMap). Ett 25-tal källor med ett 50-tal kommuner svarade med data vid kontrollen 2026-10-30. Modulen ger nästa tömning och en frekvens, så kommande datum räknas fram och märks *beräknat*.
 - **En källas id behöver inte vara unikt.** NSR ger två olika adresser samma id, så adress-id:t där är gata, ort och id tillsammans. Kontrollera det innan en ny källtyp låser sitt adress-id.
+- **En sökning med ett enda svar kan ha ett förslags-API bredvid sig.** SRV:s sökning ger bara den bästa träffen, men sidans förslag i sökrutan ger en lista med kundnummer. Läs sajtens JavaScript innan en källa avfärdas.
 - **Lantmäteriets adressregister** säger vilka adresser som finns, men inte vilket område de tillhör. Licensen är dessutom oklar för återpublicering. Det ersätter alltså inte kommunens tabell.
 
 En större genomgång av adresskällor och vilka kommuner som har publika källor för hämtschema finns i [undersökningen från oktober 2026](undersokning-2026-10-adresser-och-hamtschema.md).

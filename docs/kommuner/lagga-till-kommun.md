@@ -67,6 +67,8 @@ Stockholm Vatten och Avfall (`src/server/svoa.ts`, spec `docs/specs/2026-11-02-s
 
 NSR (`src/server/nsr.ts`, spec `docs/specs/2026-11-03-nsr.md`) är exemplet på en källa med en ICS-fil per adress: riktiga datum för hela året, inga beräknade. Kontrollera att källans id är unikt. NSR:s är det inte, så där pekar gata, ort och id ut adressen tillsammans.
 
+SRV återvinning (`src/server/srv.ts`, spec `docs/specs/2026-11-03-srv.md`) är exemplet på en källa vars sökning bara ger ett svar. Förslagen (`getSuggestions`) ger listan, och kundnumret slår upp schemat. Skriver källan postorten, och postorten saknas bland OpenStreetMaps orter eller finns i flera av källans kommuner, lägg den i källans `postorter` (ort → kommunkod).
+
 - [ ] En klient i `src/server/<system>.ts` med sökning, schema och adress-id, testad mot sparade svar i `src/server/__fixtures__/`. Okänd form på svaret kastar `SourceError`, aldrig en tom lista.
 - [ ] En ny variant i `SourceConfig` och en gren i `searchLiveSource` (`src/server/handlers.ts`) och `lookupAddress` (`src/server/lookup.ts`). Ett id som inte längre ger träff ska ge 502, inte 404, så att kalenderprenumerationer inte töms.
 - [ ] En kontroll i bevakningen (`scripts/source-checks.ts`) och en kontrolladress i `PROBES`.
