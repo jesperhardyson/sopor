@@ -31,7 +31,8 @@ describe('mapWasteType', () => {
 
   it('läser komma och ihopskrivna ord som ett delat kärl (Ale, Lidingö), men bara när varje del är en fraktion', () => {
     expect(mapWasteType('Plast,Papp')).toEqual({ fractions: ['plast', 'papper'] })
-    expect(mapWasteType('PlastPapper')).toEqual({ fractions: ['plast', 'papper'] })    expect(mapWasteType('Restavfall, 190 l')).toEqual({ fractions: ['rest'] })
+    expect(mapWasteType('PlastPapper')).toEqual({ fractions: ['plast', 'papper'] })
+    expect(mapWasteType('Restavfall, 190 l')).toEqual({ fractions: ['rest'] })
   })
 
   it('ger varje fraktion i ett delat kärl (Danderyd, Lycksele)', () => {
