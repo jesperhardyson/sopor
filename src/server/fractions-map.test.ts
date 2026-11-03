@@ -29,9 +29,9 @@ describe('mapWasteType', () => {
     expect(mapWasteType('Kärl 2', '', 'Kärl, 370 L flerfack. Kärl 2. Var 4:e vecka')).toEqual({ fractions: ['karl'], label: 'Fyrfackskärl 2' })
   })
 
-  it('läser komma som ett delat kärl (Ale), men bara när varje del är en fraktion', () => {
+  it('läser komma och ihopskrivna ord som ett delat kärl (Ale, Lidingö), men bara när varje del är en fraktion', () => {
     expect(mapWasteType('Plast,Papp')).toEqual({ fractions: ['plast', 'papper'] })
-    expect(mapWasteType('Restavfall, 190 l')).toEqual({ fractions: ['rest'] })
+    expect(mapWasteType('PlastPapper')).toEqual({ fractions: ['plast', 'papper'] })    expect(mapWasteType('Restavfall, 190 l')).toEqual({ fractions: ['rest'] })
   })
 
   it('ger varje fraktion i ett delat kärl (Danderyd, Lycksele)', () => {

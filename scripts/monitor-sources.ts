@@ -44,6 +44,8 @@ export const PROBES: Record<string, string> = {
   'herrljunga-vargarda': 'Storgatan 5, Herrljunga',
   ale: 'Björkvägen 1, Bohus',
   stenungsund: 'Stationsvägen 1, Stora Höga',
+  lidingo: 'STOCKHOLMSVÄGEN 101',
+  varmdo: 'SKOLVÄGEN 11, STAVSNÄS',
   stockholm: 'Hjortronvägen 3, Bromma, 168 59',
   vasyd: 'Limhamnsvägen 50, Malmö',
 }

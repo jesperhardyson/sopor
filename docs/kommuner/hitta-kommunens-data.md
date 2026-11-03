@@ -75,7 +75,14 @@ Kommunerna som redan är live på sajten listas på [Om-sidan](https://sopor.har
 | Säter | Kommunen själv (inte Dala Vatten och Avfall) | Webbsida med områden per veckodag och jämn/udda vecka, plus veckoschema för fraktionerna | Nej. Mina sidor (`minasidorva.sater.se`) är en kundportal från CGI som kräver inloggning | Saknas, behöver begäras | Inte påbörjad |
 | Mölndal | – | – | EDP Future svarar men är tom (`future.molndal.se/FutureWeb`, 2026-11-03) | – | Inte med |
 | Östersund | – | – | EDP Future svarar men är tom (`edp.ostersund.se/FutureWeb`, 2026-11-03) | – | Inte med |
-| Upplands Väsby | – | – | EDP Future svarar men är tom (`edpfuture.upplandsvasby.se/FutureWeb`, 2026-11-03) | – | Inte med |
+| Upplands Väsby | Kommunen | – | EDP Future svarar men är tom (`edpfuture.upplandsvasby.se/FutureWeb`). Kommunen hänvisar till inloggning på Mina sidor | – | Inte med |
+| Täby | Kommunen (Verdis) | – | Egen JSON i Sitevision-appen `garbageTruckFetcher` på taby.se (`/appresource/…/getAddresses` och `getContainer`), ger datum per fraktion ungefär ett år fram | – | Kandidat för egen källtyp (fas 3) |
+| Vallentuna | Kommunen (PreZero) | – | Bara Avfallsapp (`vallentuna.avfallsapp.se`), som kräver en anonym enhetsregistrering | – | Inte med, beslut behövs om enhetsregistreringen |
+| Tyresö | Kommunen (Verdis) | – | Bara app (Kretsloppsappen). Ingen publik webbsökning | – | Inte med |
+| Järfälla | Kommunen | – | Nej, e-tjänsten kräver e-legitimation | – | Inte med |
+| Sollentuna | SEOM | – | Nej, Mina sidor (`minasidor.seom.se`) kräver inloggning | – | Inte med |
+| Sundbyberg | SAVAB | PDF för ReTuren, inget per adress | Nej, e-tjänsten kräver inloggning | – | Inte med |
+| Solna | Staden (PreZero, Ragn-Sells) | – | Nej, hänvisar till entreprenörernas kundtjänst | – | Inte med |
 | Trelleborg | – | – | EDP Future svarar men är tom (`futureweb.trelleborg.se/EDPFutureWeb`, 2026-11-03) | – | Inte med |
 | Kävlinge | – | – | EDP Future svarar men är tom (`future.kavlinge.se/FutureWeb`, 2026-11-03) | – | Inte med |
 | Mariestad | – | – | EDP Future svarar men är tom (`edp.mariestad.se/FutureWebMariestad`, 2026-11-03) | – | Inte med |
