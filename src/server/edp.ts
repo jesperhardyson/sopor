@@ -32,7 +32,7 @@ const capitalize = (s: string) => s.toLowerCase().replace(/(^|[\s-])(\p{L})/gu, 
  * "SKOLVÄGEN 1" → "Skolvägen 1". När resten har gemener skrivs bara orden före dem om, så att
  * förkortningar längre fram står kvar: "STORGATAN Fritid vid ÅVS" → "Storgatan Fritid vid ÅVS".
  */
-const titleCase = (s: string) =>
+export const titleCase = (s: string) =>
   s === s.toUpperCase() ? capitalize(s) : s.replace(/^[^\p{Ll}]+(?=\s)/u, capitalize)
 
 /**
