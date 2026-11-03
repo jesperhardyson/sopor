@@ -413,7 +413,7 @@ describe('kommunStatus', () => {
     vi.stubGlobal(
       'fetch',
       vi.fn(async (url: string) => {
-        if (url === '/data/orter.json') return Response.json({ uppsala: { 'gamla uppsala': 'Uppsala kommun' } })
+        if (url === '/data/orter.json') return Response.json({ uppsala: { 'gamla uppsala': 'Uppsala kommun', bergby: 'Uppsala kommun' } })
         return ok ? Response.json(sverige) : new Response('', { status: 500 })
       }),
     )

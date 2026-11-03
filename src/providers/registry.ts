@@ -289,7 +289,7 @@ export async function kommunStatus(place: string): Promise<KommunStatus[] | null
   const names = kommunerForPlace(lookup, place.trim()).map((code) => lookup.kommuner[code])
   // Stadsdelar som Limhamn är inga tätorter, men källornas egna orter kan känna till dem
   const key = normalize(place, false)
-  const local = names.length > 0 ? [] : Object.values(places).flatMap((p) => p[key] ?? [])
+  const local = Object.values(places).flatMap((p) => p[key] ?? [])
   return [...new Set([...names, ...local])].map((name) => ({ name, covered: covered.has(name) }))
 }
 
