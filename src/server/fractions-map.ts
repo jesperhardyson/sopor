@@ -16,6 +16,8 @@ const PATTERNS: [RegExp, FractionId][] = [
   [/^metal/, 'metall'],
   // "Tidn." i NSR:s "Tidn./glas/metall"
   [/^tidn/, 'tidningar'],
+  // Hässleholm Miljö kallar tidningarna "Returpapper".
+  [/^returpapper/, 'tidningar'],
 ]
 
 const SKIP = [/^slam/, /^latrin/, /^fett/]

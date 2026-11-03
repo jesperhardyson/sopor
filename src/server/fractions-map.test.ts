@@ -59,6 +59,15 @@ describe('mapWasteType', () => {
     expect(mapWasteType('Mat- och restavfall')).toEqual({ fractions: ['mat', 'rest'] })
   })
 
+  it('läser Appbolagets avfallstyper', () => {
+    expect(mapWasteType('Returpapper')).toEqual({ fractions: ['tidningar'] })
+    expect(mapWasteType('Pappersförp')).toEqual({ fractions: ['papper'] })
+    expect(mapWasteType('Metallförp')).toEqual({ fractions: ['metall'] })
+    expect(mapWasteType('Färgat Glas')).toEqual({ fractions: ['glas'] })
+    expect(mapWasteType('Kärl1', '', 'Fyrfack kärl 1 Plast och Pappersförpackningar')).toEqual({ fractions: ['karl'], label: 'Fyrfackskärl 1' })
+    expect(mapWasteType('Kärl 2', '', 'Fyrfack 370 liter, Kärl 2 var 4:e vecka')).toEqual({ fractions: ['karl'], label: 'Fyrfackskärl 2' })
+  })
+
   it('gissar inte när en del av ett delat kärl är okänd', () => {
     expect(mapWasteType('Papper/Textil')).toEqual({ fractions: ['karl'], label: 'Papper/Textil' })
   })

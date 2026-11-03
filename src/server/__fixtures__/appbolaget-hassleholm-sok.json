@@ -1,0 +1,52 @@
+{
+ "message": "Successfully fetched 26 items",
+ "status": 200,
+ "data": [
+  {
+   "uuid": "4fcea803-1a26-49a1-b66f-b41a631ed823",
+   "alias": "hmab-storgatan-1-vinsloev",
+   "address": "STORGATAN 1",
+   "city": "VINSLÖV",
+   "designation": "LOKET 3"
+  },
+  {
+   "uuid": "660c48fb-cd41-48a8-a275-83477252f325",
+   "alias": "hmab-storgatan-1-soesdala",
+   "address": "STORGATAN 1",
+   "city": "SÖSDALA",
+   "designation": "SÖSDALA 72:3"
+  },
+  {
+   "uuid": "4657d12e-a630-4167-8448-717adf9e8528",
+   "alias": "hmab-storgatan-10-soesdala",
+   "address": "STORGATAN 10",
+   "city": "SÖSDALA",
+   "designation": "VANNARÖD 73:1"
+  },
+  {
+   "uuid": "f8fb4261-e2dc-4fe3-91ec-103a4f855ad6",
+   "alias": "hmab-storgatan-11a-j-soesdala",
+   "address": "STORGATAN 11A-J",
+   "city": "SÖSDALA",
+   "designation": "VANNARÖD 2:41"
+  },
+  {
+   "uuid": "1faf4085-6d20-4f60-b08e-9b12873a11dd",
+   "alias": "hmab-storgatan-13-vinsloev",
+   "address": "STORGATAN 13",
+   "city": "VINSLÖV",
+   "designation": "HERMES 7"
+  },
+  {
+   "uuid": "1b76ee0c-4507-49f2-a896-b400ab6fa087",
+   "alias": "hmab-storgatan-14-vinsloev",
+   "address": "STORGATAN 14",
+   "city": "VINSLÖV",
+   "designation": "TAPETSERAREN 9"
+  }
+ ],
+ "pagination": {
+  "next": false,
+  "page": "1"
+ }
+}

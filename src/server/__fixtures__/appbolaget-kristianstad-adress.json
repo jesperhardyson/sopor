@@ -1,0 +1,63 @@
+{
+ "message": "Successfully fetched item",
+ "status": 200,
+ "data": {
+  "uuid": "1ec2efb9-115c-4c52-9274-74398e9f427f",
+  "alias": "krab-vaestra-storgatan-1-kristianstad",
+  "address": "Västra Storgatan 1",
+  "city": "Kristianstad",
+  "property_id": "255527",
+  "services": [
+   {
+    "description": "140 l kärl matavfall 1 gång/vecka",
+    "type": "Matavfall",
+    "collection_at": "2026-11-04",
+    "precision": "day"
+   },
+   {
+    "description": "370 l kärl restavfall 1 gång/vecka",
+    "type": "Restavfall",
+    "collection_at": "2026-11-04",
+    "precision": "day"
+   },
+   {
+    "description": "370 l kärl pappersförpackningar 1 gång/vecka",
+    "type": "Pappersförp",
+    "collection_at": "2026-11-05",
+    "precision": "day"
+   },
+   {
+    "description": "190 l kärl tidningar var 4:e vecka",
+    "type": "Tidningar",
+    "collection_at": "2026-11-09",
+    "precision": "day"
+   },
+   {
+    "description": "370 l kärl plastförpackningar varannan vecka",
+    "type": "Plastförp",
+    "collection_at": "2026-11-16",
+    "precision": "day"
+   },
+   {
+    "description": "190 l kärl färgat glas var 8:e vecka",
+    "type": "Färgat Glas",
+    "collection_at": "2026-11-19",
+    "precision": "day"
+   },
+   {
+    "description": "190 l kärl ofärgat glas var 8:e vecka",
+    "type": "Ofärgat Glas",
+    "collection_at": "2026-11-19",
+    "precision": "day"
+   },
+   {
+    "description": "190 l kärl metallförpackningar var 8:e vecka",
+    "type": "Metallförp",
+    "collection_at": "2026-11-06",
+    "precision": "day"
+   }
+  ],
+  "deviations": null,
+  "updated_at": "2026-11-03 00:17:44"
+ }
+}
