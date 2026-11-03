@@ -33,7 +33,7 @@ Kristianstads `Unit` är `dd905ce7-b16d-4422-be36-564169af4035`.
 - **Avgifter är inga tömningar.** Hässleholm har raderna "Budad hämtning" ("Grundavgift, per lägenhet", "Avgift för tömning av fyrfackskärl, helår") med datum en gång i månaden.
 - **Avfallstyper** (`code.description`) i ett svep över 64 adresser:
   - Kristianstad: `Matavfall`, `Restavfall`, `Pappersförp`, `Plastförp`, `Metallförp`, `Tidningar`, `Färgat Glas`, `Ofärgat Glas`, `Kärl 1`, `Kärl 2` (fyrfackskärl), `Trädgårdsavfall` och `Batterier`.
-  - Hässleholm: samma och `Kärl1`, `Kärl2`, `Brännbart`, `Metall`, `Returpapper`, `Plast/Papper`, `Deponi` och `PK`.
+  - Hässleholm: samma och `Kärl1`, `Kärl2`, `Brännbart`, `Brä/Mat`, `Metall`, `Returpapper`, `Plast/Papper`, `Deponi` och `PK`.
 - **Personuppgifter:** `route.exceptions[].meta` har namn på den som ändrade. Sopor läser aldrig `meta`.
 
 ## Beslut
@@ -76,6 +76,7 @@ export async function appbolagetSchedule(unit: string, address: AppbolagetAddres
 |---|---|
 | `Pappersförp`, `Plastförp`, `Metallförp`, `Metall`, `Färgat Glas`, `Ofärgat Glas`, `Tidningar`, `Brännbart`, `Plast/Papper` | finns redan |
 | `Returpapper` | `tidningar` (nytt) |
+| `Brä/Mat` | `rest`, `mat` (nytt: "Brä" är brännbart) |
 | `Kärl 1`, `Kärl1`, `Kärl 2`, `Kärl2` | `karl` med texten "Fyrfackskärl 1" och "Fyrfackskärl 2" ("Fyrfack" i beskrivningen) |
 | `Trädgårdsavfall`, `Batterier` | `karl` med källans text, kända kärl (finns redan) |
 | `Deponi`, `PK` | `karl` med källans text, rapporteras av bevakningen |

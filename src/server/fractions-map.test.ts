@@ -61,6 +61,7 @@ describe('mapWasteType', () => {
 
   it('läser Appbolagets avfallstyper', () => {
     expect(mapWasteType('Returpapper')).toEqual({ fractions: ['tidningar'] })
+    expect(mapWasteType('Brä/Mat')).toEqual({ fractions: ['rest', 'mat'] })
     expect(mapWasteType('Pappersförp')).toEqual({ fractions: ['papper'] })
     expect(mapWasteType('Metallförp')).toEqual({ fractions: ['metall'] })
     expect(mapWasteType('Färgat Glas')).toEqual({ fractions: ['glas'] })
