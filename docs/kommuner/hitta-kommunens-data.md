@@ -77,7 +77,7 @@ Kommunerna som redan är live på sajten listas på [Om-sidan](https://sopor.har
 | Östersund | – | – | EDP Future svarar men är tom (`edp.ostersund.se/FutureWeb`, 2026-11-03) | – | Inte med |
 | Upplands Väsby | Kommunen | – | EDP Future svarar men är tom (`edpfuture.upplandsvasby.se/FutureWeb`). Kommunen hänvisar till inloggning på Mina sidor | – | Inte med |
 | Täby | Kommunen (Verdis) | – | Egen JSON i Sitevision-appen `garbageTruckFetcher` på taby.se (`/appresource/…/getAddresses` och `getContainer`), ger datum per fraktion ungefär ett år fram | – | Kandidat för egen källtyp (fas 3) |
-| Vallentuna | Kommunen (PreZero) | – | Bara Avfallsapp (`vallentuna.avfallsapp.se`), som kräver en anonym enhetsregistrering | – | Inte med, beslut behövs om enhetsregistreringen |
+| Vallentuna | Kommunen (PreZero) | – | Bara Avfallsapp (`vallentuna.avfallsapp.se`), som kräver en anonym enhetsregistrering | – | Inte med: Avfallsapp hoppas över (beslut 5 i `docs/plans/2026-11-03-fler-kommuner.md`) |
 | Tyresö | Kommunen (Verdis) | – | Bara app (Kretsloppsappen). Ingen publik webbsökning | – | Inte med |
 | Järfälla | Kommunen | – | Nej, e-tjänsten kräver e-legitimation | – | Inte med |
 | Sollentuna | SEOM | – | Nej, Mina sidor (`minasidor.seom.se`) kräver inloggning | – | Inte med |
