@@ -73,7 +73,7 @@ Alternativen som valdes bort: att köra bevakningen som Vercel Cron (kräver en 
 
 ### Nytt försök
 
-Källor som är **Svarar inte** efter den första omgången prövas igen efter fem minuter. Först om de inte svarar då heller räknas läget. Tillfälliga avbrott, som Lidköpings, ger alltså inget ärende.
+Källor som är **Svarar inte** efter den första omgången prövas igen efter 5, 15 och 30 minuter, men bara så länge de fortfarande inte svarar. Först om de inte svarar i någon omgång räknas läget. Tillfälliga avbrott, som Lidköpings, ger alltså inget ärende.
 
 ## Ärenden
 
