@@ -73,7 +73,7 @@ export function parseNsrIcs(text: string): (NsrPickup & { location: string })[] 
     const text = unescape(summary[1])
     const type = text.replace(/^Ändrad:\s*/i, '')
     const location = unescape(event.match(/^LOCATION:(.*)$/m)?.[1] ?? '')
-    seen.set(`${date}|${type}`, { date, type, changed: type !== text, location })
+    seen.set(`${date}|${type}|${location}`, { date, type, changed: type !== text, location })
   }
   return [...seen.values()]
 }
@@ -91,8 +91,10 @@ export async function nsrSchedule(hit: NsrHit, fetchFn?: typeof fetch, timeoutMs
     throw error
   })
   // NSR:s id är inte unikt, så filen måste gälla samma adress som träffen.
-  const own = events.filter((e) => e.location.toLowerCase() === `${street}, ${locality}`.toLowerCase())
-  if (events.length > 0 && own.length === 0) throw unknownFormat()
+  const place = (locality ? `${street}, ${locality}` : street).toLowerCase()
+  const own = events.filter((e) => e.location.replace(/,\s*$/, '').toLowerCase() === place)
+  // En tom fil när sökningen har tömningar är också ett okänt format, inte ett kortare schema.
+  if (own.length === 0 && (events.length > 0 || hit.pickups.length > 0)) throw unknownFormat()
 
   const byType = new Map<string, Map<string, boolean>>()
   for (const p of [...own, ...hit.pickups]) {

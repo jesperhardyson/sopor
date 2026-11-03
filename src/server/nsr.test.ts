@@ -70,6 +70,12 @@ describe('parseNsrIcs', () => {
     expect(pickups).toContainEqual({ date: '2026-12-21', type: 'KÄRL 1', changed: true, location: 'Rosenvägen 3, Helsingborg' })
   })
 
+  it('behåller samma tömning för två adresser i samma fil (NSR:s id är inte unikt)', () => {
+    const event = (location: string) => ['BEGIN:VEVENT', 'DTSTART:20261110T070000', 'SUMMARY:KÄRL 1', `LOCATION:${location}`, 'END:VEVENT']
+    const ics = ['BEGIN:VCALENDAR', ...event('Rosenvägen 3\\, Helsingborg'), ...event('Norra Torggatan 7\\, Hasslarp'), 'END:VCALENDAR'].join('\r\n')
+    expect(parseNsrIcs(ics).map((p) => p.location)).toEqual(['Rosenvägen 3, Helsingborg', 'Norra Torggatan 7, Hasslarp'])
+  })
+
   it('läser radbrytningar och kodade tecken enligt RFC 5545', () => {
     const ics = ['BEGIN:VCALENDAR', 'BEGIN:VEVENT', 'DTSTART;VALUE=DATE:20261103', 'SUMMARY:Mat ', ' + Rest', 'LOCATION:Storgatan 1\\, Höganäs', 'END:VEVENT', 'END:VCALENDAR'].join('\r\n')
     expect(parseNsrIcs(ics)).toEqual([{ date: '2026-11-03', type: 'Mat + Rest', changed: false, location: 'Storgatan 1, Höganäs' }])
@@ -125,6 +131,18 @@ describe('nsrSchedule', () => {
     const empty: NsrHit = { building: { raw: 'Järnvägsgatan 3', street: 'Järnvägsgatan 3', locality: 'Ängelholm', buildingId: 'x' }, pickups: [] }
     expect((await nsrSchedule(empty, fail, 5000, '2026-11-03')).events).toEqual([])
     await expect(nsrSchedule(await rosenvagen3(), fail, 5000, '2026-11-03')).rejects.toThrow('nsr.se svarade 500')
+  })
+
+  it('kastar när kalenderfilen är tom men sökningen har tömningar', async () => {
+    await expect(nsrSchedule(await rosenvagen3(), fakeNsr({ ics: 'BEGIN:VCALENDAR\r\nEND:VCALENDAR\r\n' }), 5000, '2026-11-03')).rejects.toEqual(unknown)
+  })
+
+  it('kastar ett avbrott, inte ett nytt format, när kalenderfilen inte kan läsas klart', async () => {
+    const broken = vi.fn(async () => {
+      const body = new ReadableStream({ start: (c) => c.error(new TypeError('terminated')) })
+      return new Response(body, { headers: { 'Content-Type': 'text/calendar' } })
+    }) as unknown as typeof fetch
+    await expect(nsrSchedule(await rosenvagen3(), broken, 5000, '2026-11-03')).rejects.toThrow('Ingen kontakt med nsr.se')
   })
 
   it('ger ett tomt schema för en adress utan tömningar', async () => {

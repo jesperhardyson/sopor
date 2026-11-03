@@ -35,5 +35,9 @@ export async function fetchJson<T>(url: string, init: RequestInit = {}, opts: Fe
 /** En kalenderfil (ICS) som text, med samma fel som fetchJson. */
 export async function fetchCalendar(url: string, opts: FetchOptions = {}): Promise<string> {
   const res = await request(url, {}, 'text/calendar', 'ICS', opts)
-  return res.text()
+  try {
+    return await res.text()
+  } catch (error) {
+    throw new SourceError(`Ingen kontakt med ${new URL(url).host}: ${(error as Error).message}`)
+  }
 }
