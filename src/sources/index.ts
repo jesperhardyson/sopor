@@ -7,7 +7,7 @@ export interface Kommun {
 }
 
 /** Hur källans data hämtas. Ny leverantör = ny variant här + ny provider. */
-export type SourceConfig = { system: 'static' } | { system: 'edp'; baseUrl: string } | { system: 'svoa' } | { system: 'vasyd' } | { system: 'nsr' } | { system: 'srv' }
+export type SourceConfig = { system: 'static' } | { system: 'edp'; baseUrl: string } | { system: 'svoa' } | { system: 'vasyd' } | { system: 'nsr' } | { system: 'srv' } | { system: 'appbolaget'; unit: string }
 
 /**
  * En datakälla för hämtschema, oftast ett avfallsbolag eller en kommun. En källa kan täcka
@@ -298,6 +298,22 @@ export const ALL_SOURCES: Source[] = [
     // SRV skriver postorten. Haninge, Ornö och Utö saknas bland OpenStreetMaps orter, och Norsborg finns också i Nynäshamn.
     postorter: { Haninge: '0136', Ornö: '0136', Utö: '0136', Norsborg: '0127' },
     config: { system: 'srv' },
+  },
+  {
+    // Ingen EDP: Appbolagets plattform (src/server/appbolaget.ts). Unit står på renhallningen-kristianstad.se.
+    id: 'kristianstad',
+    name: 'Renhållningen Kristianstad',
+    url: 'https://renhallningen-kristianstad.se',
+    kommuner: [{ code: '1290', name: 'Kristianstads kommun' }],
+    config: { system: 'appbolaget', unit: 'dd905ce7-b16d-4422-be36-564169af4035' },
+  },
+  {
+    // Appbolagets plattform, som Kristianstad. Unit står i tömningskalendern på hassleholmmiljo.se.
+    id: 'hassleholm',
+    name: 'Hässleholm Miljö',
+    url: 'https://hassleholmmiljo.se',
+    kommuner: [{ code: '1293', name: 'Hässleholms kommun' }],
+    config: { system: 'appbolaget', unit: 'e34d7050-1b2a-4917-a921-0ea7742d0a6e' },
   },
 ]
 

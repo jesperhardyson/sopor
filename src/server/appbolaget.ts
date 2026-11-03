@@ -99,14 +99,14 @@ function stepDays(text: string): number | null {
   return ({ 52: 7, 26: 14, 13: 28 } as Record<number, number>)[perYear] ?? null
 }
 
-interface Service {
+export interface AppbolagetService {
   code?: { description?: unknown; description_verbose?: unknown }
   collection_at?: unknown
   collections?: { collection_at?: unknown }[]
   route?: { exceptions?: { old_date?: unknown; new_date?: unknown }[] } | null
 }
 
-function pickups(service: Service, today: string): ExpandedPickup[] {
+function pickups(service: AppbolagetService, today: string): ExpandedPickup[] {
   const own = service.collections
   if (Array.isArray(own) && own.length > 0) return own.map((c) => ({ date: stockholmDate(c?.collection_at), estimated: false }))
   if (service.collection_at == null && Array.isArray(own)) return []
@@ -121,7 +121,45 @@ function pickups(service: Service, today: string): ExpandedPickup[] {
   return expanded.map((p) => (moved.has(p.date) ? { ...p, date: moved.get(p.date)!, warning: MOVED } : p))
 }
 
-/** Fastigheternas tömningar från i dag, en händelse per dag. Avgifterna ("Budad hämtning") är inga tömningar. */
+/** Fastigheternas rader, en per kärl eller avgift. */
+export async function appbolagetServices(unit: string, propertyIds: string[], fetchFn?: typeof fetch, timeoutMs = 5000): Promise<AppbolagetService[]> {
+  const responses = await Promise.all(
+    propertyIds.map((id) =>
+      fetchJson<{ data?: { services?: unknown } }>(`${APPBOLAGET_URL}/@universal/waste/properties/${encodeURIComponent(id)}/?${new URLSearchParams({ unit })}`, {}, { fetchFn, timeoutMs }),
+    ),
+  )
+  return responses.flatMap((res) => {
+    const services = res?.data?.services
+    if (!Array.isArray(services)) throw unknownFormat()
+    return (services as AppbolagetService[]).map((s) => {
+      if (!isText(s?.code?.description) || (!Array.isArray(s.collections) && s.collection_at == null)) throw unknownFormat()
+      return s
+    })
+  })
+}
+
+/** Avgifterna ("Budad hämtning") är inga tömningar. */
+export const isFee = (s: AppbolagetService) => /^budad hämtning$/i.test(String(s.code?.description).trim())
+
+export const serviceType = (s: AppbolagetService) => ({
+  type: String(s.code?.description).trim(),
+  description: isText(s.code?.description_verbose) ? s.code.description_verbose : '',
+})
+
+/** Tömningarna från i dag, en händelse per dag. */
+export function scheduleFromServices(services: AppbolagetService[], today: string): Schedule {
+  const series: PickupSeries[] = []
+  for (const s of services) {
+    if (isFee(s)) continue
+    const { type, description } = serviceType(s)
+    const dates = pickups(s, today).filter((p) => p.date >= today)
+    const mapped = mapWasteType(type, '', description)
+    if (mapped && dates.length > 0) series.push({ pickups: dates, mapped })
+  }
+  return { bins: [], events: mergeSeries(series), updatedAt: today }
+}
+
+/** Fastigheternas tömningar från i dag. En adress utan fastighet får ett tomt schema. */
 export async function appbolagetSchedule(
   unit: string,
   propertyIds: string[],
@@ -129,23 +167,5 @@ export async function appbolagetSchedule(
   timeoutMs = 5000,
   today = todayInStockholm(),
 ): Promise<Schedule> {
-  const responses = await Promise.all(
-    propertyIds.map((id) =>
-      fetchJson<{ data?: { services?: unknown } }>(`${APPBOLAGET_URL}/@universal/waste/properties/${encodeURIComponent(id)}/?${new URLSearchParams({ unit })}`, {}, { fetchFn, timeoutMs }),
-    ),
-  )
-  const series: PickupSeries[] = []
-  for (const res of responses) {
-    const services = res?.data?.services
-    if (!Array.isArray(services)) throw unknownFormat()
-    for (const s of services as Service[]) {
-      const type = s?.code?.description
-      if (!isText(type) || (!Array.isArray(s.collections) && s.collection_at == null)) throw unknownFormat()
-      if (/^budad hämtning$/i.test(type.trim())) continue
-      const dates = pickups(s, today).filter((p) => p.date >= today)
-      const mapped = mapWasteType(type, '', isText(s.code?.description_verbose) ? s.code.description_verbose : '')
-      if (mapped && dates.length > 0) series.push({ pickups: dates, mapped })
-    }
-  }
-  return { bins: [], events: mergeSeries(series), updatedAt: today }
+  return scheduleFromServices(await appbolagetServices(unit, propertyIds, fetchFn, timeoutMs), today)
 }

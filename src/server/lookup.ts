@@ -7,6 +7,7 @@ import type { AddressIndexFile, ScheduleFile } from '../data/static-format.js'
 import { needsPlaces, type Source } from '../sources/index.js'
 import { edpAddressId, edpSchedule, edpSearch, queryFromAddressId, type EdpBuilding } from './edp.js'
 import { nsrDetails, nsrSchedule, nsrSearch } from './nsr.js'
+import { appbolagetFind, appbolagetSchedule } from './appbolaget.js'
 import { SRV_CUSTOMER_TIMEOUT_MS, srvFind, srvSchedule } from './srv.js'
 import { vasydSchedule, vasydSearch } from './vasyd.js'
 import { queryFromSvoaId, sameSvoaAddress, SVOA_LIMIT, svoaSchedule, svoaSearch, type SvoaAddress } from './svoa.js'
@@ -32,6 +33,7 @@ export async function lookupAddress(
     if (source.config.system === 'vasyd') return await lookupVasyd(source, id, origin, opts)
     if (source.config.system === 'nsr') return await lookupNsr(source, id, origin, opts)
     if (source.config.system === 'srv') return await lookupSrv(source, id, origin, opts)
+    if (source.config.system === 'appbolaget') return await lookupAppbolaget(source, source.config.unit, id, opts)
     return await lookupStatic(source, id, origin, opts)
   } catch (e) {
     console.error('Uppslagning av adress misslyckades', e)
@@ -121,6 +123,14 @@ async function lookupSrv(source: Source, id: string, origin: string, opts: Handl
   const schedule = srvSchedule(found.containers, todayInStockholm(opts.now))
   const places = opts.places ?? (needsPlaces(source) ? await loadServerPlaces(origin, opts.fetchFn) : undefined)
   return { status: 200, address: toAddress(source, found.building, places), schedule }
+}
+
+/** Appbolaget: uuid:t i id:t pekar ut adressen, utan sökning. Ett id utan träff ger 502 (se lookupSvoa). */
+async function lookupAppbolaget(source: Source, unit: string, id: string, opts: HandlerOptions): Promise<Lookup> {
+  const found = await appbolagetFind(unit, id, opts.fetchFn, opts.timeoutMs ?? 5000)
+  if (!found) return { status: 502 }
+  const schedule = await appbolagetSchedule(unit, found.propertyIds, opts.fetchFn, opts.timeoutMs ?? 5000, todayInStockholm(opts.now))
+  return { status: 200, address: toAddress(source, found.building, opts.places), schedule }
 }
 
 async function lookupStatic(source: Source, id: string, origin: string, opts: HandlerOptions): Promise<Lookup> {

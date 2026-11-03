@@ -11,6 +11,7 @@ import { edpAddressId, edpSearch, type EdpBuilding } from './edp.js'
 import { svoaAddressId, svoaSearch } from './svoa.js'
 import { vasydSearch } from './vasyd.js'
 import { nsrDetails, nsrSearch } from './nsr.js'
+import { appbolagetDetails, appbolagetSearch } from './appbolaget.js'
 import { SRV_CUSTOMER_TIMEOUT_MS, srvDetails, srvSearch } from './srv.js'
 import { lookupAddress } from './lookup.js'
 
@@ -56,13 +57,18 @@ export async function searchLiveSource(source: LiveSource, street: string, place
       .map((a): Address => ({ id: svoaAddressId(a), street: a.street, locality: a.locality, sourceId: source.id, kommun }))
       .filter((a) => matchesPlace(a, place))
   }
-  if (source.config.system === 'nsr' || source.config.system === 'srv') {
-    // NSR och SRV hittar inget med orten i sökningen, så den filtreras fram här.
+  if (source.config.system === 'nsr' || source.config.system === 'srv' || source.config.system === 'appbolaget') {
+    // NSR, SRV och Appbolaget hittar inget med orten i sökningen, så den filtreras fram här.
     const [streetOnly, typedPlace = ''] = street.split(',').map((p) => p.trim())
     const timeoutMs = opts.timeoutMs ?? 3000
     const inPlace = (b: EdpBuilding) => matchesPlace(toAddress(source, b, opts.places), place || typedPlace)
     if (source.config.system === 'nsr') {
       return nsrDetails(await nsrSearch(streetOnly, opts.fetchFn, timeoutMs))
+        .filter(([b]) => inPlace(b))
+        .map(([b, detail]) => toAddress(source, b, opts.places, detail))
+    }
+    if (source.config.system === 'appbolaget') {
+      return appbolagetDetails(await appbolagetSearch(source.config.unit, streetOnly, opts.fetchFn, timeoutMs))
         .filter(([b]) => inPlace(b))
         .map(([b, detail]) => toAddress(source, b, opts.places, detail))
     }
