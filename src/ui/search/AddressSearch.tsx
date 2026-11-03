@@ -276,7 +276,6 @@ export function AddressSearch({
     // Orten kan saknas (Lidköping), och då ska raden varken börja med en punkt eller stå tom.
     const parts = [
       r.locality && <span key="locality">{r.locality}</span>,
-      r.detail && <span key="detail">{r.detail}</span>,
       showKommun && (
         <span key="kommun" className="rounded-md bg-brand-soft px-2 py-0.5 text-[13px] font-extrabold text-brand-text">
           {r.kommun}
@@ -304,6 +303,8 @@ export function AddressSearch({
               ))}
             </span>
           )}
+          {/* Särskiljaren kan vara lång (SRV: "Matavfall varannan vecka, Restavfall varje vecka (3 kärl)"), så den får en egen rad. */}
+          {r.detail && <span className="text-sm text-text-2">{r.detail}</span>}
         </span>
       </li>
     )

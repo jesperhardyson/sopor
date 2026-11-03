@@ -485,6 +485,24 @@ describe('AddressSearch', () => {
     expect(within(options[1]).getByText('Byggnad 2')).toBeInTheDocument()
   })
 
+  it('ger särskiljaren en egen rad, så att en lång text inte delar raden med orten och kommunen', async () => {
+    const detail = 'Matavfall varannan vecka (container), Restavfall varannan vecka (2 containrar)'
+    const twins = [
+      { ...a('ringvagen-1_grodinge-1', 'Ringvägen 1', 'Grödinge'), detail },
+      { ...a('ringvagen-1_grodinge-2', 'Ringvägen 1', 'Grödinge'), detail: 'Restavfall varje vecka' },
+    ]
+    render(
+      <MemoryRouter>
+        <AddressSearch search={async () => ({ addresses: twins, failed: [] })} suggest={async () => []} />
+      </MemoryRouter>,
+    )
+    await userEvent.type(screen.getByRole('combobox'), 'ringvägen 1')
+    const [first] = await screen.findAllByRole('option')
+    const line = within(first).getByText('Grödinge').parentElement!
+    expect(line).not.toHaveTextContent(detail)
+    expect(within(first).getByText(detail).parentElement).not.toBe(line)
+  })
+
   it('visar ingen tom rad och ingen ensam punkt när orten saknas', async () => {
     const lidkoping = (id: string, street: string): Address => ({ id, street, locality: '', sourceId: 'lidkoping', kommun: 'Lidköpings kommun' })
     const hits = [lidkoping('storgatan-11-1', 'Storgatan 11'), a('avesta-storgatan-12', 'Storgatan 12', 'Avesta')]
