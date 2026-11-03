@@ -4,8 +4,9 @@ import { describe, expect, it, vi } from 'vitest'
 import { SVOA_URL } from '../src/server/svoa.js'
 import { VASYD_URL } from '../src/server/vasyd.js'
 import { NSR_URL } from '../src/server/nsr.js'
+import { SRV_URL, srvKey } from '../src/server/srv.js'
 import type { Source } from '../src/sources/index.js'
-import { checkEdpSource, checkNsrSource, checkSvoaSource, checkVasydSource, checkStaticSource, checkViaSite, unreachableFromHere } from './source-checks'
+import { checkEdpSource, checkNsrSource, checkSrvSource, checkSvoaSource, checkVasydSource, checkStaticSource, checkViaSite, unreachableFromHere } from './source-checks'
 
 const json = (body: unknown) =>
   new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json; charset=utf-8' } })
@@ -336,5 +337,62 @@ describe('checkNsrSource', () => {
   it('rapporterar okända avfallstyper, men inte fyrfackskärl och trädgårdsavfall', async () => {
     const search = { fp: [{ id: '71d627516ce56271010a40fdb5d01eed', Adress: 'Rosenvägen 3', Ort: 'Helsingborg', Exec: { Datum: ['2026-11-04', '2026-11-05', '2026-11-06'], AvfallsTyp: ['Grovavfall', 'KÄRL 1', 'Trädgårdsavfall'] } }] }
     expect((await checkNsr(respond(search))).unknownWasteTypes).toEqual(['Grovavfall'])
+  })
+})
+
+describe('checkSrvSource', () => {
+  const fixture = (name: string) => readFileSync(path.resolve(import.meta.dirname, '../src/server/__fixtures__', name), 'utf8')
+  const srv: Source = { ...source, id: 'srv', name: 'SRV återvinning', config: { system: 'srv' } }
+  const probe = `ringvägen-10_huddinge-${srvKey('200001')}`
+  const suggestion = (customerId: string) => ({ name: 'Ringvägen 10, HUDDINGE', customerId, address: 'Ringvägen 10', city: 'HUDDINGE' })
+  const respond = (kund: unknown, forslag: unknown = { results: [suggestion('200001')] }) =>
+    vi.fn(async (input: string | URL | Request) => {
+      const body = String(input).includes('/getSuggestions?') ? forslag : kund
+      if (body instanceof Error) throw body
+      return new Response(typeof body === 'string' ? body : JSON.stringify(body), { headers: { 'Content-Type': 'application/json;charset=UTF-8' } })
+    }) as unknown as typeof fetch
+  const checkSrv = (fetchFn: typeof fetch) => checkSrvSource(srv, probe, '2026-11-04', fetchFn)
+  const kund = (containers: unknown[]) => ({ multipleAddresses: false, customerAddresses: [], results: [{ address: 'Ringvägen 10', city: 'HUDDINGE', containers }] })
+  const container = (contentType: string, jobTemplate = 'Tömning', containerType = 'Kärl 190 liter grönt') => ({
+    contentType,
+    containerType,
+    calendars: [{ startDate: '2026-11-05', jobTemplate, isActive: true }],
+  })
+
+  it('fungerar med de sparade svaren, och söker på gatan i adress-id:t', async () => {
+    const fetchFn = respond(fixture('srv-kund.json'))
+    expect(await checkSrv(fetchFn)).toMatchObject({ state: 'fungerar', baseUrl: SRV_URL, probe, unknownWasteTypes: [] })
+    expect(String((fetchFn as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0])).toContain('query=ringv%C3%A4gen+10')
+  })
+
+  it('svarar inte vid timeout', async () => {
+    expect((await checkSrv(respond(new TypeError('fetch failed'), new TypeError('fetch failed')))).state).toBe('svarar-inte')
+  })
+
+  it('har nytt format vid okänd form', async () => {
+    expect((await checkSrv(respond({ x: 1 }))).state).toBe('nytt-format')
+  })
+
+  it('är tom när förslagen inte hittar adressen', async () => {
+    expect((await checkSrv(respond(fixture('srv-kund.json'), { results: [] }))).state).toBe('tom')
+  })
+
+  it('har nytt format när kontrolladressen har fått ett nytt kundnummer och inte är ensam', async () => {
+    const r = await checkSrv(respond(fixture('srv-kund.json'), { results: [suggestion('1'), suggestion('2')] }))
+    expect(r.state).toBe('nytt-format')
+    expect(r.error).toContain('nytt kundnummer hos SRV')
+  })
+
+  it('rapporterar okända avfallstyper och jobb, men inte trädgårdstunnor, slam och hemtagning', async () => {
+    const containers = [
+      container('Grovavfall'),
+      container('Trädgårdstunna'),
+      container('Slamtömning'),
+      container('Kärl 2', 'Tömning', 'Kärl 370 liter två fack'),
+      container('Restavfall', 'Hemtagning FNI'),
+      container('Restavfall', 'Byte av kärl'),
+      container('Restavfall'),
+    ]
+    expect((await checkSrv(respond(kund(containers)))).unknownWasteTypes).toEqual(['Grovavfall', 'Kärl 2 (Kärl 370 liter två fack)', 'Jobb: Byte av kärl'])
   })
 })

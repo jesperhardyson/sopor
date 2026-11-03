@@ -54,6 +54,11 @@ describe('mapWasteType', () => {
     expect(isKnownBin('Miljöfarligt avfall')).toBe(true)
   })
 
+  it('läser SRV:s delade kärl "Papper och Plast"', () => {
+    expect(mapWasteType('Papper och Plast')).toEqual({ fractions: ['papper', 'plast'] })
+    expect(mapWasteType('Mat- och restavfall')).toEqual({ fractions: ['mat', 'rest'] })
+  })
+
   it('gissar inte när en del av ett delat kärl är okänd', () => {
     expect(mapWasteType('Papper/Textil')).toEqual({ fractions: ['karl'], label: 'Papper/Textil' })
   })

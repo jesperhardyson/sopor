@@ -7,6 +7,7 @@ import type { AddressIndexFile, ScheduleFile } from '../data/static-format.js'
 import { needsPlaces, type Source } from '../sources/index.js'
 import { edpAddressId, edpSchedule, edpSearch, queryFromAddressId, type EdpBuilding } from './edp.js'
 import { nsrDetails, nsrSchedule, nsrSearch } from './nsr.js'
+import { SRV_CUSTOMER_TIMEOUT_MS, srvFind, srvSchedule } from './srv.js'
 import { vasydSchedule, vasydSearch } from './vasyd.js'
 import { queryFromSvoaId, sameSvoaAddress, SVOA_LIMIT, svoaSchedule, svoaSearch, type SvoaAddress } from './svoa.js'
 import { searchCandidates, toAddress, withDetails, type HandlerOptions } from './handlers.js'
@@ -30,6 +31,7 @@ export async function lookupAddress(
     if (source.config.system === 'svoa') return await lookupSvoa(source, id, opts)
     if (source.config.system === 'vasyd') return await lookupVasyd(source, id, origin, opts)
     if (source.config.system === 'nsr') return await lookupNsr(source, id, origin, opts)
+    if (source.config.system === 'srv') return await lookupSrv(source, id, origin, opts)
     return await lookupStatic(source, id, origin, opts)
   } catch (e) {
     console.error('Uppslagning av adress misslyckades', e)
@@ -110,6 +112,15 @@ async function lookupNsr(source: Source, id: string, origin: string, opts: Handl
     return { status: 200, address: toAddress(source, building, places, detail), schedule }
   }
   return { status: 502 }
+}
+
+/** SRV: kundnumret i id:t pekar ut adressen. Ett id utan träff ger 502 (se lookupSvoa). */
+async function lookupSrv(source: Source, id: string, origin: string, opts: HandlerOptions): Promise<Lookup> {
+  const found = await srvFind(id, opts.fetchFn, opts.timeoutMs ?? SRV_CUSTOMER_TIMEOUT_MS)
+  if (!found) return { status: 502 }
+  const schedule = srvSchedule(found.containers, todayInStockholm(opts.now))
+  const places = opts.places ?? (needsPlaces(source) ? await loadServerPlaces(origin, opts.fetchFn) : undefined)
+  return { status: 200, address: toAddress(source, found.building, places), schedule }
 }
 
 async function lookupStatic(source: Source, id: string, origin: string, opts: HandlerOptions): Promise<Lookup> {

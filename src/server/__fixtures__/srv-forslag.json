@@ -1,0 +1,28 @@
+{
+ "results": [
+  {
+   "name": "Nynäsvägen 3, 13647 HANINGE",
+   "customerId": "100001",
+   "address": "Nynäsvägen 3",
+   "city": "HANINGE"
+  },
+  {
+   "name": "Nynäsvägen 3, 13647 HANINGE",
+   "customerId": "100002",
+   "address": "Nynäsvägen 3",
+   "city": "HANINGE"
+  },
+  {
+   "name": "Nynäsvägen 3, 14771 GRÖDINGE",
+   "customerId": "100003",
+   "address": "Nynäsvägen 3",
+   "city": "GRÖDINGE"
+  },
+  {
+   "name": "Nynäsvägen 3, 13647 Handen",
+   "customerId": "100004",
+   "address": "Nynäsvägen 3",
+   "city": "Handen"
+  }
+ ]
+}
