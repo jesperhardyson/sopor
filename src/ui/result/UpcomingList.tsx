@@ -17,15 +17,9 @@ export function deviationExplanation(event: PickupEvent): string | undefined {
 const ESTIMATED_NOTE_ID = 'beraknat-forklaring'
 
 /** Märkning för datum som räknats fram ur källans frekvens. */
-export function EstimatedPill({ onDark = false }: { onDark?: boolean }) {
+export function EstimatedPill() {
   return (
-    <span
-      aria-describedby={ESTIMATED_NOTE_ID}
-      className={cn(
-        'rounded-full px-2 py-0.5 text-xs font-extrabold',
-        onDark ? 'bg-card-overlay text-on-primary' : 'bg-surface-2 text-text-2',
-      )}
-    >
+    <span aria-describedby={ESTIMATED_NOTE_ID} className="rounded-full bg-surface-2 px-2 py-0.5 text-xs font-extrabold text-text-2">
       beräknat
     </span>
   )
