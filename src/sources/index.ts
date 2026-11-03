@@ -32,7 +32,7 @@ export interface Source {
   emptyScheduleNote?: { title: string; text: string }
 }
 
-/** EDP-källorna kontrollerades live 2026-10-30 (SearchAdress gav träffar). Stenungsund svarade utan data. */
+/** EDP-källorna kontrollerades live 2026-10-30 (SearchAdress gav träffar), Ale och Stenungsund 2026-11-03. */
 export const ALL_SOURCES: Source[] = [
   {
     id: 'avesta',
@@ -213,6 +213,21 @@ export const ALL_SOURCES: Source[] = [
     url: 'https://www.remondis.se',
     kommuner: [{ code: '1466', name: 'Herrljunga kommun' }, { code: '1442', name: 'Vårgårda kommun' }],
     config: { system: 'edp', baseUrl: 'https://edpfuture.remondis.se/EDPFutureWeb' },
+  },
+  {
+    id: 'ale',
+    name: 'Ale kommun',
+    url: 'https://www.ale.se',
+    kommuner: [{ code: '1440', name: 'Ale kommun' }],
+    config: { system: 'edp', baseUrl: 'https://edp.ale.se/FutureWeb' },
+  },
+  {
+    // Kommunens egen värd har data, Remondis värd var tom för Stenungsund (2026-10-30).
+    id: 'stenungsund',
+    name: 'Stenungsunds kommun',
+    url: 'https://www.stenungsund.se',
+    kommuner: [{ code: '1415', name: 'Stenungsunds kommun' }],
+    config: { system: 'edp', baseUrl: 'https://futureweb.stenungsund.se/FutureWeb' },
   },
   {
     // Ingen EDP: SVOA:s publika tjänst, bara villor och radhus (src/server/svoa.ts).

@@ -60,6 +60,9 @@ export function mapWasteType(
   const label = text.trim().replace(/\s+/g, ' ')
   // Lund skriver "4-fackskärl" och kallar kärl 1 "Rest/matavfall", fast det har fler fack.
   const multi = /fyrfack|flerfack|4-fack/i.test(`${label} ${frequencyText} ${description}`)
+  // Ale skriver det delade kärlet "Plast,Papp". Ett komma kan också följas av en volym, så bara hela träffar räknas.
+  const commaFractions = t.split(',').map((p) => fractionFor(p.trim()))
+  if (!multi && commaFractions.length > 1 && commaFractions.every((f) => f !== undefined)) return { fractions: [...new Set(commaFractions)] }
   const parts = t.split('/').map((p) => p.trim())
   if (parts.length === 1) {
     const fraction = fractionFor(t)
