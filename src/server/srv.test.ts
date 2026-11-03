@@ -81,6 +81,12 @@ describe('srvDetails', () => {
     expect(details).toEqual(['Matavfall, Restavfall', 'Papper och Plast', undefined, undefined])
   })
 
+  it('ger ingen särskiljare, i stället för ett fel, när kärlen inte går att hämta', async () => {
+    const fetchFn = fakeSrv({ kunder: { '100001': '<html>', '100002': haninge(['Restavfall']) } })
+    const details = (await srvDetails(await srvSearch('Nynäsvägen 3', fetchFn), '2026-11-04', fetchFn)).map(([, d]) => d)
+    expect(details.slice(0, 2)).toEqual([undefined, 'Restavfall'])
+  })
+
   it('jämför kärlen oavsett ordning', async () => {
     const fetchFn = fakeSrv({ kunder: { '100001': haninge(['Restavfall', 'Matavfall']), '100002': haninge(['Matavfall', 'Restavfall'], '2026-11-09') } })
     const details = (await srvDetails(await srvSearch('Nynäsvägen 3', fetchFn), '2026-11-04', fetchFn)).map(([, d]) => d)

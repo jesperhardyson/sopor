@@ -26,6 +26,9 @@ export interface SrvAddress {
   customerId: string
 }
 
+/** Kunduppslaget tar 4–5 s för stora kunder (många kärl med ett års tömningar). */
+export const SRV_CUSTOMER_TIMEOUT_MS = 10000
+
 const unknownFormat = () => new SourceError('srvatervinning.se svarade med ett okänt format')
 
 const isText = (v: unknown): v is string => typeof v === 'string'
@@ -77,7 +80,7 @@ interface CustomerResponse {
 }
 
 /** Kärlen på kundens adress, eller null. En kund med flera adresser svarar bara med den första. */
-export async function srvContainers({ building, customerId }: SrvAddress, fetchFn?: typeof fetch, timeoutMs = 5000): Promise<SrvContainer[] | null> {
+export async function srvContainers({ building, customerId }: SrvAddress, fetchFn?: typeof fetch, timeoutMs = SRV_CUSTOMER_TIMEOUT_MS): Promise<SrvContainer[] | null> {
   const opts = { fetchFn, timeoutMs }
   const res = await fetchJson<CustomerResponse>(`${SRV_URL}/search?${new URLSearchParams({ query: customerId, city: '' })}`, {}, opts)
   if (typeof res?.multipleAddresses !== 'boolean' || !Array.isArray(res.customerAddresses) || !Array.isArray(res.results)) throw unknownFormat()
@@ -97,7 +100,7 @@ export async function srvContainers({ building, customerId }: SrvAddress, fetchF
  * Finns det inte längre (huset har fått en ny kund) används den nya kunden, om den är ensam på
  * adressen: id:t pekar ju på adressen.
  */
-export async function srvFind(id: string, fetchFn?: typeof fetch, timeoutMs = 5000): Promise<{ building: EdpBuilding; containers: SrvContainer[] } | null> {
+export async function srvFind(id: string, fetchFn?: typeof fetch, timeoutMs = SRV_CUSTOMER_TIMEOUT_MS): Promise<{ building: EdpBuilding; containers: SrvContainer[] } | null> {
   const parsed = queryFromAddressId(id)
   if (!parsed) return null
   const street = parsed.query.split(',')[0].trim()
@@ -134,19 +137,20 @@ export function srvSchedule(containers: SrvContainer[], today: string): Schedule
 
 /**
  * Flera kunder på samma adress får kärlen som särskiljare, och har de samma kärl också nästa
- * tömning (som NSR). Kärlen hämtas bara för de adresserna. Kundnumret visas aldrig.
+ * tömning (som NSR). Kärlen hämtas bara för de adresserna, och går det inte blir det ingen
+ * särskiljare i stället för en misslyckad sökning. Kundnumret visas aldrig.
  */
-export async function srvDetails(addresses: SrvAddress[], today: string, fetchFn?: typeof fetch, timeoutMs = 5000): Promise<[EdpBuilding, string | undefined][]> {
+export async function srvDetails(addresses: SrvAddress[], today: string, fetchFn?: typeof fetch, timeoutMs = SRV_CUSTOMER_TIMEOUT_MS): Promise<[EdpBuilding, string | undefined][]> {
   const shared = addresses.filter((a) => addresses.some((o) => o !== a && samePlace(o.building, a.building)))
-  const info = new Map(
-    await Promise.all(
-      shared.map(async (a) => {
-        const containers = (await srvContainers(a, fetchFn, timeoutMs)) ?? []
-        const kinds = containers.filter((c) => c.calendars.some((cal) => cal.isActive && isSrvPickup(cal.jobTemplate)))
-        const bins = [...new Set(kinds.map((c) => c.contentType.trim()))].sort((a, b) => a.localeCompare(b, 'sv')).join(', ')
-        return [a, { bins, next: srvSchedule(containers, today).events[0]?.date }] as const
-      }),
-    ),
+  const info = new Map<SrvAddress, { bins: string; next?: string }>()
+  await Promise.all(
+    shared.map(async (a) => {
+      const containers = await srvContainers(a, fetchFn, timeoutMs).catch(() => undefined)
+      if (containers === undefined) return
+      const kinds = (containers ?? []).filter((c) => c.calendars.some((cal) => cal.isActive && isSrvPickup(cal.jobTemplate)))
+      const bins = [...new Set(kinds.map((c) => c.contentType.trim()))].sort((x, y) => x.localeCompare(y, 'sv')).join(', ')
+      info.set(a, { bins, next: srvSchedule(containers ?? [], today).events[0]?.date })
+    }),
   )
   return addresses.map((a) => {
     const own = info.get(a)
