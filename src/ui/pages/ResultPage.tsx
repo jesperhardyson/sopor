@@ -14,6 +14,7 @@ import { NextPickup } from '../result/NextPickup'
 import { SmartHomeBox } from '../integrations/SmartHomeBox'
 import { EmptyState, ErrorState, LoadingState, StaleNotice, UnsupportedState } from '../result/ResultStates'
 import { ShareButton } from '../result/ShareButton'
+import { SourceNote } from '../result/SourceNote'
 import { UpcomingList } from '../result/UpcomingList'
 import { AddressSearch } from '../search/AddressSearch'
 import { CalendarSheet } from '../sheets/CalendarSheet'
@@ -164,8 +165,9 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
       {state.status === 'stale' && (
         <StaleNotice sourceName={source.name} fetchedAt={formatLong(state.fetchedAt)} onRetry={retry} />
       )}
-      <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:gap-10">
-        <div className="flex min-w-0 flex-1 flex-col gap-5">
+      {/* Källan ligger sist på mobil men under vänsterspalten på desktop, där högerspalten spänner över båda raderna. */}
+      <div className="flex flex-col gap-5 lg:grid lg:grid-cols-[minmax(0,1fr)_360px] lg:grid-rows-[auto_1fr] lg:items-start lg:gap-x-10">
+        <div className="flex min-w-0 flex-col gap-5">
           {next ? <NextPickup event={next} today={today} note={schedule.note} /> : <EmptyState note={source.emptyScheduleNote} />}
           <button
             type="button"
@@ -178,12 +180,13 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
           </button>
           {coming.length > 0 && <UpcomingList events={coming} today={today} />}
         </div>
-        <div className="flex flex-col gap-5 lg:w-[360px] lg:shrink-0">
+        <div className="flex flex-col gap-5 lg:row-span-2">
           {schedule.events.length > 0 && (
             <MonthCalendar schedule={schedule} initial={next?.date ?? today} today={today} />
           )}
           {address && <SmartHomeBox address={address} />}
         </div>
+        <SourceNote name={source.name} url={source.url} />
       </div>
       {address && (
         <>

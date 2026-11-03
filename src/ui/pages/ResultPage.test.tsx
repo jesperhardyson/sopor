@@ -131,6 +131,15 @@ describe('ResultPage', () => {
     )
   })
 
+  it('visar källan med länk och vem man kontaktar när något är fel', async () => {
+    renderAt('/avesta/krylbo-storgatan-12b')
+    await vi.waitFor(() => resolveSchedule!())
+    const source = await screen.findByRole('region', { name: 'Källa' })
+    expect(within(source).getByText('Schemat kommer från')).toBeInTheDocument()
+    expect(within(source).getByRole('link', { name: /Avesta Vatten och Avfall/ })).toHaveAttribute('href', 'https://www.avestavatten.se')
+    expect(within(source).getByText(/Stämmer något inte\? Kontakta Avesta Vatten och Avfall\./)).toBeInTheDocument()
+  })
+
   it('linjerar kalendern med kortet för nästa tömning', async () => {
     renderAt('/avesta/krylbo-storgatan-12b')
     await vi.waitFor(() => resolveSchedule!())

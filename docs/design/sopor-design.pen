@@ -6907,6 +6907,115 @@
                   ]
                 }
               ]
+            },
+            {
+              "type": "frame",
+              "id": "Amawv",
+              "name": "Källa",
+              "width": "fill_container",
+              "cornerRadius": 20,
+              "stroke": "$border",
+              "strokeWidth": 1,
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 16,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "eP269",
+                  "name": "Övre",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "U0JTg",
+                      "name": "Ikon",
+                      "width": 36,
+                      "height": 36,
+                      "fill": "$surface-2",
+                      "cornerRadius": 12,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "hLYie",
+                          "name": "Ikon",
+                          "width": 18,
+                          "height": 18,
+                          "icon": "building-2",
+                          "library": "lucide",
+                          "fill": "$text-2"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "edHWr",
+                      "name": "Text",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "NEsha",
+                          "name": "Etikett",
+                          "fill": "$text-2",
+                          "content": "Schemat kommer från",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "aVfwD",
+                          "name": "Länk",
+                          "gap": 4,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "E5LnL",
+                              "name": "Källans namn",
+                              "fill": "$primary",
+                              "content": "Avesta Vatten och Avfall",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 15,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "icon",
+                              "id": "zYkyl",
+                              "name": "Pil",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "arrow-up-right",
+                              "library": "lucide",
+                              "fill": "$primary"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "Z8ocTu",
+                  "name": "Förklaring",
+                  "fill": "$text-2",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Stämmer något inte? Kontakta Avesta Vatten och Avfall. Sopor är en inofficiell tjänst som visar deras schema.",
+                  "lineHeight": 1.4,
+                  "fontFamily": "$font-ui",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                }
+              ]
             }
           ]
         },
@@ -18971,6 +19080,115 @@
                   ]
                 }
               ]
+            },
+            {
+              "type": "frame",
+              "id": "ceboG",
+              "name": "Källa",
+              "width": "fill_container",
+              "cornerRadius": 20,
+              "stroke": "$border",
+              "strokeWidth": 1,
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 16,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Y88MA",
+                  "name": "Övre",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "jlIAp",
+                      "name": "Ikon",
+                      "width": 36,
+                      "height": 36,
+                      "fill": "$surface-2",
+                      "cornerRadius": 12,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "r9P8Bm",
+                          "name": "Ikon",
+                          "width": 18,
+                          "height": 18,
+                          "icon": "building-2",
+                          "library": "lucide",
+                          "fill": "$text-2"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "MqSYA",
+                      "name": "Text",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "cW9no",
+                          "name": "Etikett",
+                          "fill": "$text-2",
+                          "content": "Schemat kommer från",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Vm6D0",
+                          "name": "Länk",
+                          "gap": 4,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "P0otH",
+                              "name": "Källans namn",
+                              "fill": "$primary",
+                              "content": "Avesta Vatten och Avfall",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 15,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "icon",
+                              "id": "M4G7c",
+                              "name": "Pil",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "arrow-up-right",
+                              "library": "lucide",
+                              "fill": "$primary"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "jQN4p",
+                  "name": "Förklaring",
+                  "fill": "$text-2",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Stämmer något inte? Kontakta Avesta Vatten och Avfall. Sopor är en inofficiell tjänst som visar deras schema.",
+                  "lineHeight": 1.4,
+                  "fontFamily": "$font-ui",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                }
+              ]
             }
           ]
         },
@@ -22124,6 +22342,115 @@
                               "fontWeight": "normal"
                             }
                           ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "uB1bt",
+                      "name": "Källa",
+                      "width": "fill_container",
+                      "cornerRadius": 20,
+                      "stroke": "$border",
+                      "strokeWidth": 1,
+                      "layout": "vertical",
+                      "gap": 10,
+                      "padding": 16,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "oEd6h",
+                          "name": "Övre",
+                          "width": "fill_container",
+                          "gap": 12,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "P2IoD",
+                              "name": "Ikon",
+                              "width": 36,
+                              "height": 36,
+                              "fill": "$surface-2",
+                              "cornerRadius": 12,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "Uv9Oh",
+                                  "name": "Ikon",
+                                  "width": 18,
+                                  "height": 18,
+                                  "icon": "building-2",
+                                  "library": "lucide",
+                                  "fill": "$text-2"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "gA3Zt",
+                              "name": "Text",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 2,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "yU4vH",
+                                  "name": "Etikett",
+                                  "fill": "$text-2",
+                                  "content": "Schemat kommer från",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "BvEjo",
+                                  "name": "Länk",
+                                  "gap": 4,
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "AK8bb",
+                                      "name": "Källans namn",
+                                      "fill": "$primary",
+                                      "content": "Avesta Vatten och Avfall",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 15,
+                                      "fontWeight": "800"
+                                    },
+                                    {
+                                      "type": "icon",
+                                      "id": "m28ft",
+                                      "name": "Pil",
+                                      "width": 16,
+                                      "height": 16,
+                                      "icon": "arrow-up-right",
+                                      "library": "lucide",
+                                      "fill": "$primary"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "vWaCm",
+                          "name": "Förklaring",
+                          "fill": "$text-2",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Stämmer något inte? Kontakta Avesta Vatten och Avfall. Sopor är en inofficiell tjänst som visar deras schema.",
+                          "lineHeight": 1.4,
+                          "fontFamily": "$font-ui",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
                         }
                       ]
                     }
@@ -31995,6 +32322,115 @@
                           ]
                         }
                       ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "cpYCX",
+                      "name": "Källa",
+                      "width": "fill_container",
+                      "cornerRadius": 20,
+                      "stroke": "$border",
+                      "strokeWidth": 1,
+                      "layout": "vertical",
+                      "gap": 10,
+                      "padding": 16,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "BKh4a",
+                          "name": "Övre",
+                          "width": "fill_container",
+                          "gap": 12,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "a3vvtQ",
+                              "name": "Ikon",
+                              "width": 36,
+                              "height": 36,
+                              "fill": "$surface-2",
+                              "cornerRadius": 12,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "ZCmOv",
+                                  "name": "Ikon",
+                                  "width": 18,
+                                  "height": 18,
+                                  "icon": "building-2",
+                                  "library": "lucide",
+                                  "fill": "$text-2"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "G2um7F",
+                              "name": "Text",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 2,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "YHDxi",
+                                  "name": "Etikett",
+                                  "fill": "$text-2",
+                                  "content": "Schemat kommer från",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "pDlBZ",
+                                  "name": "Länk",
+                                  "gap": 4,
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "ucX9j",
+                                      "name": "Källans namn",
+                                      "fill": "$primary",
+                                      "content": "Avesta Vatten och Avfall",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 15,
+                                      "fontWeight": "800"
+                                    },
+                                    {
+                                      "type": "icon",
+                                      "id": "ur80n",
+                                      "name": "Pil",
+                                      "width": 16,
+                                      "height": 16,
+                                      "icon": "arrow-up-right",
+                                      "library": "lucide",
+                                      "fill": "$primary"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "n2VEfC",
+                          "name": "Förklaring",
+                          "fill": "$text-2",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Stämmer något inte? Kontakta Avesta Vatten och Avfall. Sopor är en inofficiell tjänst som visar deras schema.",
+                          "lineHeight": 1.4,
+                          "fontFamily": "$font-ui",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
                     }
                   ]
                 },
@@ -39182,6 +39618,115 @@
                   ]
                 }
               ]
+            },
+            {
+              "type": "frame",
+              "id": "xA81P",
+              "name": "Källa",
+              "width": "fill_container",
+              "cornerRadius": 20,
+              "stroke": "$border",
+              "strokeWidth": 1,
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 16,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "d6oMH",
+                  "name": "Övre",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "Wihc2",
+                      "name": "Ikon",
+                      "width": 36,
+                      "height": 36,
+                      "fill": "$surface-2",
+                      "cornerRadius": 12,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "Xlkzn",
+                          "name": "Ikon",
+                          "width": 18,
+                          "height": 18,
+                          "icon": "building-2",
+                          "library": "lucide",
+                          "fill": "$text-2"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "t45W1L",
+                      "name": "Text",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "qch1f",
+                          "name": "Etikett",
+                          "fill": "$text-2",
+                          "content": "Schemat kommer från",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "SR2qF",
+                          "name": "Länk",
+                          "gap": 4,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "lebOM",
+                              "name": "Källans namn",
+                              "fill": "$primary",
+                              "content": "Avesta Vatten och Avfall",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 15,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "icon",
+                              "id": "i6ACjf",
+                              "name": "Pil",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "arrow-up-right",
+                              "library": "lucide",
+                              "fill": "$primary"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "xhUch",
+                  "name": "Förklaring",
+                  "fill": "$text-2",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Stämmer något inte? Kontakta Avesta Vatten och Avfall. Sopor är en inofficiell tjänst som visar deras schema.",
+                  "lineHeight": 1.4,
+                  "fontFamily": "$font-ui",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                }
+              ]
             }
           ]
         },
@@ -42349,6 +42894,115 @@
                       ]
                     }
                   ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "HdUnq",
+              "name": "Källa",
+              "width": "fill_container",
+              "cornerRadius": 20,
+              "stroke": "$border",
+              "strokeWidth": 1,
+              "layout": "vertical",
+              "gap": 10,
+              "padding": 16,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "yCpUY",
+                  "name": "Övre",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "pwXRk",
+                      "name": "Ikon",
+                      "width": 36,
+                      "height": 36,
+                      "fill": "$surface-2",
+                      "cornerRadius": 12,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "c5g5iv",
+                          "name": "Ikon",
+                          "width": 18,
+                          "height": 18,
+                          "icon": "building-2",
+                          "library": "lucide",
+                          "fill": "$text-2"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "SmjDa",
+                      "name": "Text",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "bVqxh",
+                          "name": "Etikett",
+                          "fill": "$text-2",
+                          "content": "Schemat kommer från",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "ZBpOC",
+                          "name": "Länk",
+                          "gap": 4,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "vBMSp",
+                              "name": "Källans namn",
+                              "fill": "$primary",
+                              "content": "Avesta Vatten och Avfall",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 15,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "icon",
+                              "id": "EloDe",
+                              "name": "Pil",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "arrow-up-right",
+                              "library": "lucide",
+                              "fill": "$primary"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "Fnma8",
+                  "name": "Förklaring",
+                  "fill": "$text-2",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Stämmer något inte? Kontakta Avesta Vatten och Avfall. Sopor är en inofficiell tjänst som visar deras schema.",
+                  "lineHeight": 1.4,
+                  "fontFamily": "$font-ui",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
                 }
               ]
             }
@@ -51284,6 +51938,115 @@
                               ]
                             }
                           ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "TKLW6",
+                      "name": "Källa",
+                      "width": "fill_container",
+                      "cornerRadius": 20,
+                      "stroke": "$border",
+                      "strokeWidth": 1,
+                      "layout": "vertical",
+                      "gap": 10,
+                      "padding": 16,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "w5PnOi",
+                          "name": "Övre",
+                          "width": "fill_container",
+                          "gap": 12,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "m1qvVg",
+                              "name": "Ikon",
+                              "width": 36,
+                              "height": 36,
+                              "fill": "$surface-2",
+                              "cornerRadius": 12,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "OvQL2",
+                                  "name": "Ikon",
+                                  "width": 18,
+                                  "height": 18,
+                                  "icon": "building-2",
+                                  "library": "lucide",
+                                  "fill": "$text-2"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "dnoQQ",
+                              "name": "Text",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 2,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "j4owS",
+                                  "name": "Etikett",
+                                  "fill": "$text-2",
+                                  "content": "Schemat kommer från",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "cvBEa",
+                                  "name": "Länk",
+                                  "gap": 4,
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "a5UyY",
+                                      "name": "Källans namn",
+                                      "fill": "$primary",
+                                      "content": "Avesta Vatten och Avfall",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 15,
+                                      "fontWeight": "800"
+                                    },
+                                    {
+                                      "type": "icon",
+                                      "id": "Z8CXj",
+                                      "name": "Pil",
+                                      "width": 16,
+                                      "height": 16,
+                                      "icon": "arrow-up-right",
+                                      "library": "lucide",
+                                      "fill": "$primary"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "k6aZad",
+                          "name": "Förklaring",
+                          "fill": "$text-2",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Stämmer något inte? Kontakta Avesta Vatten och Avfall. Sopor är en inofficiell tjänst som visar deras schema.",
+                          "lineHeight": 1.4,
+                          "fontFamily": "$font-ui",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
                         }
                       ]
                     }
