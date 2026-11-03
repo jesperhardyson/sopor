@@ -223,6 +223,16 @@ describe('ResultPage', () => {
       await vi.waitFor(() => expect(screen.queryByRole('alert')).toBeNull())
     })
 
+    it('visar det sparade schemat direkt, utan laddning eller varning, medan källan frågas', () => {
+      save()
+      storeSchedule({ address: villa, schedule, fetchedAt: '2026-10-29' })
+      renderAt('/avesta/krylbo-storgatan-12b')
+      expect(screen.getByRole('heading', { name: 'Storgatan 12 B', level: 1 })).toBeInTheDocument()
+      expect(screen.getByRole('region', { name: 'Nästa tömning' })).toHaveTextContent('11 november')
+      expect(screen.queryByText('Hämtar schemat från Avesta Vatten och Avfall…')).toBeNull()
+      expect(screen.queryByRole('alert')).toBeNull()
+    })
+
     it('visar felet som förut utan sparat schema', async () => {
       fake = makeProvider({ getSchedule: async () => Promise.reject(new Error('nere')) })
       renderAt('/avesta/krylbo-storgatan-12b')

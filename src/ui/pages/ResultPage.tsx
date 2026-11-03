@@ -63,8 +63,8 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
   const source = getSource(sourceId)
   const [state, retry, attempt] = useSchedule(sourceId, addressId)
   const fetched = useAddress(source, addressId, attempt)
-  // När källan inte svarar kommer adressen från det sparade schemat.
-  const address = fetched ?? (state.status === 'stale' ? state.address : undefined)
+  // Tills källan svarat, eller när den inte svarar, kommer adressen från det sparade schemat.
+  const address = fetched ?? (state.status === 'stale' || state.status === 'cached' ? state.address : undefined)
   const [sheet, setSheet] = useState<'calendar' | 'save' | null>(null)
   const [savedName, setSavedName] = useState(() => findSaved(sourceId, addressId)?.name)
   usePageTitle(address ? `${streetAndLocality(address)} – Sopor` : undefined)
