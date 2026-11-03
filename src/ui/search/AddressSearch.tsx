@@ -287,7 +287,7 @@ export function AddressSearch({
       <li
         key={`${r.sourceId}/${r.id}`}
         {...props}
-        className={cn('flex cursor-pointer items-center gap-3 rounded-xl p-3', i === active && 'bg-surface-2')}
+        className={cn('tryck flex cursor-pointer items-center gap-3 rounded-xl p-3', i === active && 'bg-surface-2')}
       >
         <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-soft text-brand-text">
           <MapPin className="size-[18px]" aria-hidden />

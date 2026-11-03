@@ -126,7 +126,7 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
             disabled={!address}
             onClick={() => setSheet('save')}
             aria-label={savedName ? `Sparad som ${savedName}` : 'Spara'}
-            className="inline-flex shrink-0 items-center gap-2 rounded-[14px] border border-border bg-surface px-4 py-3 text-[15px] font-bold text-text"
+            className="tryck inline-flex shrink-0 items-center gap-2 rounded-[14px] border border-border bg-surface px-4 py-3 text-[15px] font-bold text-text"
           >
             <Bookmark className={savedName ? 'size-[18px] fill-primary text-primary' : 'size-[18px]'} aria-hidden />
             {savedName ?? 'Spara'}
@@ -171,7 +171,7 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
             type="button"
             disabled={!address}
             onClick={() => setSheet('calendar')}
-            className="inline-flex h-14 items-center justify-center gap-2 rounded-[14px] bg-primary px-5 text-base font-extrabold text-on-primary"
+            className="tryck inline-flex h-14 items-center justify-center gap-2 rounded-[14px] bg-primary px-5 text-base font-extrabold text-on-primary"
           >
             <CalendarPlus className="size-5" aria-hidden />
             Lägg till i kalender

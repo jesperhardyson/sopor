@@ -34,6 +34,16 @@ describe('theme.css', () => {
     expect(value('.dark', 'primary')?.toUpperCase()).toBe('#4CC384')
   })
 
+  it('känns som en app vid tryck: ingen grå blink, ingen fördröjning och kort nedtryckning', () => {
+    expect(block('html')).toMatch(/-webkit-tap-highlight-color: transparent/)
+    expect(block('html')).toMatch(/touch-action: manipulation/)
+    expect(css).toMatch(/@utility tryck \{[\s\S]*:active[\s\S]*scale/)
+  })
+
+  it('håller innehållet borta från notch och hemindikator', () => {
+    for (const side of ['top', 'right', 'bottom', 'left']) expect(block('.bg-live')).toContain(`env(safe-area-inset-${side})`)
+  })
+
   it('har en kort övergång mellan sidor som stängs av vid minskad rörelse', () => {
     expect(css).toMatch(/::view-transition-new\(\.sida\)\s*\{[^}]*animation:/)
     expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\)[\s\S]*::view-transition-group\(\*\)[\s\S]*animation: none/)

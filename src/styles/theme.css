@@ -171,13 +171,31 @@
     }
   html {
     @apply font-sans;
+    /* Som en app: ingen grå blink vid tryck och ingen väntan på dubbeltryck för zoom */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
     }
+}
+
+/* Kort och knappar trycks ner lite, så att trycket känns direkt */
+@utility tryck {
+  transition: transform 120ms ease-out;
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
 }
 
 /* Levande bakgrund: två mjuka fält i --bg-2 som glider över --bg. Bara transform
    animeras, så det sker på GPU:n och kostar nästan inget. */
 .bg-live {
   isolation: isolate;
+  /* Notch och hemindikator på hemskärmen (viewport-fit=cover i index.html), annars noll */
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
 .bg-live::before {
