@@ -98737,6 +98737,2758 @@
           ]
         }
       ]
+    },
+    {
+      "type": "frame",
+      "id": "du5Lz",
+      "x": 0,
+      "y": 15728,
+      "name": "Integrationer · skiss",
+      "clip": true,
+      "width": 2200,
+      "height": 2400,
+      "fill": "$bg",
+      "layout": "none",
+      "children": [
+        {
+          "type": "text",
+          "id": "jiUrX",
+          "x": 64,
+          "y": 56,
+          "name": "Rubrik",
+          "fill": "$text",
+          "content": "Integrationer · skiss",
+          "fontFamily": "$font-brand",
+          "fontSize": 40,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "efE4Z",
+          "x": 64,
+          "y": 112,
+          "name": "Underrubrik",
+          "fill": "$text-2",
+          "textGrowth": "fixed-width",
+          "width": 1400,
+          "content": "\"Smarta hem\" blir \"Integrationer\": Homey, Home Assistant och API får varsitt kort. API-kortet länkar till /api/v1/docs (Scalar). Raden \"Bygger du något eget?\" utgår. På Om-sidan (720 px) ligger API-kortet på egen rad.",
+          "fontFamily": "$font-ui",
+          "fontSize": 16,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "aYuKv",
+          "x": 64,
+          "y": 200,
+          "name": "Desktop · Start, avsnitt Integrationer",
+          "width": 1280,
+          "fill": "$bg",
+          "layout": "vertical",
+          "gap": 40,
+          "padding": [
+            24,
+            160,
+            96,
+            160
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "Upt86",
+              "name": "Rubrik",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "Zy3mg",
+                  "name": "Över",
+                  "fill": "$primary",
+                  "content": "INTEGRATIONER",
+                  "fontFamily": "$font-ui",
+                  "fontSize": 13,
+                  "fontWeight": "800",
+                  "letterSpacing": 1.4
+                },
+                {
+                  "type": "text",
+                  "id": "ryzE8",
+                  "name": "Titel",
+                  "fill": "$text",
+                  "textGrowth": "fixed-width",
+                  "width": 620,
+                  "content": "Påminnelse i Homey eller Home Assistant",
+                  "lineHeight": 1.15,
+                  "fontFamily": "$font-ui",
+                  "fontSize": 36,
+                  "fontWeight": "800",
+                  "letterSpacing": -1
+                },
+                {
+                  "type": "text",
+                  "id": "StPMO",
+                  "name": "Ingress",
+                  "fill": "$text-2",
+                  "textGrowth": "fixed-width",
+                  "width": 620,
+                  "content": "Få veta när soporna hämtas, direkt i ditt smarta hem. Bygger du något eget finns ett öppet API. Allt är gratis, och du behöver inget konto.",
+                  "lineHeight": 1.4,
+                  "fontFamily": "$font-ui",
+                  "fontSize": 16,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Fpk1H",
+              "name": "Kort",
+              "width": "fill_container",
+              "gap": 16,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "YX1ut",
+                  "name": "Kort Homey",
+                  "width": "fill_container",
+                  "fill": "$surface",
+                  "cornerRadius": 20,
+                  "stroke": "$border",
+                  "strokeWidth": 1,
+                  "layout": "vertical",
+                  "gap": 12,
+                  "padding": 16,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "cCU5M",
+                      "name": "Huvud",
+                      "width": "fill_container",
+                      "gap": 14,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "GEeUM",
+                          "name": "Ikon",
+                          "width": 44,
+                          "height": 44,
+                          "fill": "$surface-2",
+                          "cornerRadius": 14,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "zQf1M",
+                              "name": "Glyf",
+                              "width": 22,
+                              "height": 22,
+                              "icon": "house-wifi",
+                              "library": "lucide",
+                              "fill": "$text"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "fkznd",
+                          "name": "Titel",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "P2Dnp",
+                              "name": "Rad",
+                              "gap": 8,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "TK31F",
+                                  "name": "Namn",
+                                  "fill": "$text",
+                                  "content": "Homey",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 16,
+                                  "fontWeight": "800"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "d5TN9q",
+                                  "name": "Märke",
+                                  "fill": "$brand-soft",
+                                  "cornerRadius": 999,
+                                  "padding": [
+                                    3,
+                                    10
+                                  ],
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "SUw0t",
+                                      "name": "Etikett",
+                                      "fill": "$brand-text",
+                                      "content": "Testversion",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 12,
+                                      "fontWeight": "800"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "ZYyui",
+                              "name": "Krav",
+                              "fill": "$text-2",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Appen Sophämtning · för Homey Pro",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "y8rndt",
+                      "name": "Beskrivning",
+                      "fill": "$text-2",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Lägg till din adress i appen, så vet Homey när soporna hämtas.",
+                      "lineHeight": 1.4,
+                      "fontFamily": "$font-ui",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "y5VEDj",
+                      "name": "Punkter",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "yg8aO",
+                          "name": "Punkt",
+                          "width": "fill_container",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "PswIc",
+                              "name": "Bock",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "check",
+                              "library": "lucide",
+                              "fill": "$brand-text"
+                            },
+                            {
+                              "type": "text",
+                              "id": "qYVJd",
+                              "name": "Text",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Påminnelse kvällen innan, eller på morgonen",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "f3VDHP",
+                          "name": "Punkt",
+                          "width": "fill_container",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "s7g4V",
+                              "name": "Bock",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "check",
+                              "library": "lucide",
+                              "fill": "$brand-text"
+                            },
+                            {
+                              "type": "text",
+                              "id": "vr3Md",
+                              "name": "Text",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Besked när schemat ändras, till exempel kring helgdagar",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "olHcQ",
+                          "name": "Punkt",
+                          "width": "fill_container",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "K1inb",
+                              "name": "Bock",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "check",
+                              "library": "lucide",
+                              "fill": "$brand-text"
+                            },
+                            {
+                              "type": "text",
+                              "id": "h08FrS",
+                              "name": "Text",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Widget med nästa hämtning på din dashboard",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "T5bSd7",
+                      "name": "Knappar",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "CapWw",
+                          "name": "Knapp Installera i Homey",
+                          "fill": "$primary",
+                          "cornerRadius": 14,
+                          "gap": 8,
+                          "padding": [
+                            12,
+                            16
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "TNLGr",
+                              "name": "Glyf",
+                              "width": 18,
+                              "height": 18,
+                              "icon": "download",
+                              "library": "lucide",
+                              "fill": "$on-primary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "iiaX7",
+                              "name": "Etikett",
+                              "fill": "$on-primary",
+                              "content": "Installera i Homey",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 15,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "nALte",
+                  "name": "Kort Home Assistant",
+                  "width": "fill_container",
+                  "fill": "$surface",
+                  "cornerRadius": 20,
+                  "stroke": "$border",
+                  "strokeWidth": 1,
+                  "layout": "vertical",
+                  "gap": 12,
+                  "padding": 16,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "sROet",
+                      "name": "Huvud",
+                      "width": "fill_container",
+                      "gap": 14,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "CICDS",
+                          "name": "Ikon",
+                          "width": 44,
+                          "height": 44,
+                          "fill": "$surface-2",
+                          "cornerRadius": 14,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "C0vwz6",
+                              "name": "Glyf",
+                              "width": 22,
+                              "height": 22,
+                              "icon": "server",
+                              "library": "lucide",
+                              "fill": "$text"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "WmDcg",
+                          "name": "Titel",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "fyOLI",
+                              "name": "Rad",
+                              "gap": 8,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "FmnSu",
+                                  "name": "Namn",
+                                  "fill": "$text",
+                                  "content": "Home Assistant",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 16,
+                                  "fontWeight": "800"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "rdu3j",
+                                  "x": 62,
+                                  "y": 0,
+                                  "name": "Märke",
+                                  "enabled": false,
+                                  "fill": "$brand-soft",
+                                  "cornerRadius": 999,
+                                  "padding": [
+                                    3,
+                                    10
+                                  ],
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "O0Wl7",
+                                      "name": "Etikett",
+                                      "fill": "$brand-text",
+                                      "content": "Testversion",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 12,
+                                      "fontWeight": "800"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "uR7zK",
+                              "name": "Krav",
+                              "fill": "$text-2",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Integrationen Sophämtning · via HACS",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "R679t",
+                      "name": "Beskrivning",
+                      "fill": "$text-2",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Lägg till din adress i integrationen, så vet Home Assistant när soporna hämtas.",
+                      "lineHeight": 1.4,
+                      "fontFamily": "$font-ui",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "U6ZUPa",
+                      "name": "Punkter",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "jMIjS",
+                          "name": "Punkt",
+                          "width": "fill_container",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "RViZF",
+                              "name": "Bock",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "check",
+                              "library": "lucide",
+                              "fill": "$brand-text"
+                            },
+                            {
+                              "type": "text",
+                              "id": "OEWjK",
+                              "name": "Text",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Påminnelse kvällen innan, via kalendern",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "J9EdPv",
+                          "name": "Punkt",
+                          "width": "fill_container",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "KfWRZ",
+                              "name": "Bock",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "check",
+                              "library": "lucide",
+                              "fill": "$brand-text"
+                            },
+                            {
+                              "type": "text",
+                              "id": "aClkN",
+                              "name": "Text",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Nästa hämtning för varje avfallstyp",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "fEbNS",
+                          "name": "Punkt",
+                          "width": "fill_container",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "asQCa",
+                              "name": "Bock",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "check",
+                              "library": "lucide",
+                              "fill": "$brand-text"
+                            },
+                            {
+                              "type": "text",
+                              "id": "W9EhFv",
+                              "name": "Text",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Besked när schemat ändras, till exempel kring helgdagar",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "z9ew6F",
+                      "name": "Knappar",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "RYd5j",
+                          "name": "Knapp Installera via HACS",
+                          "fill": "$primary",
+                          "cornerRadius": 14,
+                          "gap": 8,
+                          "padding": [
+                            12,
+                            16
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "qNQaH",
+                              "name": "Glyf",
+                              "width": 18,
+                              "height": 18,
+                              "icon": "download",
+                              "library": "lucide",
+                              "fill": "$on-primary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "kqFzl",
+                              "name": "Etikett",
+                              "fill": "$on-primary",
+                              "content": "Installera via HACS",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 15,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "NEhBM",
+                  "name": "Kort API",
+                  "width": "fill_container",
+                  "fill": "$surface",
+                  "cornerRadius": 20,
+                  "stroke": "$border",
+                  "strokeWidth": 1,
+                  "layout": "vertical",
+                  "gap": 12,
+                  "padding": 16,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "xuSqS",
+                      "name": "Huvud",
+                      "width": "fill_container",
+                      "gap": 14,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "M1jO78",
+                          "name": "Ikon",
+                          "width": 44,
+                          "height": 44,
+                          "fill": "$surface-2",
+                          "cornerRadius": 14,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "zfOrR",
+                              "name": "Glyf",
+                              "width": 22,
+                              "height": 22,
+                              "icon": "braces",
+                              "library": "lucide",
+                              "fill": "$text"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "dvSAp",
+                          "name": "Titel",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "xDVKz",
+                              "name": "Rad",
+                              "gap": 8,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "duQZw",
+                                  "name": "Namn",
+                                  "fill": "$text",
+                                  "content": "API",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 16,
+                                  "fontWeight": "800"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "tQVAN",
+                                  "x": 62,
+                                  "y": 0,
+                                  "name": "Märke",
+                                  "enabled": false,
+                                  "fill": "$brand-soft",
+                                  "cornerRadius": 999,
+                                  "padding": [
+                                    3,
+                                    10
+                                  ],
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "u4hZn7",
+                                      "name": "Etikett",
+                                      "fill": "$brand-text",
+                                      "content": "Testversion",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 12,
+                                      "fontWeight": "800"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "u1rzq3",
+                              "name": "Krav",
+                              "fill": "$text-2",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Öppet JSON-API · v1",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "Tv4yv",
+                      "name": "Beskrivning",
+                      "fill": "$text-2",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Hämta schemat för en adress som JSON och bygg något eget.",
+                      "lineHeight": 1.4,
+                      "fontFamily": "$font-ui",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "RGfLp",
+                      "name": "Punkter",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "wRoTl",
+                          "name": "Punkt",
+                          "width": "fill_container",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "xfmmY",
+                              "name": "Bock",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "check",
+                              "library": "lucide",
+                              "fill": "$brand-text"
+                            },
+                            {
+                              "type": "text",
+                              "id": "JfooQ",
+                              "name": "Text",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Sök adress, hämta schema och kalender",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "BKkhm",
+                          "name": "Punkt",
+                          "width": "fill_container",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "Lnqmc",
+                              "name": "Bock",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "check",
+                              "library": "lucide",
+                              "fill": "$brand-text"
+                            },
+                            {
+                              "type": "text",
+                              "id": "MDFdA",
+                              "name": "Text",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Inga nycklar och inget konto",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "RyIGG",
+                          "name": "Punkt",
+                          "width": "fill_container",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "yN3oE",
+                              "name": "Bock",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "check",
+                              "library": "lucide",
+                              "fill": "$brand-text"
+                            },
+                            {
+                              "type": "text",
+                              "id": "n0RvA",
+                              "name": "Text",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Fält tas aldrig bort inom v1",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "W55ka",
+                      "name": "Knappar",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 12,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "bXb5w",
+                          "name": "Knapp Utforska API:t",
+                          "fill": "$surface",
+                          "cornerRadius": 14,
+                          "stroke": "$border",
+                          "strokeWidth": 1,
+                          "gap": 8,
+                          "padding": [
+                            12,
+                            16
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "y9yk0e",
+                              "name": "Glyf",
+                              "width": 18,
+                              "height": 18,
+                              "icon": "book-open",
+                              "library": "lucide",
+                              "fill": "$text"
+                            },
+                            {
+                              "type": "text",
+                              "id": "HUOyT",
+                              "name": "Etikett",
+                              "fill": "$text",
+                              "content": "Utforska API:t",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 15,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "KbHvT",
+                          "name": "Länk API-guiden",
+                          "fill": "$primary",
+                          "content": "Läs API-guiden →",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 15,
+                          "fontWeight": "800"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "MCH6w",
+          "x": 1440,
+          "y": 200,
+          "name": "Mobil · Start, avsnitt Integrationer",
+          "width": 375,
+          "fill": "$bg",
+          "layout": "vertical",
+          "gap": 24,
+          "padding": [
+            48,
+            20,
+            40,
+            20
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "I2va1",
+              "name": "Rubrik",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "AwYXn",
+                  "name": "Över",
+                  "fill": "$primary",
+                  "content": "INTEGRATIONER",
+                  "fontFamily": "$font-ui",
+                  "fontSize": 13,
+                  "fontWeight": "800",
+                  "letterSpacing": 1.4
+                },
+                {
+                  "type": "text",
+                  "id": "ZTUSJ",
+                  "name": "Titel",
+                  "fill": "$text",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Påminnelse i Homey eller Home Assistant",
+                  "lineHeight": 1.15,
+                  "fontFamily": "$font-ui",
+                  "fontSize": 26,
+                  "fontWeight": "800",
+                  "letterSpacing": -0.7
+                },
+                {
+                  "type": "text",
+                  "id": "Z84a3",
+                  "name": "Ingress",
+                  "fill": "$text-2",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Få veta när soporna hämtas, direkt i ditt smarta hem. Bygger du något eget finns ett öppet API. Allt är gratis, och du behöver inget konto.",
+                  "lineHeight": 1.4,
+                  "fontFamily": "$font-ui",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "ag6VI",
+              "name": "Kort Homey",
+              "width": "fill_container",
+              "fill": "$surface",
+              "cornerRadius": 20,
+              "stroke": "$border",
+              "strokeWidth": 1,
+              "layout": "vertical",
+              "gap": 12,
+              "padding": 16,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "KCCYt",
+                  "name": "Huvud",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "SHPhV",
+                      "name": "Ikon",
+                      "width": 44,
+                      "height": 44,
+                      "fill": "$surface-2",
+                      "cornerRadius": 14,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "wkUCK",
+                          "name": "Glyf",
+                          "width": 22,
+                          "height": 22,
+                          "icon": "house-wifi",
+                          "library": "lucide",
+                          "fill": "$text"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "FzCjV",
+                      "name": "Titel",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "CNBwT",
+                          "name": "Rad",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "wNl0h",
+                              "name": "Namn",
+                              "fill": "$text",
+                              "content": "Homey",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "wIHek",
+                              "name": "Märke",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "P82PX",
+                                  "name": "Etikett",
+                                  "fill": "$brand-text",
+                                  "content": "Testversion",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 12,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "hVAlI",
+                          "name": "Krav",
+                          "fill": "$text-2",
+                          "content": "Appen Sophämtning · för Homey Pro",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "NDpCu",
+                  "name": "Beskrivning",
+                  "fill": "$text-2",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Lägg till din adress i appen, så vet Homey när soporna hämtas.",
+                  "lineHeight": 1.4,
+                  "fontFamily": "$font-ui",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "IkK3A",
+                  "name": "Punkter",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 6,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "y9F6H",
+                      "name": "Punkt",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "MON9d",
+                          "name": "Bock",
+                          "width": 16,
+                          "height": 16,
+                          "icon": "check",
+                          "library": "lucide",
+                          "fill": "$brand-text"
+                        },
+                        {
+                          "type": "text",
+                          "id": "yfw1j",
+                          "name": "Text",
+                          "fill": "$text",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Påminnelse kvällen innan, eller på morgonen",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "p3ffLS",
+                      "name": "Punkt",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "c6sIl",
+                          "name": "Bock",
+                          "width": 16,
+                          "height": 16,
+                          "icon": "check",
+                          "library": "lucide",
+                          "fill": "$brand-text"
+                        },
+                        {
+                          "type": "text",
+                          "id": "yFxFC",
+                          "name": "Text",
+                          "fill": "$text",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Besked när schemat ändras, till exempel kring helgdagar",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "EzjgO",
+                      "name": "Punkt",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "PSEd7",
+                          "name": "Bock",
+                          "width": 16,
+                          "height": 16,
+                          "icon": "check",
+                          "library": "lucide",
+                          "fill": "$brand-text"
+                        },
+                        {
+                          "type": "text",
+                          "id": "YWRxW",
+                          "name": "Text",
+                          "fill": "$text",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Widget med nästa hämtning på din dashboard",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "HjgcS",
+                  "name": "Knappar",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "EwIRg",
+                      "name": "Knapp Installera i Homey",
+                      "fill": "$primary",
+                      "cornerRadius": 14,
+                      "gap": 8,
+                      "padding": [
+                        12,
+                        16
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "ncc8s",
+                          "name": "Glyf",
+                          "width": 18,
+                          "height": 18,
+                          "icon": "download",
+                          "library": "lucide",
+                          "fill": "$on-primary"
+                        },
+                        {
+                          "type": "text",
+                          "id": "mEzrp",
+                          "name": "Etikett",
+                          "fill": "$on-primary",
+                          "content": "Installera i Homey",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 15,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "ozo7q",
+              "name": "Kort Home Assistant",
+              "width": "fill_container",
+              "fill": "$surface",
+              "cornerRadius": 20,
+              "stroke": "$border",
+              "strokeWidth": 1,
+              "layout": "vertical",
+              "gap": 12,
+              "padding": 16,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "XTDD1",
+                  "name": "Huvud",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "ng5Hj",
+                      "name": "Ikon",
+                      "width": 44,
+                      "height": 44,
+                      "fill": "$surface-2",
+                      "cornerRadius": 14,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "IcbHT",
+                          "name": "Glyf",
+                          "width": 22,
+                          "height": 22,
+                          "icon": "server",
+                          "library": "lucide",
+                          "fill": "$text"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "N0hsJ",
+                      "name": "Titel",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "D9r6iH",
+                          "name": "Rad",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "vrtGO",
+                              "name": "Namn",
+                              "fill": "$text",
+                              "content": "Home Assistant",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "GF69j",
+                              "x": 62,
+                              "y": 0,
+                              "name": "Märke",
+                              "enabled": false,
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "g8gwny",
+                                  "name": "Etikett",
+                                  "fill": "$brand-text",
+                                  "content": "Testversion",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 12,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "QKJ0C",
+                          "name": "Krav",
+                          "fill": "$text-2",
+                          "content": "Integrationen Sophämtning · via HACS",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "X81LDn",
+                  "name": "Beskrivning",
+                  "fill": "$text-2",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Lägg till din adress i integrationen, så vet Home Assistant när soporna hämtas.",
+                  "lineHeight": 1.4,
+                  "fontFamily": "$font-ui",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "SbHmk",
+                  "name": "Punkter",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 6,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "f8kqA",
+                      "name": "Punkt",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "ThHBY",
+                          "name": "Bock",
+                          "width": 16,
+                          "height": 16,
+                          "icon": "check",
+                          "library": "lucide",
+                          "fill": "$brand-text"
+                        },
+                        {
+                          "type": "text",
+                          "id": "KGBYL",
+                          "name": "Text",
+                          "fill": "$text",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Påminnelse kvällen innan, via kalendern",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "x8CahY",
+                      "name": "Punkt",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "VfGZC",
+                          "name": "Bock",
+                          "width": 16,
+                          "height": 16,
+                          "icon": "check",
+                          "library": "lucide",
+                          "fill": "$brand-text"
+                        },
+                        {
+                          "type": "text",
+                          "id": "nNd8e",
+                          "name": "Text",
+                          "fill": "$text",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Nästa hämtning för varje avfallstyp",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "PU77I",
+                      "name": "Punkt",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "ng3ZO",
+                          "name": "Bock",
+                          "width": 16,
+                          "height": 16,
+                          "icon": "check",
+                          "library": "lucide",
+                          "fill": "$brand-text"
+                        },
+                        {
+                          "type": "text",
+                          "id": "DHt3w",
+                          "name": "Text",
+                          "fill": "$text",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Besked när schemat ändras, till exempel kring helgdagar",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "I9c5sV",
+                  "name": "Knappar",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "z68WQn",
+                      "name": "Knapp Installera via HACS",
+                      "fill": "$primary",
+                      "cornerRadius": 14,
+                      "gap": 8,
+                      "padding": [
+                        12,
+                        16
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "nh4D4",
+                          "name": "Glyf",
+                          "width": 18,
+                          "height": 18,
+                          "icon": "download",
+                          "library": "lucide",
+                          "fill": "$on-primary"
+                        },
+                        {
+                          "type": "text",
+                          "id": "s3LpZQ",
+                          "name": "Etikett",
+                          "fill": "$on-primary",
+                          "content": "Installera via HACS",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 15,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "rkmi8",
+              "name": "Kort API",
+              "width": "fill_container",
+              "fill": "$surface",
+              "cornerRadius": 20,
+              "stroke": "$border",
+              "strokeWidth": 1,
+              "layout": "vertical",
+              "gap": 12,
+              "padding": 16,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "TSN3x",
+                  "name": "Huvud",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "QczQa",
+                      "name": "Ikon",
+                      "width": 44,
+                      "height": 44,
+                      "fill": "$surface-2",
+                      "cornerRadius": 14,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "fI9ZP",
+                          "name": "Glyf",
+                          "width": 22,
+                          "height": 22,
+                          "icon": "braces",
+                          "library": "lucide",
+                          "fill": "$text"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "bk0As",
+                      "name": "Titel",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "CZDZf",
+                          "name": "Rad",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "P2biD",
+                              "name": "Namn",
+                              "fill": "$text",
+                              "content": "API",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "oUVNm",
+                              "x": 62,
+                              "y": 0,
+                              "name": "Märke",
+                              "enabled": false,
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "F7ymf",
+                                  "name": "Etikett",
+                                  "fill": "$brand-text",
+                                  "content": "Testversion",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 12,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "hM2cS",
+                          "name": "Krav",
+                          "fill": "$text-2",
+                          "content": "Öppet JSON-API · v1",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "EOmVn",
+                  "name": "Beskrivning",
+                  "fill": "$text-2",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Hämta schemat för en adress som JSON och bygg något eget.",
+                  "lineHeight": 1.4,
+                  "fontFamily": "$font-ui",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "t1xv9J",
+                  "name": "Punkter",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 6,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "cg02o",
+                      "name": "Punkt",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "b3aAw",
+                          "name": "Bock",
+                          "width": 16,
+                          "height": 16,
+                          "icon": "check",
+                          "library": "lucide",
+                          "fill": "$brand-text"
+                        },
+                        {
+                          "type": "text",
+                          "id": "W5j91",
+                          "name": "Text",
+                          "fill": "$text",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Sök adress, hämta schema och kalender",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "qON9m",
+                      "name": "Punkt",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "an2HG",
+                          "name": "Bock",
+                          "width": 16,
+                          "height": 16,
+                          "icon": "check",
+                          "library": "lucide",
+                          "fill": "$brand-text"
+                        },
+                        {
+                          "type": "text",
+                          "id": "l8CzF",
+                          "name": "Text",
+                          "fill": "$text",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Inga nycklar och inget konto",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "eYtsf",
+                      "name": "Punkt",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "WC9qn",
+                          "name": "Bock",
+                          "width": 16,
+                          "height": 16,
+                          "icon": "check",
+                          "library": "lucide",
+                          "fill": "$brand-text"
+                        },
+                        {
+                          "type": "text",
+                          "id": "VJnsN",
+                          "name": "Text",
+                          "fill": "$text",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Fält tas aldrig bort inom v1",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "E6w6w",
+                  "name": "Knappar",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "JvHAR",
+                      "name": "Knapp Utforska API:t",
+                      "fill": "$surface",
+                      "cornerRadius": 14,
+                      "stroke": "$border",
+                      "strokeWidth": 1,
+                      "gap": 8,
+                      "padding": [
+                        12,
+                        16
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "Y9EWPQ",
+                          "name": "Glyf",
+                          "width": 18,
+                          "height": 18,
+                          "icon": "book-open",
+                          "library": "lucide",
+                          "fill": "$text"
+                        },
+                        {
+                          "type": "text",
+                          "id": "MySFO",
+                          "name": "Etikett",
+                          "fill": "$text",
+                          "content": "Utforska API:t",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 15,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "o7QDG",
+                      "name": "Länk API-guiden",
+                      "fill": "$primary",
+                      "content": "Läs API-guiden →",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 15,
+                      "fontWeight": "800"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "G6Fu77",
+          "x": 64,
+          "y": 1000,
+          "name": "Desktop · Om, Integrationer",
+          "width": 1160,
+          "fill": "$bg",
+          "layout": "vertical",
+          "gap": 16,
+          "padding": [
+            32,
+            220
+          ],
+          "children": [
+            {
+              "type": "text",
+              "id": "D655DG",
+              "name": "H2",
+              "fill": "$text",
+              "content": "Integrationer",
+              "fontFamily": "$font-ui",
+              "fontSize": 24,
+              "fontWeight": "800"
+            },
+            {
+              "type": "text",
+              "id": "HfhJx",
+              "name": "Ingress",
+              "fill": "$text-2",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Få veta när soporna hämtas, direkt i ditt smarta hem. Bygger du något eget finns ett öppet API. Allt är gratis, och du behöver inget konto.",
+              "lineHeight": 1.45,
+              "fontFamily": "$font-ui",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
+              "id": "syStu",
+              "name": "Kort",
+              "width": 720,
+              "gap": 16,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "UM3U8",
+                  "name": "Kort Homey",
+                  "width": "fill_container",
+                  "fill": "$surface",
+                  "cornerRadius": 20,
+                  "stroke": "$border",
+                  "strokeWidth": 1,
+                  "layout": "vertical",
+                  "gap": 12,
+                  "padding": 16,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "dgrj7",
+                      "name": "Huvud",
+                      "width": "fill_container",
+                      "gap": 14,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "RrXjd",
+                          "name": "Ikon",
+                          "width": 44,
+                          "height": 44,
+                          "fill": "$surface-2",
+                          "cornerRadius": 14,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "N9pzN",
+                              "name": "Glyf",
+                              "width": 22,
+                              "height": 22,
+                              "icon": "house-wifi",
+                              "library": "lucide",
+                              "fill": "$text"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "XkS1p",
+                          "name": "Titel",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "tdpnD",
+                              "name": "Rad",
+                              "gap": 8,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "s6J2w",
+                                  "name": "Namn",
+                                  "fill": "$text",
+                                  "content": "Homey",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 16,
+                                  "fontWeight": "800"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "CRSEC",
+                                  "name": "Märke",
+                                  "fill": "$brand-soft",
+                                  "cornerRadius": 999,
+                                  "padding": [
+                                    3,
+                                    10
+                                  ],
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "dEVfz",
+                                      "name": "Etikett",
+                                      "fill": "$brand-text",
+                                      "content": "Testversion",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 12,
+                                      "fontWeight": "800"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "UZGG4",
+                              "name": "Krav",
+                              "fill": "$text-2",
+                              "content": "Appen Sophämtning · för Homey Pro",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "xZZPR",
+                      "name": "Beskrivning",
+                      "fill": "$text-2",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Lägg till din adress i appen, så vet Homey när soporna hämtas.",
+                      "lineHeight": 1.4,
+                      "fontFamily": "$font-ui",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "tdQq9",
+                      "name": "Punkter",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "ETkGg",
+                          "name": "Punkt",
+                          "width": "fill_container",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "F5vlf",
+                              "name": "Bock",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "check",
+                              "library": "lucide",
+                              "fill": "$brand-text"
+                            },
+                            {
+                              "type": "text",
+                              "id": "HuGiZ",
+                              "name": "Text",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Påminnelse kvällen innan, eller på morgonen",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Vxo7e",
+                          "name": "Punkt",
+                          "width": "fill_container",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "T7IkL",
+                              "name": "Bock",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "check",
+                              "library": "lucide",
+                              "fill": "$brand-text"
+                            },
+                            {
+                              "type": "text",
+                              "id": "UpYJM",
+                              "name": "Text",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Besked när schemat ändras, till exempel kring helgdagar",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "u4dvG",
+                          "name": "Punkt",
+                          "width": "fill_container",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "AlOGe",
+                              "name": "Bock",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "check",
+                              "library": "lucide",
+                              "fill": "$brand-text"
+                            },
+                            {
+                              "type": "text",
+                              "id": "EWly3",
+                              "name": "Text",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Widget med nästa hämtning på din dashboard",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "a1c3wV",
+                      "name": "Knappar",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "XVCvk",
+                          "name": "Knapp Installera i Homey",
+                          "fill": "$primary",
+                          "cornerRadius": 14,
+                          "gap": 8,
+                          "padding": [
+                            12,
+                            16
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "bQo8a",
+                              "name": "Glyf",
+                              "width": 18,
+                              "height": 18,
+                              "icon": "download",
+                              "library": "lucide",
+                              "fill": "$on-primary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "yRhCp",
+                              "name": "Etikett",
+                              "fill": "$on-primary",
+                              "content": "Installera i Homey",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 15,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "RmeVt",
+                  "name": "Kort Home Assistant",
+                  "width": "fill_container",
+                  "fill": "$surface",
+                  "cornerRadius": 20,
+                  "stroke": "$border",
+                  "strokeWidth": 1,
+                  "layout": "vertical",
+                  "gap": 12,
+                  "padding": 16,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "BLISh",
+                      "name": "Huvud",
+                      "width": "fill_container",
+                      "gap": 14,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "fOvQE",
+                          "name": "Ikon",
+                          "width": 44,
+                          "height": 44,
+                          "fill": "$surface-2",
+                          "cornerRadius": 14,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "R2tgkw",
+                              "name": "Glyf",
+                              "width": 22,
+                              "height": 22,
+                              "icon": "server",
+                              "library": "lucide",
+                              "fill": "$text"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "fnHmY",
+                          "name": "Titel",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "OAkAp",
+                              "name": "Rad",
+                              "gap": 8,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "Uq3AO",
+                                  "name": "Namn",
+                                  "fill": "$text",
+                                  "content": "Home Assistant",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 16,
+                                  "fontWeight": "800"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "C35Hnv",
+                                  "x": 62,
+                                  "y": 0,
+                                  "name": "Märke",
+                                  "enabled": false,
+                                  "fill": "$brand-soft",
+                                  "cornerRadius": 999,
+                                  "padding": [
+                                    3,
+                                    10
+                                  ],
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "qCDCZ",
+                                      "name": "Etikett",
+                                      "fill": "$brand-text",
+                                      "content": "Testversion",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 12,
+                                      "fontWeight": "800"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "CJvgB",
+                              "name": "Krav",
+                              "fill": "$text-2",
+                              "content": "Integrationen Sophämtning · via HACS",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "ada3l",
+                      "name": "Beskrivning",
+                      "fill": "$text-2",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Lägg till din adress i integrationen, så vet Home Assistant när soporna hämtas.",
+                      "lineHeight": 1.4,
+                      "fontFamily": "$font-ui",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "jxs4L",
+                      "name": "Punkter",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "eYSRr",
+                          "name": "Punkt",
+                          "width": "fill_container",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "tBzBy",
+                              "name": "Bock",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "check",
+                              "library": "lucide",
+                              "fill": "$brand-text"
+                            },
+                            {
+                              "type": "text",
+                              "id": "dwnz8",
+                              "name": "Text",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Påminnelse kvällen innan, via kalendern",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "FLlAC",
+                          "name": "Punkt",
+                          "width": "fill_container",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "eA5P9",
+                              "name": "Bock",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "check",
+                              "library": "lucide",
+                              "fill": "$brand-text"
+                            },
+                            {
+                              "type": "text",
+                              "id": "R5tBl",
+                              "name": "Text",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Nästa hämtning för varje avfallstyp",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "WrDFo",
+                          "name": "Punkt",
+                          "width": "fill_container",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "mQKzP",
+                              "name": "Bock",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "check",
+                              "library": "lucide",
+                              "fill": "$brand-text"
+                            },
+                            {
+                              "type": "text",
+                              "id": "GkCSa",
+                              "name": "Text",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Besked när schemat ändras, till exempel kring helgdagar",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "w8n3N",
+                      "name": "Knappar",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "GWusU",
+                          "name": "Knapp Installera via HACS",
+                          "fill": "$primary",
+                          "cornerRadius": 14,
+                          "gap": 8,
+                          "padding": [
+                            12,
+                            16
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "DZw8Y",
+                              "name": "Glyf",
+                              "width": 18,
+                              "height": 18,
+                              "icon": "download",
+                              "library": "lucide",
+                              "fill": "$on-primary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "oFkut",
+                              "name": "Etikett",
+                              "fill": "$on-primary",
+                              "content": "Installera via HACS",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 15,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "OSzpW",
+              "name": "Kort API",
+              "width": "fill_container",
+              "fill": "$surface",
+              "cornerRadius": 20,
+              "stroke": "$border",
+              "strokeWidth": 1,
+              "layout": "vertical",
+              "gap": 12,
+              "padding": 16,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Jtmyz",
+                  "name": "Huvud",
+                  "width": "fill_container",
+                  "gap": 14,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "AIad9",
+                      "name": "Ikon",
+                      "width": 44,
+                      "height": 44,
+                      "fill": "$surface-2",
+                      "cornerRadius": 14,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "vnCRd",
+                          "name": "Glyf",
+                          "width": 22,
+                          "height": 22,
+                          "icon": "braces",
+                          "library": "lucide",
+                          "fill": "$text"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "wszWR",
+                      "name": "Titel",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "Uift6",
+                          "name": "Rad",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Jjtyw",
+                              "name": "Namn",
+                              "fill": "$text",
+                              "content": "API",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "WSobv",
+                              "x": 62,
+                              "y": 0,
+                              "name": "Märke",
+                              "enabled": false,
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "ZP9Jq",
+                                  "name": "Etikett",
+                                  "fill": "$brand-text",
+                                  "content": "Testversion",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 12,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "hlcyh",
+                          "name": "Krav",
+                          "fill": "$text-2",
+                          "content": "Öppet JSON-API · v1",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "juuFe",
+                  "name": "Beskrivning",
+                  "fill": "$text-2",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Hämta schemat för en adress som JSON och bygg något eget.",
+                  "lineHeight": 1.4,
+                  "fontFamily": "$font-ui",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "b9W8g",
+                  "name": "Punkter",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 6,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "D94gi",
+                      "name": "Punkt",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "gCz6f",
+                          "name": "Bock",
+                          "width": 16,
+                          "height": 16,
+                          "icon": "check",
+                          "library": "lucide",
+                          "fill": "$brand-text"
+                        },
+                        {
+                          "type": "text",
+                          "id": "qOXpl",
+                          "name": "Text",
+                          "fill": "$text",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Sök adress, hämta schema och kalender",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "zMtHx",
+                      "name": "Punkt",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "j7wYSN",
+                          "name": "Bock",
+                          "width": 16,
+                          "height": 16,
+                          "icon": "check",
+                          "library": "lucide",
+                          "fill": "$brand-text"
+                        },
+                        {
+                          "type": "text",
+                          "id": "kRpSy",
+                          "name": "Text",
+                          "fill": "$text",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Inga nycklar och inget konto",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "if8Mj",
+                      "name": "Punkt",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "UJ5Je",
+                          "name": "Bock",
+                          "width": 16,
+                          "height": 16,
+                          "icon": "check",
+                          "library": "lucide",
+                          "fill": "$brand-text"
+                        },
+                        {
+                          "type": "text",
+                          "id": "Dy7lp",
+                          "name": "Text",
+                          "fill": "$text",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Fält tas aldrig bort inom v1",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "T68vWG",
+                  "name": "Knappar",
+                  "width": "fill_container",
+                  "gap": 16,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "g87XH",
+                      "name": "Knapp Utforska API:t",
+                      "fill": "$surface",
+                      "cornerRadius": 14,
+                      "stroke": "$border",
+                      "strokeWidth": 1,
+                      "gap": 8,
+                      "padding": [
+                        12,
+                        16
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "L3wpL4",
+                          "name": "Glyf",
+                          "width": 18,
+                          "height": 18,
+                          "icon": "book-open",
+                          "library": "lucide",
+                          "fill": "$text"
+                        },
+                        {
+                          "type": "text",
+                          "id": "Amzxc",
+                          "name": "Etikett",
+                          "fill": "$text",
+                          "content": "Utforska API:t",
+                          "fontFamily": "$font-ui",
+                          "fontSize": 15,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "TjXZt",
+                      "name": "Länk API-guiden",
+                      "fill": "$primary",
+                      "content": "Läs API-guiden →",
+                      "fontFamily": "$font-ui",
+                      "fontSize": 15,
+                      "fontWeight": "800"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ],
   "themes": {
