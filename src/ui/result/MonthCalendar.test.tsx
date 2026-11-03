@@ -42,6 +42,23 @@ describe('MonthCalendar', () => {
     expect(screen.getByTestId('forklaring')).toHaveTextContent('Hushåll')
   })
 
+  it('visar varje kärl med eget namn i förklaringen, även när de är samma fraktion', () => {
+    const tvaKarl: Schedule = {
+      ...schedule,
+      events: [
+        { date: '2026-12-08', fractions: ['karl'], labels: { karl: 'Fyrfackskärl 2' } },
+        { date: '2026-12-09', fractions: ['karl', 'rest'], labels: { karl: 'Fyrfackskärl 1' } },
+        { date: '2026-12-23', fractions: ['karl'], labels: { karl: 'Fyrfackskärl 1' } },
+      ],
+    }
+    render(<MonthCalendar schedule={tvaKarl} initial="2026-12-09" today="2026-12-01" />)
+    const forklaring = screen.getByTestId('forklaring')
+    expect(forklaring).toHaveTextContent('Fyrfackskärl 1')
+    expect(forklaring).toHaveTextContent('Fyrfackskärl 2')
+    expect(forklaring).toHaveTextContent('Rest')
+    expect(forklaring.children).toHaveLength(3)
+  })
+
   it('har månadsknappar som är stora nog att träffa med fingret', () => {
     render(<MonthCalendar schedule={schedule} initial="2026-12-09" today="2026-12-01" />)
     expect(screen.getByRole('button', { name: 'Nästa månad' })).toHaveClass('after:-inset-1')

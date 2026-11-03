@@ -40,10 +40,18 @@ export function MonthCalendar({ schedule, initial, today }: { schedule: Schedule
   ]
   while (cells.length % 7 !== 0) cells.push(null)
 
-  const shown = new Set<FractionId>(schedule.events.flatMap((e) => e.fractions))
-  const legend = (Object.keys(FRACTIONS) as FractionId[]).filter((f) => shown.has(f))
-  // Samma namn som etiketterna när källan har ett eget (t.ex. "Hushåll" för kärl).
-  const legendName = (f: FractionId) => schedule.events.find((e) => e.labels?.[f])?.labels?.[f] ?? FRACTIONS[f].short
+  // En rad per namn: källans egna (t.ex. "Fyrfackskärl 1" och "Fyrfackskärl 2") kan dela fraktion.
+  const order = Object.keys(FRACTIONS) as FractionId[]
+  const names = new Map<string, { fraction: FractionId; name: string }>()
+  for (const e of schedule.events) {
+    for (const f of e.fractions) {
+      const name = e.labels?.[f] ?? FRACTIONS[f].short
+      names.set(`${f}|${name}`, { fraction: f, name })
+    }
+  }
+  const legend = [...names.values()].sort(
+    (a, b) => order.indexOf(a.fraction) - order.indexOf(b.fraction) || a.name.localeCompare(b.name, 'sv', { numeric: true }),
+  )
   // Rundeln är 36 px som i designen, tryckytan 44 px.
   const navButton =
     'relative inline-flex size-9 items-center justify-center rounded-full border border-border text-text after:absolute after:-inset-1 disabled:opacity-35'
@@ -142,12 +150,12 @@ export function MonthCalendar({ schedule, initial, today }: { schedule: Schedule
           })}
         </div>
         <div data-testid="forklaring" className="mt-1 flex flex-wrap gap-x-4 gap-y-1 border-t border-border px-2 pt-2.5">
-          {legend.map((f) => {
-            const Icon = FRACTION_ICON[f]
+          {legend.map(({ fraction, name }) => {
+            const Icon = FRACTION_ICON[fraction]
             return (
-              <span key={f} className="flex items-center gap-1.5 text-[13px] font-semibold text-text-2">
-                <Icon className={cn('size-4', FRACTION_CLASS[f].fg)} aria-hidden />
-                {legendName(f)}
+              <span key={`${fraction}|${name}`} className="flex items-center gap-1.5 text-[13px] font-semibold text-text-2">
+                <Icon className={cn('size-4', FRACTION_CLASS[fraction].fg)} aria-hidden />
+                {name}
               </span>
             )
           })}
