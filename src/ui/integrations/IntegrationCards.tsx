@@ -1,4 +1,4 @@
-import { Check, Download, HouseWifi, Server, type LucideIcon } from 'lucide-react'
+import { BookOpen, Braces, Check, Download, HouseWifi, Server, type LucideIcon } from 'lucide-react'
 import { useId } from 'react'
 import { cn } from '@/lib/utils'
 import { SITE } from '@/config'
@@ -14,6 +14,8 @@ interface Integration {
   text: string
   points?: string[]
   link: { label: string; href: string; icon: LucideIcon; primary?: boolean }
+  /** Textlänk bredvid knappen */
+  more?: { label: string; href: string }
 }
 
 const INTEGRATIONS: Integration[] = [
@@ -42,9 +44,18 @@ const INTEGRATIONS: Integration[] = [
     ],
     link: { label: 'Installera via HACS', href: SITE.homeAssistantUrl, icon: Download, primary: true },
   },
+  {
+    name: 'API',
+    icon: Braces,
+    sub: 'Öppet JSON-API · v1',
+    text: 'Hämta schemat för en adress som JSON och bygg något eget.',
+    points: ['Sök adress, hämta schema och kalender', 'Inga nycklar och inget konto', 'Fält tas aldrig bort inom v1'],
+    link: { label: 'Utforska API:t', href: SITE.apiDocsUrl, icon: BookOpen },
+    more: { label: 'Läs API-guiden →', href: SITE.apiGuideUrl },
+  },
 ]
 
-function Card({ name, icon: Icon, status, soon, sub, text, points, link }: Integration) {
+function Card({ name, icon: Icon, status, soon, sub, text, points, link, more }: Integration) {
   const id = useId()
   const LinkIcon = link.icon
   return (
@@ -74,25 +85,35 @@ function Card({ name, icon: Icon, status, soon, sub, text, points, link }: Integ
           ))}
         </ul>
       )}
-      <a
-        href={link.href}
-        rel="noopener"
-        className={cn(
-          'mt-auto inline-flex items-center gap-2 self-start rounded-[14px] px-4 py-3 text-[15px] font-bold',
-          link.primary ? 'bg-primary text-on-primary' : 'border border-border bg-surface text-text',
+      <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-3">
+        <a
+          href={link.href}
+          rel="noopener"
+          className={cn(
+            'inline-flex items-center gap-2 rounded-[14px] px-4 py-3 text-[15px] font-bold',
+            link.primary ? 'bg-primary text-on-primary' : 'border border-border bg-surface text-text',
+          )}
+        >
+          <LinkIcon className="size-[18px]" aria-hidden />
+          {link.label}
+        </a>
+        {more && (
+          <a href={more.href} rel="noopener" className="text-[15px] font-extrabold text-primary">
+            {more.label}
+          </a>
         )}
-      >
-        <LinkIcon className="size-[18px]" aria-hidden />
-        {link.label}
-      </a>
+      </div>
     </article>
   )
 }
 
-/** Om-sidans kort för Homey och Home Assistant. Sida vid sida från md. */
-export function IntegrationCards() {
+/**
+ * Korten för Homey, Home Assistant och API:t. I `row` ligger alla tre sida vid sida från lg (startsidan);
+ * annars ligger Homey och Home Assistant sida vid sida från md och API:t på egen rad (Om-sidan, 640 px).
+ */
+export function IntegrationCards({ row = false }: { row?: boolean }) {
   return (
-    <div className="flex w-full flex-col gap-3.5 md:flex-row md:items-stretch md:gap-4">
+    <div className={cn('grid w-full gap-3.5 md:gap-4', row ? 'lg:grid-cols-3' : 'md:grid-cols-2 md:[&>:last-child]:col-span-2')}>
       {INTEGRATIONS.map((integration) => (
         <Card key={integration.name} {...integration} />
       ))}

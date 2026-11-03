@@ -6,6 +6,7 @@ Ett öppet, inofficiellt API för sophämtning per adress. Det är samma data so
 - Bara `GET`. Svaren är JSON. Inga nycklar och ingen inloggning.
 - Alla JSON-svar från endpoints har `"apiVersion": "1"`. Alla svar har `Access-Control-Allow-Origin: *`.
 - Maskinläsbar beskrivning: [`openapi.json`](https://sopor.hardyson.se/api/v1/openapi.json) (OpenAPI 3.1).
+- Interaktiv dokumentation, där man kan prova anropen: [sopor.hardyson.se/api/v1/docs](https://sopor.hardyson.se/api/v1/docs).
 
 Det är en hobbytjänst utan garantier. Vid avvikelser gäller alltid kommunens information.
 

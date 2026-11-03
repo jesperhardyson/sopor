@@ -120,10 +120,10 @@ describe('ResultPage', () => {
     expect(screen.queryByText(/e-post eller sms/)).toBeNull()
   })
 
-  it('visar smarta hem med söktext för Homey och API-länken', async () => {
+  it('visar integrationerna med söktext för Homey och API-länken', async () => {
     renderAt('/avesta/krylbo-storgatan-12b')
     await vi.waitFor(() => resolveSchedule!())
-    expect(await screen.findByRole('heading', { name: 'Smarta hem' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Integrationer' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Kopiera söktexten' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /API-länk för utvecklare/ })).toHaveAttribute(
       'href',

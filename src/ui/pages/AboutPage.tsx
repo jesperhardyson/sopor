@@ -5,7 +5,6 @@ import { clearSaved, loadSaved } from '@/lib/storage'
 import { GitHubMark } from '../components/GitHubMark'
 import { ForgetAll } from '../saved/ForgetAll'
 import { Link, useLocation } from 'react-router'
-import { BuildYourOwn } from '../integrations/BuildYourOwn'
 import { IntegrationCards } from '../integrations/IntegrationCards'
 import { SITE } from '@/config'
 import { SOURCES, sourceLabel, type Source } from '@/sources'
@@ -95,7 +94,7 @@ function SourceList() {
   )
 }
 
-/** Skrollar till ett avsnitt när sidan öppnas med #ankare, till exempel /om#smarta-hem från startsidan. */
+/** Skrollar till ett avsnitt när sidan öppnas med #ankare, till exempel /om#integrationer från startsidan. */
 function useScrollToHash() {
   const { hash } = useLocation()
   useEffect(() => {
@@ -186,13 +185,12 @@ export function AboutPage() {
         </div>
       </section>
 
-      <section id="smarta-hem" aria-labelledby="smarta-hem-rubrik" className="flex scroll-mt-6 flex-col items-start gap-3.5">
-        <h2 id="smarta-hem-rubrik" className={h2}>
-          Smarta hem
+      <section id="integrationer" aria-labelledby="integrationer-rubrik" className="flex scroll-mt-6 flex-col items-start gap-3.5">
+        <h2 id="integrationer-rubrik" className={h2}>
+          Integrationer
         </h2>
-        <p className={body}>Få veta när soporna hämtas, direkt i ditt smarta hem. Det är gratis, och du behöver inget konto.</p>
+        <p className={body}>Få veta när soporna hämtas, direkt i ditt smarta hem. Bygger du något eget finns ett öppet API. Allt är gratis, och du behöver inget konto.</p>
         <IntegrationCards />
-        <BuildYourOwn />
       </section>
 
       <section className="flex flex-col items-start gap-3">

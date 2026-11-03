@@ -6,7 +6,7 @@ import { FractionIcon } from '../components/FractionIcon'
 import { SavedList } from '../saved/SavedList'
 import { ContributeSection } from '../start/ContributeSection'
 import { ServicesSection } from '../start/ServicesSection'
-import { SmartHomeSection } from '../start/SmartHomeSection'
+import { IntegrationsSection } from '../start/IntegrationsSection'
 import { AddressSearch } from '../search/AddressSearch'
 import { usePageTitle } from '../hooks/usePageTitle'
 
@@ -79,7 +79,7 @@ export function StartPage() {
     </div>
     <div data-testid="infoband" className="mt-12 border-t border-border bg-surface/45 lg:mt-4">
       <ServicesSection />
-      <SmartHomeSection />
+      <IntegrationsSection />
       <ContributeSection />
     </div>
     </>
