@@ -54,13 +54,12 @@ const url = (p: string) => new URL(`https://preview.test${p}`)
 const schema = (id: string) => url(`/api/schema?source=srv&id=${encodeURIComponent(id)}`)
 
 describe('SRV i sajtens API', () => {
-  it('söker fram adressen i alla orter, med kärlen när flera kunder delar adress, aldrig kundnumret', async () => {
+  it('söker fram adressen i alla orter, en gång när kunderna på adressen har samma schema, aldrig med kundnumret', async () => {
     const res = await handleSearch(url('/api/sok?q=Nynäsvägen 3&sources=srv'), opts())
     const all = await res.json()
     expect(all.failed).toEqual([])
     expect(all.addresses.map((a: { locality: string; detail?: string }) => [a.locality, a.detail ?? null])).toEqual([
-      ['Haninge', 'Restavfall, nästa Tor 5 nov'],
-      ['Haninge', 'Restavfall, nästa Tor 5 nov'],
+      ['Haninge', null],
       ['Grödinge', null],
       ['Handen', null],
     ])

@@ -81,6 +81,34 @@ describe('srvDetails', () => {
     expect(details).toEqual(['Matavfall, Restavfall', 'Papper och Plast', undefined, undefined])
   })
 
+  it('skiljer kunderna åt med hur ofta fraktionerna töms och hur många kärl eller containrar det är', async () => {
+    const forslag = { 'ringvägen 1': { results: ['100011', '100012', '100013'].map((id) => suggestion(id, 'Ringvägen 1', 'GRÖDINGE')) } }
+    const bin = (contentType: string, frequency: string, containerType = 'Kärl 660 liter grönt', startDate = '2026-11-04') => ({ ...container(contentType, [{ startDate }], containerType), frequency })
+    const grodinge = (containers: unknown[]) => customer('Ringvägen 1', 'GRÖDINGE', containers)
+    const kunder = {
+      '100011': grodinge([bin('Restavfall', 'Varje vecka'), bin('Restavfall', 'Varje vecka'), bin('Restavfall', 'Varje vecka', 'Kärl 240 liter grönt'), bin('Matavfall', 'Varje vecka', 'Kärl 140 liter mat', '2026-11-05')]),
+      '100012': grodinge([bin('Matavfall', 'Varannan vecka', 'Kärl 140 liter mat', '2026-11-12'), bin('Restavfall', 'Varje vecka')]),
+      '100013': grodinge([bin('Restavfall', 'Varannan vecka', 'Container 5 kbm bottentömmande - Kranbil', '2026-11-05'), bin('Restavfall', 'Varannan vecka', 'Container 5 kbm bottentömmande - Kranbil', '2026-11-05'), bin('Matavfall', 'Varannan vecka', 'Container 1 kbm bottentömmande - Kranbil', '2026-11-11')]),
+    }
+    const fetchFn = fakeSrv({ forslag, kunder })
+    const details = (await srvDetails(await srvSearch('Ringvägen 1', fetchFn), '2026-11-04', fetchFn)).map(([, d]) => d)
+    expect(details).toEqual([
+      'Matavfall varje vecka, Restavfall varje vecka (3 kärl)',
+      'Matavfall varannan vecka, Restavfall varje vecka',
+      'Matavfall varannan vecka (container), Restavfall varannan vecka (2 containrar)',
+    ])
+  })
+
+  it('visar bara en av kunderna när de har exakt samma schema', async () => {
+    const fetchFn = fakeSrv({ kunder: { '100001': haninge(['Restavfall']), '100002': haninge(['Restavfall']) } })
+    const found = await srvDetails(await srvSearch('Nynäsvägen 3', fetchFn), '2026-11-04', fetchFn)
+    expect(found.map(([b, d]) => [b.locality, d ?? null])).toEqual([
+      ['Haninge', null],
+      ['Grödinge', null],
+      ['Handen', null],
+    ])
+  })
+
   it('ger ingen särskiljare, i stället för ett fel, när kärlen inte går att hämta', async () => {
     const fetchFn = fakeSrv({ kunder: { '100001': '<html>', '100002': haninge(['Restavfall']) } })
     const details = (await srvDetails(await srvSearch('Nynäsvägen 3', fetchFn), '2026-11-04', fetchFn)).map(([, d]) => d)
@@ -98,7 +126,7 @@ describe('srvDetails', () => {
     const details = (await srvDetails(await srvSearch('Nynäsvägen 3', fetchFn), '2026-11-04', fetchFn)).map(([, d]) => d)
     expect(details.slice(0, 2)).toEqual(['Restavfall, nästa Tor 5 nov', 'Restavfall, nästa Mån 9 nov'])
 
-    const empty = fakeSrv({ kunder: { '100001': haninge([]) } })
+    const empty = fakeSrv({ kunder: { '100001': haninge([]), '100002': haninge(['Restavfall']) } })
     expect((await srvDetails(await srvSearch('Nynäsvägen 3', empty), '2026-11-04', empty))[0][1]).toBe('Inga tömningar just nu')
   })
 })

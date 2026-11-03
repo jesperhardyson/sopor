@@ -17,6 +17,8 @@ export interface SrvContainer {
   contentType: string
   /** "Kärl 370 liter kärl 1 restavfall" */
   containerType: string
+  /** "Varje vecka", "Varannan vecka" …, eller false (villornas nya kärl) */
+  frequency?: string | boolean
   calendars: { startDate: string; jobTemplate: string; isActive: boolean }[]
 }
 
@@ -136,27 +138,54 @@ export function srvSchedule(containers: SrvContainer[], today: string): Schedule
 }
 
 /**
- * Flera kunder på samma adress får kärlen som särskiljare, och har de samma kärl också nästa
- * tömning (som NSR). Kärlen hämtas bara för de adresserna, och går det inte blir det ingen
- * särskiljare i stället för en misslyckad sökning. Kundnumret visas aldrig.
+ * "Matavfall varannan vecka, Restavfall varje vecka (3 kärl)": fraktionerna, hur ofta de töms och
+ * hur många kärl eller containrar det är. Det är det som skiljer kunderna på en adress åt.
+ */
+function describeBins(containers: SrvContainer[]): string {
+  const groups = new Map<string, { text: string; count: number; container: boolean }>()
+  for (const c of containers) {
+    if (!c.calendars.some((cal) => cal.isActive && isSrvPickup(cal.jobTemplate))) continue
+    const frequency = typeof c.frequency === 'string' ? c.frequency.trim().toLowerCase() : ''
+    const text = [c.contentType.trim(), frequency].filter(Boolean).join(' ')
+    const container = /^container/i.test(c.containerType.trim())
+    const group = groups.get(`${text}|${container}`) ?? { text, count: 0, container }
+    group.count++
+    groups.set(`${text}|${container}`, group)
+  }
+  return [...groups.values()]
+    .map(({ text, count, container }) => {
+      if (container) return `${text} (${count > 1 ? `${count} containrar` : 'container'})`
+      return count > 1 ? `${text} (${count} kärl)` : text
+    })
+    .sort((x, y) => x.localeCompare(y, 'sv'))
+    .join(', ')
+}
+
+/**
+ * Flera kunder på samma adress får kärlen som särskiljare, och är de lika också nästa tömning.
+ * Kunder med exakt samma schema visas en gång: då spelar det ingen roll vilken man väljer. Kärlen
+ * hämtas bara för de adresserna, och går det inte blir det ingen särskiljare i stället för en
+ * misslyckad sökning. Kundnumret visas aldrig.
  */
 export async function srvDetails(addresses: SrvAddress[], today: string, fetchFn?: typeof fetch, timeoutMs = SRV_CUSTOMER_TIMEOUT_MS): Promise<[EdpBuilding, string | undefined][]> {
   const shared = addresses.filter((a) => addresses.some((o) => o !== a && samePlace(o.building, a.building)))
-  const info = new Map<SrvAddress, { bins: string; next?: string }>()
+  const info = new Map<SrvAddress, { bins: string; next?: string; schedule: string }>()
   await Promise.all(
     shared.map(async (a) => {
       const containers = await srvContainers(a, fetchFn, timeoutMs).catch(() => undefined)
       if (containers === undefined) return
-      const kinds = (containers ?? []).filter((c) => c.calendars.some((cal) => cal.isActive && isSrvPickup(cal.jobTemplate)))
-      const bins = [...new Set(kinds.map((c) => c.contentType.trim()))].sort((x, y) => x.localeCompare(y, 'sv')).join(', ')
-      info.set(a, { bins, next: srvSchedule(containers ?? [], today).events[0]?.date })
+      const events = srvSchedule(containers ?? [], today).events
+      info.set(a, { bins: describeBins(containers ?? []), next: events[0]?.date, schedule: JSON.stringify(events) })
     }),
   )
-  return addresses.map((a) => {
+  const same = (a: SrvAddress, o: SrvAddress) => o !== a && samePlace(o.building, a.building)
+  const kept = addresses.filter((a, i) => !addresses.slice(0, i).some((o) => same(a, o) && info.has(a) && info.get(o)?.schedule === info.get(a)?.schedule))
+  return kept.map((a) => {
     const own = info.get(a)
-    if (!own) return [a.building, undefined]
-    const sameBins = shared.some((o) => o !== a && samePlace(o.building, a.building) && info.get(o)?.bins === own.bins)
+    const others = kept.filter((o) => same(a, o))
+    if (!own || others.length === 0) return [a.building, undefined]
     if (!own.bins) return [a.building, 'Inga tömningar just nu']
+    const sameBins = others.some((o) => info.get(o)?.bins === own.bins)
     return [a.building, sameBins && own.next ? `${own.bins}, nästa ${formatShort(own.next)}` : own.bins]
   })
 }
