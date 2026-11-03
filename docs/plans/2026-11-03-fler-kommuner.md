@@ -28,7 +28,7 @@ De största kommunerna som saknas, och varför:
 | 14 | Botkyrka | 96 000 | SRV | JSON, fas 2 |
 | 15 | Järfälla | 89 000 | ? | Inte undersökt, fas 1 |
 | 16 | Kristianstad | 86 000 | Appbolaget | JSON, fas 2 |
-| 17 | Kungsbacka | 86 000 | Självservice (HTML) | Skrapning, fas 4 |
+| 17 | Kungsbacka | 86 000 | Självservice (HTML) | Skrapas inte, fas 5 |
 | 18 | Solna | 86 000 | ? | Inte undersökt, fas 1 |
 | 19 | Luleå | 80 000 | Lumire | JSON, fas 3 |
 | 20 | Täby | 78 000 | ? | Inte undersökt, fas 1 |
@@ -67,8 +67,8 @@ Ordnade efter invånare. Varje rad är en egen spec och plan som `stockholm` och
 
 | Ordning | Källa | Kommuner | Invånare | Andel | Format (*overifierat*) |
 |---|---|---|---|---|---|
-| 1 | **SRV återvinning** | Huddinge, Haninge, Botkyrka, Nynäshamn, Salem | 359 000 | 3,4 % | JSON, `srvatervinning.se/rest-api/core/sewagePickup/search` |
-| 2 | **NSR** | Helsingborg, Ängelholm, Höganäs, Båstad, Bjuv, Åstorp | 274 000 | 2,6 % | JSON, `nsr.se/api/wastecalendar`, även ICS |
+| 1 | **NSR** | Helsingborg, Ängelholm, Höganäs, Båstad, Bjuv, Åstorp | 274 000 | 2,6 % | JSON, `nsr.se/api/wastecalendar`, även ICS |
+| 2 | **SRV återvinning** | Huddinge, Haninge, Botkyrka, Nynäshamn, Salem | 359 000 | 3,4 % | JSON, `srvatervinning.se/rest-api/core/sewagePickup/search` |
 | 3 | **Avfallsapp/Nova** (utan token) | Sigtuna, Motala, Upplands-Bro, Söderköping (+ Skaraborg?) | 144 000 | 1,4 % | JSON, `<kund>.avfallsapp.se/wp-json/nova/v1/`. Kunder som kräver token (Nodra, Vänersborg, Teknik i Väst) tas inte med |
 | 4 | **Appbolaget** | Kristianstad, Hässleholm | 138 000 | 1,3 % | JSON, `api-universal.appbolaget.se/waste/…` |
 | 5 | **WordPress-appen** (Rambo, Uddevalla Energi) | Uddevalla, Lysekil, Sotenäs, Munkedal, Tanum | 103 000 | 1,0 % | JSON, `…/wp-json/app/v1/address-flat` och `next-pickup`. Samma form hos båda, *kontrollera* |
@@ -85,13 +85,15 @@ Avfallsapp/Nova och WordPress-appen är plattformar med flera kunder. Byggs de m
 | 1 | **Telge** | Södertälje, Nykvarn | 115 000 | JSON, `telge.se/api/thorweb/garbagecollection` |
 | 2 | **MSVA** | Sundsvall | 99 000 | JSON, `api.sundsvall.se/Garbage/2281/schedules` (kommunens öppna API, bäst dokumenterat av alla) |
 | 3 | **Lumire** | Luleå | 80 000 | JSON, `lumire.se/api/waste-pickup` |
-| 4 | **Affärsverken** | Karlskrona | 66 000 | JSON, `kundapi.affarsverken.se/api/v1/open-api/`. Hämtar en anonym token först: *kontrollera mot regel 4* innan något byggs |
+| 4 | **Affärsverken** | Karlskrona | 66 000 | JSON, `kundapi.affarsverken.se/api/v1/open-api/`. Hämtar en anonym token först, utan inloggning. Räknas som publik källa (beslut 2026-11-03) |
 | 5 | **LSR** | Landskrona, Svalöv | 62 000 | JSON, `minasidor.lsr.nu/api/api/external/schedule/` |
 | 6 | **Pireva** | Piteå | 42 000 | Sökning i JSON, schemat i HTML |
 
 **Vinst:** cirka 460 000 invånare, **till cirka 48 %**. Sysav och Ökrab har också JSON men oklart vilka kommuner de hämtar i. Kartlägg dem innan de rangordnas.
 
-## Fas 4: Skrapning av HTML (beslut krävs)
+## Fas 4: Skrapning av HTML (görs inte)
+
+Beslut 2026-11-03: Sopor skrapar inte webbsidor. Sidorna ändras utan förvarning, och varje ändring blir en lagning, vilket går emot målet om minimalt underhåll. Kommunerna nedan behandlas som de i fas 5: fråga efter en söktjänst eller statisk data.
 
 | Källa | Kommuner | Invånare |
 |---|---|---|
@@ -101,13 +103,12 @@ Avfallsapp/Nova och WordPress-appen är plattformar med flera kunder. Byggs de m
 | Hudiksvall, Västervik (VMEAB), Ronneby, Hedemora, Älvsbyn | | cirka 130 000 |
 | Indecta- och "kalender"-PHP (Nårab, SÅM, VMAB) | flera små | – |
 
-Skrapning går emot målet om minimalt underhåll: sidorna ändras utan förvarning. Bevakningen fångar det, men varje ändring blir en lagning. **Förslag:** bara Kungsbacka och Norrtälje (största vinsten och troligen samma plattform), och bara efter fas 2 och 3.
-
 ## Fas 5: Stora kommuner utan publik källa
 
 Göteborg, Linköping, Umeå, Karlstad, Halmstad, Eskilstuna, Gävle och Norrköping: 1,5 miljoner invånare. Göteborg ensam är 5,8 %.
 
 - [ ] **Djupkoll** av varje kommuns webbplats i webbläsaren (nätverksfliken vid "sök tömningsdag"). Undersökningen byggde på Waste Collection Schedule, som bara har det någon har bidragit med. Något kan ha missats.
+- [ ] **Ett GitHub-ärende per kommun** ([mallen för ny kommun](https://github.com/jesperhardyson/sopor/issues/new?template=ny-kommun.md)) med ett färdigt utkast till förfrågan, så att den som bor där kan skicka den eller hjälpa till. Gäller även kommunerna i fas 4.
 - [ ] **Fråga kommunen**, med mallen i [steg 4](../kommuner/hitta-kommunens-data.md#steg-4-begär-kopplingen-från-kommunen): om de har EDP, be dem fylla SimpleWastePickup; annars begär ut kopplingen adress → område som allmän handling och lägg den som statisk data (som Avesta).
 - [ ] Gävle och Norrköping hade publika källor förut. Fråga om de kan öppnas igen. Använd inte apptoken eller inloggning.
 
@@ -121,12 +122,11 @@ Göteborg, Linköping, Umeå, Karlstad, Halmstad, Eskilstuna, Gävle och Norrkö
 | Fas 1 | 33–38 % |
 | Fas 2 | cirka 44 % |
 | Fas 3 | cirka 48 % |
-| Fas 4 (Kungsbacka, Norrtälje) | cirka 50 % |
-| Fas 5 (om Göteborg svarar ja) | upp mot 56 % |
+| Fas 5 (om Göteborg svarar ja) | upp mot 54 % |
 
-## Öppna frågor
+## Beslut (2026-11-03)
 
-1. **Ordningen i fas 2:** SRV först (störst), eller NSR (har ICS, alltså riktiga datum och helgdagsflyttar, mindre risk)?
-2. **Skrapning (fas 4):** ja, nej eller bara Kungsbacka och Norrtälje?
-3. **Affärsverken:** räknas en anonym token från ett öppet "open-api" som publik källa enligt regel 4?
-4. **Fas 5:** vill du skicka förfrågningarna själv, eller ska utkasten ligga i ärenden på GitHub?
+1. **Fas 2 börjar med NSR**, inte SRV. NSR har ICS med riktiga datum och helgdagsflyttar, så risken är mindre.
+2. **Ingen skrapning av HTML.** Fas 4 utgår, och de kommunerna går till fas 5.
+3. **Affärsverken räknas som publik källa.** Token hämtas anonymt från deras open-api, utan inloggning.
+4. **Förfrågningarna i fas 5 blir GitHub-ärenden**, ett per kommun, med ett utkast.
