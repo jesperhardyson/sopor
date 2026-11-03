@@ -397,3 +397,95 @@ describe('missingKommuner', () => {
     expect(await missing('Storgatan 12, Hedemora')).toEqual([])
   })
 })
+
+describe('kommunStatus', () => {
+  const sverige = {
+    kommuner: { '2083': 'Hedemora kommun', '0380': 'Uppsala kommun', '0882': 'Oskarshamns kommun' },
+    orter: { hedemora: ['2083'], uppsala: ['0380'], storvreta: ['0380'], oskarshamn: ['0882'], bergby: ['0380', '2083'] },
+  }
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
+    vi.resetModules()
+  })
+
+  async function status(place: string, ok = true) {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string) => {
+        if (url === '/data/orter.json') return Response.json({ uppsala: { 'gamla uppsala': 'Uppsala kommun', bergby: 'Uppsala kommun' } })
+        return ok ? Response.json(sverige) : new Response('', { status: 500 })
+      }),
+    )
+    const { kommunStatus } = await import('./registry')
+    return kommunStatus(place)
+  }
+
+  it('säger om kommunen finns, också när man skriver en ort i den', async () => {
+    expect(await status('Uppsala')).toEqual([{ name: 'Uppsala kommun', covered: true }])
+    expect(await status(' storvreta ')).toEqual([{ name: 'Uppsala kommun', covered: true }])
+    expect(await status('Hedemora')).toEqual([{ name: 'Hedemora kommun', covered: false }])
+  })
+
+  it('känner igen stadsdelar från källornas egna orter', async () => {
+    expect(await status('Gamla Uppsala')).toEqual([{ name: 'Uppsala kommun', covered: true }])
+  })
+
+  it('räknar inte kommuner där en källa bara har en del adresser', async () => {
+    expect(await status('Oskarshamn')).toEqual([{ name: 'Oskarshamns kommun', covered: false }])
+  })
+
+  it('ger en rad per kommun för orter i flera kommuner', async () => {
+    expect(await status('Bergby')).toEqual([
+      { name: 'Uppsala kommun', covered: true },
+      { name: 'Hedemora kommun', covered: false },
+    ])
+  })
+
+  it('ger en tom lista för okända orter', async () => {
+    expect(await status('Xyzby')).toEqual([])
+  })
+
+  it('ger null när ortfilen inte går att hämta', async () => {
+    expect(await status('Uppsala', false)).toBeNull()
+  })
+})
+
+describe('placeSuggestions', () => {
+  const sverige = {
+    kommuner: { '2084': 'Avesta kommun', '0380': 'Uppsala kommun', '0180': 'Stockholms kommun' },
+    orter: { avesta: ['2084'], avestaby: ['2084'], uppsala: ['0380'], stockholm: ['0180'], stockholms: ['0180'] },
+  }
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
+    vi.resetModules()
+  })
+
+  async function suggest(prefix: string) {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string) =>
+        url === '/data/orter.json' ? Response.json({ uppsala: { 'uppsala näs': 'Uppsala kommun' } }) : Response.json(sverige),
+      ),
+    )
+    const { placeSuggestions } = await import('./registry')
+    return placeSuggestions(prefix)
+  }
+
+  it('föreslår orter som börjar som det man skrivit, kortast först', async () => {
+    expect((await suggest('aves')).map((s) => s.place)).toEqual(['Avesta', 'Avestaby'])
+  })
+
+  it('tar med källornas orter och säger vilken kommun de ligger i', async () => {
+    expect(await suggest('Uppsala n')).toEqual([{ place: 'Uppsala Näs', kommuner: [{ name: 'Uppsala kommun', covered: true }] }])
+  })
+
+  it('visar inte genitivformen av en kommun som ett eget förslag', async () => {
+    expect((await suggest('stockh')).map((s) => s.place)).toEqual(['Stockholm'])
+  })
+
+  it('föreslår inget för en enda bokstav', async () => {
+    expect(await suggest('a')).toEqual([])
+  })
+})

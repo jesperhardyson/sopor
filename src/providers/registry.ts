@@ -1,5 +1,5 @@
 import type { Address } from '@/domain/types'
-import { getSource, placeKommuner, SOURCES, type Source } from '@/sources'
+import { getSource, placeKommuner, SOURCES, supportedKommuner, type Source } from '@/sources'
 import { matchesPlace, pickLiveSources, shardKey, splitPlace, type QueryParts, type StreetShard } from '@/data/street-index'
 import { kommunerForPlace } from '@/data/sweden-places'
 import { normalize } from '@/domain/search'
@@ -271,6 +271,48 @@ async function missingForPlace(place: string): Promise<string[]> {
   const codes = kommunerForPlace(lookup, place)
   const covered = new Set(SOURCES.flatMap(placeKommuner).map((k) => k.code))
   return codes.some((code) => covered.has(code)) ? [] : codes.map((code) => lookup.kommuner[code])
+}
+
+export interface KommunStatus {
+  name: string
+  covered: boolean
+}
+
+/**
+ * "Finns din kommun?": kommunerna som en ort eller kommun ligger i och om Sopor har dem.
+ * Kommuner där en källa bara har en del adresser räknas inte. Null när ortfilen inte går att hämta.
+ */
+export async function kommunStatus(place: string): Promise<KommunStatus[] | null> {
+  const [lookup, places] = await Promise.all([loadSwedenPlaces(), loadPlaces()])
+  if (!lookup) return null
+  const covered = new Set(supportedKommuner().map((k) => k.name))
+  const names = kommunerForPlace(lookup, place.trim()).map((code) => lookup.kommuner[code])
+  // Stadsdelar som Limhamn är inga tätorter, men källornas egna orter kan känna till dem
+  const key = normalize(place, false)
+  const local = Object.values(places).flatMap((p) => p[key] ?? [])
+  return [...new Set([...names, ...local])].map((name) => ({ name, covered: covered.has(name) }))
+}
+
+export interface PlaceSuggestion {
+  place: string
+  kommuner: KommunStatus[]
+}
+
+/** "uppsala näs" → "Uppsala Näs". Ortnamnen finns bara normaliserade. */
+const titleCase = (key: string) => key.replace(/(^|[ -])(\p{L})/gu, (_, sep: string, c: string) => sep + c.toLocaleUpperCase('sv'))
+
+/** Orter som börjar som det man skrivit, kortast först, för "Menade du …?" medan man skriver. */
+export async function placeSuggestions(prefix: string, limit = 5): Promise<PlaceSuggestion[]> {
+  const key = normalize(prefix, false)
+  if (key.length < 2) return []
+  const [lookup, places] = await Promise.all([loadSwedenPlaces(), loadPlaces()])
+  const keys = new Set([...Object.keys(lookup?.orter ?? {}), ...Object.values(places).flatMap(Object.keys)])
+  // "stockholms" finns bara för att "Stockholms kommun" ska hittas och är inget eget förslag
+  const hits = [...keys]
+    .filter((k) => k.startsWith(key) && k !== key && !(k.endsWith('s') && keys.has(k.slice(0, -1))))
+    .sort((a, b) => a.length - b.length || a.localeCompare(b, 'sv'))
+    .slice(0, limit)
+  return Promise.all(hits.map(async (k) => ({ place: titleCase(k), kommuner: (await kommunStatus(k)) ?? [] })))
 }
 
 /** Förslag för "Menade du:" (bara statiska källor har listan lokalt). */

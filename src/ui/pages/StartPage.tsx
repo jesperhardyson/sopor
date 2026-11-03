@@ -1,5 +1,6 @@
 import { MapPin } from 'lucide-react'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { Link, useLocation } from 'react-router'
 import { cn } from '@/lib/utils'
 import { supportedKommuner } from '@/sources'
 import { FractionIcon } from '../components/FractionIcon'
@@ -14,7 +15,7 @@ const HERO_FRACTIONS = ['rest', 'mat', 'papper', 'plast'] as const
 
 function kommunLine(): string {
   const names = supportedKommuner().map((k) => k.name)
-  if (names.length > 3) return `Just nu: ${names.length} kommuner. Fler kommer.`
+  if (names.length > 3) return `Just nu: ${names.length} kommuner.`
   const list = names.length > 1 ? `${names.slice(0, -1).join(', ')} och ${names.at(-1)}` : names[0]
   return `Just nu: ${list}. Fler kommuner kommer.`
 }
@@ -26,6 +27,12 @@ export function StartPage() {
   const searchRef = useRef<HTMLDivElement>(null)
   usePageTitle()
   const [focus, setFocus] = useState(false)
+  const { hash } = useLocation()
+
+  // "Sök adress i …" i Finns din kommun? länkar hit
+  useEffect(() => {
+    if (hash === '#sok') searchRef.current?.querySelector('input')?.focus()
+  }, [hash])
 
   // Sidan scrollas i stället för att fältet flyttas med transform. Mobilen scrollar själv när
   // tangentbordet öppnas, och en transform ovanpå den scrollen skickade fältet ovanför skärmen.
@@ -67,12 +74,17 @@ export function StartPage() {
             className="fixed inset-0 z-30 animate-in bg-bg/75 backdrop-blur-[3px] duration-200 fade-in motion-reduce:animate-none"
           />
         )}
-        <div ref={searchRef} className={cn('relative', focus && 'z-40')}>
+        <div id="sok" ref={searchRef} className={cn('relative scroll-mt-4', focus && 'z-40')}>
           <AddressSearch onActivate={activate} onDeactivate={deactivate} />
         </div>
         <p className="flex items-center gap-2 px-1 text-sm text-text-2 lg:justify-center lg:text-[15px]">
           <MapPin className="size-4 shrink-0 text-primary" aria-hidden />
-          {kommunLine()}
+          <span>
+            {kommunLine()}{' '}
+            <Link to="/#finns-din-kommun" className="font-extrabold text-earth underline underline-offset-2">
+              Finns din kommun?
+            </Link>
+          </span>
         </p>
         <SavedList />
       </div>
