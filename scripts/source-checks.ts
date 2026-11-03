@@ -4,6 +4,8 @@
 import { addDays } from '../src/domain/dates.js'
 import { edpSchedule, edpSearch } from '../src/server/edp.js'
 import { fetchJson, SourceError } from '../src/server/http.js'
+import { isKnownBin } from '../src/server/fractions-map.js'
+import { vasydSchedule, vasydSearch, vasydStep, VASYD_URL } from '../src/server/vasyd.js'
 import { parseSvoaAddress, sameSvoaAddress, svoaAddressId, SVOA_URL, svoaFractions, svoaSchedule, svoaSearch, svoaStep } from '../src/server/svoa.js'
 import type { Source } from '../src/sources/index.js'
 import { classifyWasteTypes } from './check-source.js'
@@ -102,6 +104,38 @@ export async function checkSvoaSource(source: Source, probe: string, today: stri
     const unknownWasteTypes = [
       ...rows.filter((r) => svoaFractions(r.group).fractions.includes('karl') && r.group !== 'Trädgårdsavfall, villa').map((r) => r.group),
       ...rows.filter((r) => !svoaStep(r.frequency)).map((r) => `Frekvens: ${r.frequency}`),
+    ]
+    const end = addDays(today, HORIZON_DAYS)
+    const upcoming = schedule.events.some((e) => e.date >= today && e.date <= end)
+    return { ...base, state: upcoming ? 'fungerar' : 'inga-tomningar', unknownWasteTypes }
+  } catch (error) {
+    return { ...base, state: stateForError(error), error: (error as Error).message }
+  }
+}
+
+/** Malmö och Burlöv: som checkSvoaSource. Kontrolladressen matchas på hela adressen, som sökningen skriver den. */
+export async function checkVasydSource(source: Source, probe: string, today: string, fetchFn: typeof fetch = fetch): Promise<SourceResult> {
+  const base = { sourceId: source.id, name: source.name, baseUrl: VASYD_URL, probe }
+  let raw: unknown = null
+  const spy: typeof fetch = async (input, init) => {
+    const res = await fetchFn(input, init)
+    raw = await res.clone().json().catch(() => null)
+    return res
+  }
+  try {
+    const found = await vasydSearch(probe, spy, TIMEOUT_MS)
+    if (found.length === 0) return { ...base, state: 'tom' }
+    const building = found.find((b) => b.raw === probe)
+    if (!building) return { ...base, state: 'nytt-format', error: `Kontrolladressen ${probe} hittades inte, bara t.ex. ${found[0].raw}` }
+    const schedule = await vasydSchedule(building, spy, TIMEOUT_MS)
+    const items = (raw as { items?: { wasteType?: unknown; wastePickupFrequency?: unknown }[] } | null)?.items ?? []
+    const rows = items.map((r) => ({ wasteType: String(r.wasteType ?? ''), frequency: String(r.wastePickupFrequency ?? '').trim() }))
+    // Kända kärl med egen text (trädgårdsavfall) har säsong i frekvensen och visas med bara källans datum.
+    const unknownWasteTypes = [
+      ...classifyWasteTypes(rows.map((r) => ({ WasteType: r.wasteType, WastePickupFrequency: r.frequency })))
+        .filter((w) => w.status === 'okänd')
+        .map((w) => w.wasteType),
+      ...rows.filter((r) => !vasydStep(r.frequency) && !isKnownBin(r.wasteType)).map((r) => `Frekvens: ${r.frequency}`),
     ]
     const end = addDays(today, HORIZON_DAYS)
     const upcoming = schedule.events.some((e) => e.date >= today && e.date <= end)
