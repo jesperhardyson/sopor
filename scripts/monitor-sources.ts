@@ -6,9 +6,10 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { todayInStockholm } from '../src/domain/dates.js'
+import { queryFromAddressId } from '../src/server/edp.js'
 import { SOURCES, type Source } from '../src/sources/index.js'
 import { readYears } from './build-data.js'
-import { checkEdpSource, checkSvoaSource, checkVasydSource, checkStaticSource, checkViaSite, unreachableFromHere, type SourceResult } from './source-checks.js'
+import { checkEdpSource, checkNsrSource, checkSvoaSource, checkVasydSource, checkStaticSource, checkViaSite, unreachableFromHere, type SourceResult } from './source-checks.js'
 import { applyIssues, ensureLabels, listOpenIssues, planIssues } from './source-issues.js'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
@@ -48,6 +49,8 @@ export const PROBES: Record<string, string> = {
   varmdo: 'SKOLVÄGEN 11, STAVSNÄS',
   stockholm: 'Hjortronvägen 3, Bromma, 168 59',
   vasyd: 'Limhamnsvägen 50, Malmö',
+  // NSR: ett adress-id, så att bevakningen märker om NSR byter id (docs/specs/2026-11-03-nsr.md).
+  nsr: 'rosenvägen-3_helsingborg-71d627516ce56271010a40fdb5d01eed',
 }
 
 /** Väntan före varje ny omgång för källor som inte svarade: 5, 15 och 30 minuter. */
@@ -64,11 +67,14 @@ async function checkOne(
   readValidTo: (id: string) => string[],
 ): Promise<SourceResult> {
   if (source.config.system === 'static') return checkStaticSource(source, readValidTo(source.id), today)
-  const check = source.config.system === 'svoa' ? checkSvoaSource : source.config.system === 'vasyd' ? checkVasydSource : checkEdpSource
+  const checks = { svoa: checkSvoaSource, vasyd: checkVasydSource, nsr: checkNsrSource, edp: checkEdpSource }
+  const check = checks[source.config.system]
   const direct = await check(source, probes[source.id], today, fetchFn)
   if (!unreachableFromHere(direct)) return direct
   // Fungerar källan från sajten är det bara GitHub som stängs ute, och det är inget att larma om.
-  const site = await checkViaSite(source, probes[source.id], today, fetchFn)
+  // NSR:s kontrolladress är ett adress-id; sajten söker på gatan och orten i det.
+  const siteProbe = source.config.system === 'nsr' ? (queryFromAddressId(probes[source.id])?.query ?? probes[source.id]) : probes[source.id]
+  const site = await checkViaSite(source, siteProbe, today, fetchFn)
   if (site.state === 'fungerar') return { ...direct, ...site, error: direct.error }
   return { ...direct, error: `${direct.error}. Via sajten: ${site.error ?? site.state}` }
 }

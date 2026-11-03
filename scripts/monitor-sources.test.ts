@@ -26,6 +26,10 @@ describe('kontrolladresserna', () => {
     expect(PROBES.vasyd).toBe('Limhamnsvägen 50, Malmö')
   })
 
+  it('har NSR:s kontrolladress som adress-id', () => {
+    expect(PROBES.nsr).toBe('rosenvägen-3_helsingborg-71d627516ce56271010a40fdb5d01eed')
+  })
+
   it('har Stockholms kontrolladress', () => {
     expect(PROBES.stockholm).toBe('Hjortronvägen 3, Bromma, 168 59')
   })
