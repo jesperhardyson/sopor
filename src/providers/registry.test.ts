@@ -397,3 +397,49 @@ describe('missingKommuner', () => {
     expect(await missing('Storgatan 12, Hedemora')).toEqual([])
   })
 })
+
+describe('kommunStatus', () => {
+  const sverige = {
+    kommuner: { '2083': 'Hedemora kommun', '0380': 'Uppsala kommun', '0882': 'Oskarshamns kommun' },
+    orter: { hedemora: ['2083'], uppsala: ['0380'], storvreta: ['0380'], oskarshamn: ['0882'], bergby: ['0380', '2083'] },
+  }
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
+    vi.resetModules()
+  })
+
+  async function status(place: string, ok = true) {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => (ok ? Response.json(sverige) : new Response('', { status: 500 }))),
+    )
+    const { kommunStatus } = await import('./registry')
+    return kommunStatus(place)
+  }
+
+  it('säger om kommunen finns, också när man skriver en ort i den', async () => {
+    expect(await status('Uppsala')).toEqual([{ name: 'Uppsala kommun', covered: true }])
+    expect(await status(' storvreta ')).toEqual([{ name: 'Uppsala kommun', covered: true }])
+    expect(await status('Hedemora')).toEqual([{ name: 'Hedemora kommun', covered: false }])
+  })
+
+  it('räknar inte kommuner där en källa bara har en del adresser', async () => {
+    expect(await status('Oskarshamn')).toEqual([{ name: 'Oskarshamns kommun', covered: false }])
+  })
+
+  it('ger en rad per kommun för orter i flera kommuner', async () => {
+    expect(await status('Bergby')).toEqual([
+      { name: 'Uppsala kommun', covered: true },
+      { name: 'Hedemora kommun', covered: false },
+    ])
+  })
+
+  it('ger en tom lista för okända orter', async () => {
+    expect(await status('Xyzby')).toEqual([])
+  })
+
+  it('ger null när ortfilen inte går att hämta', async () => {
+    expect(await status('Uppsala', false)).toBeNull()
+  })
+})

@@ -10,6 +10,7 @@ vi.mock('@/providers/registry', () => ({
   prefetchAddress: () => {},
   suggestAll: async () => [],
   missingKommuner: async () => [],
+  kommunStatus: async () => [],
   providerFor: () => ({ getSchedule: async () => null }),
 }))
 
@@ -134,5 +135,22 @@ describe('StartPage innehåll', () => {
       'href',
       'mailto:support@hardyson.se',
     )
+  })
+})
+
+describe('StartPage och Finns din kommun?', () => {
+  it('länkar från kommunraden till kontrollen i Bidra-kortet', () => {
+    setup()
+    expect(screen.getByRole('link', { name: 'Finns din kommun?' })).toHaveAttribute('href', '/#finns-din-kommun')
+    expect(screen.getByRole('textbox', { name: 'Kommun eller ort' })).toBeInTheDocument()
+  })
+
+  it('sätter fokus i adressfältet när man kommer via #sok', () => {
+    render(
+      <MemoryRouter initialEntries={['/#sok']}>
+        <StartPage />
+      </MemoryRouter>,
+    )
+    expect(screen.getByRole('combobox')).toHaveFocus()
   })
 })

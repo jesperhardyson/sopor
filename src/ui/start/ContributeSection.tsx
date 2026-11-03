@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils'
 import { SITE } from '@/config'
 import { SOURCES } from '@/sources'
 import { GitHubMark } from '../components/GitHubMark'
+import { KommunCheck } from './KommunCheck'
 
 const WAYS: { icon: LucideIcon; title: string; text: string; href: string; tag?: string }[] = [
   {
@@ -46,7 +47,7 @@ function kommunRows() {
   return [...new Map(rows.map((r) => [r.code, r])).values()].sort((a, b) => a.name.localeCompare(b.name, 'sv'))
 }
 
-/** Antalet kommuner i registret, namnen bakom en knapp (de är för många för att visas direkt), plus "Nästa kommun". */
+/** "Finns din kommun?", antalet kommuner i registret, namnen bakom en knapp (de är för många för att visas direkt), plus "Nästa kommun". */
 export function MunicipalityStatusList({ defaultOpen = false }: { defaultOpen?: boolean }) {
   const listId = useId()
   const [open, setOpen] = useState(defaultOpen)
@@ -54,6 +55,9 @@ export function MunicipalityStatusList({ defaultOpen = false }: { defaultOpen?: 
   const row = 'flex items-center gap-2.5 text-[15px] font-extrabold text-text'
   return (
     <div className="flex flex-col gap-2.5">
+      <div className="pb-2">
+        <KommunCheck />
+      </div>
       <p className={row}>
         <CircleCheck className="size-[18px] text-primary" aria-hidden />
         {rows.length} kommuner finns nu

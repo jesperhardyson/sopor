@@ -1,13 +1,14 @@
 import '@/test/show-hidden-sources'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { MemoryRouter } from 'react-router'
 import { describe, expect, it } from 'vitest'
 import { supportedKommuner } from '@/sources'
 import { MunicipalityStatusList } from './ContributeSection'
 
 describe('MunicipalityStatusList', () => {
   it('sammanfattar antalet kommuner och fäller ut namnen först på begäran', async () => {
-    render(<MunicipalityStatusList />)
+    render(<MunicipalityStatusList />, { wrapper: MemoryRouter })
     const count = supportedKommuner().length
     expect(screen.getByText(`${count} kommuner finns nu`)).toBeInTheDocument()
     expect(screen.queryByText('Avesta kommun')).toBeNull()
@@ -19,14 +20,14 @@ describe('MunicipalityStatusList', () => {
   })
 
   it('märker kommuner med testdata och visar nästa kommun', async () => {
-    render(<MunicipalityStatusList />)
+    render(<MunicipalityStatusList />, { wrapper: MemoryRouter })
     await userEvent.click(screen.getByRole('button', { name: 'Visa alla kommuner' }))
     expect(screen.getByText('Avesta kommun').parentElement).toHaveTextContent('Testdata')
     expect(screen.getByText('Nästa kommun')).toBeInTheDocument()
   })
 
   it('kan börja utfälld', () => {
-    render(<MunicipalityStatusList defaultOpen />)
+    render(<MunicipalityStatusList defaultOpen />, { wrapper: MemoryRouter })
     expect(screen.getByRole('button', { name: 'Dölj kommunerna' })).toHaveAttribute('aria-expanded', 'true')
   })
 })

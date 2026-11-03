@@ -1,5 +1,5 @@
 import type { Address } from '@/domain/types'
-import { getSource, placeKommuner, SOURCES, type Source } from '@/sources'
+import { getSource, placeKommuner, SOURCES, supportedKommuner, type Source } from '@/sources'
 import { matchesPlace, pickLiveSources, shardKey, splitPlace, type QueryParts, type StreetShard } from '@/data/street-index'
 import { kommunerForPlace } from '@/data/sweden-places'
 import { normalize } from '@/domain/search'
@@ -271,6 +271,22 @@ async function missingForPlace(place: string): Promise<string[]> {
   const codes = kommunerForPlace(lookup, place)
   const covered = new Set(SOURCES.flatMap(placeKommuner).map((k) => k.code))
   return codes.some((code) => covered.has(code)) ? [] : codes.map((code) => lookup.kommuner[code])
+}
+
+export interface KommunStatus {
+  name: string
+  covered: boolean
+}
+
+/**
+ * "Finns din kommun?": kommunerna som en ort eller kommun ligger i och om Sopor har dem.
+ * Kommuner där en källa bara har en del adresser räknas inte. Null när ortfilen inte går att hämta.
+ */
+export async function kommunStatus(place: string): Promise<KommunStatus[] | null> {
+  const lookup = await loadSwedenPlaces()
+  if (!lookup) return null
+  const covered = new Set(supportedKommuner().map((k) => k.code))
+  return kommunerForPlace(lookup, place.trim()).map((code) => ({ name: lookup.kommuner[code], covered: covered.has(code) }))
 }
 
 /** Förslag för "Menade du:" (bara statiska källor har listan lokalt). */
