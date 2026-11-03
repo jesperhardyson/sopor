@@ -22,6 +22,10 @@ describe('kontrolladresserna', () => {
     expect(PROBES[id]).toBeTruthy()
   })
 
+  it('har VA Syds kontrolladress', () => {
+    expect(PROBES.vasyd).toBe('Limhamnsvägen 50, Malmö')
+  })
+
   it('har Stockholms kontrolladress', () => {
     expect(PROBES.stockholm).toBe('Hjortronvägen 3, Bromma, 168 59')
   })

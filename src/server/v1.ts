@@ -189,7 +189,7 @@ export const handleV1Search: V1Handler = async (request, opts = {}) => {
   const { street, place } = parts
 
   const places =
-    opts.places ?? (sources.some((s) => s.config.system === 'edp' && needsPlaces(s)) ? await loadServerPlaces(url.origin, opts.fetchFn) : undefined)
+    opts.places ?? (sources.some((s) => isLive(s) && needsPlaces(s)) ? await loadServerPlaces(url.origin, opts.fetchFn) : undefined)
   const results = await Promise.allSettled(
     sources.map(async (s) =>
       isLive(s) ? (await searchLiveSource(s, street, place, { ...opts, places })).slice(0, SEARCH_LIMIT) : await searchStatic(s, q, url.origin, opts),

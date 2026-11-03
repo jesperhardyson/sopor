@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url'
 import { todayInStockholm } from '../src/domain/dates.js'
 import { SOURCES, type Source } from '../src/sources/index.js'
 import { readYears } from './build-data.js'
-import { checkEdpSource, checkSvoaSource, checkStaticSource, checkViaSite, unreachableFromHere, type SourceResult } from './source-checks.js'
+import { checkEdpSource, checkSvoaSource, checkVasydSource, checkStaticSource, checkViaSite, unreachableFromHere, type SourceResult } from './source-checks.js'
 import { applyIssues, ensureLabels, listOpenIssues, planIssues } from './source-issues.js'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
@@ -43,6 +43,7 @@ export const PROBES: Record<string, string> = {
   mark: 'Kyrkogatan 2, KINNA',
   'herrljunga-vargarda': 'Storgatan 5, Herrljunga',
   stockholm: 'Hjortronvägen 3, Bromma, 168 59',
+  vasyd: 'Limhamnsvägen 50, Malmö',
 }
 
 const RETRY_DELAY_MS = 5 * 60 * 1000
@@ -58,7 +59,7 @@ async function checkOne(
   readValidTo: (id: string) => string[],
 ): Promise<SourceResult> {
   if (source.config.system === 'static') return checkStaticSource(source, readValidTo(source.id), today)
-  const check = source.config.system === 'svoa' ? checkSvoaSource : checkEdpSource
+  const check = source.config.system === 'svoa' ? checkSvoaSource : source.config.system === 'vasyd' ? checkVasydSource : checkEdpSource
   const direct = await check(source, probes[source.id], today, fetchFn)
   if (!unreachableFromHere(direct)) return direct
   // Fungerar källan från sajten är det bara GitHub som stängs ute, och det är inget att larma om.

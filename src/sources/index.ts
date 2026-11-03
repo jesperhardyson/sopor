@@ -7,7 +7,7 @@ export interface Kommun {
 }
 
 /** Hur källans data hämtas. Ny leverantör = ny variant här + ny provider. */
-export type SourceConfig = { system: 'static' } | { system: 'edp'; baseUrl: string } | { system: 'svoa' }
+export type SourceConfig = { system: 'static' } | { system: 'edp'; baseUrl: string } | { system: 'svoa' } | { system: 'vasyd' }
 
 /**
  * En datakälla för hämtschema, oftast ett avfallsbolag eller en kommun. En källa kan täcka
@@ -225,6 +225,14 @@ export const ALL_SOURCES: Source[] = [
       title: 'I Stockholm visar Sopor bara villor och radhus',
       text: 'Bor du i lägenhet sköter fastighetsägaren sophämtningen. Fråga din hyresvärd eller bostadsrättsförening.',
     },
+  },
+  {
+    // Ingen EDP: VA Syds publika tjänst (src/server/vasyd.ts). Malmö och Burlöv, inte Lund, Lomma eller Eslöv.
+    id: 'vasyd',
+    name: 'VA Syd',
+    url: 'https://www.vasyd.se',
+    kommuner: [{ code: '1280', name: 'Malmö kommun' }, { code: '1231', name: 'Burlövs kommun' }],
+    config: { system: 'vasyd' },
   },
 ]
 

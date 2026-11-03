@@ -64,6 +64,14 @@ export function relativeDayLabel(days: number): string {
   return `om ${days} dagar`
 }
 
+/** ISO-veckan, som veckonumren i kommunernas scheman: 2026-12-29 är vecka 53 och 2027-01-05 vecka 1. */
+export function isoWeek(date: string): { year: number; week: number } {
+  const d = toUtc(date)
+  const thursday = new Date(d.getTime() + (3 - ((d.getUTCDay() + 6) % 7)) * 86400000)
+  const year = thursday.getUTCFullYear()
+  return { year, week: Math.ceil(((thursday.getTime() - Date.UTC(year, 0, 1)) / 86400000 + 1) / 7) }
+}
+
 export function weekdayIndex(date: string): number {
   return toUtc(date).getUTCDay()
 }

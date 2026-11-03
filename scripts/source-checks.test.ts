@@ -2,8 +2,9 @@ import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
 import { SVOA_URL } from '../src/server/svoa.js'
+import { VASYD_URL } from '../src/server/vasyd.js'
 import type { Source } from '../src/sources/index.js'
-import { checkEdpSource, checkSvoaSource, checkStaticSource, checkViaSite, unreachableFromHere } from './source-checks'
+import { checkEdpSource, checkSvoaSource, checkVasydSource, checkStaticSource, checkViaSite, unreachableFromHere } from './source-checks'
 
 const json = (body: unknown) =>
   new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json; charset=utf-8' } })
@@ -244,5 +245,51 @@ describe('checkSvoaSource', () => {
       'Kärl 9 - farligt avfall',
       'Frekvens: Var 14:e dag',
     ])
+  })
+})
+
+describe('checkVasydSource', () => {
+  const fixture = (name: string) => readFileSync(path.resolve(import.meta.dirname, '../src/server/__fixtures__', name), 'utf8')
+  const vasyd: Source = { ...source, id: 'vasyd', name: 'VA Syd', config: { system: 'vasyd' } }
+  const probe = 'Limhamnsvägen 50, Malmö'
+  const hit = JSON.stringify({ items: [{ street: probe, id: '104904' }], meta: { success: true } })
+  const respond = (addresses: unknown, schedule: unknown = fixture('vasyd-schema.json')) =>
+    vi.fn(async (input: string | URL | Request) => {
+      const body = new URL(String(input)).pathname.endsWith('/buildingaddresssearch') ? addresses : schedule
+      if (body instanceof Error) throw body
+      return new Response(typeof body === 'string' ? body : JSON.stringify(body), { headers: { 'Content-Type': 'application/json' } })
+    }) as unknown as typeof fetch
+  const checkVasyd = (fetchFn: typeof fetch) => checkVasydSource(vasyd, probe, today, fetchFn)
+  const items = (list: unknown[]) => ({ items: list, meta: { success: true } })
+
+  it('fungerar med de sparade svaren', async () => {
+    expect(await checkVasyd(respond(hit))).toMatchObject({ state: 'fungerar', baseUrl: VASYD_URL, probe, unknownWasteTypes: [] })
+  })
+
+  it('svarar inte vid timeout', async () => {
+    expect((await checkVasyd(respond(new TypeError('fetch failed')))).state).toBe('svarar-inte')
+  })
+
+  it('har nytt format vid okänd form', async () => {
+    expect((await checkVasyd(respond({ x: 1 }))).state).toBe('nytt-format')
+  })
+
+  it('är tom när sökningen inte hittar något', async () => {
+    expect((await checkVasyd(respond(items([])))).state).toBe('tom')
+  })
+
+  it('har nytt format när kontrolladressen inte finns bland träffarna', async () => {
+    const r = await checkVasyd(respond(items([{ street: 'Limhamnsvägen 52, Malmö', id: '1' }])))
+    expect(r.state).toBe('nytt-format')
+    expect(r.error).toContain(probe)
+  })
+
+  it('rapporterar okända avfallstyper och frekvenser, men inte trädgårdsavfall', async () => {
+    const schedule = items([
+      { wasteType: 'Grovavfall', wastePickupFrequency: 'Onsdag varje vecka', nextWastePickup: '2026-11-04' },
+      { wasteType: 'Restavfall', wastePickupFrequency: 'Varannan onsdag', nextWastePickup: '2026-11-04' },
+      { wasteType: 'Trädgårdsavfall', wastePickupFrequency: 'Onsdag jämn vecka trädgård', nextWastePickup: '2026-11-11' },
+    ])
+    expect((await checkVasyd(respond(hit, schedule))).unknownWasteTypes).toEqual(['Grovavfall', 'Frekvens: Varannan onsdag'])
   })
 })
