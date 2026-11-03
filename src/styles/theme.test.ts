@@ -34,6 +34,28 @@ describe('theme.css', () => {
     expect(value('.dark', 'primary')?.toUpperCase()).toBe('#4CC384')
   })
 
+  it('känns som en app vid tryck: ingen grå blink, ingen fördröjning och kort nedtryckning', () => {
+    expect(block('html')).toMatch(/-webkit-tap-highlight-color: transparent/)
+    expect(block('html')).toMatch(/touch-action: manipulation/)
+    expect(css).toMatch(/@utility tryck \{[\s\S]*:active[\s\S]*scale/)
+  })
+
+  it('visar pekhand på allt klickbart, men inte på avstängda knappar (Tailwind v4 har pil som standard)', () => {
+    const rule = css.match(/([^{}]*)\{\s*cursor: pointer;\s*\}/)?.[1] ?? ''
+    for (const sel of ['button:not(:disabled)', '[role="button"]', 'summary', 'select', 'label:has(input[type="checkbox"])']) {
+      expect(rule).toContain(sel)
+    }
+  })
+
+  it('håller innehållet borta från notch och hemindikator', () => {
+    for (const side of ['top', 'right', 'bottom', 'left']) expect(block('.bg-live')).toContain(`env(safe-area-inset-${side})`)
+  })
+
+  it('har en kort övergång mellan sidor som stängs av vid minskad rörelse', () => {
+    expect(css).toMatch(/::view-transition-new\(\.sida\)\s*\{[^}]*animation:/)
+    expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\)[\s\S]*::view-transition-group\(\*\)[\s\S]*animation: none/)
+  })
+
   it('har en levande bakgrund som stängs av vid minskad rörelse', () => {
     expect(css).toMatch(/\.bg-live::before\s*\{[^}]*animation:/)
     expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\)[\s\S]*\.bg-live::before[\s\S]*animation: none/)

@@ -7,6 +7,7 @@ import { StartPage } from './StartPage'
 vi.mock('@/providers/registry', () => ({
   searchAll: async () => ({ addresses: [], failed: [] }),
   warmUpSearch: () => {},
+  prefetchAddress: () => {},
   suggestAll: async () => [],
   missingKommuner: async () => [],
   providerFor: () => ({ getSchedule: async () => null }),

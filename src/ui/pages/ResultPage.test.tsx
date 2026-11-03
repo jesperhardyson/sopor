@@ -31,6 +31,7 @@ vi.mock('@/providers/registry', () => ({
   getAddress: (_m: string, id: string) => fake.getAddress(id),
   searchAll: async () => ({ addresses: [], failed: [] }),
   warmUpSearch: () => {},
+  prefetchAddress: () => {},
   suggestAll: async () => [],
   missingKommuner: async () => [],
 }))
@@ -221,6 +222,16 @@ describe('ResultPage', () => {
       await userEvent.click(within(alert).getByRole('button', { name: 'Försök igen' }))
       await screen.findByRole('region', { name: 'Nästa tömning' })
       await vi.waitFor(() => expect(screen.queryByRole('alert')).toBeNull())
+    })
+
+    it('visar det sparade schemat direkt, utan laddning eller varning, medan källan frågas', () => {
+      save()
+      storeSchedule({ address: villa, schedule, fetchedAt: '2026-10-29' })
+      renderAt('/avesta/krylbo-storgatan-12b')
+      expect(screen.getByRole('heading', { name: 'Storgatan 12 B', level: 1 })).toBeInTheDocument()
+      expect(screen.getByRole('region', { name: 'Nästa tömning' })).toHaveTextContent('11 november')
+      expect(screen.queryByText('Hämtar schemat från Avesta Vatten och Avfall…')).toBeNull()
+      expect(screen.queryByRole('alert')).toBeNull()
     })
 
     it('visar felet som förut utan sparat schema', async () => {

@@ -62,6 +62,26 @@ describe('createStaticProvider', () => {
     expect(s?.events.map((e) => e.date)).toEqual(['2026-11-11', '2027-01-05'])
   })
 
+  it('hämtar varje schemafil en gång, så att en förhämtning återanvänds', async () => {
+    const f = fakeFetch()
+    const p = createStaticProvider(avesta, f)
+    await Promise.all([p.getSchedule('krylbo-storgatan-12b'), p.getSchedule('krylbo-storgatan-12b')])
+    await p.getSchedule('avesta-storgatan-12')
+    expect(f).toHaveBeenCalledTimes(3) // indexet, 2026-a och 2027-b
+  })
+
+  it('hämtar en schemafil igen efter ett fel', async () => {
+    let fail = true
+    const ok = fakeFetch()
+    const f = vi.fn(async (url: string) =>
+      fail && url.includes('schedules') ? new Response('', { status: 503 }) : ok(url),
+    ) as unknown as typeof fetch
+    const p = createStaticProvider(avesta, f)
+    await expect(p.getSchedule('avesta-storgatan-12')).rejects.toThrow()
+    fail = false
+    expect(await p.getSchedule('avesta-storgatan-12')).not.toBeNull()
+  })
+
   it('ger null för okänd adress', async () => {
     expect(await createStaticProvider(avesta, fakeFetch()).getSchedule('finns-inte')).toBeNull()
   })

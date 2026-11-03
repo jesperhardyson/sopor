@@ -169,15 +169,41 @@
   body {
     @apply bg-bg text-text antialiased;
     }
+  /* Tailwind v4 ger knappar pilen; på webben förväntar man sig handen på det som går att klicka */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  summary,
+  select,
+  label:has(input[type="checkbox"]) {
+    cursor: pointer;
+  }
   html {
     @apply font-sans;
+    /* Som en app: ingen grå blink vid tryck och ingen väntan på dubbeltryck för zoom */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
     }
+}
+
+/* Kort och knappar trycks ner lite, så att trycket känns direkt */
+@utility tryck {
+  transition: transform 120ms ease-out;
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
 }
 
 /* Levande bakgrund: två mjuka fält i --bg-2 som glider över --bg. Bara transform
    animeras, så det sker på GPU:n och kostar nästan inget. */
 .bg-live {
   isolation: isolate;
+  /* Notch och hemindikator på hemskärmen (viewport-fit=cover i index.html), annars noll */
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
 .bg-live::before {
@@ -203,8 +229,37 @@
   }
 }
 
+/* Övergång mellan sidor (<ViewTransition default="sida"> i Layout): den gamla sidan tonar ut
+   och den nya tonar in med en liten glidning uppåt. Sidhuvudet ligger utanför och står still. */
+::view-transition-old(.sida) {
+  animation: sida-ut 120ms ease-in both;
+}
+
+::view-transition-new(.sida) {
+  animation: sida-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1) 60ms both;
+}
+
+@keyframes sida-ut {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes sida-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .bg-live::before {
+    animation: none;
+  }
+
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
     animation: none;
   }
 }

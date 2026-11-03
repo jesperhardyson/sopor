@@ -12,11 +12,12 @@ import { NameIcon } from './NameIcon'
 
 function SavedCard({ saved, today }: { saved: SavedAddress; today: string }) {
   const [state] = useSchedule(saved.sourceId, saved.addressId)
-  const next = state.status === 'ok' ? nextPickup(state.schedule, today) : null
+  // Även det sparade schemat, så att kortet inte blinkar till medan källan frågas
+  const next = 'schedule' in state ? nextPickup(state.schedule, today) : null
   return (
     <Link
       to={`/${saved.sourceId}/${saved.addressId}`}
-      className="flex items-center gap-3.5 rounded-[18px] border border-border bg-surface p-4 hover:border-primary"
+      className="tryck flex items-center gap-3.5 rounded-[18px] border border-border bg-surface p-4 hover:border-primary"
     >
       <span className="flex min-w-0 flex-1 flex-col gap-1">
         <span className="flex items-center gap-1.5">

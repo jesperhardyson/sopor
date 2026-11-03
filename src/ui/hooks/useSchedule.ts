@@ -11,16 +11,24 @@ export type ScheduleState =
   | { status: 'error' }
   /** Källan svarar inte; schemat som sparades senast för den sparade adressen */
   | { status: 'stale'; schedule: Schedule; address: Address; fetchedAt: string }
+  /** Schemat som sparades senast, medan källan frågas igen */
+  | { status: 'cached'; schedule: Schedule; address: Address; fetchedAt: string }
+
+/** Sparade adresser visas direkt med det senaste schemat; övriga får vänta på källan. */
+function initial(sourceId: string, addressId: string): ScheduleState {
+  const stored = loadStoredSchedule(sourceId, addressId)
+  return stored ? { status: 'cached', ...stored } : { status: 'loading' }
+}
 
 export function useSchedule(sourceId: string, addressId: string) {
-  const [state, setState] = useState<ScheduleState>({ status: 'loading' })
+  const [state, setState] = useState(() => initial(sourceId, addressId))
   const [attempt, setAttempt] = useState(0)
 
   useEffect(() => {
     const m = getSource(sourceId)
     if (!m) return
     const controller = new AbortController()
-    setState({ status: 'loading' })
+    setState(initial(sourceId, addressId))
     providerFor(m)
       .getSchedule(addressId, controller.signal)
       .then(

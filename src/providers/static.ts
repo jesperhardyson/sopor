@@ -15,9 +15,10 @@ interface LoadedIndex {
 export function createStaticProvider(source: Source, fetchFn: typeof fetch = (...args) => fetch(...args)): WasteProvider {
   const base = `/data/${source.id}`
   let indexPromise: Promise<LoadedIndex> | undefined
+  const scheduleFiles = new Map<string, Promise<ScheduleFile>>()
 
-  async function getJson<T>(url: string, signal?: AbortSignal): Promise<T> {
-    const res = await fetchFn(url, { signal })
+  async function getJson<T>(url: string): Promise<T> {
+    const res = await fetchFn(url)
     if (!res.ok) throw new Error(`Kunde inte hämta ${url} (${res.status})`)
     return res.json() as Promise<T>
   }
@@ -44,6 +45,17 @@ export function createStaticProvider(source: Source, fetchFn: typeof fetch = (..
     return indexPromise
   }
 
+  /** Delas mellan anrop (t.ex. en förhämtning och sidan), så den avbryts inte heller av enskilda signaler. */
+  function loadScheduleFile(ref: string): Promise<ScheduleFile> {
+    let file = scheduleFiles.get(ref)
+    if (!file) {
+      file = getJson<ScheduleFile>(`${base}/schedules/${encodeURIComponent(ref)}.json`)
+      file.catch(() => scheduleFiles.delete(ref))
+      scheduleFiles.set(ref, file)
+    }
+    return file
+  }
+
   return {
     async searchAddresses(query) {
       return searchAddresses(query, (await loadIndex()).addresses)
@@ -54,13 +66,10 @@ export function createStaticProvider(source: Source, fetchFn: typeof fetch = (..
     async getAddress(addressId) {
       return (await loadIndex()).addresses.find((a) => a.id === addressId) ?? null
     },
-    async getSchedule(addressId, signal) {
+    async getSchedule(addressId) {
       const refs = (await loadIndex()).refs.get(addressId)
       if (!refs) return null
-      const parts = await Promise.all(
-        refs.map((ref) => getJson<ScheduleFile>(`${base}/schedules/${encodeURIComponent(ref)}.json`, signal)),
-      )
-      return mergeParts(parts)
+      return mergeParts(await Promise.all(refs.map(loadScheduleFile)))
     },
     async dataUpdatedAt() {
       return (await loadIndex()).updatedAt || null

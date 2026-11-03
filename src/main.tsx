@@ -19,3 +19,8 @@ createRoot(document.getElementById('root')!).render(
     <App />
   </StrictMode>,
 )
+
+// Bara i bygget: i dev-servern skulle den sparade sidan dölja ändringar.
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  addEventListener('load', () => void navigator.serviceWorker.register('/sw.js').catch(() => {}))
+}

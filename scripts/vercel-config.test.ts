@@ -51,6 +51,10 @@ describe('vercel.json', () => {
     expect(header('/data/(.*)', 'Cache-Control')).toBe('public, max-age=300, s-maxage=3600')
   })
 
+  it('cachar byggets filer för alltid, eftersom namnen byts när innehållet ändras', () => {
+    expect(header('/assets/(.*)', 'Cache-Control')).toBe('public, max-age=31536000, immutable')
+  })
+
   it('skickar appens sidor till index.html men inte data, ics eller assets', () => {
     const rewrite = config.rewrites.find((r) => r.destination === '/index.html')!
     const re = new RegExp(`^${rewrite.source}$`)

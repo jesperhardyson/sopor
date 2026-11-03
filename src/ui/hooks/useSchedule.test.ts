@@ -43,6 +43,15 @@ describe('useSchedule', () => {
     )
   })
 
+  it('visar det sparade schemat direkt medan källan frågas', async () => {
+    saveWithSchedule()
+    const fresh = { ...schedule, updatedAt: '2026-11-03' }
+    getSchedule.mockResolvedValue(fresh)
+    const { result } = renderHook(() => useSchedule('avesta', address.id))
+    expect(result.current[0]).toEqual({ status: 'cached', schedule, address, fetchedAt: '2026-11-02' })
+    await waitFor(() => expect(result.current[0]).toEqual({ status: 'ok', schedule: fresh }))
+  })
+
   it('hämtar igen vid nytt försök', async () => {
     saveWithSchedule()
     getSchedule.mockRejectedValueOnce(new Error('502')).mockResolvedValueOnce(schedule)
