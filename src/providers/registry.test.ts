@@ -412,7 +412,10 @@ describe('kommunStatus', () => {
   async function status(place: string, ok = true) {
     vi.stubGlobal(
       'fetch',
-      vi.fn(async () => (ok ? Response.json(sverige) : new Response('', { status: 500 }))),
+      vi.fn(async (url: string) => {
+        if (url === '/data/orter.json') return Response.json({ uppsala: { 'gamla uppsala': 'Uppsala kommun' } })
+        return ok ? Response.json(sverige) : new Response('', { status: 500 })
+      }),
     )
     const { kommunStatus } = await import('./registry')
     return kommunStatus(place)
@@ -422,6 +425,10 @@ describe('kommunStatus', () => {
     expect(await status('Uppsala')).toEqual([{ name: 'Uppsala kommun', covered: true }])
     expect(await status(' storvreta ')).toEqual([{ name: 'Uppsala kommun', covered: true }])
     expect(await status('Hedemora')).toEqual([{ name: 'Hedemora kommun', covered: false }])
+  })
+
+  it('känner igen stadsdelar från källornas egna orter', async () => {
+    expect(await status('Gamla Uppsala')).toEqual([{ name: 'Uppsala kommun', covered: true }])
   })
 
   it('räknar inte kommuner där en källa bara har en del adresser', async () => {

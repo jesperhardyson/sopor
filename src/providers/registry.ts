@@ -283,10 +283,14 @@ export interface KommunStatus {
  * Kommuner där en källa bara har en del adresser räknas inte. Null när ortfilen inte går att hämta.
  */
 export async function kommunStatus(place: string): Promise<KommunStatus[] | null> {
-  const lookup = await loadSwedenPlaces()
+  const [lookup, places] = await Promise.all([loadSwedenPlaces(), loadPlaces()])
   if (!lookup) return null
-  const covered = new Set(supportedKommuner().map((k) => k.code))
-  return kommunerForPlace(lookup, place.trim()).map((code) => ({ name: lookup.kommuner[code], covered: covered.has(code) }))
+  const covered = new Set(supportedKommuner().map((k) => k.name))
+  const names = kommunerForPlace(lookup, place.trim()).map((code) => lookup.kommuner[code])
+  // Stadsdelar som Limhamn är inga tätorter, men källornas egna orter kan känna till dem
+  const key = normalize(place, false)
+  const local = names.length > 0 ? [] : Object.values(places).flatMap((p) => p[key] ?? [])
+  return [...new Set([...names, ...local])].map((name) => ({ name, covered: covered.has(name) }))
 }
 
 /** Förslag för "Menade du:" (bara statiska källor har listan lokalt). */
