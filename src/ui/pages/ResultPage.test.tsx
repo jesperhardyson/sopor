@@ -89,9 +89,9 @@ describe('ResultPage', () => {
     resolveSchedule!()
 
     const next = await screen.findByRole('region', { name: 'Nästa tömning' })
-    expect(within(next).getByText('Onsdag')).toBeInTheDocument()
-    expect(within(next).getByText('11 november')).toBeInTheDocument()
-    expect(within(next).getByText('om 12 dagar')).toBeInTheDocument()
+    expect(within(next).getByRole('heading', { name: 'Om 12 dagar' })).toBeInTheDocument()
+    expect(within(next).getByText('Onsdag 11 november')).toBeInTheDocument()
+    expect(within(next).getByTestId('kalenderblad')).toHaveAttribute('aria-hidden', 'true')
     expect(within(next).getByText('Restavfall')).toBeInTheDocument()
     expect(within(next).getByText('Matavfall')).toBeInTheDocument()
     expect(within(next).getByText('Påminnelse: ställ ut kärlen senast 06.00 på tömningsdagen.')).toBeInTheDocument()
