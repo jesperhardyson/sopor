@@ -56,18 +56,25 @@ export function vasydStep(frequency: string): number | null
 
 ### Datum
 
-`wastePickupFrequency` läses i sin helhet, efter veckodagen:
+`wastePickupFrequency` läses i sin helhet: en veckodag och sedan en av frekvenserna nedan.
 
-| Text (efter veckodagen) | Intervall |
+| Text (efter veckodagen) | Kommande datum |
 |---|---|
-| `varje vecka` | 7 dagar |
-| `jämn vecka`, `udda vecka` | 14 dagar |
-| `var 4:e vecka` (med eller utan `startvecka N`) | 28 dagar |
+| `varje vecka` | Varje vecka i 12 månader |
+| `jämn vecka`, `udda vecka` | Veckodagen i ISO-veckor med rätt paritet, i 12 månader. 2026 har en vecka 53, så två udda veckor kan följa på varandra (53 och 1); ett fast steg på 14 dagar hade hamnat i jämna veckor från januari 2027. |
+| `var 4:e vecka` (med eller utan `startvecka N`) | Var 28:e dag, men bara till slutet av ISO-året, eftersom vi inte vet hur startveckan gäller efter nyår. Med `startvecka N` måste källans vecka vara N, N+4 … |
 
-Det första datumet (`nextWastePickup`) är källans eget, och de följande är *beräknade*, i 12 månader med `expandEvery` (`src/domain/recurrence.ts`). Text som inte känns igen helt, till exempel `jämn vecka trädgård`, ger bara källans datum. Trädgårdsavfallet har säsong, men texten säger inte vilken, och det är bättre att visa ett datum för lite än tömningar hela vintern.
+Det första datumet (`nextWastePickup`) är källans eget, och de följande är *beräknade* (`expandEvery` i `src/domain/recurrence.ts` och `isoWeek` i `src/domain/dates.ts`). Bara källans datum visas när:
+
+- texten inte känns igen helt, till exempel `jämn vecka trädgård` (trädgårdsavfallet har säsong, men texten säger inte vilken)
+- källans datum inte ligger på veckodagen i texten, till exempel en tömning som flyttats vid en helgdag
+- källans vecka har fel paritet, eller inte passar startveckan.
+
+Det är bättre att visa ett datum för lite än fel datum.
 
 ## Sökning, uppslag och sajten
 
+- Id:t tappar kolonet i "S:t" (`encode`), och VA Syd hittar inte "St Knuts väg". Uppslaget provar därför också "s:t …" när gatan börjar med "st ".
 - `searchLiveSource` (`src/server/handlers.ts`) får en gren för `vasyd` som använder `vasydSearch`, `withDetails` och `toAddress` som EDP. Två byggnader med samma adress (Storgatan 1, Malmö) får särskiljaren "Byggnad 125040".
 - `lookupAddress` (`src/server/lookup.ts`) får en gren för `vasyd`: `searchCandidates` → träffen med rätt byggnads-id → `vasydSchedule`. Ingen träff ger **502** (som Stockholm, inte 404 som EDP).
 - **Kommun per ort:** källan har två kommuner, så `kommunForLocality` med ortindexet avgör Malmö eller Burlöv (Arlöv → Burlövs kommun).

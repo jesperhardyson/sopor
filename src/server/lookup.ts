@@ -74,8 +74,10 @@ async function lookupSvoa(source: Source, id: string, opts: HandlerOptions): Pro
 async function lookupVasyd(source: Source, id: string, origin: string, opts: HandlerOptions): Promise<Lookup> {
   const parsed = queryFromAddressId(id)
   if (!parsed) return { status: 502 }
+  // Id:t tappar kolonet i "S:t", och VA Syd hittar inte "St Knuts väg", så den stavningen provas också.
+  const queries = [parsed.query, parsed.query.replace(/^st /, 's:t ')]
   let found: [EdpBuilding, string | undefined] | undefined
-  for (const q of searchCandidates(parsed.query)) {
+  for (const q of [...new Set(queries.flatMap(searchCandidates))]) {
     const hits = withDetails(await vasydSearch(q, opts.fetchFn, opts.timeoutMs ?? 3000))
     found = hits.find(([b]) => b.buildingId === parsed.buildingId)
     if (found) break

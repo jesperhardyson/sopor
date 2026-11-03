@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { daysBetween, formatLong, relativeDayLabel, secondsToStockholmMidnight, todayInStockholm, weekdayShort } from './dates'
+import { daysBetween, formatLong, relativeDayLabel, secondsToStockholmMidnight, todayInStockholm, isoWeek, weekdayShort } from './dates'
 
 describe('todayInStockholm', () => {
   it('räknar dagen i svensk tid, inte UTC', () => {
@@ -54,5 +54,17 @@ describe('secondsToStockholmMidnight', () => {
   it('klarar natten då klockan ställs tillbaka', () => {
     // 00:00 CEST, 2026-10-25. Nästa midnatt är 00:00 CET = 23:00Z, ett dygn på 25 timmar.
     expect(secondsToStockholmMidnight(new Date('2026-10-24T22:00:00Z'))).toBe(90_000)
+  })
+})
+
+describe('isoWeek', () => {
+  it.each([
+    ['2026-11-03', { year: 2026, week: 45 }],
+    ['2026-12-29', { year: 2026, week: 53 }],
+    ['2027-01-03', { year: 2026, week: 53 }],
+    ['2027-01-05', { year: 2027, week: 1 }],
+    ['2025-12-29', { year: 2026, week: 1 }],
+  ])('%s', (date, expected) => {
+    expect(isoWeek(date)).toEqual(expected)
   })
 })

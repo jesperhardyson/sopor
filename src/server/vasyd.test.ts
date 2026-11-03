@@ -3,7 +3,7 @@ import path from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
 import { edpAddressId, type EdpBuilding } from './edp'
 import { SourceError } from './http'
-import { vasydSchedule, vasydSearch, vasydStep, VASYD_URL } from './vasyd'
+import { vasydDates, vasydRule, vasydSchedule, vasydSearch, VASYD_URL } from './vasyd'
 
 const fixture = (name: string) => readFileSync(path.resolve(import.meta.dirname, '__fixtures__', name), 'utf8')
 
@@ -15,20 +15,58 @@ const unknown = new SourceError('vasyd.se svarade med ett okänt format')
 const limhamn: EdpBuilding = { raw: 'Limhamnsvägen 50, Malmö', street: 'Limhamnsvägen 50', locality: 'Malmö', buildingId: '104904' }
 const schedule = (items: unknown[]) => JSON.stringify({ items, meta: { success: true, message: null } })
 
-describe('vasydStep', () => {
+describe('vasydRule', () => {
   it.each([
-    ['Onsdag varje vecka', 7],
-    ['Tisdag udda vecka', 14],
-    ['Torsdag jämn vecka ', 14],
-    ['Tisdag var 4:e vecka startvecka 1', 28],
-    ['Torsdag var 4:e vecka', 28],
-  ])('%s', (text, days) => {
-    expect(vasydStep(text)).toBe(days)
+    ['Onsdag varje vecka', { weekday: 3, kind: 'veckovis' }],
+    ['Tisdag udda vecka', { weekday: 2, kind: 'udda' }],
+    ['Torsdag jämn vecka ', { weekday: 4, kind: 'jämn' }],
+    ['Tisdag var 4:e vecka startvecka 1', { weekday: 2, kind: 'var4', startWeek: 1 }],
+    ['Torsdag var 4:e vecka', { weekday: 4, kind: 'var4' }],
+  ])('%s', (text, rule) => {
+    expect(vasydRule(text)).toEqual(rule)
   })
 
   // Hellre bara källans datum än gissade tömningar.
   it.each(['Onsdag jämn vecka trädgård', 'Varannan onsdag', 'varje vecka'])('känner inte igen %s', (text) => {
-    expect(vasydStep(text)).toBeNull()
+    expect(vasydRule(text)).toBeNull()
+  })
+})
+
+describe('vasydDates', () => {
+  const dates = (next: string, text: string) => vasydDates(next, vasydRule(text)!).map((p) => p.date)
+
+  it('följer udda veckor över vecka 53 och nyår', () => {
+    const d = dates('2026-11-03', 'Tisdag udda vecka')
+    expect(d).toContain('2026-12-29')
+    expect(d).toContain('2027-01-05')
+    expect(d).toContain('2027-01-19')
+    expect(d).not.toContain('2027-01-12')
+  })
+
+  it('följer jämna veckor över nyår', () => {
+    const d = dates('2026-12-22', 'Tisdag jämn vecka')
+    expect(d).toContain('2027-01-12')
+    expect(d).not.toContain('2027-01-05')
+  })
+
+  it('ger bara källans datum när veckans paritet inte stämmer', () => {
+    expect(dates('2026-11-03', 'Tisdag jämn vecka')).toEqual(['2026-11-03'])
+  })
+
+  it('ger bara källans datum när veckodagen inte stämmer (flyttad vid helgdag)', () => {
+    expect(dates('2026-12-23', 'Torsdag varje vecka')).toEqual(['2026-12-23'])
+  })
+
+  it('räknar var 4:e vecka från startveckan, bara till årets slut', () => {
+    expect(dates('2026-11-03', 'Tisdag var 4:e vecka startvecka 1')).toEqual(['2026-11-03', '2026-12-01', '2026-12-29'])
+  })
+
+  it('räknar var 4:e vecka utan startvecka bara till årets slut', () => {
+    expect(dates('2026-11-05', 'Torsdag var 4:e vecka')).toEqual(['2026-11-05', '2026-12-03', '2026-12-31'])
+  })
+
+  it('räknar varje vecka i ett år', () => {
+    expect(dates('2026-11-04', 'Onsdag varje vecka').length).toBeGreaterThan(50)
   })
 })
 

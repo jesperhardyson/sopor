@@ -5,7 +5,7 @@ import { addDays } from '../src/domain/dates.js'
 import { edpSchedule, edpSearch } from '../src/server/edp.js'
 import { fetchJson, SourceError } from '../src/server/http.js'
 import { isKnownBin } from '../src/server/fractions-map.js'
-import { vasydSchedule, vasydSearch, vasydStep, VASYD_URL } from '../src/server/vasyd.js'
+import { vasydRule, vasydSchedule, vasydSearch, VASYD_URL } from '../src/server/vasyd.js'
 import { parseSvoaAddress, sameSvoaAddress, svoaAddressId, SVOA_URL, svoaFractions, svoaSchedule, svoaSearch, svoaStep } from '../src/server/svoa.js'
 import type { Source } from '../src/sources/index.js'
 import { classifyWasteTypes } from './check-source.js'
@@ -135,7 +135,7 @@ export async function checkVasydSource(source: Source, probe: string, today: str
       ...classifyWasteTypes(rows.map((r) => ({ WasteType: r.wasteType, WastePickupFrequency: r.frequency })))
         .filter((w) => w.status === 'okänd')
         .map((w) => w.wasteType),
-      ...rows.filter((r) => !vasydStep(r.frequency) && !isKnownBin(r.wasteType)).map((r) => `Frekvens: ${r.frequency}`),
+      ...rows.filter((r) => !vasydRule(r.frequency) && !isKnownBin(r.wasteType)).map((r) => `Frekvens: ${r.frequency}`),
     ]
     const end = addDays(today, HORIZON_DAYS)
     const upcoming = schedule.events.some((e) => e.date >= today && e.date <= end)

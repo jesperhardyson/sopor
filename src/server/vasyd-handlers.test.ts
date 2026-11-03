@@ -30,7 +30,7 @@ function fakeVasyd({ addresses = fixture('vasyd-adresser.json'), schedule = fixt
     return json(url.pathname.endsWith('/buildingaddresssearch') ? addresses : schedule)
   }) as unknown as typeof fetch & ReturnType<typeof vi.fn>
 }
-const opts = (fetchFn = fakeVasyd()) => ({ fetchFn, sources: [vasyd], timeoutMs: 50, now: new Date('2026-11-03T10:00:00Z') })
+const opts = (fetchFn: typeof fetch = fakeVasyd()) => ({ fetchFn, sources: [vasyd], timeoutMs: 50, now: new Date('2026-11-03T10:00:00Z') })
 const url = (p: string) => new URL(`https://preview.test${p}`)
 const schema = (id: string) => url(`/api/schema?source=vasyd&id=${encodeURIComponent(id)}`)
 
@@ -49,6 +49,22 @@ describe('VA Syd i sajtens API', () => {
     expect((await res.json()).address.kommun).toBe('Malmö kommun')
     const scheduleCall = fetchFn.mock.calls.find(([u]) => String(u).endsWith('/wastepickupbyaddress'))!
     expect(new URLSearchParams(String((scheduleCall[1] as RequestInit).body)).get('query')).toBe('185904')
+  })
+
+  it('slår upp adresser med S:t, fast id:t har tappat kolonet', async () => {
+    const queries: string[] = []
+    const fetchFn = vi.fn(async (input: string | URL | Request, init?: RequestInit) => {
+      const u = new URL(String(input))
+      if (u.host === 'preview.test') return json({ vasyd: { malmö: 'Malmö kommun' } })
+      if (u.pathname.endsWith('/wastepickupbyaddress')) return json(fixture('vasyd-schema.json'))
+      const q = new URLSearchParams(String(init?.body)).get('query')!
+      queries.push(q)
+      const hit = { street: 'S:t Knuts väg 9, Malmö', id: '107711' }
+      return json({ items: q.startsWith('s:t') ? [hit] : [], meta: { success: true } })
+    }) as unknown as typeof fetch
+    const res = await handleSchedule(schema('st-knuts-väg-9_malmö-107711'), opts(fetchFn))
+    expect(res.status).toBe(200)
+    expect(queries).toContain('s:t knuts väg 9, malmö')
   })
 
   it('ger 502, inte 404, när byggnaden inte längre finns i sökningen', async () => {
