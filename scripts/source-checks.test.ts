@@ -5,8 +5,9 @@ import { SVOA_URL } from '../src/server/svoa.js'
 import { VASYD_URL } from '../src/server/vasyd.js'
 import { NSR_URL } from '../src/server/nsr.js'
 import { SRV_URL, srvKey } from '../src/server/srv.js'
+import { APPBOLAGET_URL } from '../src/server/appbolaget.js'
 import type { Source } from '../src/sources/index.js'
-import { checkEdpSource, checkNsrSource, checkSrvSource, checkSvoaSource, checkVasydSource, checkStaticSource, checkViaSite, unreachableFromHere } from './source-checks'
+import { checkAppbolagetSource, checkEdpSource, checkNsrSource, checkSrvSource, checkSvoaSource, checkVasydSource, checkStaticSource, checkViaSite, unreachableFromHere } from './source-checks'
 
 const json = (body: unknown) =>
   new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json; charset=utf-8' } })
@@ -394,5 +395,48 @@ describe('checkSrvSource', () => {
       container('Restavfall'),
     ]
     expect((await checkSrv(respond(kund(containers)))).unknownWasteTypes).toEqual(['Grovavfall', 'Kärl 2 (Kärl 370 liter två fack)', 'Jobb: Byte av kärl'])
+  })
+})
+
+describe('checkAppbolagetSource', () => {
+  const fixture = (name: string) => readFileSync(path.resolve(import.meta.dirname, '../src/server/__fixtures__', name), 'utf8')
+  const hassleholm: Source = { ...source, id: 'hassleholm', name: 'Hässleholm Miljö', config: { system: 'appbolaget', unit: 'e34d7050-1b2a-4917-a921-0ea7742d0a6e' } }
+  const probe = 'storgatan-1_vinslöv-4fcea8031a2649a1b66fb41a631ed823'
+  const respond = ({ adress = fixture('appbolaget-hassleholm-adress.json') as unknown, fastighet = fixture('appbolaget-hassleholm-fastighet.json') as unknown, sok = fixture('appbolaget-hassleholm-sok.json') as unknown } = {}) =>
+    vi.fn(async (input: string | URL | Request) => {
+      const url = new URL(String(input))
+      const body = url.pathname.endsWith('/search') ? sok : url.pathname.startsWith('/@universal/') ? fastighet : adress
+      if (body instanceof Error) throw body
+      if (body === 404) return new Response('{"status":404}', { status: 404, headers: { 'Content-Type': 'application/json' } })
+      return new Response(typeof body === 'string' ? body : JSON.stringify(body), { headers: { 'Content-Type': 'application/json' } })
+    }) as unknown as typeof fetch
+  const check = (fetchFn: typeof fetch) => checkAppbolagetSource(hassleholm, probe, '2026-11-04', fetchFn)
+
+  it('fungerar med de sparade svaren', async () => {
+    expect(await check(respond())).toMatchObject({ state: 'fungerar', baseUrl: APPBOLAGET_URL, probe, unknownWasteTypes: [] })
+  })
+
+  it('svarar inte vid timeout', async () => {
+    expect((await check(respond({ adress: new TypeError('fetch failed') }))).state).toBe('svarar-inte')
+  })
+
+  it('har nytt format vid okänd form', async () => {
+    expect((await check(respond({ fastighet: { status: 200, data: {} } }))).state).toBe('nytt-format')
+  })
+
+  it('är tom när varken adressen eller gatan hittas', async () => {
+    expect((await check(respond({ adress: 404, sok: { status: 200, data: [] } }))).state).toBe('tom')
+  })
+
+  it('har nytt format när kontrolladressen inte längre finns', async () => {
+    const r = await check(respond({ adress: 404 }))
+    expect(r.state).toBe('nytt-format')
+    expect(r.error).toContain('nytt uuid hos Appbolaget')
+  })
+
+  it('rapporterar okända avfallstyper, men inte avgifter, fyrfackskärl och trädgårdsavfall', async () => {
+    const service = (description: string, description_verbose = '') => ({ code: { description, description_verbose }, collections: [{ collection_at: '2026-11-05 23:00:00' }] })
+    const fastighet = { status: 200, data: { services: [service('Deponi'), service('Budad hämtning'), service('Kärl1', 'Fyrfack kärl 1'), service('Trädgårdsavfall'), service('Restavfall')] } }
+    expect((await check(respond({ fastighet }))).unknownWasteTypes).toEqual(['Deponi'])
   })
 })
