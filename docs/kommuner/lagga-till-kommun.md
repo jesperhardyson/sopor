@@ -40,7 +40,7 @@ EDP Future har en publik modul, SimpleWastePickup, som Sopor frågar direkt per 
 - [ ] Kör `npm run lint && npm test && npm run build`, och sök på några adresser i `npm run dev`.
 - [ ] Stod kommunen i [tabellen](hitta-kommunens-data.md#vad-vi-vet-om-kommunerna-hittills) i guiden, ta bort raden. Live-kommunerna visas på [Om-sidan](https://sopor.hardyson.se/om).
 
-EDP ger nästa tömning och en frekvens. Sopor räknar fram kommande datum i 12 månader och märker dem *beräknat*. Datum som infaller på röda dagar får en varning.
+EDP ger nästa tömning och en frekvens. Sopor räknar fram kommande datum och märker dem *beräknat*: jämna och udda veckor i 12 månader, men tömningar utan paritet bara till årets slut (se [specen om vecka 53](../specs/2026-11-03-vecka-53.md)). Ger en ny kommun en frekvenstext som `edpRule` i `src/server/edp.ts` inte läser rätt, visas bara källans datum. Datum som infaller på röda dagar får en varning.
 
 ## B. Statisk data
 

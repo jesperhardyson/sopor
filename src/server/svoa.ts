@@ -3,7 +3,7 @@
 // blir ett fel i stället för ett tomt svar. Se docs/specs/2026-11-02-stockholm.md.
 
 import { isValidDate, todayInStockholm } from '../domain/dates.js'
-import { expandEvery, type ExpandedPickup } from '../domain/recurrence.js'
+import { weekRuleDates, type ExpandedPickup, type WeekRule } from '../domain/recurrence.js'
 import type { FractionId, Schedule } from '../domain/types.js'
 import { encode, mergeSeries, queryFromAddressId } from './edp.js'
 import { mapWasteType } from './fractions-map.js'
@@ -62,29 +62,30 @@ export function svoaFractions(group: string): { fractions: FractionId[]; label?:
   return { fractions: [...new Set(mapped.flatMap((m) => m!.fractions))] }
 }
 
-const STEPS: [RegExp, number][] = [
-  [/^varje vecka$/, 7],
-  [/^varannan vecka$/, 14],
-  [/^var 3:e vecka$/, 21],
-  [/^var 4:e vecka$/, 28],
+const STEPS: [RegExp, WeekRule['every']][] = [
+  [/^varje vecka$/, 1],
+  [/^varannan vecka$/, 2],
+  [/^var 3:e vecka$/, 3],
+  [/^var 4:e vecka$/, 4],
 ]
+const WEEKDAYS = ['söndag', 'måndag', 'tisdag', 'onsdag', 'torsdag', 'fredag', 'lördag']
 const MONTHS = ['jan', 'feb', 'mar', 'apr', 'maj', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec']
 
 /**
- * "Varannan vecka (april-nov)" → 14 dagar i april–november. Hela texten måste kännas igen: en
+ * "Varannan vecka (april-nov)" → varannan vecka i april–november. Hela texten måste kännas igen: en
  * säsong vi inte förstår ger null (bara källans datum), aldrig tömningar året runt.
  */
-export function svoaStep(frequency: string): { stepDays: number; inMonths?: number[] } | null {
+export function svoaStep(frequency: string): { every: WeekRule['every']; inMonths?: number[] } | null {
   const m = frequency.trim().toLowerCase().match(/^(.+?)(?:\s*\((\p{L}+)\s*[-–]\s*(\p{L}+)\))?$/u)
-  const step = m && STEPS.find(([pattern]) => pattern.test(m[1]))?.[1]
-  if (!m || !step) return null
+  const every = m && STEPS.find(([pattern]) => pattern.test(m[1]))?.[1]
+  if (!m || !every) return null
   const season = m[2] ? m : null
-  if (!season) return { stepDays: step }
+  if (!season) return { every }
   const from = MONTHS.indexOf(season[2].slice(0, 3)) + 1
   const to = MONTHS.indexOf(season[3].slice(0, 3)) + 1
   if (!from || !to) return null
   const inMonths = Array.from({ length: ((to - from + 12) % 12) + 1 }, (_, i) => ((from - 1 + i) % 12) + 1)
-  return { stepDays: step, inMonths }
+  return { every, inMonths }
 }
 
 export async function svoaSearch(q: string, fetchFn?: typeof fetch, timeoutMs = 3000): Promise<SvoaAddress[]> {
@@ -101,16 +102,18 @@ interface Pickup {
   group: string
   frequency: string
   date: string
+  /** "Onsdag" */
+  weekday?: unknown
 }
 
 /** Dagens form (en lista) och den äldre (ett objekt per kärl). Allt annat är ett okänt format. */
 function readPickups(res: unknown): Pickup[] {
   const rows: Pickup[] = Array.isArray(res)
-    ? res.map((r) => ({ group: r?.group, frequency: r?.fetchFrequency, date: r?.executionDate }))
+    ? res.map((r) => ({ group: r?.group, frequency: r?.fetchFrequency, date: r?.executionDate, weekday: r?.weekday }))
     : res && typeof res === 'object'
       ? Object.entries(res).map(([group, list]) => {
           const first = Array.isArray(list) ? list[0] : undefined
-          return { group, frequency: first?.FetchFrequency, date: first?.ExecutionDate }
+          return { group, frequency: first?.FetchFrequency, date: first?.ExecutionDate, weekday: first?.Weekday }
         })
       : []
   if (!Array.isArray(res) && rows.length === 0) throw unknownFormat()
@@ -124,8 +127,12 @@ export async function svoaSchedule(raw: string, fetchFn?: typeof fetch, timeoutM
   const res = await fetchJson<unknown>(`${SVOA_URL}/Search?${new URLSearchParams({ address: raw })}`, {}, { fetchFn, timeoutMs })
   const series = readPickups(res).map((p) => {
     const step = svoaStep(String(p.frequency ?? ''))
+    // Källans veckodag kontrolleras, så att en tömning som flyttats vid en helgdag inte räknas vidare.
+    const weekday = WEEKDAYS.indexOf(String(p.weekday ?? '').trim().toLowerCase())
     // En frekvens vi inte känner igen ger bara källans eget datum, aldrig gissade datum.
-    const pickups: ExpandedPickup[] = step ? expandEvery({ next: p.date, ...step }) : [{ date: p.date, estimated: false }]
+    const pickups: ExpandedPickup[] = step
+      ? weekRuleDates(p.date, { every: step.every, weekday: weekday < 0 ? undefined : weekday }, { inMonths: step.inMonths })
+      : [{ date: p.date, estimated: false }]
     return { pickups, mapped: svoaFractions(p.group) }
   })
   return { bins: [], events: mergeSeries(series), updatedAt: todayInStockholm() }
