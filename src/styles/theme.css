@@ -203,8 +203,37 @@
   }
 }
 
+/* Övergång mellan sidor (<ViewTransition default="sida"> i Layout): den gamla sidan tonar ut
+   och den nya tonar in med en liten glidning uppåt. Sidhuvudet ligger utanför och står still. */
+::view-transition-old(.sida) {
+  animation: sida-ut 120ms ease-in both;
+}
+
+::view-transition-new(.sida) {
+  animation: sida-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1) 60ms both;
+}
+
+@keyframes sida-ut {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes sida-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .bg-live::before {
+    animation: none;
+  }
+
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
     animation: none;
   }
 }

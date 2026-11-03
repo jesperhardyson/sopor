@@ -34,6 +34,11 @@ describe('theme.css', () => {
     expect(value('.dark', 'primary')?.toUpperCase()).toBe('#4CC384')
   })
 
+  it('har en kort övergång mellan sidor som stängs av vid minskad rörelse', () => {
+    expect(css).toMatch(/::view-transition-new\(\.sida\)\s*\{[^}]*animation:/)
+    expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\)[\s\S]*::view-transition-group\(\*\)[\s\S]*animation: none/)
+  })
+
   it('har en levande bakgrund som stängs av vid minskad rörelse', () => {
     expect(css).toMatch(/\.bg-live::before\s*\{[^}]*animation:/)
     expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\)[\s\S]*\.bg-live::before[\s\S]*animation: none/)
