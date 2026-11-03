@@ -2,8 +2,8 @@
 // adresserna blir EdpBuilding och får EDP:s adress-id. Allt vi inte känner igen blir ett fel i
 // stället för ett tomt svar. Se docs/specs/2026-11-03-malmo-vasyd.md.
 
-import { isoWeek, isValidDate, todayInStockholm, weekdayIndex } from '../domain/dates.js'
-import { expandEvery, type ExpandedPickup } from '../domain/recurrence.js'
+import { isValidDate, todayInStockholm } from '../domain/dates.js'
+import { weekRuleDates, type ExpandedPickup, type WeekRule } from '../domain/recurrence.js'
 import type { Schedule } from '../domain/types.js'
 import { mergeSeries, type EdpBuilding } from './edp.js'
 import { mapWasteType } from './fractions-map.js'
@@ -15,15 +15,11 @@ const unknownFormat = () => new SourceError('vasyd.se svarade med ett okänt for
 
 const WEEKDAYS = ['söndag', 'måndag', 'tisdag', 'onsdag', 'torsdag', 'fredag', 'lördag']
 
-export type VasydRule =
-  | { weekday: number; kind: 'veckovis' | 'jämn' | 'udda' }
-  | { weekday: number; kind: 'var4'; startWeek?: number }
-
 /**
  * "Tisdag udda vecka" → tisdagar i udda veckor. Hela texten måste kännas igen; annars null och
- * bara källans datum. Veckodagen är 0 = söndag, som `weekdayIndex`.
+ * bara källans datum. Datumen räknas av `weekRuleDates` (docs/specs/2026-11-03-vecka-53.md).
  */
-export function vasydRule(frequency: string): VasydRule | null {
+export function vasydRule(frequency: string): WeekRule | null {
   const m = frequency
     .trim()
     .toLowerCase()
@@ -31,28 +27,9 @@ export function vasydRule(frequency: string): VasydRule | null {
     .match(/^(\p{L}+) (?:(varje vecka)|(jämn|udda) vecka|var 4:e vecka(?: startvecka (\d+))?)$/u)
   const weekday = m ? WEEKDAYS.indexOf(m[1]) : -1
   if (!m || weekday < 0) return null
-  if (m[2]) return { weekday, kind: 'veckovis' }
-  if (m[3]) return { weekday, kind: m[3] as 'jämn' | 'udda' }
-  return m[4] ? { weekday, kind: 'var4', startWeek: Number(m[4]) } : { weekday, kind: 'var4' }
-}
-
-/**
- * Kommande tömningar enligt regeln. Jämna och udda veckor följer ISO-veckan, även över vecka 53.
- * "Var 4:e vecka" räknas bara till årets slut, eftersom vi inte vet hur startveckan gäller efter
- * nyår. Stämmer källans datum inte med veckodagen eller veckan (flyttat vid en helgdag) visas bara det.
- */
-export function vasydDates(next: string, rule: VasydRule): ExpandedPickup[] {
-  const only: ExpandedPickup[] = [{ date: next, estimated: false }]
-  if (weekdayIndex(next) !== rule.weekday) return only
-  const { year, week } = isoWeek(next)
-  if (rule.kind === 'var4') {
-    if (rule.startWeek !== undefined && (week - rule.startWeek) % 4 !== 0) return only
-    return expandEvery({ next, stepDays: 28 }).filter((p) => isoWeek(p.date).year === year)
-  }
-  if (rule.kind === 'veckovis') return expandEvery({ next, stepDays: 7 })
-  const parity = rule.kind === 'jämn' ? 0 : 1
-  if (week % 2 !== parity) return only
-  return expandEvery({ next, stepDays: 7 }).filter((p) => isoWeek(p.date).week % 2 === parity)
+  if (m[2]) return { weekday, every: 1 }
+  if (m[3]) return { weekday, every: 2, parity: m[3] as 'jämn' | 'udda' }
+  return m[4] ? { weekday, every: 4, startWeek: Number(m[4]) } : { weekday, every: 4 }
 }
 
 /** Svaret måste ha `meta.success` och en lista `items`; annat är ett okänt format. */
@@ -86,7 +63,7 @@ export async function vasydSchedule(b: EdpBuilding, fetchFn?: typeof fetch, time
     const mapped = mapWasteType(item.wasteType, frequency)
     const rule = vasydRule(frequency)
     // En frekvens vi inte känner igen ger bara källans eget datum, aldrig gissade datum.
-    const pickups: ExpandedPickup[] = rule ? vasydDates(date, rule) : [{ date, estimated: false }]
+    const pickups: ExpandedPickup[] = rule ? weekRuleDates(date, rule) : [{ date, estimated: false }]
     return mapped ? { pickups, mapped } : null
   })
   return { bins: [], events: mergeSeries(series.filter((s) => s !== null)), updatedAt: todayInStockholm() }

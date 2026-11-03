@@ -3,7 +3,8 @@ import path from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
 import { edpAddressId, type EdpBuilding } from './edp'
 import { SourceError } from './http'
-import { vasydDates, vasydRule, vasydSchedule, vasydSearch, VASYD_URL } from './vasyd'
+import { weekRuleDates } from '../domain/recurrence'
+import { vasydRule, vasydSchedule, vasydSearch, VASYD_URL } from './vasyd'
 
 const fixture = (name: string) => readFileSync(path.resolve(import.meta.dirname, '__fixtures__', name), 'utf8')
 
@@ -17,11 +18,11 @@ const schedule = (items: unknown[]) => JSON.stringify({ items, meta: { success: 
 
 describe('vasydRule', () => {
   it.each([
-    ['Onsdag varje vecka', { weekday: 3, kind: 'veckovis' }],
-    ['Tisdag udda vecka', { weekday: 2, kind: 'udda' }],
-    ['Torsdag jämn vecka ', { weekday: 4, kind: 'jämn' }],
-    ['Tisdag var 4:e vecka startvecka 1', { weekday: 2, kind: 'var4', startWeek: 1 }],
-    ['Torsdag var 4:e vecka', { weekday: 4, kind: 'var4' }],
+    ['Onsdag varje vecka', { weekday: 3, every: 1 }],
+    ['Tisdag udda vecka', { weekday: 2, every: 2, parity: 'udda' }],
+    ['Torsdag jämn vecka ', { weekday: 4, every: 2, parity: 'jämn' }],
+    ['Tisdag var 4:e vecka startvecka 1', { weekday: 2, every: 4, startWeek: 1 }],
+    ['Torsdag var 4:e vecka', { weekday: 4, every: 4 }],
   ])('%s', (text, rule) => {
     expect(vasydRule(text)).toEqual(rule)
   })
@@ -32,8 +33,8 @@ describe('vasydRule', () => {
   })
 })
 
-describe('vasydDates', () => {
-  const dates = (next: string, text: string) => vasydDates(next, vasydRule(text)!).map((p) => p.date)
+describe('datum enligt vasydRule', () => {
+  const dates = (next: string, text: string) => weekRuleDates(next, vasydRule(text)!).map((p) => p.date)
 
   it('följer udda veckor över vecka 53 och nyår', () => {
     const d = dates('2026-11-03', 'Tisdag udda vecka')
@@ -57,12 +58,13 @@ describe('vasydDates', () => {
     expect(dates('2026-12-23', 'Torsdag varje vecka')).toEqual(['2026-12-23'])
   })
 
-  it('räknar var 4:e vecka från startveckan, bara till årets slut', () => {
-    expect(dates('2026-11-03', 'Tisdag var 4:e vecka startvecka 1')).toEqual(['2026-11-03', '2026-12-01', '2026-12-29'])
+  // Vecka 53 räknas inte med, eftersom startvecka 1 passar både den och vecka 1.
+  it('räknar var 4:e vecka från startveckan, bara till och med vecka 52', () => {
+    expect(dates('2026-11-03', 'Tisdag var 4:e vecka startvecka 1')).toEqual(['2026-11-03', '2026-12-01'])
   })
 
-  it('räknar var 4:e vecka utan startvecka bara till årets slut', () => {
-    expect(dates('2026-11-05', 'Torsdag var 4:e vecka')).toEqual(['2026-11-05', '2026-12-03', '2026-12-31'])
+  it('räknar var 4:e vecka utan startvecka bara till och med vecka 52', () => {
+    expect(dates('2026-11-05', 'Torsdag var 4:e vecka')).toEqual(['2026-11-05', '2026-12-03'])
   })
 
   it('räknar varje vecka i ett år', () => {

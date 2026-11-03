@@ -3,7 +3,7 @@
 
 import { isValidDate, todayInStockholm } from '../domain/dates.js'
 import { sortFractions } from '../domain/fractions.js'
-import { expandPickups, type ExpandedPickup } from '../domain/recurrence.js'
+import { expandWeekdays, weekRuleDates, type ExpandedPickup, type WeekRule } from '../domain/recurrence.js'
 import type { FractionId, PickupEvent, Schedule } from '../domain/types.js'
 import { fetchJson } from './http.js'
 import { mapWasteType } from './fractions-map.js'
@@ -92,9 +92,29 @@ export async function edpSearch(
   return (res.Buildings ?? []).map(parseBuilding).filter((b): b is EdpBuilding => b !== null)
 }
 
+/** ISO-veckodagarna (1 = måndag … 7 = söndag) som texten nämner. */
 function weekdaysIn(text: string): number[] {
   const t = text.toLowerCase()
   return WEEKDAYS.flatMap((day, i) => (t.includes(day) ? [i + 1] : []))
+}
+
+/**
+ * Frekvenstexten som en regel för `weekRuleDates`, med antalet tömningar per år som spärr. Texterna
+ * har ingen gemensam form ("Måndag udda vecka. Fyrfack", "Onsdag var 4:e vecka med start v. 3"), så
+ * delarna letas fram var för sig. null = bara källans datum. Se docs/specs/2026-11-03-vecka-53.md.
+ */
+export function edpRule(frequency: string, perYear: number): WeekRule | null {
+  const t = frequency.toLowerCase().replace(/\s+/g, ' ')
+  const days = weekdaysIn(t)
+  if (days.length > 1 || /sommar|vinter|säsong/.test(t)) return null
+  const weekday = days.length ? days[0] % 7 : undefined
+  const parity = /(^|\P{L})(udda|ojämn)/u.test(t) ? 'udda' : /(^|\P{L})jämn/u.test(t) ? 'jämn' : undefined
+
+  if (perYear === 52) return parity ? null : { weekday, every: 1 }
+  if (perYear === 26) return parity || !/var 14:e dag/.test(t) ? { weekday, every: 2, parity } : { weekday, every: 2, fixedDays: true }
+  if (perYear !== 13) return null
+  const start = t.match(/start(?:vecka| ?v\.?) ?(\d+)/) ?? t.match(/(?:^|\P{L})v ?(\d+) ?,/u)
+  return { weekday, every: 4, parity, startWeek: start ? Number(start[1]) : undefined }
 }
 
 /** En källas kärl: dess datum och vilka fraktioner det tömmer. */
@@ -144,11 +164,17 @@ export async function edpSchedule(
     const mapped = mapWasteType(service.WasteType ?? '', service.WastePickupFrequency ?? '', service.Description ?? '')
     if (!mapped || !next || !isValidDate(next) || next.startsWith('0001')) continue
 
-    const pickups = expandPickups({
-      next,
-      perYear: service.WastePickupsPerYear ?? 0,
-      weekdays: weekdaysIn(service.WastePickupFrequency ?? ''),
-    })
+    const frequency = service.WastePickupFrequency ?? ''
+    const perYear = service.WastePickupsPerYear ?? 0
+    const weekdays = weekdaysIn(frequency)
+    const rule = edpRule(frequency, perYear)
+    // En frekvens vi inte känner igen ger bara källans eget datum, aldrig gissade datum.
+    const pickups: ExpandedPickup[] =
+      perYear === 104 && weekdays.length > 0
+        ? expandWeekdays({ next, weekdays })
+        : rule
+          ? weekRuleDates(next, rule)
+          : [{ date: next, estimated: false }]
     items.push({ pickups, mapped })
   }
   const events = mergeSeries(items)

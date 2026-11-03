@@ -1,7 +1,7 @@
 import { readFileSync, readdirSync } from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
-import { edpAddressId, edpSchedule, edpSearch, parseBuilding, queryFromAddressId } from './edp'
+import { edpAddressId, edpRule, edpSchedule, edpSearch, parseBuilding, queryFromAddressId } from './edp'
 import { SourceError } from './http'
 
 const dir = path.resolve(import.meta.dirname, '__fixtures__')
@@ -111,7 +111,81 @@ describe('edpSearch', () => {
   })
 })
 
+describe('edpRule', () => {
+  // Veckodagen är 0 = söndag, som weekdayIndex.
+  it.each([
+    ['Onsdag varje vecka', 52, { weekday: 3, every: 1 }],
+    ['Varje vecka, måndag', 52, { weekday: 1, every: 1 }],
+    ['T. 1 ggr i veckan, helår', 52, { every: 1 }],
+    ['Se körlista', 52, { every: 1 }],
+    ['Måndag udda vecka. Fyrfack', 26, { weekday: 1, every: 2, parity: 'udda' }],
+    ['14-dag onsdag jämn vecka', 26, { weekday: 3, every: 2, parity: 'jämn' }],
+    ['Onsdag varannan vecka udda', 26, { weekday: 3, every: 2, parity: 'udda' }],
+    ['Tömning varannan vecka måndag udda vecka helår', 26, { weekday: 1, every: 2, parity: 'udda' }],
+    ['ÅVS Tömning varannan vecka fredag ojämn vecka', 26, { weekday: 5, every: 2, parity: 'udda' }],
+    ['Container tömning jämn vecka torsdag', 26, { weekday: 4, every: 2, parity: 'jämn' }],
+    ['Var 14:e dag', 26, { every: 2, fixedDays: true }],
+    ['Måndag varannan vecka', 26, { weekday: 1, every: 2 }],
+    ['se körlista', 26, { every: 2 }],
+    ['Onsdag var 4:e vecka startvecka 1', 13, { weekday: 3, every: 4, startWeek: 1 }],
+    ['Måndagar var 4:e vecka start v 3', 13, { weekday: 1, every: 4, startWeek: 3 }],
+    ['Onsdag var 4:e vecka med start v. 3', 13, { weekday: 3, every: 4, startWeek: 3 }],
+    ['Tömning  var fjärde vecka onsdag helår v4,8,12 osv', 13, { weekday: 3, every: 4, startWeek: 4 }],
+    ['Tömning  var fjärde vecka onsdag helår v 1,5, 9 os', 13, { weekday: 3, every: 4, startWeek: 1 }],
+    ['Helår, var 4:e vecka, startvecka 1, tisdag', 13, { weekday: 2, every: 4, startWeek: 1 }],
+    ['Onsdag udda var 4:e vecka startvecka 3', 13, { weekday: 3, every: 4, parity: 'udda', startWeek: 3 }],
+    ['Måndag var fjärde vecka, jämn vecka', 13, { weekday: 1, every: 4, parity: 'jämn' }],
+    ['Var 4:e vecka', 13, { every: 4 }],
+  ])('%s (%i per år)', (text, perYear, rule) => {
+    expect(edpRule(text, perYear)).toEqual(rule)
+  })
+
+  // Hellre bara källans datum än gissade tömningar.
+  it.each([
+    ['Onsdag udda vecka trädgård', 17],
+    ['Onsdag udda var 8:e vecka startvecka 7, helår', 6],
+    ['Torsdag jämn vecka', 0],
+    ['Var 14:e dag, Varje vecka sommar', 39],
+    ['Varannan v sommar, var 4:e v vinter', 26],
+    ['Måndag jämn vecka', 52],
+    ['Måndag och torsdag varannan vecka', 26],
+    ['Två gånger i veckan', 104],
+  ])('räknar inte fram %s (%i per år)', (text, perYear) => {
+    expect(edpRule(text, perYear)).toBeNull()
+  })
+})
+
 describe('edpSchedule', () => {
+  it('följer udda och jämna veckor över vecka 53 och nyår', async () => {
+    const body = {
+      RhServices: [
+        { WasteType: 'Restavfall', WastePickupFrequency: 'Måndag udda vecka', NextWastePickup: '2026-11-16T00:00:00', WastePickupsPerYear: 26 },
+        { WasteType: 'Matavfall', WastePickupFrequency: 'Torsdag jämn vecka', NextWastePickup: '2026-11-12T00:00:00', WastePickupsPerYear: 26 },
+      ],
+    }
+    const dates = (await edpSchedule('https://x', 'x (1)', fakeFetch(body), NOW)).events.map((e) => e.date)
+    expect(dates).toContain('2026-12-28')
+    expect(dates).toContain('2027-01-04')
+    expect(dates).not.toContain('2027-01-11')
+    expect(dates).toContain('2027-01-14')
+    expect(dates).not.toContain('2026-12-31')
+    expect(dates).not.toContain('2027-01-07')
+  })
+
+  it('ger bara källans datum för en tömning som flyttats från textens veckodag', async () => {
+    const body = {
+      RhServices: [{ WasteType: 'Restavfall', WastePickupFrequency: 'Torsdag udda vecka', NextWastePickup: '2026-12-23T00:00:00', WastePickupsPerYear: 26 }],
+    }
+    const s = await edpSchedule('https://x', 'x (1)', fakeFetch(body), NOW)
+    expect(s.events.map((e) => e.date)).toEqual(['2026-12-23'])
+  })
+
+  it('räknar var 4:e vecka bara till och med vecka 52', async () => {
+    const s = await edpSchedule('https://x', 'x (1)', fakeFetch(fixture('boras-schedule.json')), NOW)
+    const fyrfack2 = s.events.filter((e) => e.labels?.karl?.includes('Fyrfackskärl 2')).map((e) => e.date)
+    expect(fyrfack2).toEqual(['2026-11-25', '2026-12-23'])
+  })
+
   it('slår ihop Uppsalas tjänster per datum och märker framräknade datum', async () => {
     const s = await edpSchedule('https://x', 'Storgatan 2, Uppsala (4004688)', fakeFetch(fixture('uppsala-schedule.json')), NOW)
     const byDate = Object.fromEntries(s.events.map((e) => [e.date, e]))

@@ -62,9 +62,9 @@ export function vasydStep(frequency: string): number | null
 |---|---|
 | `varje vecka` | Varje vecka i 12 månader |
 | `jämn vecka`, `udda vecka` | Veckodagen i ISO-veckor med rätt paritet, i 12 månader. 2026 har en vecka 53, så två udda veckor kan följa på varandra (53 och 1); ett fast steg på 14 dagar hade hamnat i jämna veckor från januari 2027. |
-| `var 4:e vecka` (med eller utan `startvecka N`) | Var 28:e dag, men bara till slutet av ISO-året, eftersom vi inte vet hur startveckan gäller efter nyår. Med `startvecka N` måste källans vecka vara N, N+4 … |
+| `var 4:e vecka` (med eller utan `startvecka N`) | Var 28:e dag, men bara till och med vecka 52 i ISO-året, eftersom vi inte vet hur startveckan gäller efter nyår (se `2026-11-03-vecka-53.md`). Med `startvecka N` måste källans vecka vara N, N+4 … |
 
-Det första datumet (`nextWastePickup`) är källans eget, och de följande är *beräknade* (`expandEvery` i `src/domain/recurrence.ts` och `isoWeek` i `src/domain/dates.ts`). Bara källans datum visas när:
+Det första datumet (`nextWastePickup`) är källans eget, och de följande är *beräknade* (`weekRuleDates` i `src/domain/recurrence.ts`, samma regel som för EDP och Stockholm). Bara källans datum visas när:
 
 - texten inte känns igen helt, till exempel `jämn vecka trädgård` (trädgårdsavfallet har säsong, men texten säger inte vilken)
 - källans datum inte ligger på veckodagen i texten, till exempel en tömning som flyttats vid en helgdag

@@ -75,11 +75,11 @@ describe('svoaFractions', () => {
 
 describe('svoaStep', () => {
   it.each([
-    ['Varje vecka', { stepDays: 7 }],
-    ['Varannan vecka', { stepDays: 14 }],
-    ['Var 3:e vecka', { stepDays: 21 }],
-    ['Var 4:e vecka', { stepDays: 28 }],
-    ['Varannan vecka (april-nov)', { stepDays: 14, inMonths: [4, 5, 6, 7, 8, 9, 10, 11] }],
+    ['Varje vecka', { every: 1 }],
+    ['Varannan vecka', { every: 2 }],
+    ['Var 3:e vecka', { every: 3 }],
+    ['Var 4:e vecka', { every: 4 }],
+    ['Varannan vecka (april-nov)', { every: 2, inMonths: [4, 5, 6, 7, 8, 9, 10, 11] }],
   ])('%s', (text, expected) => {
     expect(svoaStep(text)).toEqual(expected)
   })
@@ -89,7 +89,7 @@ describe('svoaStep', () => {
   })
 
   it('läser säsongen även med tankstreck', () => {
-    expect(svoaStep('Varannan vecka (april–nov)')).toEqual({ stepDays: 14, inMonths: [4, 5, 6, 7, 8, 9, 10, 11] })
+    expect(svoaStep('Varannan vecka (april–nov)')).toEqual({ every: 2, inMonths: [4, 5, 6, 7, 8, 9, 10, 11] })
   })
 
   // Hellre bara källans datum än trädgårdsavfall hela vintern.
@@ -138,6 +138,22 @@ describe('svoaSchedule', () => {
     ['[{"group":"X"}]'],
   ])('kastar för okänd form eller datum: %s', async (body) => {
     await expect(svoaSchedule(raw, fakeFetch(body))).rejects.toThrow(SourceError)
+  })
+
+  it('räknar varannan vecka bara till slutet av ISO-året', async () => {
+    const body = JSON.stringify([{ group: 'Kärl 1 - restavfall och matavfall', fetchFrequency: 'Varannan vecka', executionDate: '2026-11-04', weekday: 'Onsdag' }])
+    const dates = (await svoaSchedule(raw, fakeFetch(body))).events.map((e) => e.date)
+    expect(dates).toEqual(['2026-11-04', '2026-11-18', '2026-12-02', '2026-12-16', '2026-12-30'])
+  })
+
+  it('räknar varje vecka i 12 månader', async () => {
+    const body = JSON.stringify([{ group: 'Kärl 1 - restavfall och matavfall', fetchFrequency: 'Varje vecka', executionDate: '2026-11-04', weekday: 'Onsdag' }])
+    expect((await svoaSchedule(raw, fakeFetch(body))).events.length).toBe(53)
+  })
+
+  it('ger bara källans datum när datumet inte ligger på källans veckodag', async () => {
+    const body = JSON.stringify([{ group: 'Kärl 1 - restavfall och matavfall', fetchFrequency: 'Varannan vecka', executionDate: '2026-12-23', weekday: 'Torsdag' }])
+    expect((await svoaSchedule(raw, fakeFetch(body))).events.map((e) => e.date)).toEqual(['2026-12-23'])
   })
 
   it('ger bara källans datum för en okänd frekvens', async () => {

@@ -82,14 +82,14 @@ Okända grupper blir `karl` med källans text, som för EDP.
 
 ### Datum
 
-`fetchFrequency` översätts till ett intervall. Det första datumet (`executionDate`) är källans eget, och de följande är *beräknade*, i 12 månader som för EDP (`expandPickups` i `src/domain/recurrence.ts`).
+`fetchFrequency` översätts till ett intervall. Det första datumet (`executionDate`) är källans eget, och de följande är *beräknade*, med `weekRuleDates` i `src/domain/recurrence.ts`, som för EDP. Varje vecka räknas i 12 månader, de andra bara till slutet av ISO-året och var 4:e vecka till och med vecka 52 (se `2026-11-03-vecka-53.md`). Ligger datumet inte på källans veckodag (`weekday`) visas bara det.
 
 | `fetchFrequency` | Intervall |
 |---|---|
-| `Varje vecka` | 7 dagar |
-| `Varannan vecka` | 14 dagar |
-| `Var 3:e vecka` | 21 dagar |
-| `Var 4:e vecka` | 28 dagar |
+| `Varje vecka` | 7 dagar, i 12 månader |
+| `Varannan vecka` | 14 dagar, till slutet av ISO-året |
+| `Var 3:e vecka` | 21 dagar, till slutet av ISO-året |
+| `Var 4:e vecka` | 28 dagar, till och med vecka 52 |
 | `… (april-nov)` (månadsnamn i parentes) | Som ovan, men bara datum i de angivna månaderna |
 
 Okänd frekvens ger bara källans eget datum. Helgdagar hanteras som för EDP: ett beräknat datum på en helgdag får en varning, inte ett flyttat datum.
