@@ -62,6 +62,23 @@ describe('MonthCalendar', () => {
     expect(within(screen.getByRole('dialog')).getByText('beräknat')).toBeInTheDocument()
   })
 
+  it('visar tömningsdagarna som gröna rundlar', () => {
+    render(<MonthCalendar schedule={schedule} initial="2026-12-09" today="2026-12-01" />)
+    expect(screen.getByRole('button', { name: '9 december: Restavfall' }).querySelector('.bg-primary')).toHaveTextContent('9')
+  })
+
+  it('markerar dagens datum', () => {
+    render(<MonthCalendar schedule={schedule} initial="2026-12-09" today="2026-12-03" />)
+    const idag = document.querySelector('[aria-current="date"]')
+    expect(idag).toHaveTextContent(/^3$/)
+  })
+
+  it('tonar ned dagar som redan har varit', () => {
+    render(<MonthCalendar schedule={schedule} initial="2026-12-09" today="2026-12-03" />)
+    expect(screen.getByText('1')).toHaveClass('opacity-55')
+    expect(screen.getByText('4')).not.toHaveClass('opacity-55')
+  })
+
   it('gör bara dagar med tömning klickbara', () => {
     render(<MonthCalendar schedule={schedule} initial="2026-12-09" today="2026-12-01" />)
     expect(screen.getAllByRole('button', { name: /december:/ })).toHaveLength(4)
