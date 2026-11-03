@@ -293,6 +293,28 @@ export async function kommunStatus(place: string): Promise<KommunStatus[] | null
   return [...new Set([...names, ...local])].map((name) => ({ name, covered: covered.has(name) }))
 }
 
+export interface PlaceSuggestion {
+  place: string
+  kommuner: KommunStatus[]
+}
+
+/** "uppsala näs" → "Uppsala Näs". Ortnamnen finns bara normaliserade. */
+const titleCase = (key: string) => key.replace(/(^|[ -])(\p{L})/gu, (_, sep: string, c: string) => sep + c.toLocaleUpperCase('sv'))
+
+/** Orter som börjar som det man skrivit, kortast först, för "Menade du …?" medan man skriver. */
+export async function placeSuggestions(prefix: string, limit = 5): Promise<PlaceSuggestion[]> {
+  const key = normalize(prefix, false)
+  if (key.length < 2) return []
+  const [lookup, places] = await Promise.all([loadSwedenPlaces(), loadPlaces()])
+  const keys = new Set([...Object.keys(lookup?.orter ?? {}), ...Object.values(places).flatMap(Object.keys)])
+  // "stockholms" finns bara för att "Stockholms kommun" ska hittas och är inget eget förslag
+  const hits = [...keys]
+    .filter((k) => k.startsWith(key) && k !== key && !(k.endsWith('s') && keys.has(k.slice(0, -1))))
+    .sort((a, b) => a.length - b.length || a.localeCompare(b, 'sv'))
+    .slice(0, limit)
+  return Promise.all(hits.map(async (k) => ({ place: titleCase(k), kommuner: (await kommunStatus(k)) ?? [] })))
+}
+
 /** Förslag för "Menade du:" (bara statiska källor har listan lokalt). */
 export async function suggestAll(query: string, signal?: AbortSignal): Promise<Address[]> {
   const local = SOURCES.filter((m) => m.config.system === 'static')

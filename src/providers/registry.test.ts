@@ -450,3 +450,42 @@ describe('kommunStatus', () => {
     expect(await status('Uppsala', false)).toBeNull()
   })
 })
+
+describe('placeSuggestions', () => {
+  const sverige = {
+    kommuner: { '2084': 'Avesta kommun', '0380': 'Uppsala kommun', '0180': 'Stockholms kommun' },
+    orter: { avesta: ['2084'], avestaby: ['2084'], uppsala: ['0380'], stockholm: ['0180'], stockholms: ['0180'] },
+  }
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
+    vi.resetModules()
+  })
+
+  async function suggest(prefix: string) {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string) =>
+        url === '/data/orter.json' ? Response.json({ uppsala: { 'uppsala näs': 'Uppsala kommun' } }) : Response.json(sverige),
+      ),
+    )
+    const { placeSuggestions } = await import('./registry')
+    return placeSuggestions(prefix)
+  }
+
+  it('föreslår orter som börjar som det man skrivit, kortast först', async () => {
+    expect((await suggest('aves')).map((s) => s.place)).toEqual(['Avesta', 'Avestaby'])
+  })
+
+  it('tar med källornas orter och säger vilken kommun de ligger i', async () => {
+    expect(await suggest('Uppsala n')).toEqual([{ place: 'Uppsala Näs', kommuner: [{ name: 'Uppsala kommun', covered: true }] }])
+  })
+
+  it('visar inte genitivformen av en kommun som ett eget förslag', async () => {
+    expect((await suggest('stockh')).map((s) => s.place)).toEqual(['Stockholm'])
+  })
+
+  it('föreslår inget för en enda bokstav', async () => {
+    expect(await suggest('a')).toEqual([])
+  })
+})

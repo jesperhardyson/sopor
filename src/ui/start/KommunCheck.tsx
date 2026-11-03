@@ -4,9 +4,10 @@ import { Link, useLocation } from 'react-router'
 import { SITE } from '@/config'
 import { normalize } from '@/domain/search'
 import { reportMissingKommun } from '@/lib/analytics'
-import { kommunStatus, type KommunStatus } from '@/providers/registry'
+import { kommunStatus, placeSuggestions, type KommunStatus, type PlaceSuggestion } from '@/providers/registry'
 
 type Check = (place: string) => Promise<KommunStatus[] | null>
+type Suggest = (prefix: string) => Promise<PlaceSuggestion[]>
 
 /** Väntetid efter sista tangenttrycket innan orten slås upp */
 const DEBOUNCE_MS = 200
@@ -61,9 +62,45 @@ function Answer({ icon: Icon, tone, title, children }: { icon: LucideIcon; tone:
 /** "limhamn" → "Limhamn", som det skrevs men med versal först */
 const capitalize = (s: string) => s.charAt(0).toLocaleUpperCase('sv') + s.slice(1)
 
-function Result({ place, rows }: { place: string; rows: KommunStatus[] | null }) {
+/** "Menade du …?": orter som börjar som det man skrivit. Ett klick fyller i orten. */
+function Suggestions({ suggestions, onPick }: { suggestions: PlaceSuggestion[]; onPick: (place: string) => void }) {
+  return (
+    <Answer icon={Search} tone="bg-surface-2 text-text-2" title="Menade du …?">
+      <ul className="-mx-2 flex flex-col pt-1">
+        {suggestions.map(({ place, kommuner }) => {
+          const covered = kommuner.some((k) => k.covered)
+          const Icon = covered ? CircleCheck : CircleDashed
+          const where = kommuner.length === 1 ? kommuner[0].name : `${kommuner.length} kommuner`
+          return (
+            <li key={place}>
+              <button
+                type="button"
+                aria-label={`${place}, ${where}`}
+                onClick={() => onPick(place)}
+                className="flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-left hover:bg-surface-2"
+              >
+                <Icon className={`size-4 shrink-0 ${covered ? 'text-primary' : 'text-earth'}`} aria-hidden />
+                <span className="text-sm font-extrabold text-text">{place}</span>
+                <span className="min-w-0 truncate text-[13px] text-text-2">{where}</span>
+              </button>
+            </li>
+          )
+        })}
+      </ul>
+    </Answer>
+  )
+}
+
+interface Found {
+  place: string
+  rows: KommunStatus[] | null
+  suggestions: PlaceSuggestion[]
+}
+
+function Result({ place, rows, suggestions, onPick }: Found & { onPick: (place: string) => void }) {
   const text = 'text-sm leading-[1.45] text-text-2'
   if (rows === null) return <p className={text}>Det gick inte att slå upp orten just nu. Försök igen om en stund.</p>
+  if (rows.length === 0 && suggestions.length > 0) return <Suggestions suggestions={suggestions} onPick={onPick} />
   if (rows.length === 0)
     return (
       <Answer icon={SearchX} tone="bg-surface-2 text-text-2" title="Hittar ingen ort som heter så">
@@ -109,9 +146,9 @@ function Result({ place, rows }: { place: string; rows: KommunStatus[] | null })
 }
 
 /** "Finns din kommun?" i Bidra-kortet: svar medan man skriver en kommun eller ort. */
-export function KommunCheck({ check = kommunStatus }: { check?: Check }) {
+export function KommunCheck({ check = kommunStatus, suggest = placeSuggestions }: { check?: Check; suggest?: Suggest }) {
   const [query, setQuery] = useState('')
-  const [result, setResult] = useState<{ place: string; rows: KommunStatus[] | null }>()
+  const [result, setResult] = useState<Found>()
   const inputRef = useRef<HTMLInputElement>(null)
   const { hash } = useLocation()
 
@@ -126,8 +163,10 @@ export function KommunCheck({ check = kommunStatus }: { check?: Check }) {
     let stale = false
     const timer = setTimeout(async () => {
       const rows = await check(place)
+      // Förslag bara när det man skrivit inte är en ort, t.ex. halvvägs in i "Avesta"
+      const suggestions = rows?.length === 0 ? await suggest(place) : []
       if (stale) return
-      setResult({ place, rows })
+      setResult({ place, rows, suggestions })
       const missing = rows?.filter((r) => !r.covered).map((r) => r.name) ?? []
       if (missing.length > 0) reportMissingKommun(missing)
     }, DEBOUNCE_MS)
@@ -135,7 +174,7 @@ export function KommunCheck({ check = kommunStatus }: { check?: Check }) {
       stale = true
       clearTimeout(timer)
     }
-  }, [query, check])
+  }, [query, check, suggest])
 
   return (
     <div id="finns-din-kommun" className="flex scroll-mt-6 flex-col gap-3">
@@ -158,7 +197,17 @@ export function KommunCheck({ check = kommunStatus }: { check?: Check }) {
           className="min-w-0 flex-1 bg-transparent text-base text-text outline-none placeholder:text-text-2"
         />
       </div>
-      <div role="status">{result && query.trim() && <Result {...result} />}</div>
+      <div role="status">
+        {result && query.trim() && (
+          <Result
+            {...result}
+            onPick={(place) => {
+              setQuery(place)
+              inputRef.current?.focus()
+            }}
+          />
+        )}
+      </div>
     </div>
   )
 }

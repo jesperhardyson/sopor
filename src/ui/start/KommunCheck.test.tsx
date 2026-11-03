@@ -4,7 +4,7 @@ import { MemoryRouter } from 'react-router'
 import { describe, expect, it, vi } from 'vitest'
 import { SITE } from '@/config'
 import { reportMissingKommun } from '@/lib/analytics'
-import type { KommunStatus } from '@/providers/registry'
+import type { KommunStatus, PlaceSuggestion } from '@/providers/registry'
 import { KommunCheck } from './KommunCheck'
 
 vi.mock('@/lib/analytics', () => ({ reportMissingKommun: vi.fn() }))
@@ -13,16 +13,22 @@ const DATA: Record<string, KommunStatus[]> = {
   malmö: [{ name: 'Malmö kommun', covered: true }],
   limhamn: [{ name: 'Malmö kommun', covered: true }],
   hedemora: [{ name: 'Hedemora kommun', covered: false }],
+  avesta: [{ name: 'Avesta kommun', covered: false }],
   bergby: [
     { name: 'Ljusdals kommun', covered: false },
     { name: 'Norrtälje kommun', covered: true },
   ],
 }
 
+const SUGGESTIONS: PlaceSuggestion[] = [
+  { place: 'Avesta', kommuner: [{ name: 'Avesta kommun', covered: false }] },
+  { place: 'Avestaby', kommuner: [{ name: 'Avesta kommun', covered: false }] },
+]
+
 async function ask(query: string, check = async (q: string): Promise<KommunStatus[] | null> => DATA[q.toLowerCase()] ?? []) {
   render(
     <MemoryRouter>
-      <KommunCheck check={check} />
+      <KommunCheck check={check} suggest={async (q) => (q.toLowerCase().startsWith('av') ? SUGGESTIONS : [])} />
     </MemoryRouter>,
   )
   await userEvent.type(screen.getByRole('textbox', { name: 'Kommun eller ort' }), query)
@@ -55,6 +61,15 @@ describe('KommunCheck', () => {
     expect(screen.getByRole('link', { name: 'Sök adress i Norrtälje kommun' })).toBeInTheDocument()
   })
 
+  it('föreslår orter medan man skriver och svarar när man väljer en', async () => {
+    await ask('aves')
+    expect(await screen.findByRole('heading', { name: 'Menade du …?' })).toBeInTheDocument()
+    expect(screen.queryByText('Hittar ingen ort som heter så')).toBeNull()
+    await userEvent.click(screen.getByRole('button', { name: 'Avesta, Avesta kommun' }))
+    expect(screen.getByRole('textbox', { name: 'Kommun eller ort' })).toHaveValue('Avesta')
+    expect(await screen.findByRole('heading', { name: 'Avesta kommun finns inte än' })).toBeInTheDocument()
+  })
+
   it('säger till när orten är okänd', async () => {
     await ask('Xyzby')
     expect(await screen.findByRole('heading', { name: 'Hittar ingen ort som heter så' })).toBeInTheDocument()
@@ -69,7 +84,7 @@ describe('KommunCheck', () => {
     const check = vi.fn(async () => [])
     render(
       <MemoryRouter>
-        <KommunCheck check={check} />
+        <KommunCheck check={check} suggest={async () => []} />
       </MemoryRouter>,
     )
     await userEvent.type(screen.getByRole('textbox', { name: 'Kommun eller ort' }), '  ')

@@ -11,6 +11,7 @@ vi.mock('@/providers/registry', () => ({
   suggestAll: async () => [],
   missingKommuner: async () => [],
   kommunStatus: async () => [],
+  placeSuggestions: async () => [],
   providerFor: () => ({ getSchedule: async () => null }),
 }))
 
