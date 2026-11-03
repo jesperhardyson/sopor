@@ -46,7 +46,8 @@ export const PROBES: Record<string, string> = {
   vasyd: 'Limhamnsvägen 50, Malmö',
 }
 
-const RETRY_DELAY_MS = 5 * 60 * 1000
+/** Väntan före varje ny omgång för källor som inte svarade: 5, 15 och 30 minuter. */
+const RETRY_DELAYS_MS = [5, 15, 30].map((min) => min * 60 * 1000)
 
 const readValidToFromData = (sourceId: string) =>
   readYears(path.join(root, 'data', sourceId)).map((y) => y.schedules.validTo)
@@ -70,26 +71,28 @@ async function checkOne(
 
 /**
  * Kontrollerar källorna en i taget, så att ingen värd får flera anrop samtidigt. En källa som inte
- * nås härifrån kontrolleras också via sajten. Källor som inte svarade prövas igen efter en stund,
- * så att ett tillfälligt avbrott inte blir ett ärende.
+ * nås härifrån kontrolleras också via sajten. Källor som inte svarade prövas igen i flera omgångar
+ * med allt längre väntan, så att ett tillfälligt avbrott inte blir ett ärende.
  */
 export async function runChecks(
   sources: Source[],
   today: string,
   {
     fetchFn = fetch,
-    retryDelayMs = RETRY_DELAY_MS,
+    retryDelaysMs = RETRY_DELAYS_MS,
     readValidTo = readValidToFromData,
     probes = PROBES,
-  }: { fetchFn?: typeof fetch; retryDelayMs?: number; readValidTo?: (sourceId: string) => string[]; probes?: Record<string, string> } = {},
+  }: { fetchFn?: typeof fetch; retryDelaysMs?: number[]; readValidTo?: (sourceId: string) => string[]; probes?: Record<string, string> } = {},
 ): Promise<SourceResult[]> {
   const results: SourceResult[] = []
   for (const source of sources) results.push(await checkOne(source, today, probes, fetchFn, readValidTo))
 
-  const retry = results.flatMap((r, i) => (r.state === 'svarar-inte' ? [i] : []))
-  if (retry.length === 0) return results
-  await new Promise((resolve) => setTimeout(resolve, retryDelayMs))
-  for (const i of retry) results[i] = await checkOne(sources[i], today, probes, fetchFn, readValidTo)
+  for (const delay of retryDelaysMs) {
+    const retry = results.flatMap((r, i) => (r.state === 'svarar-inte' ? [i] : []))
+    if (retry.length === 0) break
+    await new Promise((resolve) => setTimeout(resolve, delay))
+    for (const i of retry) results[i] = await checkOne(sources[i], today, probes, fetchFn, readValidTo)
+  }
   return results
 }
 
@@ -105,7 +108,7 @@ export function formatTable(results: SourceResult[]): string {
 
 async function main() {
   const retry = process.env.RETRY
-  const results = await runChecks(SOURCES, todayInStockholm(), retry ? { retryDelayMs: Number(retry) } : {})
+  const results = await runChecks(SOURCES, todayInStockholm(), retry ? { retryDelaysMs: RETRY_DELAYS_MS.map(() => Number(retry)) } : {})
   const table = formatTable(results)
   console.log(table)
   if (process.env.GITHUB_STEP_SUMMARY) fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `## Bevakning av källorna\n\n${table}\n`)

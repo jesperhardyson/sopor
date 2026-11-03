@@ -50,7 +50,7 @@ describe('runChecks', () => {
 
     const results = await runChecks([edp('flaky'), edp('stable')], '2026-11-02', {
       fetchFn,
-      retryDelayMs: 0,
+      retryDelaysMs: [0],
       probes: { flaky: 'Storgatan 1', stable: 'Storgatan 1' },
     })
 
@@ -60,6 +60,35 @@ describe('runChecks', () => {
     ])
     expect(calls.filter((h) => h === 'stable.example.se')).toHaveLength(2)
     expect(calls.filter((h) => h === 'flaky.example.se')).toHaveLength(3)
+  })
+
+  it('provar i flera omgångar, och slutar när källan svarar', async () => {
+    let failures = 2
+    const hosts: string[] = []
+    const fetchFn = vi.fn(async (input: string | URL | Request) => {
+      const url = new URL(String(input))
+      hosts.push(url.host)
+      if (url.pathname.endsWith('/SearchAdress') && failures-- > 0) return new Response('', { status: 500 })
+      return url.pathname.endsWith('/SearchAdress') ? json({ Buildings: ['Storgatan 1, Test (1)'] }) : json({ RhServices: [rest] })
+    }) as unknown as typeof fetch
+
+    const [r] = await runChecks([edp('seg')], '2026-11-02', { fetchFn, retryDelaysMs: [0, 0, 0], probes: { seg: 'Storgatan 1' } })
+
+    expect(r.state).toBe('fungerar')
+    expect(hosts.filter((h) => h === 'seg.example.se')).toHaveLength(4)
+  })
+
+  it('räknas som svarar inte först när alla omgångar har prövats', async () => {
+    const hosts: string[] = []
+    const fetchFn = vi.fn(async (input: string | URL | Request) => {
+      hosts.push(new URL(String(input)).host)
+      return new Response('', { status: 500 })
+    }) as unknown as typeof fetch
+
+    const [r] = await runChecks([edp('nere')], '2026-11-02', { fetchFn, retryDelaysMs: [0, 0, 0], probes: { nere: 'Storgatan 1' } })
+
+    expect(r.state).toBe('svarar-inte')
+    expect(hosts.filter((h) => h === 'nere.example.se')).toHaveLength(4)
   })
 
   /** Källan "spärrad" når bara sajten; sajten själv svarar som anges. */
@@ -85,7 +114,7 @@ describe('runChecks', () => {
 
   it('frågar sajten när en källa inte svarar härifrån, och då blir det inget ärende', async () => {
     const { fetchFn, hosts } = blockedFromGitHub()
-    const results = await runChecks([edp('sparrad'), edp('stable')], '2026-11-02', { fetchFn, retryDelayMs: 0, probes })
+    const results = await runChecks([edp('sparrad'), edp('stable')], '2026-11-02', { fetchFn, retryDelaysMs: [0], probes })
     expect(results[0]).toMatchObject({ sourceId: 'sparrad', state: 'fungerar', via: 'sajten' })
     expect(results[0].error).toContain('Ingen kontakt med sparrad.example.se')
     // Inget nytt försök behövs när sajten har svarat.
@@ -95,13 +124,13 @@ describe('runChecks', () => {
 
   it('frågar sajten när en brandvägg svarar med en HTML-sida', async () => {
     const { fetchFn } = blockedFromGitHub({ edp: 'html' })
-    const [r] = await runChecks([edp('sparrad')], '2026-11-02', { fetchFn, retryDelayMs: 0, probes })
+    const [r] = await runChecks([edp('sparrad')], '2026-11-02', { fetchFn, retryDelaysMs: [0], probes })
     expect(r).toMatchObject({ state: 'fungerar', via: 'sajten' })
   })
 
   it('räknar källan som avbruten när den inte svarar via sajten heller, med båda felen', async () => {
     const { fetchFn } = blockedFromGitHub({ failed: ['sparrad'] })
-    const [r] = await runChecks([edp('sparrad')], '2026-11-02', { fetchFn, retryDelayMs: 0, probes })
+    const [r] = await runChecks([edp('sparrad')], '2026-11-02', { fetchFn, retryDelaysMs: [0], probes })
     expect(r.state).toBe('svarar-inte')
     expect(r.via).toBeUndefined()
     expect(r.error).toContain('Ingen kontakt med sparrad.example.se')
@@ -114,7 +143,7 @@ describe('runChecks', () => {
       hosts.push(new URL(String(input)).host)
       return new Response('Not found', { status: 404 })
     }) as unknown as typeof fetch
-    const [r] = await runChecks([edp('stable')], '2026-11-02', { fetchFn, retryDelayMs: 0, probes })
+    const [r] = await runChecks([edp('stable')], '2026-11-02', { fetchFn, retryDelaysMs: [0], probes })
     expect(r.state).toBe('nytt-format')
     expect(hosts).not.toContain('sopor.hardyson.se')
   })
