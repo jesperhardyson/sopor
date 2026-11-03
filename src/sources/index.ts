@@ -7,7 +7,7 @@ export interface Kommun {
 }
 
 /** Hur källans data hämtas. Ny leverantör = ny variant här + ny provider. */
-export type SourceConfig = { system: 'static' } | { system: 'edp'; baseUrl: string } | { system: 'svoa' } | { system: 'vasyd' } | { system: 'nsr' }
+export type SourceConfig = { system: 'static' } | { system: 'edp'; baseUrl: string } | { system: 'svoa' } | { system: 'vasyd' } | { system: 'nsr' } | { system: 'srv' }
 
 /**
  * En datakälla för hämtschema, oftast ett avfallsbolag eller en kommun. En källa kan täcka
@@ -23,6 +23,11 @@ export interface Source {
    * bara hämtar vissa fraktioner. Används bara för att slå upp ort → kommun.
    */
   grannkommuner?: Kommun[]
+  /**
+   * Postorter som källan skriver men som inte går att slå upp i OpenStreetMaps orter, för att de
+   * saknas där eller finns i flera av källans kommuner: ort → kommunkod.
+   */
+  postorter?: Record<string, string>
   config: SourceConfig
   /** Påhittad data (seed). Ta bort när riktig data finns. */
   testData?: boolean
@@ -277,6 +282,22 @@ export const ALL_SOURCES: Source[] = [
       { code: '1277', name: 'Åstorps kommun' },
     ],
     config: { system: 'nsr' },
+  },
+  {
+    // Ingen EDP: söktjänsten på srvatervinning.se (src/server/srv.ts), med kundnumret som id.
+    id: 'srv',
+    name: 'SRV återvinning',
+    url: 'https://www.srvatervinning.se',
+    kommuner: [
+      { code: '0126', name: 'Huddinge kommun' },
+      { code: '0127', name: 'Botkyrka kommun' },
+      { code: '0136', name: 'Haninge kommun' },
+      { code: '0192', name: 'Nynäshamns kommun' },
+      { code: '0128', name: 'Salems kommun' },
+    ],
+    // SRV skriver postorten. Haninge, Ornö och Utö saknas bland OpenStreetMaps orter, och Norsborg finns också i Nynäshamn.
+    postorter: { Haninge: '0136', Ornö: '0136', Utö: '0136', Norsborg: '0127' },
+    config: { system: 'srv' },
   },
 ]
 

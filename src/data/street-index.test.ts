@@ -63,6 +63,16 @@ describe('buildStreetIndex', () => {
     expect(withNeighbour.places.vafab.storvreta).toBe('Uppsala kommun')
     expect(withNeighbour.shards.sv).toBeUndefined()
   })
+
+  it('tar källans postorter före OpenStreetMaps orter, också tvetydiga och saknade', () => {
+    const vafab = { ...SOURCES[1], postorter: { Skultuna: '0381', 'Västerås Hamn': '1980' } }
+    expect(buildStreetIndex(OSM, [vafab]).places.vafab).toMatchObject({ skultuna: 'Enköpings kommun', 'västerås hamn': 'Västerås kommun' })
+  })
+
+  it('kastar för en postort i en kommun som källan inte har', () => {
+    const vafab = { ...SOURCES[1], postorter: { Storvreta: '0380' } }
+    expect(() => buildStreetIndex(OSM, [vafab])).toThrow('Storvreta')
+  })
 })
 
 describe('candidateSources', () => {

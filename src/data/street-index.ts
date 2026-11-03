@@ -42,7 +42,7 @@ export function buildStreetIndex(osm: OsmKommun[], sources: Source[]): StreetInd
         if (!ids.includes(source.id)) ids.push(source.id)
       }
     }
-    if (needsPlaces(source)) places[source.id] = placeTable(osm, placeKommuner(source))
+    if (needsPlaces(source)) places[source.id] = { ...placeTable(osm, placeKommuner(source)), ...postortTable(source) }
   }
 
   for (const shard of Object.values(shards)) for (const ids of Object.values(shard)) ids.sort()
@@ -75,6 +75,18 @@ function placeTable(osm: OsmKommun[], kommuner: Kommun[]): Record<string, string
     }
   }
   return Object.fromEntries([...table].filter((e): e is [string, string] => e[1] !== null))
+}
+
+/** Källans egna postorter (Source.postorter). En kommunkod som källan inte har är ett skrivfel. */
+function postortTable(source: Source): Record<string, string> {
+  const kommuner = placeKommuner(source)
+  return Object.fromEntries(
+    Object.entries(source.postorter ?? {}).map(([ort, code]) => {
+      const kommun = kommuner.find((k) => k.code === code)
+      if (!kommun) throw new Error(`Postorten ${ort} hos ${source.id} pekar på ${code}, som inte är källans kommun`)
+      return [normalize(ort, false), kommun.name]
+    }),
+  )
 }
 
 /**
