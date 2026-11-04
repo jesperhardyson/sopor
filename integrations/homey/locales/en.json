@@ -6,11 +6,11 @@
     "search": "Search",
     "searching": "Searching…",
     "tooShort": "Type at least three characters.",
-    "notFound": "No address found. Check the spelling and house number, and that your municipality is included. In Avesta, search by area, for example Avesta tätort.",
+    "notFound": "No address found. Check the spelling and house number, and that your municipality is included. In Avesta and Säter, search by area, for example Avesta tätort or Bispberg.",
     "failed": "Some sources did not respond. Try again in a while.",
     "hint": "Add the town after a comma to get fewer matches.",
     "choosePlace": "Many matches. Where is the address?",
-    "notFoundCovered": "No address found in __place__. Check the spelling and house number. In Avesta, search by area, for example Avesta tätort.",
+    "notFoundCovered": "No address found in __place__. Check the spelling and house number. In Avesta and Säter, search by area, for example Avesta tätort or Bispberg.",
     "notFoundElsewhere": "No address found in __place__. Check that the municipality is included.",
     "coverage": "Sopor covers __count__ Swedish municipalities.",
     "coverageLink": "See which"
