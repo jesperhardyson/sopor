@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Address, Schedule } from '@/domain/types'
-import { loadSaved, loadStoredSchedule, removeSaved, renameSaved, storeSchedule, upsertSaved, type SavedAddress, type StoredSchedule } from './storage'
+import { clearSaved, forgetChoice, loadChoice, loadSaved, loadStoredSchedule, moveChoices, rememberChoice, removeSaved, renameSaved, replaceSaved, storeSchedule, upsertSaved, type SavedAddress, type StoredSchedule } from './storage'
 
 const hemma: SavedAddress = {
   sourceId: 'avesta',
@@ -139,5 +139,74 @@ describe('sparade scheman', () => {
       throw new Error('SecurityError')
     })
     expect(loadStoredSchedule('avesta', 'krylbo-storgatan-12b')).toBeUndefined()
+  })
+})
+
+describe('eget val av område', () => {
+  const choice = { sourceId: 'avesta', street: 'Kungsgatan 12', areaId: 'trakt-7', label: 'Trakt 7', day: 'Tisdag, jämn vecka' }
+  beforeEach(() => localStorage.clear())
+
+  it('kommer ihåg valet oavsett versaler och kan glömma det', () => {
+    rememberChoice(choice)
+    expect(loadChoice('avesta', 'KUNGSGATAN  12')).toEqual(choice)
+    expect(loadChoice('annan', 'Kungsgatan 12')).toBeUndefined()
+    forgetChoice('avesta', 'kungsgatan 12')
+    expect(loadChoice('avesta', 'Kungsgatan 12')).toBeUndefined()
+  })
+
+  it('flyttar val från det gamla området vid ett byte', () => {
+    rememberChoice(choice)
+    moveChoices('avesta', 'trakt-7', { id: 'trakt-1', label: 'Trakt 1', day: 'Måndag, udda vecka' })
+    expect(loadChoice('avesta', 'Kungsgatan 12')).toMatchObject({ areaId: 'trakt-1', label: 'Trakt 1' })
+  })
+
+  it('rensas tillsammans med sparade adresser', () => {
+    rememberChoice(choice)
+    clearSaved()
+    expect(loadChoice('avesta', 'Kungsgatan 12')).toBeUndefined()
+  })
+
+  it('tål trasig lagring', () => {
+    localStorage.setItem('sopor.areaChoices.v1', '{trasig')
+    expect(loadChoice('avesta', 'Kungsgatan 12')).toBeUndefined()
+    localStorage.setItem('sopor.areaChoices.v1', JSON.stringify({ 'avesta/kungsgatan 12': { skräp: true } }))
+    expect(loadChoice('avesta', 'Kungsgatan 12')).toBeUndefined()
+  })
+
+  it('tål att lagringen kastar fel', () => {
+    const spy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('full')
+    })
+    expect(() => rememberChoice(choice)).not.toThrow()
+    spy.mockRestore()
+  })
+})
+
+describe('replaceSaved', () => {
+  const omrade = { sourceId: 'avesta', addressId: 'trakt-7', name: 'Hemma', street: 'Avesta tätort', locality: '', savedAt: '2026-11-04' }
+  beforeEach(() => localStorage.clear())
+
+  it('ersätter området på samma plats och behåller ett eget namn', () => {
+    upsertSaved(omrade)
+    replaceSaved('avesta', 'trakt-7', { id: 'trakt-1', street: 'Askön' })
+    expect(loadSaved()).toEqual([{ ...omrade, addressId: 'trakt-1', street: 'Askön' }])
+  })
+
+  it('byter namnet när det bara var områdets namn', () => {
+    upsertSaved({ ...omrade, name: 'Avesta tätort' })
+    replaceSaved('avesta', 'trakt-7', { id: 'trakt-1', street: 'Askön' })
+    expect(loadSaved()[0].name).toBe('Askön')
+  })
+
+  it('lämnar listan orörd när det gamla området inte är sparat', () => {
+    replaceSaved('avesta', 'trakt-7', { id: 'trakt-1', street: 'Askön' })
+    expect(loadSaved()).toEqual([])
+  })
+
+  it('ger inga dubbletter om det nya området redan är sparat', () => {
+    upsertSaved(omrade)
+    upsertSaved({ ...omrade, addressId: 'trakt-1', street: 'Askön', name: 'Stugan' })
+    replaceSaved('avesta', 'trakt-7', { id: 'trakt-1', street: 'Askön' })
+    expect(loadSaved().map((a) => a.addressId)).toEqual(['trakt-1'])
   })
 })

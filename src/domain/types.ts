@@ -9,6 +9,21 @@ export interface Address {
   kommun: string
   /** Skiljer träffar med samma gata och ort åt, t.ex. "Byggnad 78838" i ett flerbostadshus */
   detail?: string
+  /** Områdets sökord (gator, orter), som utöver namnet gör att området hittas, t.ex. "Stallgatan" */
+  searchTerms?: string[]
+}
+
+export interface Area {
+  id: string
+  name: string
+  day: string
+  label: string
+  places: string[]
+  otherDays: string[]
+  /** Sökord (gator, orter) som utöver namnet hittar området */
+  searchTerms: string[]
+  /** Områdets hämtdatum, sorterade (YYYY-MM-DD) */
+  dates: string[]
 }
 
 export interface Bin {

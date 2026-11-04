@@ -21,13 +21,23 @@ function haystack(a: Address): string[] {
   return normalize(`${a.street} ${a.locality}`).split(' ')
 }
 
-export function searchAddresses(query: string, addresses: Address[], limit = 8): Address[] {
+/** Hur frågans ord jämförs med områdens termer. Vanliga adresser matchar alltid på början av ord. */
+export interface SearchMode {
+  /**
+   * Sökningen gäller just källan (kommunsidan, API:t med `kalla`, filtret på Välj område): ett ord
+   * får vara början på ett ord i termen. Annars måste det vara helt, så att halvskrivna frågor på
+   * startsidan inte visar områden för alla.
+   */
+  areaPrefix?: boolean
+}
+
+export function searchAddresses(query: string, addresses: Address[], limit = 8, mode: SearchMode = {}): Address[] {
   const q = normalize(query)
   if (q.length < 2) return []
-  const hits = match(q, addresses, limit)
+  const hits = match(q, addresses, limit, mode)
   // "storgatan 12 k" kan vara husbokstav eller början på orten (Krylbo).
   const split = normalize(query, false)
-  return hits.length === 0 && split !== q ? match(split, addresses, limit) : hits
+  return hits.length === 0 && split !== q ? match(split, addresses, limit, mode) : hits
 }
 
 /**
@@ -41,13 +51,46 @@ export function enterTarget(query: string, addresses: Address[]): Address | unde
   return exact.length === 1 ? exact[0] : undefined
 }
 
-function match(q: string, addresses: Address[], limit: number): Address[] {
+/** Adressens termer: namnet och sökorden. Bara områden har sökord. */
+function terms(a: Address): { text: string; norm: string }[] {
+  return [a.street, ...(a.searchTerms ?? [])].map((text) => ({ text, norm: normalize(text) }))
+}
+
+/** Gatudelen av "stallgatan 5b", bara när husnummer och bokstav står sist. "näs 12 gotland" är ingen gata i listan. */
+function streetPart(q: string): string | undefined {
+  return q.match(/^(.+) \d+\p{L}?$/u)?.[1]
+}
+
+/** Småord i områdens namn ("m.fl.", "Norr och Sör Nävde"). De går inte att söka på, annars ger "fl" nästan alla områden. */
+const FILLER_WORDS = new Set(['m', 'fl', 'och'])
+
+/**
+ * Alla ord i frågan finns i samma term (med `areaPrefix` räcker början), eller gatudelen är exakt
+ * lika med termen. Ett småord i frågan måste stå i termen men räcker aldrig ensamt för en träff.
+ */
+function termMatches(q: string, t: { norm: string }, { areaPrefix }: SearchMode): boolean {
   const tokens = q.split(' ')
-  return addresses
-    .filter((a) => {
-      const words = haystack(a)
-      return tokens.every((t) => words.some((w) => w.startsWith(t)))
-    })
+  if (tokens.every((tok) => FILLER_WORDS.has(tok))) return false
+  const all = t.norm.split(' ')
+  const words = all.filter((w) => !FILLER_WORDS.has(w))
+  const found = (tok: string) => {
+    if (FILLER_WORDS.has(tok)) return all.includes(tok)
+    return areaPrefix ? words.some((w) => w.startsWith(tok)) : words.includes(tok)
+  }
+  return tokens.every(found) || streetPart(q) === t.norm
+}
+
+function match(q: string, addresses: Address[], limit: number, mode: SearchMode): Address[] {
+  const tokens = q.split(' ')
+  const hits = addresses.filter((a) => {
+    if (a.searchTerms) return terms(a).some((t) => termMatches(q, t, mode))
+    const words = haystack(a)
+    return tokens.every((t) => words.some((w) => w.startsWith(t)))
+  })
+  // Ett sökord som är exakt det man skrev utesluter områden där det bara är början på något längre.
+  const exact = (a: Address) => terms(a).some((t) => t.norm === q || t.norm === streetPart(q))
+  const narrowed = hits.some((a) => a.searchTerms && exact(a)) ? hits.filter((a) => !a.searchTerms || exact(a)) : hits
+  return narrowed
     .map((a) => ({ a, starts: normalize(a.street).startsWith(q) ? 0 : 1 }))
     .sort(
       (x, y) =>
@@ -57,6 +100,26 @@ function match(q: string, addresses: Address[], limit: number): Address[] {
     )
     .slice(0, limit)
     .map((x) => x.a)
+}
+
+/**
+ * Sökordet som gav träff på ett område, för att visa varför det kom med. Null när namnet redan
+ * visar det och för adresser utan sökord.
+ */
+export function matchedTerm(query: string, address: Address): string | null {
+  if (!address.searchTerms) return null
+  const q = normalize(query)
+  const [name, ...rest] = terms(address)
+  const prefix = { areaPrefix: true }
+  if (termMatches(q, name, prefix)) return null
+  const asked = q.split(' ')
+  const hit = rest.find((t) => termMatches(q, t, prefix)) ?? rest.find((t) => t.norm.split(' ').every((w) => asked.includes(w)))
+  return hit?.text ?? null
+}
+
+/** Träffarna från två sökningar, utan dubbletter. */
+export function mergeHits(first: Address[], second: Address[]): Address[] {
+  return [...first, ...second.filter((a) => !first.some((b) => b.id === a.id))]
 }
 
 /** Damerau-Levenshtein (optimal string alignment) */

@@ -5,11 +5,11 @@ import { secondsToStockholmMidnight, todayInStockholm } from '../domain/dates.js
 import { FRACTIONS, sortFractions } from '../domain/fractions.js'
 import { nextPerFraction, pickupSummary } from '../domain/next.js'
 import { upcoming } from '../domain/schedule.js'
-import { normalize, searchAddresses } from '../domain/search.js'
+import { mergeHits, normalize, searchAddresses } from '../domain/search.js'
 import type { Address, FractionId, Schedule } from '../domain/types.js'
-import { pickLiveSources, shardKey, splitPlace, type StreetShard } from '../data/street-index.js'
+import { pickLiveSources, shardKey, splitPlace, streetAtSourcePlace, type StreetShard } from '../data/street-index.js'
 import type { AddressIndexFile } from '../data/static-format.js'
-import { isLive, needsPlaces, SOURCES, type Source } from '../sources/index.js'
+import { areaNoticeText, isLive, needsPlaces, SOURCES, type Source } from '../sources/index.js'
 import { CACHE_PARTIAL, CACHE_SEARCH, decodeId, searchLiveSource, type HandlerOptions } from './handlers.js'
 import { lookupAddress } from './lookup.js'
 import { loadServerPlaces, siteJson } from './site.js'
@@ -124,6 +124,7 @@ export const handleV1Address: V1Handler = async (request, opts = {}) => {
         kommun: address.kommun,
         source: address.sourceId,
         detail: address.detail ?? null,
+        ...selectionFields(source),
       },
       ...scheduleBody(schedule, today),
       links: { ics: `${url.origin}/ics/${path}.ics`, web: `${url.origin}/${path}` },
@@ -136,23 +137,41 @@ export const handleV1Address: V1Handler = async (request, opts = {}) => {
 
 const SEARCH_LIMIT = 10
 
-const v1Address = (a: Address, origin: string) => ({
+const selectionFields = (source: Source | undefined) => ({
+  selection: source?.selection ?? 'address',
+  notice: areaNoticeText(source) ?? null,
+})
+
+const v1Address = (a: Address, origin: string, sources: Source[]) => ({
   id: a.id,
   street: a.street,
   locality: a.locality,
   kommun: a.kommun,
   source: a.sourceId,
   detail: a.detail ?? null,
+  ...selectionFields(sources.find((s) => s.id === a.sourceId)),
   url: `${origin}/api/v1/adress/${a.sourceId}/${encodeURIComponent(a.id)}`,
 })
 
 /** Statiska källor söks lokalt i sin adressfil. */
-async function searchStatic(source: Source, query: string, origin: string, opts: HandlerOptions): Promise<Address[]> {
+async function searchStatic(source: Source, query: string, origin: string, opts: HandlerOptions, areaPrefix: boolean): Promise<Address[]> {
   const index = await siteJson<AddressIndexFile>(origin, `/data/${source.id}/addresses.json`, opts.fetchFn, opts.timeoutMs)
   if (!index) throw new Error(`${source.id} saknar adressfil`)
   const kommun = source.kommuner[0]?.name ?? source.name
-  const addresses = index.addresses.map(([id, street, locality]) => ({ id, street, locality, sourceId: source.id, kommun }))
-  return searchAddresses(query, addresses, SEARCH_LIMIT)
+  const addresses = index.addresses.map(([id, street, locality, , area]) => ({
+    id,
+    street,
+    locality,
+    sourceId: source.id,
+    kommun,
+    ...(area && { detail: area.detail, searchTerms: area.searchTerms }),
+  }))
+  const find = (q: string) => searchAddresses(q, addresses, SEARCH_LIMIT, { areaPrefix })
+  const hits = find(query)
+  if (source.selection !== 'area') return hits
+  // Nämner frågan källans plats söks områdena också på gatudelen, som i registret på sajten.
+  const street = await streetAtSourcePlace(query, source, (key) => streetShard(key, origin, opts))
+  return street ? mergeHits(hits, find(street)).slice(0, SEARCH_LIMIT) : hits
 }
 
 /** Gatuindexet hjälper till att välja källor. Når vi det inte frågar vi som om gatan saknades. */
@@ -192,11 +211,11 @@ export const handleV1Search: V1Handler = async (request, opts = {}) => {
     opts.places ?? (sources.some((s) => isLive(s) && needsPlaces(s)) ? await loadServerPlaces(url.origin, opts.fetchFn) : undefined)
   const results = await Promise.allSettled(
     sources.map(async (s) =>
-      isLive(s) ? (await searchLiveSource(s, street, place, { ...opts, places })).slice(0, SEARCH_LIMIT) : await searchStatic(s, q, url.origin, opts),
+      isLive(s) ? (await searchLiveSource(s, street, place, { ...opts, places })).slice(0, SEARCH_LIMIT) : await searchStatic(s, q, url.origin, opts, !!kalla),
     ),
   )
   const failed = sources.filter((_, i) => results[i].status === 'rejected').map((s) => s.id)
-  const addresses = results.flatMap((r) => (r.status === 'fulfilled' ? r.value : [])).map((a) => v1Address(a, url.origin))
+  const addresses = results.flatMap((r) => (r.status === 'fulfilled' ? r.value : [])).map((a) => v1Address(a, url.origin, sources))
   return v1Json({ addresses, failed }, 200, failed.length > 0 ? CACHE_PARTIAL : CACHE_SEARCH)
 }
 

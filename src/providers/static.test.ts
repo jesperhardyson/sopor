@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import type { AddressIndexFile, ScheduleFile } from '@/data/static-format'
+import type { AddressIndexFile, AreasIndexFile, ScheduleFile } from '@/data/static-format'
 import type { Source } from '@/sources'
 import { createStaticProvider } from './static'
 
@@ -17,8 +17,11 @@ const index: AddressIndexFile = {
   addresses: [
     ['krylbo-storgatan-12b', 'Storgatan 12 B', 'Krylbo', ['2026-a', '2027-b']],
     ['avesta-storgatan-12', 'Storgatan 12', 'Avesta', ['2026-a']],
+    ['trakt-7', 'Avesta tätort', '', ['2026-a'], { detail: 'Måndag · Rest', searchTerms: ['Stallgatan'] }],
   ],
 }
+
+const areas: AreasIndexFile = { explanation: 'Så funkar det', help: 'Ring oss', areas: [] }
 
 const files: Record<string, ScheduleFile> = {
   '2026-a': {
@@ -33,7 +36,7 @@ const files: Record<string, ScheduleFile> = {
 
 function fakeFetch(status = 200) {
   return vi.fn(async (url: string) => {
-    const body = url === '/data/avesta/addresses.json' ? index : files[url.match(/schedules\/(.+)\.json$/)?.[1] ?? '']
+    const body = url === '/data/avesta/addresses.json' ? index : url === '/data/avesta/omraden.json' ? areas : files[url.match(/schedules\/(.+)\.json$/)?.[1] ?? '']
     if (status !== 200 || !body) return new Response('fel', { status: status === 200 ? 404 : status })
     return new Response(JSON.stringify(body), { status: 200 })
   }) as unknown as typeof fetch & ReturnType<typeof vi.fn>
@@ -54,6 +57,19 @@ describe('createStaticProvider', () => {
       id: 'krylbo-storgatan-12b', street: 'Storgatan 12 B', locality: 'Krylbo', sourceId: 'avesta', kommun: 'Avesta kommun',
     })
     expect(await p.getAddress('finns-inte')).toBeNull()
+  })
+
+  it('ger detail och searchTerms från indexet', async () => {
+    const p = createStaticProvider(avesta, fakeFetch())
+    const area = { id: 'trakt-7', street: 'Avesta tätort', locality: '', sourceId: 'avesta', kommun: 'Avesta kommun', detail: 'Måndag · Rest', searchTerms: ['Stallgatan'] }
+    expect(await p.getAddress('trakt-7')).toEqual(area)
+    expect(await p.searchAddresses('stallgatan')).toEqual([area])
+  })
+
+  it('listar områdena från omraden.json', async () => {
+    const f = fakeFetch()
+    expect(await createStaticProvider(avesta, f).listAreas?.()).toEqual(areas)
+    expect(f).toHaveBeenCalledWith('/data/avesta/omraden.json')
   })
 
   it('slår ihop alla år för adressens schema', async () => {

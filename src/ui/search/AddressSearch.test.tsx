@@ -1,11 +1,13 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter, Route, Routes, useParams } from 'react-router'
-import { describe, expect, it, vi } from 'vitest'
+import { MemoryRouter, Route, Routes, useParams, useLocation } from 'react-router'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { searchAddresses, suggest } from '@/domain/search'
 import type { Address } from '@/domain/types'
 import { reportMissingKommun } from '@/lib/analytics'
+import type { SearchResult } from '@/providers/registry'
 import { AddressSearch } from './AddressSearch'
+import { loadChoice, rememberChoice } from '@/lib/storage'
 
 vi.mock('@/lib/analytics', () => ({ reportMissingKommun: vi.fn() }))
 
@@ -46,7 +48,7 @@ function setup(addresses = ADDRESSES) {
           element={
             <>
               <AddressSearch
-                search={async (q) => ({ addresses: searchAddresses(q, addresses, 12), failed })}
+                search={async (q) => ({ addresses: searchAddresses(q, addresses, 12), failed, areaPickers: [] })}
                 suggest={async (q) => suggest(q, addresses)}
                 missing={async (q) => (/hedemora/i.test(q) ? ['Hedemora kommun'] : /kil$/i.test(q) ? ['Kils kommun', 'Danderyds kommun'] : [])}
                 onDeactivate={onDeactivate}
@@ -167,7 +169,7 @@ describe('AddressSearch', () => {
     const renderWith = (addresses: Address[]) =>
       render(
         <MemoryRouter>
-          <AddressSearch search={async () => ({ addresses, failed: [] })} suggest={async () => []} />
+          <AddressSearch search={async () => ({ addresses, failed: [], areaPickers: [] })} suggest={async () => []} />
         </MemoryRouter>,
       )
 
@@ -254,7 +256,7 @@ describe('AddressSearch', () => {
     function setupInKommun() {
       render(
         <MemoryRouter>
-          <AddressSearch search={async () => ({ addresses: [], failed: [] })} suggest={async () => []} kommun="Uppsala kommun" />
+          <AddressSearch search={async () => ({ addresses: [], failed: [], areaPickers: [] })} suggest={async () => []} kommun="Uppsala kommun" />
         </MemoryRouter>,
       )
       return screen.getByRole('combobox')
@@ -306,7 +308,7 @@ describe('AddressSearch', () => {
     render(
       <MemoryRouter>
         <AddressSearch
-          search={(q) => (q === 'sto' ? Promise.resolve({ addresses: [], failed: [] }) : new Promise(() => {}))}
+          search={(q) => (q === 'sto' ? Promise.resolve({ addresses: [], failed: [], areaPickers: [] }) : new Promise(() => {}))}
           suggest={async () => []}
         />
       </MemoryRouter>,
@@ -322,7 +324,7 @@ describe('AddressSearch', () => {
     render(
       <MemoryRouter>
         <AddressSearch
-          search={(q) => (q === 'storgx' ? Promise.resolve({ addresses: [], failed: [] }) : new Promise(() => {}))}
+          search={(q) => (q === 'storgx' ? Promise.resolve({ addresses: [], failed: [], areaPickers: [] }) : new Promise(() => {}))}
           suggest={async () => []}
         />
       </MemoryRouter>,
@@ -393,9 +395,9 @@ describe('AddressSearch', () => {
     })
 
     it('väntar på alla källor i stället för att gissa från de som redan svarat', async () => {
-      const search = vi.fn(async (_q: string, _signal?: AbortSignal, onPartial?: (p: { addresses: Address[]; failed: string[] }) => void, options?: { submitted?: boolean }) => {
-        if (options?.submitted) return { addresses: [horn('1', 'Borås'), horn('1', 'Kalmar')], failed: [] }
-        onPartial?.({ addresses: [horn('1', 'Borås')], failed: [] })
+      const search = vi.fn(async (_q: string, _signal?: AbortSignal, onPartial?: (p: { addresses: Address[]; failed: string[]; areaPickers: [] }) => void, options?: { submitted?: boolean }) => {
+        if (options?.submitted) return { addresses: [horn('1', 'Borås'), horn('1', 'Kalmar')], failed: [], areaPickers: [] }
+        onPartial?.({ addresses: [horn('1', 'Borås')], failed: [], areaPickers: [] })
         return new Promise<never>(() => {})
       })
       render(
@@ -451,8 +453,8 @@ describe('AddressSearch', () => {
       <MemoryRouter>
         <AddressSearch
           search={(q, _signal, onPartial) => {
-            onPartial?.({ addresses: searchAddresses(q, ADDRESSES), failed: [] })
-            return new Promise((resolve) => (finish = () => resolve({ addresses: searchAddresses(q, ADDRESSES), failed: [] })))
+            onPartial?.({ addresses: searchAddresses(q, ADDRESSES), failed: [], areaPickers: [] })
+            return new Promise((resolve) => (finish = () => resolve({ addresses: searchAddresses(q, ADDRESSES), failed: [], areaPickers: [] })))
           }}
           suggest={async () => []}
         />
@@ -472,8 +474,8 @@ describe('AddressSearch', () => {
       <MemoryRouter>
         <AddressSearch
           search={(_q, _signal, onPartial) => {
-            onPartial?.({ addresses: [first, second], failed: [] })
-            return new Promise((resolve) => (finish = () => resolve({ addresses: [third, second, first], failed: [] })))
+            onPartial?.({ addresses: [first, second], failed: [], areaPickers: [] })
+            return new Promise((resolve) => (finish = () => resolve({ addresses: [third, second, first], failed: [], areaPickers: [] })))
           }}
           suggest={async () => []}
         />
@@ -492,7 +494,7 @@ describe('AddressSearch', () => {
     render(
       <MemoryRouter>
         <AddressSearch
-          search={(q) => new Promise((resolve) => (finish = () => resolve({ addresses: searchAddresses(q, ADDRESSES), failed: [] })))}
+          search={(q) => new Promise((resolve) => (finish = () => resolve({ addresses: searchAddresses(q, ADDRESSES), failed: [], areaPickers: [] })))}
           suggest={async () => []}
         />
       </MemoryRouter>,
@@ -509,7 +511,7 @@ describe('AddressSearch', () => {
       <MemoryRouter>
         <AddressSearch
           search={(q) =>
-            q.startsWith('storg') ? Promise.resolve({ addresses: searchAddresses(q, ADDRESSES), failed: [] }) : new Promise(() => {})
+            q.startsWith('storg') ? Promise.resolve({ addresses: searchAddresses(q, ADDRESSES), failed: [], areaPickers: [] }) : new Promise(() => {})
           }
           suggest={async () => []}
         />
@@ -528,7 +530,7 @@ describe('AddressSearch', () => {
     render(
       <MemoryRouter>
         <AddressSearch
-          search={(q) => (q === 'storg' ? Promise.resolve({ addresses: searchAddresses(q, ADDRESSES), failed: [] }) : new Promise(() => {}))}
+          search={(q) => (q === 'storg' ? Promise.resolve({ addresses: searchAddresses(q, ADDRESSES), failed: [], areaPickers: [] }) : new Promise(() => {}))}
           suggest={async () => []}
         />
       </MemoryRouter>,
@@ -550,7 +552,7 @@ describe('AddressSearch', () => {
   })
 
   it('ber om en bredare sökning när man trycker Enter', async () => {
-    const search = vi.fn(async () => ({ addresses: [], failed: [] }))
+    const search = vi.fn(async () => ({ addresses: [], failed: [], areaPickers: [] }))
     render(
       <MemoryRouter>
         <AddressSearch search={search} suggest={async () => []} />
@@ -567,7 +569,7 @@ describe('AddressSearch', () => {
     ]
     render(
       <MemoryRouter>
-        <AddressSearch search={async () => ({ addresses: twins, failed: [] })} suggest={async () => []} />
+        <AddressSearch search={async () => ({ addresses: twins, failed: [], areaPickers: [] })} suggest={async () => []} />
       </MemoryRouter>,
     )
     await userEvent.type(screen.getByRole('combobox'), 'vasagatan 20')
@@ -584,7 +586,7 @@ describe('AddressSearch', () => {
     ]
     render(
       <MemoryRouter>
-        <AddressSearch search={async () => ({ addresses: twins, failed: [] })} suggest={async () => []} />
+        <AddressSearch search={async () => ({ addresses: twins, failed: [], areaPickers: [] })} suggest={async () => []} />
       </MemoryRouter>,
     )
     await userEvent.type(screen.getByRole('combobox'), 'ringvägen 1')
@@ -599,11 +601,218 @@ describe('AddressSearch', () => {
     const hits = [lidkoping('storgatan-11-1', 'Storgatan 11'), a('avesta-storgatan-12', 'Storgatan 12', 'Avesta')]
     render(
       <MemoryRouter>
-        <AddressSearch search={async () => ({ addresses: hits, failed: [] })} suggest={async () => []} />
+        <AddressSearch search={async () => ({ addresses: hits, failed: [], areaPickers: [] })} suggest={async () => []} />
       </MemoryRouter>,
     )
     await userEvent.type(screen.getByRole('combobox'), 'storgatan')
     const options = await screen.findAllByRole('option')
     expect(options[0]).toHaveTextContent(/^Storgatan 11Lidköpings kommun$/)
+  })
+
+  describe('områdesval', () => {
+    const area = (id: string, street: string, detail: string, searchTerms: string[]): Address => ({
+      id,
+      street,
+      locality: '',
+      detail,
+      searchTerms,
+      sourceId: 'avesta',
+      kommun: 'Avesta kommun',
+    })
+    const tatort = area('trakt-7', 'Avesta tätort, Östanfors m.fl.', 'Tisdag, jämn vecka · Trakt 7', ['Avesta tätort'])
+    const skogsbo = area('trakt-2', 'Skogsbo tätort, Rosse m.fl.', 'Tisdag, udda vecka · Trakt 2', ['Backa'])
+    const krylbo = area('trakt-4', 'Krylbo stationssidan, Lejde m.fl.', 'Torsdag, udda vecka · Trakt 4', ['Backa'])
+    const hedemora: Address = { id: 'kungsgatan-12', street: 'Kungsgatan 12', locality: 'Hedemora', sourceId: 'hedemora', kommun: 'Hedemoras kommun' }
+    const picker = (hasHits: boolean) => ({ sourceId: 'avesta', kommun: 'Avesta kommun', hasHits })
+
+    beforeEach(() => localStorage.clear())
+
+    function Omraden() {
+      const street = (useLocation().state as { street?: string } | null)?.street
+      return <p>{street ? `Områdesvalet: ${street}` : 'Områdesvalet'}</p>
+    }
+
+    function renderResult(query: string, result: Partial<SearchResult>) {
+      render(
+        <MemoryRouter>
+          <Routes>
+            <Route
+              index
+              element={<AddressSearch search={async () => ({ addresses: [], failed: [], areaPickers: [], ...result })} suggest={async () => []} />}
+            />
+            <Route path="avesta/omraden" element={<Omraden />} />
+            <Route path=":sourceId/:addressId" element={<Result />} />
+          </Routes>
+        </MemoryRouter>,
+      )
+      return userEvent.type(screen.getByRole('combobox'), query)
+    }
+
+    it('visar områdets namn och särskiljare med kartikon, och raden för alla områden', async () => {
+      await renderResult('Avesta tätort', { addresses: [tatort], areaPickers: [picker(true)] })
+      const options = await screen.findAllByRole('option')
+      expect(options).toHaveLength(2)
+      expect(options[0]).toHaveTextContent('Avesta tätort, Östanfors m.fl.Tisdag, jämn vecka · Trakt 7')
+      expect(options[0].querySelector('.lucide-map')).not.toBeNull()
+      expect(options[0].querySelector('.lucide-map-pin')).toBeNull()
+      expect(options[1]).toHaveTextContent('Se alla områden i Avesta')
+      expect(screen.getByRole('group', { name: 'Avesta kommun' })).toBeInTheDocument()
+    })
+
+    it('behåller nålen för en adress med särskiljare och ort', async () => {
+      const twin = { ...a('ringvagen-1_1', 'Ringvägen 1', 'Grödinge'), detail: 'Restavfall varje vecka' }
+      await renderResult('ringvägen 1', { addresses: [twin] })
+      const [row] = await screen.findAllByRole('option')
+      expect(row.querySelector('.lucide-map-pin')).not.toBeNull()
+    })
+
+    it('behåller nålen för en adress med särskiljare men utan ort', async () => {
+      const lidkoping: Address = { id: 'ringvagen-1', street: 'Ringvägen 1', locality: '', detail: 'Restavfall varje vecka', sourceId: 'lidkoping', kommun: 'Lidköpings kommun' }
+      await renderResult('ringvägen 1', { addresses: [lidkoping] })
+      const [row] = await screen.findAllByRole('option')
+      expect(row.querySelector('.lucide-map-pin')).not.toBeNull()
+      expect(row.querySelector('.lucide-map')).toBeNull()
+    })
+
+    it('skiljer raden för alla områden från träffarna med en rak linje', async () => {
+      await renderResult('Avesta tätort', { addresses: [tatort], areaPickers: [picker(true)] })
+      const row = await screen.findByRole('option', { name: /Se alla områden i Avesta/ })
+      expect(row.className).not.toContain('border-t')
+      expect(row.previousElementSibling).toHaveClass('h-px', 'bg-border')
+      expect(row.previousElementSibling).toHaveAttribute('role', 'none')
+    })
+
+    it('visar sökordet som gav träffen', async () => {
+      await renderResult('Backa', { addresses: [skogsbo, krylbo], areaPickers: [picker(true)] })
+      const options = await screen.findAllByRole('option')
+      expect(options[0]).toHaveTextContent('Backa ingår i området')
+      expect(options[1]).toHaveTextContent('Backa ingår i området')
+    })
+
+    it('visar ingen sökordsrad när namnet själv träffar', async () => {
+      await renderResult('Avesta tätort', { addresses: [tatort], areaPickers: [picker(true)] })
+      await screen.findAllByRole('option')
+      expect(screen.queryByText(/ingår i området/)).toBeNull()
+    })
+
+    it('visar Välj område med förklaring, och andra kommuners träffar under sina rubriker', async () => {
+      await renderResult('Kungsgatan 12 Avesta', { addresses: [hedemora], areaPickers: [picker(false)] })
+      const options = await screen.findAllByRole('option')
+      expect(within(screen.getByRole('group', { name: 'Avesta kommun' })).getByRole('option')).toHaveTextContent(
+        'Välj område i AvestaHär finns schemat per område, inte per adress.',
+      )
+      expect(within(screen.getByRole('group', { name: 'Hedemoras kommun' })).getByRole('option')).toHaveTextContent('Kungsgatan 12')
+      expect(options).toHaveLength(2)
+    })
+
+    it('lägger raden för gatan sist, efter andra kommuners träffar', async () => {
+      await renderResult('Kungsgatan 12', { addresses: [hedemora], areaPickers: [{ ...picker(false), street: 'Kungsgatan 12' }] })
+      const groups = await screen.findAllByRole('group')
+      expect(groups.map((g) => g.getAttribute('aria-label'))).toEqual(['Hedemoras kommun', 'Avesta kommun'])
+      expect(within(groups[1]).getByRole('option')).toHaveTextContent('Kungsgatan 12Välj område i Avesta. Här finns schemat per område, inte per adress.')
+    })
+
+    describe('eget val', () => {
+      const choice = { sourceId: 'avesta', street: 'Kungsgatan 12', areaId: 'trakt-7', label: 'Trakt 7', day: 'Tisdag, jämn vecka' }
+      const withStreet = { areaPickers: [{ ...picker(false), street: 'Kungsgatan 12' }] }
+      beforeEach(() => rememberChoice(choice))
+
+      it('märks som användarens eget val och öppnar området', async () => {
+        await renderResult('Kungsgatan 12', withStreet)
+        const row = await screen.findByRole('option', { name: /Ditt val/ })
+        expect(row).toHaveTextContent('Trakt 7 · Tisdag, jämn vecka')
+        expect(row).toHaveTextContent(/Ditt val, inte från/)
+        await userEvent.click(row)
+        expect(await screen.findByText('Resultat avesta/trakt-7')).toBeInTheDocument()
+      })
+
+      it('går att ändra med tangentbordet och tar med gatan', async () => {
+        await renderResult('Kungsgatan 12', withStreet)
+        await screen.findByRole('option', { name: /Ditt val/ })
+        await userEvent.keyboard('{ArrowDown}{ArrowDown}{Enter}')
+        expect(await screen.findByText('Områdesvalet: Kungsgatan 12')).toBeInTheDocument()
+      })
+
+      it('går att glömma, och då visas raden för att välja område igen', async () => {
+        await renderResult('Kungsgatan 12', withStreet)
+        await userEvent.click(await screen.findByRole('option', { name: 'Glöm valet' }))
+        expect(screen.queryByRole('option', { name: /Ditt val/ })).toBeNull()
+        expect(screen.getByRole('option', { name: /Välj område i Avesta/ })).toBeInTheDocument()
+        expect(loadChoice('avesta', 'Kungsgatan 12')).toBeUndefined()
+      })
+
+      it('öppnar valet med Enter när det är enda raden', async () => {
+        await renderResult('Kungsgatan 12{Enter}', withStreet)
+        expect(await screen.findByText('Resultat avesta/trakt-7')).toBeInTheDocument()
+      })
+    })
+
+    it('tar med gatan till områdesvalet', async () => {
+      await renderResult('Kungsgatan 12', { areaPickers: [{ ...picker(false), street: 'Kungsgatan 12' }] })
+      await userEvent.click(await screen.findByRole('option', { name: /Kungsgatan 12/ }))
+      expect(await screen.findByText('Områdesvalet: Kungsgatan 12')).toBeInTheDocument()
+    })
+
+    it('är inte "hittades inte" när bara raden för områdesval finns', async () => {
+      await renderResult('Okändgatan 3, Avesta', { areaPickers: [picker(false)] })
+      expect(await screen.findByRole('option', { name: /Välj område i Avesta/ })).toBeInTheDocument()
+      expect(screen.queryByText('Vi hittade inte adressen')).toBeNull()
+    })
+
+    it('går till områdesvalet vid klick på raden', async () => {
+      await renderResult('Kungsgatan 12 Avesta', { addresses: [hedemora], areaPickers: [picker(false)] })
+      await userEvent.click(await screen.findByRole('option', { name: /Välj område i Avesta/ }))
+      expect(await screen.findByText('Områdesvalet')).toBeInTheDocument()
+    })
+
+    it('går till områdesvalet med piltangent och Enter på raden Se alla områden', async () => {
+      await renderResult('Avesta tätort', { addresses: [tatort], areaPickers: [picker(true)] })
+      await screen.findAllByRole('option')
+      await userEvent.keyboard('{ArrowDown}{ArrowDown}{Enter}')
+      expect(await screen.findByText('Områdesvalet')).toBeInTheDocument()
+    })
+
+    it('öppnar områdesvalet med Enter när raden är den enda', async () => {
+      await renderResult('Okändgatan 3, Avesta{Enter}', { areaPickers: [picker(false)] })
+      expect(await screen.findByText('Områdesvalet')).toBeInTheDocument()
+    })
+
+    it('öppnar inte något med Enter när en träff och Välj område finns', async () => {
+      await renderResult('Kungsgatan 12 Avesta{Enter}', { addresses: [hedemora], areaPickers: [picker(false)] })
+      await screen.findAllByRole('option')
+      expect(screen.queryByText('Områdesvalet')).toBeNull()
+      expect(screen.queryByText(/^Resultat/)).toBeNull()
+      expect(screen.getAllByRole('option')[0]).toHaveAttribute('aria-selected', 'true')
+    })
+
+    it('öppnar en ensam områdesträff med Enter även med raden Se alla områden', async () => {
+      await renderResult('Avesta tätort{Enter}', { addresses: [tatort], areaPickers: [picker(true)] })
+      expect(await screen.findByText('Resultat avesta/trakt-7')).toBeInTheDocument()
+    })
+
+    it('fäller ut kommunens träffar med Visa N till utan att tappa raden för områdesval', async () => {
+      const many = Array.from({ length: 6 }, (_, i) => area(`trakt-${i + 20}`, `Område ${i}`, 'Måndag', ['Backa']))
+      await renderResult('Backa', { addresses: many, areaPickers: [picker(true)] })
+      await userEvent.click(await screen.findByRole('option', { name: 'Visa 3 till i Avesta kommun' }))
+      expect(screen.getAllByRole('option')).toHaveLength(7)
+      expect(screen.getByRole('option', { name: /Se alla områden i Avesta/ })).toBeInTheDocument()
+    })
+  })
+
+  describe('hittades inte', () => {
+    it('har länken Välj område när sökningen är avgränsad till en kommun med områdesval', async () => {
+      render(
+        <MemoryRouter>
+          <AddressSearch
+            search={async () => ({ addresses: [], failed: [], areaPickers: [] })}
+            suggest={async () => []}
+            kommun="Avesta kommun"
+            areaHref="/avesta/omraden"
+          />
+        </MemoryRouter>,
+      )
+      await userEvent.type(screen.getByRole('combobox'), 'Okändgatan 3{Enter}')
+      expect(await screen.findByRole('link', { name: 'Välj område i Avesta' })).toHaveAttribute('href', '/avesta/omraden')
+    })
   })
 })

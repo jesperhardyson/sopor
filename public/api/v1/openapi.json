@@ -72,7 +72,9 @@
                     "locality": "Uppsala",
                     "kommun": "Uppsala kommun",
                     "source": "uppsala",
-                    "detail": null
+                    "detail": null,
+                    "selection": "address",
+                    "notice": null
                   },
                   "next": [
                     {
@@ -217,7 +219,7 @@
             "name": "q",
             "in": "query",
             "required": true,
-            "description": "Sökfras, minst tre tecken, t.ex. \"storgatan 2\". Ort eller kommun får stå efter gatan: \"storgatan 2 uppsala\".",
+            "description": "Sökfras, minst tre tecken, t.ex. \"storgatan 2\". Ort eller kommun får stå efter gatan: \"storgatan 2 uppsala\". Områden kräver hela ord, utom när `kalla` anger källan: då räcker början av ett ord.",
             "schema": {
               "type": "string",
               "minLength": 3
@@ -268,6 +270,8 @@
                       "kommun": "Uppsala kommun",
                       "source": "uppsala",
                       "detail": null,
+                      "selection": "address",
+                      "notice": null,
                       "url": "https://sopor.hardyson.se/api/v1/adress/uppsala/storgatan-2_uppsala-4004688"
                     }
                   ],
@@ -543,7 +547,9 @@
           "locality",
           "kommun",
           "source",
-          "detail"
+          "detail",
+          "selection",
+          "notice"
         ],
         "properties": {
           "id": {
@@ -552,11 +558,11 @@
           },
           "street": {
             "type": "string",
-            "description": "Gatuadress, t.ex. \"Storgatan 2\"."
+            "description": "Gatuadress, t.ex. \"Storgatan 2\". En träff kan också vara ett område (en källa som delar in kommunen i områden i stället för adresser); då är det områdets namn, t.ex. \"Avesta tätort\"."
           },
           "locality": {
             "type": "string",
-            "description": "Ort."
+            "description": "Ort. Tom för ett område."
           },
           "kommun": {
             "type": "string",
@@ -571,13 +577,28 @@
               "string",
               "null"
             ],
-            "description": "Skiljer träffar med samma gata och ort åt, t.ex. \"Byggnad 78838\". null när det saknas."
+            "description": "Skiljer träffar med samma gata och ort åt, t.ex. \"Byggnad 78838\". För ett område är det hämtdagen, t.ex. \"Tisdag, jämn vecka · Trakt 7\". null när det saknas."
+          },
+          "selection": {
+            "type": "string",
+            "enum": [
+              "address",
+              "area"
+            ],
+            "description": "Hur träffen väljs. \"area\" betyder att källan bara publicerar scheman per område, så att användaren väljer området själv. Nya värden kan tillkomma."
+          },
+          "notice": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Det vi inte vet om schemat, att visa för användaren. Datumen kommer från källan, men för ett område vet vi inte att det gäller en viss adress. null för en adress."
           }
         }
       },
       "SearchHit": {
         "type": "object",
-        "description": "En adress i sökresultatet.",
+        "description": "En adress eller ett område i sökresultatet.",
         "additionalProperties": false,
         "required": [
           "id",
@@ -586,6 +607,8 @@
           "kommun",
           "source",
           "detail",
+          "selection",
+          "notice",
           "url"
         ],
         "properties": {
@@ -595,11 +618,11 @@
           },
           "street": {
             "type": "string",
-            "description": "Gatuadress."
+            "description": "Gatuadress, t.ex. \"Storgatan 2\". En träff kan också vara ett område (en källa som delar in kommunen i områden i stället för adresser); då är det områdets namn, t.ex. \"Avesta tätort\"."
           },
           "locality": {
             "type": "string",
-            "description": "Ort."
+            "description": "Ort. Tom för ett område."
           },
           "kommun": {
             "type": "string",
@@ -614,7 +637,22 @@
               "string",
               "null"
             ],
-            "description": "Skiljer träffar med samma gata och ort åt. null när det saknas."
+            "description": "Skiljer träffar med samma gata och ort åt, t.ex. \"Byggnad 78838\". För ett område är det hämtdagen, t.ex. \"Tisdag, jämn vecka · Trakt 7\". null när det saknas."
+          },
+          "selection": {
+            "type": "string",
+            "enum": [
+              "address",
+              "area"
+            ],
+            "description": "Hur träffen väljs. \"area\" betyder att källan bara publicerar scheman per område, så att användaren väljer området själv. Nya värden kan tillkomma."
+          },
+          "notice": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Det vi inte vet om schemat, att visa för användaren. Datumen kommer från källan, men för ett område vet vi inte att det gäller en viss adress. null för en adress."
           },
           "url": {
             "type": "string",

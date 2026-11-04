@@ -1,9 +1,9 @@
 import '@/test/show-hidden-sources'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Address } from '@/domain/types'
 import type { Source } from '@/sources'
 import { getSource, SOURCES } from '@/sources'
-import { mergeResults, providerFor } from './registry'
+import { mergeResults, providerFor, type SearchOptions, type SearchResult } from './registry'
 
 const a = (id: string, sourceId: string): Address => ({ id, street: id, locality: 'x', sourceId, kommun: 'x' })
 
@@ -607,5 +607,121 @@ describe('placeSuggestions', () => {
 
   it('föreslår inget för en enda bokstav', async () => {
     expect(await suggest('a')).toEqual([])
+  })
+})
+
+describe('searchAll: val av område', () => {
+  const area = ['trakt-7', 'Avesta tätort', '', ['2026-a'], { detail: 'Måndag · Rest', searchTerms: ['Stallgatan'] }]
+  const avestaIndex = { sourceId: 'avesta', updatedAt: '2026-10-29', addresses: [area] }
+
+  beforeEach(async () => {
+    vi.resetModules()
+    await import('@/test/show-hidden-sources') // föregående grupp lämnar ett register utan Avesta
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string) => {
+        if (url === '/data/avesta/addresses.json') return Response.json(avestaIndex)
+        if (url === '/data/gator/ku.json') return Response.json({ kungsgatan: ['avesta'] })
+        if (url === '/data/gator/av.json') return Response.json({ avesta: ['avesta'] })
+        if (url === '/data/gator/ho.json') return Response.json({ hornsgatan: ['stockholm'] })
+        if (url.startsWith('/api/sok')) return Response.json({ addresses: [], failed: [] })
+        return new Response('', { status: 404 })
+      }),
+    )
+  })
+
+  afterEach(async () => {
+    vi.unstubAllGlobals()
+    vi.resetModules()
+    await import('@/test/show-hidden-sources')
+  })
+
+  async function pickers(query: string, options?: SearchOptions) {
+    const { searchAll } = await import('./registry')
+    return (await searchAll(query, undefined, undefined, options)).areaPickers
+  }
+
+  const avesta = { sourceId: 'avesta', kommun: 'Avesta kommun' }
+
+  const iAvesta = { kommun: { code: '2084', name: 'Avesta kommun' } }
+
+  it('ger en väljare med gatan för en hel känd gata, med eller utan nummer', async () => {
+    expect(await pickers('Kungsgatan')).toEqual([{ ...avesta, hasHits: false, street: 'Kungsgatan' }])
+    expect(await pickers('kungsgatan 12')).toEqual([{ ...avesta, hasHits: false, street: 'Kungsgatan 12' }])
+  })
+
+  it('ger en väljare för en hel känd gata på kommunsidan', async () => {
+    expect(await pickers('Kungsgatan 12', iAvesta)).toEqual([{ ...avesta, hasHits: false, street: 'Kungsgatan 12' }])
+  })
+
+  it('ger ingen väljare på kommunsidan för en gata som inte finns där', async () => {
+    expect(await pickers('Hornsgatan 1', iAvesta)).toEqual([])
+  })
+
+  it('ger en väljare när frågan nämner Avesta, även för en okänd gata', async () => {
+    expect(await pickers('Kungsgatan 12 Avesta')).toEqual([{ ...avesta, hasHits: false, street: 'Kungsgatan 12' }])
+    expect(await pickers('Okändgatan 3, Avesta')).toEqual([{ ...avesta, hasHits: false, street: 'Okändgatan 3' }])
+  })
+
+  it('ger ingen väljare för en halvskriven gata eller en gata som inte finns i Avesta', async () => {
+    expect(await pickers('Kungsg')).toEqual([])
+    expect(await pickers('Hornsgatan 1')).toEqual([])
+  })
+
+  it('ger ingen väljare när platsen är en annan än Avesta', async () => {
+    expect(await pickers('Kungsgatan 12, Uppsala')).toEqual([])
+  })
+
+  it('markerar att det finns områdesträffar', async () => {
+    const { searchAll } = await import('./registry')
+    const result = await searchAll('Avesta tätort')
+    expect(result.addresses.map((a) => a.id)).toEqual(['trakt-7'])
+    expect(result.areaPickers).toEqual([{ ...avesta, hasHits: true }])
+  })
+
+  it('tar med väljaren i delresultaten', async () => {
+    const { searchAll } = await import('./registry')
+    const partials: SearchResult[] = []
+    await searchAll('Avesta tätort', undefined, (p) => partials.push(p))
+    expect(partials.length).toBeGreaterThan(0)
+    expect(partials.at(-1)?.areaPickers).toEqual([{ ...avesta, hasHits: true }])
+  })
+
+  it('ger ingen väljare för en annan kommun', async () => {
+    const uppsala = { code: '0380', name: 'Uppsala kommun' }
+    expect(await pickers('Kungsgatan 12', { kommun: uppsala })).toEqual([])
+  })
+
+  it('hämtar en delfil igen efter ett nätfel', async () => {
+    const stub = vi.mocked(fetch)
+    const working = stub.getMockImplementation()!
+    let down = true
+    stub.mockImplementation(async (url) => {
+      if (down && url === '/data/gator/ku.json') throw new TypeError('Nätverksfel')
+      return working(url)
+    })
+    expect(await pickers('Kungsgatan', iAvesta)).toEqual([])
+    down = false
+    expect(await pickers('Kungsgatan', iAvesta)).toEqual([{ ...avesta, hasHits: false, street: 'Kungsgatan' }])
+  })
+
+  it('hämtar en delfil igen efter ett serverfel, men inte en som inte finns', async () => {
+    const stub = vi.mocked(fetch)
+    const working = stub.getMockImplementation()!
+    let down = true
+    stub.mockImplementation(async (url) => (down && url === '/data/gator/ku.json' ? new Response('', { status: 500 }) : working(url)))
+    expect(await pickers('Kungsgatan', iAvesta)).toEqual([])
+    down = false
+    expect(await pickers('Kungsgatan', iAvesta)).toEqual([{ ...avesta, hasHits: false, street: 'Kungsgatan' }])
+
+    await pickers('Zzzgatan')
+    await pickers('Zzzgatan')
+    expect(stub.mock.calls.filter(([url]) => url === '/data/gator/zz.json')).toHaveLength(1)
+  })
+
+  it('ger aldrig en väljare för en källa utan selection', async () => {
+    const { getSource } = await import('@/sources')
+    delete getSource('avesta')!.selection
+    expect(await pickers('Kungsgatan 12 Avesta')).toEqual([])
   })
 })

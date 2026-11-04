@@ -1,6 +1,6 @@
-import { ArrowLeft, Bookmark, CalendarPlus } from 'lucide-react'
+import { ArrowLeft, Bookmark, CalendarPlus, TriangleAlert } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router'
+import { Link, useLocation, useNavigate, useParams } from 'react-router'
 import { streetAndLocality } from '@/domain/address'
 import { formatLong, todayInStockholm } from '@/domain/dates'
 import { nextPickup, upcoming } from '@/domain/schedule'
@@ -8,7 +8,9 @@ import type { Address } from '@/domain/types'
 import { findSaved, storeSchedule } from '@/lib/storage'
 import { getSource, type Source } from '@/sources'
 import { providerFor } from '@/providers/registry'
+import { useAreas } from '../hooks/useAreas'
 import { useSchedule } from '../hooks/useSchedule'
+import { AreaInfo } from '../result/AreaInfo'
 import { MonthCalendar } from '../result/MonthCalendar'
 import { NextPickup } from '../result/NextPickup'
 import { SmartHomeBox } from '../integrations/SmartHomeBox'
@@ -25,12 +27,30 @@ import { usePageTitle } from '../hooks/usePageTitle'
 const dot = "inline-flex items-center before:inline-block before:w-5 before:text-center before:content-['·']"
 const page = 'mx-auto flex w-full max-w-[920px] flex-col gap-5 px-5 pt-1 pb-8 md:px-8 md:pt-4 lg:gap-7 lg:px-0 lg:pb-20'
 
-function BackLink() {
+function BackLink({ area, sourceId, addressId }: { area?: boolean; sourceId?: string; addressId?: string }) {
   return (
-    <Link to="/" className="inline-flex items-center gap-1.5 self-start py-1.5 text-[15px] font-extrabold text-primary">
+    <Link to={area ? `/${sourceId}/omraden` : '/'} state={area && addressId ? { from: addressId } : undefined} className="inline-flex items-center gap-1.5 self-start py-1.5 text-[15px] font-extrabold text-primary">
       <ArrowLeft className="size-[18px]" aria-hidden />
-      Byt adress
+      {area ? 'Byt område' : 'Byt adress'}
     </Link>
+  )
+}
+
+/** En prenumeration pekar på områdets id, så en kalender med det gamla området går inte att ändra härifrån. */
+function AreaChangedNotice({ onDismiss }: { onDismiss: () => void }) {
+  return (
+    <div role="status" className="flex gap-3 rounded-[14px] bg-warn-bg px-4 py-3.5 text-warn">
+      <TriangleAlert className="size-[22px] shrink-0" aria-hidden />
+      <div className="flex min-w-0 flex-col items-start gap-1">
+        <h2 className="text-[15px] font-extrabold">Du har bytt område</h2>
+        <p className="text-sm leading-[1.4]">
+          Har du lagt till det gamla området i din kalender? Ta bort det och lägg till det nya, annars visar kalendern fel dagar.
+        </p>
+        <button type="button" onClick={onDismiss} className="min-h-11 text-sm font-extrabold">
+          Jag förstår
+        </button>
+      </div>
+    </div>
   )
 }
 
@@ -66,7 +86,13 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
   const fetched = useAddress(source, addressId, attempt)
   // Tills källan svarat, eller när den inte svarar, kommer adressen från det sparade schemat.
   const address = fetched ?? (state.status === 'stale' || state.status === 'cached' ? state.address : undefined)
+  const byArea = source?.selection === 'area'
+  const [areas] = useAreas(byArea ? source : undefined)
   const [sheet, setSheet] = useState<'calendar' | 'save' | null>(null)
+  const location = useLocation()
+  const navigate = useNavigate()
+  const areaChanged = (location.state as { areaChanged?: boolean } | null)?.areaChanged === true
+  const dismissChanged = () => navigate(location.pathname, { replace: true, state: null })
   const [savedName, setSavedName] = useState(() => findSaved(sourceId, addressId)?.name)
   usePageTitle(address ? `${streetAndLocality(address)} – Sopor` : undefined)
 
@@ -89,7 +115,7 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
   if (fetched === null || state.status === 'missing') {
     return (
       <div className={page}>
-        <BackLink />
+        <BackLink area={byArea} sourceId={sourceId} addressId={addressId} />
         <NotFound suggestions={[]} />
         <AddressSearch />
       </div>
@@ -98,7 +124,7 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
 
   const header = (
     <div className="flex flex-col gap-2.5">
-      <BackLink />
+      <BackLink area={byArea} sourceId={sourceId} addressId={addressId} />
       <div className="flex items-center gap-3">
         <div className="flex min-w-0 flex-1 flex-col gap-1.5">
           <h1 className="text-[28px] leading-tight font-extrabold tracking-[-0.6px] text-text lg:text-[40px]">
@@ -156,18 +182,21 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
   }
 
   const { schedule } = state
+  const area = areas.status === 'ready' ? areas.index.areas.find((a) => a.id === addressId) : undefined
   const next = nextPickup(schedule, today)
   const coming = upcoming(schedule, today)
 
   return (
     <div className={page}>
       {header}
+      {areaChanged && <AreaChangedNotice onDismiss={dismissChanged} />}
       {state.status === 'stale' && (
         <StaleNotice sourceName={source.name} fetchedAt={formatLong(state.fetchedAt)} onRetry={retry} />
       )}
       {/* Källan ligger sist på mobil men under vänsterspalten på desktop, där högerspalten spänner över båda raderna. */}
       <div className="flex flex-col gap-5 lg:grid lg:grid-cols-[minmax(0,1fr)_360px] lg:grid-rows-[auto_1fr] lg:items-start lg:gap-x-10">
         <div className="flex min-w-0 flex-col gap-5">
+          {area && areas.status === 'ready' && <AreaInfo area={area} explanation={areas.index.explanation} />}
           {next ? <NextPickup event={next} today={today} note={schedule.note} /> : <EmptyState note={source.emptyScheduleNote} />}
           <button
             type="button"
@@ -195,6 +224,9 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
             onOpenChange={(o) => setSheet(o ? 'calendar' : null)}
             address={address}
             icsPath={providerFor(source).icsUrl(address.id)}
+            notice={source.areaNotice}
+            findState={byArea ? { from: addressId, find: true } : undefined}
+            findTo={byArea ? `/${sourceId}/omraden` : undefined}
           />
           <SaveSheet
             key={savedName ?? ''}

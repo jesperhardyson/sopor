@@ -1,8 +1,9 @@
-import { SearchX } from 'lucide-react'
+import { ArrowRight, SearchX } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
-import { useLocation, useParams } from 'react-router'
+import { Link, useLocation, useParams } from 'react-router'
 import type { KommunPage as KommunPageData } from '@/data/kommun-pages'
 import { kommunPage, searchInKommun } from '@/providers/registry'
+import { SOURCES } from '@/sources'
 import { usePageTitle } from '../hooks/usePageTitle'
 import { AllKommunerLink, BackLink, KommunColumn, KommunContent } from '../kommun/KommunContent'
 import { embeddedData } from '../kommun/embedded'
@@ -53,7 +54,20 @@ function KommunView({ slug }: { slug: string }) {
 
 function KommunSearch({ page }: { page: KommunPageData }) {
   const { search, suggest } = useMemo(() => searchInKommun(page), [page])
-  return <AddressSearch search={search} suggest={suggest} kommun={page.name} />
+  // Källor som publicerar scheman per område har en egen sida för valet.
+  const areaSource = SOURCES.find((s) => s.selection === 'area' && s.kommuner.some((k) => k.code === page.code))
+  const areaHref = areaSource && `/${areaSource.id}/omraden`
+  return (
+    <div className="flex flex-col gap-3.5">
+      <AddressSearch search={search} suggest={suggest} kommun={page.name} areaHref={areaHref} />
+      {areaHref && (
+        <Link to={areaHref} className="inline-flex items-center gap-1.5 self-start text-[15px] font-bold text-primary">
+          Välj område i {page.name.replace(/ kommun$/, '')}
+          <ArrowRight className="size-4" aria-hidden />
+        </Link>
+      )}
+    </div>
+  )
 }
 
 function UnknownKommun() {

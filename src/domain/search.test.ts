@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { enterTarget, fairShare, groupByKommun, normalize, searchAddresses, stableMerge, suggest } from './search'
+import { enterTarget, fairShare, groupByKommun, matchedTerm, normalize, searchAddresses, stableMerge, suggest } from './search'
 import type { Address } from './types'
 
 const a = (id: string, street: string, locality: string): Address => ({ id, street, locality, sourceId: 'avesta', kommun: 'Avesta kommun' })
@@ -181,5 +181,136 @@ describe('enterTarget', () => {
 
   it('räknar husbokstaven som en del av adressen', () => {
     expect(enterTarget('storgatan 12 b', [a('x', 'Storgatan 12 B', 'Krylbo'), a('y', 'Storgatan 12', 'Avesta')])?.id).toBe('x')
+  })
+})
+
+describe('områdessökning', () => {
+  const area = (id: string, street: string, searchTerms: string[]): Address => ({ ...a(id, street, 'Avesta'), searchTerms })
+  const AREAS: Address[] = [
+    area('trakt-1', 'Trakt 1', ['trakt 1', 'Stallgatan', 'Askön']),
+    area('trakt-10', 'Trakt 10', ['trakt 10', 'Horndal tätort']),
+    area('trakt-2', 'Trakt 2', ['Backa']),
+    area('trakt-4', 'Trakt 4', ['Backa']),
+    area('trakt-7', 'Avesta tätort, Östanfors m.fl.', []),
+  ]
+
+  it('områden hittas på sitt namn', () => {
+    expect(ids(searchAddresses('Avesta tätort', AREAS))).toEqual(['trakt-7'])
+    expect(ids(searchAddresses('AVESTA TÄTORT', AREAS))).toEqual(['trakt-7'])
+  })
+
+  it('områden hittas på sökord', () => {
+    expect(ids(searchAddresses('Askön', AREAS))).toEqual(['trakt-1'])
+  })
+
+  it('ett exakt sökord utesluter längre', () => {
+    expect(ids(searchAddresses('trakt 1', AREAS))).toEqual(['trakt-1'])
+  })
+
+  it('alla områden med samma namn visas', () => {
+    expect(ids(searchAddresses('Backa', AREAS))).toEqual(['trakt-2', 'trakt-4'])
+  })
+
+  it('gata i listan med nummer', () => {
+    expect(ids(searchAddresses('Stallgatan 5', AREAS))).toEqual(['trakt-1'])
+    expect(ids(searchAddresses('Stallgatan 5 B', AREAS))).toEqual(['trakt-1'])
+  })
+
+  it('i en obegränsad sökning måste varje ord vara ett helt ord i termen', () => {
+    expect(searchAddresses('st', AREAS)).toEqual([])
+    expect(searchAddresses('stall', AREAS)).toEqual([])
+    expect(searchAddresses('avesta tät', AREAS)).toEqual([])
+    expect(ids(searchAddresses('Östanfors', AREAS))).toEqual(['trakt-7'])
+  })
+
+  describe('småord i områdens termer', () => {
+    const LIST = [
+      area('trakt-3', 'Fors, Nordanö, Brogård', ['Fors', 'Norr', 'Norr och Sör Nävde']),
+      area('trakt-7', 'Avesta tätort, Östanfors m.fl.', ['trakt 7']),
+    ]
+
+    it.each(['fl', 'm fl', 'm.fl.', 'och'])('%s ger inga områden, inte heller med prefix', (query) => {
+      expect(searchAddresses(query, LIST)).toEqual([])
+      expect(searchAddresses(query, LIST, 8, { areaPrefix: true })).toEqual([])
+    })
+
+    it('ett småord hjälper inte ett annat ord att träffa en term utan det', () => {
+      expect(searchAddresses('m 7', LIST)).toEqual([])
+      expect(searchAddresses('och 7', LIST)).toEqual([])
+    })
+
+    it('övriga ord träffar som förut, med småordet kvar i frågan', () => {
+      expect(ids(searchAddresses('Norr', LIST))).toEqual(['trakt-3'])
+      expect(ids(searchAddresses('Fors', LIST))).toEqual(['trakt-3'])
+      expect(ids(searchAddresses('Norr och Sör Nävde', LIST))).toEqual(['trakt-3'])
+      expect(ids(searchAddresses('Avesta tätort', LIST))).toEqual(['trakt-7'])
+      expect(ids(searchAddresses('Östanfors m.fl.', LIST))).toEqual(['trakt-7'])
+    })
+
+    it('namnet visas oförändrat', () => {
+      expect(searchAddresses('Östanfors', LIST)[0].street).toBe('Avesta tätort, Östanfors m.fl.')
+    })
+
+    it('vanliga adresser påverkas inte', () => {
+      const street = a('och-1', 'Och 1', 'Fl')
+      expect(ids(searchAddresses('och', [street]))).toEqual(['och-1'])
+      expect(ids(searchAddresses('fl', [street]))).toEqual(['och-1'])
+    })
+  })
+
+  it('prefix gäller när sökningen är avgränsad till källan', () => {
+    const prefix = { areaPrefix: true }
+    expect(ids(searchAddresses('östan', AREAS, 8, prefix))).toEqual(['trakt-7'])
+    expect(ids(searchAddresses('stall', AREAS, 8, prefix))).toEqual(['trakt-1'])
+    expect(searchAddresses('östan', AREAS)).toEqual([])
+  })
+
+  it('vanliga adresser matchar början av ord i båda lägena', () => {
+    expect(ids(searchAddresses('storg', ADDRESSES))).toEqual(ids(searchAddresses('storg', ADDRESSES, 8, { areaPrefix: true })))
+    expect(searchAddresses('storg', ADDRESSES).length).toBeGreaterThan(0)
+  })
+
+  it('gatan räknas bara när inget annat än husnummer och bokstav följer', () => {
+    expect(searchAddresses('Stallgatan 5, Stockholm', AREAS)).toEqual([])
+    expect(searchAddresses('Stallgatan 5 B Stockholm', AREAS)).toEqual([])
+  })
+
+  it('orelaterad gata ger inget', () => {
+    expect(searchAddresses('Kungsgatan 12', AREAS)).toEqual([])
+  })
+
+  it('ord får inte hämtas från olika sökord', () => {
+    expect(searchAddresses('Askön Stallgatan', AREAS)).toEqual([])
+  })
+
+  it('adresser utan sökord fungerar som förut', () => {
+    expect(ids(searchAddresses('storgatan 12b', [...AREAS, ...ADDRESSES]))).toEqual(['krylbo-storgatan-12b'])
+  })
+
+  describe('matchedTerm', () => {
+    it('ger sökordet som gav träff', () => {
+      expect(matchedTerm('Backa', AREAS[2])).toBe('Backa')
+    })
+
+    it('ger gatan när ett husnummer följer', () => {
+      expect(matchedTerm('Stallgatan 5', AREAS[0])).toBe('Stallgatan')
+    })
+
+    it('ger gatan när en plats följer', () => {
+      expect(matchedTerm('Stallgatan 5, Avesta', AREAS[0])).toBe('Stallgatan')
+      expect(matchedTerm('Stallgatan Avesta', AREAS[0])).toBe('Stallgatan')
+    })
+
+    it('ger sökordet också när bara början är skriven, som på kommunsidan', () => {
+      expect(matchedTerm('stall', AREAS[0])).toBe('Stallgatan')
+    })
+
+    it('ger null när namnet redan visar träffen', () => {
+      expect(matchedTerm('Avesta tätort', AREAS[4])).toBeNull()
+    })
+
+    it('ger null för en adress utan sökord', () => {
+      expect(matchedTerm('Storgatan', ADDRESSES[0])).toBeNull()
+    })
   })
 })

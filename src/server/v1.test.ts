@@ -22,6 +22,7 @@ const SOURCES: Source[] = [
   edp('trog', 'trog.test', 'Trög kommun'),
   { ...edp('statisk', 'statisk.test', 'Statiska kommun'), config: { system: 'static' } },
   { ...edp('dold', 'dold.test', 'Dolda kommun'), hidden: true },
+  { ...edp('avesta', 'avesta.test', 'Avesta kommun'), config: { system: 'static' }, selection: 'area', areaNotice: { title: 'Kontrollera området', text: 'Du har valt det själv.' } },
 ]
 
 const event = (date: string) => ({ date, fractions: ['mat'], estimated: false })
@@ -36,6 +37,18 @@ const files: Record<string, unknown> = {
       ['gammal-1', 'Gammelgatan 1', 'Örebro', ['gammal']],
       ['tom-1', 'Tomgatan 1', 'Örebro', ['tom']],
     ],
+  },
+  '/data/avesta/addresses.json': {
+    sourceId: 'avesta',
+    updatedAt: '2026-01-01',
+    addresses: [
+      ['trakt-7', 'Avesta tätort', '', ['2026-trakt-7'], { detail: 'Tisdag, jämn vecka · Trakt 7', searchTerms: ['Trakt 7', 'Stallgatan'] }],
+      ['trakt-3', 'Fors, Nordanö m.fl.', '', ['2026-trakt-3'], { detail: 'Onsdag, udda vecka · Trakt 3', searchTerms: ['Fors', 'Norr', 'Norr och Sör Nävde'] }],
+    ],
+  },
+  '/data/avesta/schedules/2026-trakt-7.json': {
+    id: '2026-trakt-7', validFrom: '2026-01-01', validTo: '2026-12-31', updatedAt: '2026-01-01', bins: [],
+    events: [event('2026-11-03')],
   },
   '/data/statisk/schedules/del.json': {
     id: 'del', validFrom: '2026-01-01', validTo: '2026-12-31', updatedAt: '2026-01-01', bins: [],
@@ -81,6 +94,8 @@ describe('handleV1Address', () => {
       kommun: 'Uppsala kommun',
       source: 'uppsala',
       detail: null,
+      selection: 'address',
+      notice: null,
     })
   })
 
@@ -219,7 +234,7 @@ describe('handleV1Sources', () => {
     expect(res.headers.get('Cache-Control')).toBe('public, s-maxage=86400')
     const body = await res.json()
     expect(body.apiVersion).toBe('1')
-    expect(body.sources.map((s: { id: string }) => s.id)).toEqual(['uppsala', 'trog', 'statisk'])
+    expect(body.sources.map((s: { id: string }) => s.id)).toEqual(['uppsala', 'trog', 'statisk', 'avesta'])
     expect(body.sources[0]).toEqual({
       id: 'uppsala',
       name: 'uppsala AB',
@@ -292,7 +307,7 @@ describe('handleV1Search', () => {
     expect(body.failed).toEqual([])
     expect(body.addresses.length).toBeGreaterThan(0)
     for (const a of body.addresses) {
-      expect(Object.keys(a).sort()).toEqual(['detail', 'id', 'kommun', 'locality', 'source', 'street', 'url'])
+      expect(Object.keys(a).sort()).toEqual(['detail', 'id', 'kommun', 'locality', 'notice', 'selection', 'source', 'street', 'url'])
       expect(a.url).toBe(`https://preview.test/api/v1/adress/uppsala/${encodeURIComponent(a.id)}`)
     }
     expect(hosts()).toContain('uppsala.test')
@@ -367,6 +382,8 @@ describe('handleV1Search', () => {
         kommun: 'Statiska kommun',
         source: 'statisk',
         detail: null,
+        selection: 'address',
+        notice: null,
         url: `https://preview.test/api/v1/adress/statisk/${encodeURIComponent('storgatan-1_örebro')}`,
       },
     ])
@@ -385,5 +402,77 @@ describe('handleV1Search', () => {
         : fetchFn(input, init)) as typeof fetch
     const body = await (await search(q('Storgatan', '&kalla=statisk'), { ...opts, fetchFn: bigFetch })).json()
     expect(body.addresses).toHaveLength(10)
+  })
+})
+
+describe('områden som träffar', () => {
+  const search = (query: string) => v1(handleV1Search)(get(`/api/v1/sok?${query}`), opts)
+  const hit = {
+    id: 'trakt-7',
+    street: 'Avesta tätort',
+    locality: '',
+    kommun: 'Avesta kommun',
+    source: 'avesta',
+    detail: 'Tisdag, jämn vecka · Trakt 7',
+    selection: 'area',
+    notice: 'Kontrollera området. Du har valt det själv.',
+    url: 'https://preview.test/api/v1/adress/avesta/trakt-7',
+  }
+
+  it('/sok ger området med namnet i street, tom ort och hämtdagen i detail', async () => {
+    const body = await (await search('q=avesta%20t%C3%A4tort')).json()
+    expect(body.addresses).toEqual([hit])
+    expect(body.failed).toEqual([])
+  })
+
+  it('läcker inte searchTerms', async () => {
+    const body = await (await search('q=trakt%207&kalla=avesta')).json()
+    expect(body.addresses).toEqual([hit])
+    expect(JSON.stringify(body)).not.toContain('searchTerms')
+  })
+
+  it('kräver hela ord utan kalla och tillåter början av ord med kalla', async () => {
+    expect((await (await search('q=stallg')).json()).addresses).toEqual([])
+    expect((await (await search('q=stallg&kalla=avesta')).json()).addresses).toEqual([hit])
+  })
+
+  it('småord i områdens termer ger inga träffar, men övriga ord gör det', async () => {
+    for (const q of ['m%20fl', 'och']) {
+      expect((await (await search(`q=${q}`)).json()).addresses).toEqual([])
+      expect((await (await search(`q=${q}&kalla=avesta`)).json()).addresses).toEqual([])
+    }
+    const ids = async (q: string) => (await (await search(`q=${q}`)).json()).addresses.map((a: { id: string }) => a.id)
+    expect(await ids('Norr')).toEqual(['trakt-3'])
+    expect(await ids('Fors')).toEqual(['trakt-3'])
+    expect(await ids('Norr%20och%20S%C3%B6r%20N%C3%A4vde')).toEqual(['trakt-3'])
+    expect(await ids('Avesta%20t%C3%A4tort')).toEqual(['trakt-7'])
+  })
+
+  it('hittar gatan när frågan nämner Avesta, med och utan kalla', async () => {
+    for (const q of ['Stallgatan%205%2C%20Avesta', 'Stallgatan%2C%20Avesta', 'Stallgatan%20Avesta']) {
+      expect((await (await search(`q=${q}`)).json()).addresses).toEqual([hit])
+      expect((await (await search(`q=${q}&kalla=avesta`)).json()).addresses).toEqual([hit])
+    }
+  })
+
+  it('hittar inte gatan när frågan nämner en annan plats', async () => {
+    const body = await (await search('q=Stallgatan%205%2C%20Stockholm')).json()
+    expect(body.addresses).toEqual([])
+  })
+
+  it('en gatuadress ger inga träffar och inget fel', async () => {
+    const body = await (await search('q=kungsgatan%2012&kalla=avesta')).json()
+    expect(body.addresses).toEqual([])
+    expect(body.failed).toEqual([])
+  })
+
+  it('/adress ger detail och schemat', async () => {
+    const body = await (await address('source=avesta&id=trakt-7')).json()
+    expect(body.address).toEqual({
+      id: 'trakt-7', street: 'Avesta tätort', locality: '', kommun: 'Avesta kommun', source: 'avesta', detail: 'Tisdag, jämn vecka · Trakt 7',
+      selection: 'area', notice: 'Kontrollera området. Du har valt det själv.',
+    })
+    expect(body.events.map((e: { date: string }) => e.date)).toEqual(['2026-11-03'])
+    expect(JSON.stringify(body)).not.toContain('searchTerms')
   })
 })

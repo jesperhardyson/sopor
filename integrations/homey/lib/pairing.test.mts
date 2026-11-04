@@ -66,4 +66,14 @@ describe('kommunerna som finns', () => {
     expect(placeCovered(names, 'Kommun')).toBe(false)
     expect(placeCovered(names, 'Lillby')).toBe(false)
   })
+
+  it('släpper igenom en områdesträff utan ort som found', () => {
+    const omrade: SoporSearchHit = {
+      ...hit('Avesta tätort, Östanfors m.fl.', '', 'Avesta kommun'),
+      detail: 'Tisdag, jämn vecka · Trakt 7',
+    }
+    const outcome = searchOutcome({ addresses: [omrade], failed: [] }, '')
+    expect(outcome.result).toBe('found')
+    expect(outcome.hits).toEqual([omrade])
+  })
 })

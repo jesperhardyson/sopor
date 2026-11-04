@@ -116,3 +116,19 @@ describe('buildIcs', () => {
   })
 })
 
+describe('buildIcs med varning för valt område', () => {
+  const unfolded = (ics: string) => ics.replace(/\r\n /g, '')
+  const area = { id: 'trakt-7', street: 'Avesta tätort', locality: '', sourceId: 'avesta', kommun: 'Avesta kommun' }
+  const schedule = { updatedAt: '2026-11-04', bins: [], events: [{ date: '2026-11-10', fractions: ['mat' as const] }, { date: '2026-11-24', fractions: ['mat' as const] }] }
+
+  it('står i kalendern och i varje händelse, med oförändrat UID', () => {
+    const ics = unfolded(buildIcs({ address: area, kommunName: 'Avesta kommun', schedule: schedule as never, notice: 'Kontrollera att området stämmer. Text.' }))
+    expect(ics).toMatch(/X-WR-CALDESC:.*Kontrollera att området stämmer\. Text\./)
+    expect(ics.match(/^DESCRIPTION:Kontrollera att området stämmer/gm)).toHaveLength(2)
+    expect(ics).toContain('UID:trakt-7-2026-11-10@sopor.hardyson.se')
+  })
+
+  it('saknas utan varning', () => {
+    expect(buildIcs({ address: area, kommunName: 'Avesta kommun', schedule: schedule as never })).not.toContain('Kontrollera')
+  })
+})

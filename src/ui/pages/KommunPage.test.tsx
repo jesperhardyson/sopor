@@ -4,6 +4,7 @@ import { Link, MemoryRouter, Route, Routes, useParams } from 'react-router'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { KommunPage } from '@/data/kommun-pages'
 import { kommunPage, kommunPages, searchAll, searchInKommun } from '@/providers/registry'
+import '@/test/show-hidden-sources'
 import { embeddedScript } from '../kommun/embedded'
 import { KommunRoute } from './KommunPage'
 import { KommunerRoute } from './KommunerPage'
@@ -11,7 +12,7 @@ import { KommunerRoute } from './KommunerPage'
 vi.mock('@/providers/registry', () => ({
   kommunPage: vi.fn(),
   kommunPages: vi.fn(),
-  searchAll: vi.fn(async () => ({ addresses: [{ id: 'storgatan-2_stockholm', street: 'Storgatan 2', locality: 'Stockholm', sourceId: 'stockholm', kommun: 'Stockholms kommun' }], failed: [] })),
+  searchAll: vi.fn(async () => ({ addresses: [{ id: 'storgatan-2_stockholm', street: 'Storgatan 2', locality: 'Stockholm', sourceId: 'stockholm', kommun: 'Stockholms kommun' }], failed: [], areaPickers: [] })),
   searchInKommun: vi.fn(),
   warmUpSearch: () => {},
   prefetchAddress: () => {},
@@ -20,6 +21,7 @@ vi.mock('@/providers/registry', () => ({
 }))
 
 const uppsala: KommunPage = { code: '0380', name: 'Uppsala kommun', slug: 'uppsala-kommun', covered: true, sources: [], orter: [] }
+const avesta: KommunPage = { code: '2084', name: 'Avesta kommun', slug: 'avesta-kommun', covered: true, sources: [], orter: [] }
 const goteborg: KommunPage = { code: '1480', name: 'Göteborgs kommun', slug: 'goteborgs-kommun', covered: false, sources: [], orter: [] }
 
 function AddressProbe() {
@@ -44,7 +46,7 @@ beforeEach(() => {
   vi.mocked(kommunPage).mockImplementation(async (slug) => [uppsala, goteborg].find((k) => k.slug === slug))
   vi.mocked(kommunPages).mockResolvedValue([uppsala, goteborg])
   vi.mocked(searchInKommun).mockReturnValue({
-    search: async () => ({ addresses: [{ id: 'storgatan-2_uppsala', street: 'Storgatan 2', locality: 'Uppsala', sourceId: 'uppsala', kommun: 'Uppsala kommun' }], failed: [] }),
+    search: async () => ({ addresses: [{ id: 'storgatan-2_uppsala', street: 'Storgatan 2', locality: 'Uppsala', sourceId: 'uppsala', kommun: 'Uppsala kommun' }], failed: [], areaPickers: [] }),
     suggest: async () => [],
   })
 })
@@ -97,11 +99,32 @@ describe('KommunRoute', () => {
   })
 
   it('förklarar att adressen saknas i just den här kommunen', async () => {
-    vi.mocked(searchInKommun).mockReturnValue({ search: async () => ({ addresses: [], failed: [] }), suggest: async () => [] })
+    vi.mocked(searchInKommun).mockReturnValue({ search: async () => ({ addresses: [], failed: [], areaPickers: [] }), suggest: async () => [] })
     embed('/kommuner/uppsala-kommun', uppsala)
     show('/kommuner/uppsala-kommun')
     await userEvent.type(screen.getByRole('combobox'), 'Storgatan 2{Enter}')
     expect(await screen.findByRole('heading', { name: 'Vi hittade inte adressen i Uppsala kommun' })).toBeInTheDocument()
+  })
+
+  it('länkar till områdesvalet på kommunsidan för en källa med områdesval', () => {
+    embed('/kommuner/avesta-kommun', avesta)
+    show('/kommuner/avesta-kommun')
+    expect(screen.getByRole('link', { name: 'Välj område i Avesta' })).toHaveAttribute('href', '/avesta/omraden')
+  })
+
+  it('länkar inte till områdesval på andra kommuner', () => {
+    embed('/kommuner/uppsala-kommun', uppsala)
+    show('/kommuner/uppsala-kommun')
+    expect(screen.queryByRole('link', { name: /Välj område/ })).toBeNull()
+  })
+
+  it('ger rutan "hittades inte" en länk till områdesvalet på Avestas kommunsida', async () => {
+    vi.mocked(searchInKommun).mockReturnValue({ search: async () => ({ addresses: [], failed: [], areaPickers: [] }), suggest: async () => [] })
+    embed('/kommuner/avesta-kommun', avesta)
+    show('/kommuner/avesta-kommun')
+    await userEvent.type(screen.getByRole('combobox'), 'Okändgatan 3{Enter}')
+    await screen.findByRole('heading', { name: 'Vi hittade inte adressen i Avesta kommun' })
+    expect(screen.getAllByRole('link', { name: 'Välj område i Avesta' })).toHaveLength(2)
   })
 
   it('sätter sidans titel', async () => {
