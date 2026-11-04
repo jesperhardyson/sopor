@@ -1,3 +1,4 @@
+import '@/test/show-hidden-sources'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -6,7 +7,7 @@ import { loadSaved } from '@/lib/storage'
 import { CalendarSheet } from './CalendarSheet'
 import { SaveSheet } from './SaveSheet'
 
-const villa: Address = { id: 'krylbo-storgatan-12b', street: 'Storgatan 12 B', locality: 'Krylbo', sourceId: 'avesta', kommun: 'Avesta kommun' }
+const villa: Address = { id: 'krylbo-storgatan-12b', street: 'Storgatan 12 B', locality: 'Krylbo', sourceId: 'uppsala', kommun: 'Avesta kommun' }
 
 describe('CalendarSheet', () => {
   it('har fyra sätt att lägga till kalendern och ett notistips', () => {
@@ -63,5 +64,20 @@ describe('SaveSheet', () => {
     render(<SaveSheet open onOpenChange={() => {}} address={villa} kommunName="Avesta kommun" />)
     expect(screen.getByLabelText('Ge adressen ett namn')).not.toHaveFocus()
     expect(screen.getByRole('dialog')).toHaveFocus()
+  })
+
+  it('använder ordet område för en källa som väljs per område', async () => {
+    const area: Address = { ...villa, id: 'trakt-7', street: 'Avesta tätort', locality: '', sourceId: 'avesta' }
+    render(<SaveSheet open onOpenChange={() => {}} address={area} kommunName="Avesta kommun" />)
+    expect(screen.getByRole('dialog', { name: 'Spara område' })).toBeInTheDocument()
+    expect(screen.getByLabelText('Ge området ett namn')).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Spara område' }))
+    expect(loadSaved()).toMatchObject([{ addressId: 'trakt-7', street: 'Avesta tätort' }])
+  })
+
+  it('behåller adressorden för vanliga källor', () => {
+    render(<SaveSheet open onOpenChange={() => {}} address={villa} kommunName="Avesta kommun" />)
+    expect(screen.getByRole('dialog', { name: 'Spara adress' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Spara adress' })).toBeInTheDocument()
   })
 })

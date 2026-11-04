@@ -25,7 +25,7 @@ function BackLink() {
   )
 }
 
-function useAreas(source: Source | undefined): [State, () => void] {
+export function useAreas(source: Source | undefined): [State, () => void] {
   const [state, setState] = useState<State>({ status: 'loading' })
   const [attempt, setAttempt] = useState(0)
   useEffect(() => {

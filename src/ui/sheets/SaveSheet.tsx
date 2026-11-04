@@ -3,6 +3,7 @@ import { useId, useState } from 'react'
 import { streetAndLocality } from '@/domain/address'
 import type { Address } from '@/domain/types'
 import { findSaved, upsertSaved } from '@/lib/storage'
+import { getSource } from '@/sources'
 import { cn } from '@/lib/utils'
 import { NameIcon } from '../saved/NameIcon'
 import { ResponsiveSheet } from './ResponsiveSheet'
@@ -24,6 +25,7 @@ export function SaveSheet({
 }) {
   const inputId = useId()
   const [name, setName] = useState(() => findSaved(address.sourceId, address.id)?.name ?? 'Hemma')
+  const noun = getSource(address.sourceId)?.selection === 'area' ? 'område' : 'adress'
   const trimmed = name.trim()
 
   function save() {
@@ -44,7 +46,7 @@ export function SaveSheet({
     <ResponsiveSheet
       open={open}
       onOpenChange={onOpenChange}
-      title="Spara adress"
+      title={`Spara ${noun}`}
       description={`${streetAndLocality(address)} · ${kommunName}`}
     >
       <form
@@ -56,7 +58,7 @@ export function SaveSheet({
       >
         <div className="flex flex-col gap-2">
           <label htmlFor={inputId} className="text-sm font-extrabold text-text">
-            Ge adressen ett namn
+            Ge {noun === 'område' ? 'området' : 'adressen'} ett namn
           </label>
           <div className="flex h-14 items-center gap-2.5 rounded-[14px] border-2 border-border bg-surface px-4 focus-within:border-primary">
             <NameIcon name={name} className="size-5 shrink-0 text-primary" />
@@ -98,7 +100,7 @@ export function SaveSheet({
             disabled={!trimmed}
             className="h-14 rounded-[14px] bg-primary text-base font-extrabold text-on-primary disabled:opacity-50"
           >
-            Spara adress
+            Spara {noun}
           </button>
           <button type="button" onClick={() => onOpenChange(false)} className="h-12 text-base font-extrabold text-text-2">
             Avbryt
