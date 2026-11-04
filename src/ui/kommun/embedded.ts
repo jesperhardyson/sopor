@@ -13,7 +13,7 @@ export function embeddedData<T>(pathname: string): T | undefined {
   if (!text) return undefined
   try {
     const { path, data } = JSON.parse(text) as { path: string; data: T }
-    return path === pathname ? data : undefined
+    return path === pathname.replace(/\/+$/, '') ? data : undefined
   } catch {
     return undefined
   }

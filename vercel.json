@@ -104,7 +104,7 @@
       "destination": "/api/v1/okand"
     },
     {
-      "source": "/((?!data/|ics/|assets/|api/).*)",
+      "source": "/((?!data/|ics/|assets/|api/|kommuner/).*)",
       "destination": "/index.html"
     }
   ]

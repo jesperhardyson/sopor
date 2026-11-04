@@ -74,6 +74,11 @@ describe('vercel.json', () => {
     expect(index('/kommuner/:slug', '/kommuner/:slug/index.html')).toBeLessThan(app)
   })
 
+  it('låter en okänd kommun ge 404, genom att inte fånga den i regeln till index.html', () => {
+    const app = config.rewrites.find((r) => r.destination === '/index.html')!
+    expect(new RegExp(`^${app.source}$`).test('/kommuner/finns-inte')).toBe(false)
+  })
+
   it('håller adressidor borta från sökmotorerna men inte kommunsidorna', () => {
     const rule = config.headers.find((h) => h.headers?.some((x) => x.key === 'X-Robots-Tag' && x.value === 'noindex'))!
     const re = new RegExp(`^${rule.source}$`)

@@ -18,6 +18,11 @@ describe('inbäddad data', () => {
     expect(embeddedData('/kommuner/b')).toBeUndefined()
   })
 
+  it('hittar datan även med avslutande snedstreck, som Vercel serverar samma fil för', () => {
+    put(embeddedScript('/kommuner/a', { name: 'A' }))
+    expect(embeddedData('/kommuner/a/')).toEqual({ name: 'A' })
+  })
+
   it('kan inte avsluta skriptblocket i förtid', () => {
     const html = embeddedScript('/kommuner/a', { name: '</script><b>x' })
     expect(html.match(/<\/script>/g)).toHaveLength(1)

@@ -65,6 +65,17 @@ describe('renderKommunHtml', () => {
   })
 })
 
+describe('en mall som ändrats', () => {
+  it.each([
+    ['rotelementet', '<div id="root"></div>', '<div id="root" />'],
+    ['titeln', /<title>[^<]*<\/title>/, ''],
+    ['beskrivningen', /<meta name="description"[^>]*>/, ''],
+    ['delningstiteln', /<meta property="og:title"[^>]*>/, ''],
+  ])('stoppar bygget när %s saknas', (_, from, to) => {
+    expect(() => renderKommunHtml(template.replace(from, to), uppsala)).toThrow(/mallen/i)
+  })
+})
+
 describe('CSP', () => {
   it('tillåter temaskriptet i en färdig kommunsida', () => {
     const config = JSON.parse(readFileSync(path.join(root, 'vercel.json'), 'utf8')) as { headers: { headers: { key: string; value: string }[] }[] }

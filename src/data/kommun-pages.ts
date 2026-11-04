@@ -3,7 +3,7 @@
 
 import type { Source } from '@/sources'
 import { DataError } from './static-format'
-import type { SwedenPlacesFile } from './sweden-places'
+import { placeNames, type SwedenPlacesFile } from './sweden-places'
 
 export interface KommunPage {
   code: string
@@ -49,8 +49,8 @@ export function buildKommunPages(file: SwedenPlacesFile, sources: Source[]): Kom
   }
 
   const orterByCode = new Map<string, string[]>()
-  for (const [ort, codes] of Object.entries(file.orter)) {
-    for (const code of codes) orterByCode.set(code, [...(orterByCode.get(code) ?? []), ort])
+  for (const [label, codes] of Object.entries(file.orter)) {
+    for (const code of codes) orterByCode.set(code, [...(orterByCode.get(code) ?? []), ...placeNames(label)])
   }
 
   const pages = Object.entries(file.kommuner)
@@ -62,7 +62,7 @@ export function buildKommunPages(file: SwedenPlacesFile, sources: Source[]): Kom
         slug: kommunSlug(code, name),
         covered: covering.length > 0,
         sources: covering.map((s) => ({ name: s.name, url: s.url })),
-        orter: sortOrter(orterByCode.get(code) ?? [], name),
+        orter: sortOrter([...new Set(orterByCode.get(code))], name),
       }
     })
     .sort((a, b) => a.name.localeCompare(b.name, 'sv'))

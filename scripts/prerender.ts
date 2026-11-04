@@ -24,20 +24,25 @@ interface PageMeta {
 
 const escapeAttr = (text: string) => text.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')
 
-/** Funktioner som ersättning, så att $ i datan inte tolkas av String.replace. */
+/** Ersätter eller stoppar bygget, så att en ändrad mall inte ger 290 sidor med fel innehåll. Funktion som ersättning, så att $ i datan inte tolkas. */
+function replaceOrThrow(html: string, pattern: string | RegExp, replacement: (...parts: string[]) => string): string {
+  if (typeof pattern === 'string' ? !html.includes(pattern) : !pattern.test(html)) throw new Error(`prerender: mallen saknar ${pattern}`)
+  return html.replace(pattern, replacement)
+}
+
 function setMeta(html: string, attr: string, value: string): string {
-  return html.replace(new RegExp(`(<meta ${attr} content=")[^"]*(")`), (_, start: string, end: string) => `${start}${escapeAttr(value)}${end}`)
+  return replaceOrThrow(html, new RegExp(`(<meta ${attr} content=")[^"]*(")`), (_, start, end) => `${start}${escapeAttr(value)}${end}`)
 }
 
 function renderPage(template: string, meta: PageMeta, element: ReactElement, data: unknown): string {
   const url = `${SITE.origin}${meta.path}`
-  let html = template.replace(/<title>[^<]*<\/title>/, () => `<title>${escapeAttr(meta.title)}</title>\n    <link rel="canonical" href="${url}" />`)
+  let html = replaceOrThrow(template, /<title>[^<]*<\/title>/, () => `<title>${escapeAttr(meta.title)}</title>\n    <link rel="canonical" href="${url}" />`)
   html = setMeta(html, 'name="description"', meta.description)
   html = setMeta(html, 'property="og:description"', meta.description)
   html = setMeta(html, 'property="og:title"', meta.title)
   html = setMeta(html, 'property="og:url"', url)
   const content = renderToStaticMarkup(createElement(StaticRouter, { location: meta.path }, element))
-  return html.replace('<div id="root"></div>', () => `<div id="root">${content}</div>\n    ${embeddedScript(meta.path, data)}`)
+  return replaceOrThrow(html, '<div id="root"></div>', () => `<div id="root">${content}</div>\n    ${embeddedScript(meta.path, data)}`)
 }
 
 export function renderKommunHtml(template: string, page: KommunPage): string {

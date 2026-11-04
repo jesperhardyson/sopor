@@ -68,6 +68,11 @@ describe('buildKommunPages', () => {
     expect(buildKommunPages(small, []).find((p) => p.code === '1480')!.orter).toEqual(['Göteborg', 'Angered'])
   })
 
+  it('delar upp sammansatta ortnamn och tar bort förklaringar och dubbletter', () => {
+    const file = { ...small, orter: { 'Gunnilse (östra delen)': ['1480'], Gunnilse: ['1480'], 'Gundal och Högås': ['1480'], Göteborg: ['1480'] } }
+    expect(buildKommunPages(file, []).find((p) => p.code === '1480')!.orter).toEqual(['Göteborg', 'Gundal', 'Gunnilse', 'Högås'])
+  })
+
   it('tål en kommun utan orter', () => {
     expect(buildKommunPages(small, []).find((p) => p.code === '0980')!.orter).toEqual([])
   })
