@@ -26,12 +26,15 @@ describe('kontrolladresserna', () => {
     expect(PROBES.vasyd).toBe('Limhamnsvägen 50, Malmö')
   })
 
-  it('har NSR:s, SRV:s, Appbolagets och Uddevallas kontrolladresser som adress-id', () => {
+  it('har NSR:s, SRV:s, Appbolagets, Uddevallas och Roslagsvattens kontrolladresser som adress-id', () => {
     expect(PROBES.nsr).toBe('rosenvägen-3_helsingborg-71d627516ce56271010a40fdb5d01eed')
     expect(PROBES.srv).toBe('kommunalvägen-28_huddinge-iokpga')
     expect(PROBES.kristianstad).toBe('västra-storgatan-1_kristianstad-1ec2efb9115c4c52927474398e9f427f')
     expect(PROBES.hassleholm).toBe('storgatan-1_vinslöv-4fcea8031a2649a1b66fb41a631ed823')
     expect(PROBES.uddevalla).toBe('kungsgatan-10_uddevalla-ebui9d')
+    expect(PROBES.osteraker).toBe('hackstavägen-22_åkersberga-1bqsdr9')
+    expect(PROBES.ekero).toBe('tappströmsvägen-2_ekerö-ouhkuq')
+    expect(PROBES.vaxholm).toBe('eriksövägen-27_vaxholm-1wkxke4')
   })
 
   it('har Stockholms kontrolladress', () => {

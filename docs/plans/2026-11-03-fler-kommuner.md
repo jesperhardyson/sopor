@@ -51,7 +51,7 @@ Provas med `npm run check:source` för de **100 största saknade kommunerna**: k
 |---|---|---|
 | Mölndal (71 000) | `future.molndal.se/FutureWeb` | Svarar men tom |
 | Lerum (44 000) | `vatjanst.lerum.se/FutureWeb` | Ingen kontakt (kan blockera utlandet eller kräva annan sökväg) |
-| Österåker, Vaxholm, Ekerö (91 000) | `edpmypage.roslagsvatten.se/FutureWebOS` | 404, men Roslagsvatten har en egen JSON-tjänst (fas 2) |
+| Österåker, Vaxholm, Ekerö (91 000) | `edpmypage.roslagsvatten.se/FutureWebOS` | 404, men Roslagsvatten har en egen JSON-tjänst (fas 2, klar) |
 | Hudiksvall (38 000) | `gis.hudiksvall.se/origoserver/EDPFuture` | 404, behöver rätt sökväg |
 | Stenungsund (28 000) | via Remondis | Svarar men tom |
 
@@ -72,7 +72,7 @@ Ordnade efter invånare. Varje rad är en egen spec och plan som `stockholm` och
 | 3 | ~~**Avfallsapp/Nova**~~ (hoppas över, beslut 5) | Sigtuna, Motala, Upplands-Bro, Söderköping (+ Skaraborg?) | 144 000 | 1,4 % | JSON, `<kund>.avfallsapp.se/wp-json/nova/v1/`. Kunder som kräver token (Nodra, Vänersborg, Teknik i Väst) tas inte med |
 | 4 | **Appbolaget** (klar, `docs/specs/2026-11-03-appbolaget.md`) | Kristianstad, Hässleholm | 138 000 | 1,3 % | JSON, `api-universal.appbolaget.se/waste/…` |
 | 5 | **Uddevalla Energi** (klar, `docs/specs/2026-11-04-uddevalla.md`). ~~Rambo~~ hoppas över, beslut 6 | Uddevalla (Lysekil, Sotenäs, Munkedal och Tanum går till fas 5) | 56 000 | 0,5 % | JSON, `app.uddevallaenergi.se/wp-json/app/`. Bara nästa tömning per kärl |
-| 6 | **Roslagsvatten** | Österåker, Ekerö, Vaxholm | 91 000 | 0,9 % | JSON, `POST roslagsvatten.se/schedule` |
+| 6 | **Roslagsvatten** (klar, `docs/specs/2026-11-04-roslagsvatten.md`) | Österåker, Ekerö, Vaxholm | 91 000 | 0,9 % | HTML i JSON, `POST roslagsvatten.se/schedule/search` och `/schedule/fetch` |
 
 **Insats:** en källtyp i taget, som VA Syd. **Vinst:** cirka 1,1 miljoner invånare, **täckningen går från 33 % till cirka 44 %.** Utan Avfallsapp/Nova blir det cirka 950 000 och 42 %.
 
