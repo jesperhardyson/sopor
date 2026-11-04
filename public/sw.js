@@ -6,7 +6,7 @@ const ASSETS = 'sopor-assets-v1'
 /** Ungefär fem byggen av JS, CSS och typsnitt */
 const MAX_ASSETS = 100
 /** Så länge sidan väntar på nätet innan den sparade versionen visas */
-const NETWORK_TIMEOUT_MS = 3000
+const NETWORK_TIMEOUT_MS = 1500
 
 self.addEventListener('install', () => self.skipWaiting())
 
@@ -24,19 +24,22 @@ self.addEventListener('fetch', (event) => {
   if (request.method !== 'GET') return
   const url = new URL(request.url)
   if (url.origin !== self.location.origin) return
-  if (request.mode === 'navigate' && !/^\/(api|ics|data)\//.test(url.pathname)) event.respondWith(page(request))
+  if (request.mode === 'navigate' && !/^\/(api|ics|data)\//.test(url.pathname)) event.respondWith(page(event))
   else if (url.pathname.startsWith('/assets/')) event.respondWith(asset(request))
 })
 
 /** Nätet först, så att en ny version syns direkt. Den sparade sidan när nätet inte svarar i tid. */
-async function page(request) {
+async function page(event) {
+  const { request } = event
   const cache = await caches.open(SHELL)
-  const network = fetch(request).then((res) => {
+  const network = fetch(request).then(async (res) => {
     // Kommunsidorna har eget innehåll i HTML:en och duger inte som appens skal
     const shell = !new URL(request.url).pathname.startsWith('/kommuner')
-    if (shell && res.ok && res.headers.get('Content-Type')?.startsWith('text/html')) void cache.put('/', res.clone())
+    if (shell && res.ok && res.headers.get('Content-Type')?.startsWith('text/html')) await cache.put('/', res.clone())
     return res
   })
+  // Ett svar som kommer efter den sparade sidan ska ändå sparas till nästa besök
+  event.waitUntil(network.catch(() => {}))
   const timeout = new Promise((resolve) => setTimeout(resolve, NETWORK_TIMEOUT_MS))
   const first = await Promise.race([network.catch(() => undefined), timeout])
   if (first) return first
