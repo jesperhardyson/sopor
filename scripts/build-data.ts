@@ -4,6 +4,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { buildKommunPages } from '../src/data/kommun-pages'
 import { buildMunicipality, DataError, parseAddressesCsv, parseSchedulesFile } from '../src/data/static-format'
 import { buildStreetIndex, type OsmKommun } from '../src/data/street-index'
 import { buildPlaceLookup, type SwedenPlacesFile } from '../src/data/sweden-places'
@@ -57,9 +58,16 @@ function writeSwedenPlaces() {
   console.log(`build-data: orter i Sverige: ${Object.keys(lookup.orter).length}`)
 }
 
+/** Kommunsidornas data från data/sverige/orter.json och SOURCES */
+export function readKommunPages() {
+  const file = JSON.parse(fs.readFileSync(path.join(root, 'data', 'sverige', 'orter.json'), 'utf8')) as SwedenPlacesFile
+  return buildKommunPages(file, SOURCES)
+}
+
 function main() {
   writeStreetIndex()
   writeSwedenPlaces()
+  writeFile(path.join(root, 'public', 'data', 'kommuner.json'), JSON.stringify(readKommunPages()))
   for (const municipality of ALL_SOURCES) {
     if (municipality.config.system !== 'static') continue
     const dataDir = path.join(root, 'data', municipality.id)
