@@ -6,7 +6,7 @@
 
 import { formatShort, isValidDate } from '../domain/dates.js'
 import type { Schedule } from '../domain/types.js'
-import { edpAddressId, mergeSeries, queryFromAddressId, titleCase, type EdpBuilding, type PickupSeries } from './edp.js'
+import { edpAddressId, idHash, mergeSeries, queryFromAddressId, titleCase, type EdpBuilding, type PickupSeries } from './edp.js'
 import { mapWasteType } from './fractions-map.js'
 import { fetchJson, SourceError } from './http.js'
 
@@ -36,15 +36,10 @@ const unknownFormat = () => new SourceError('srvatervinning.se svarade med ett o
 const isText = (v: unknown): v is string => typeof v === 'string'
 
 /**
- * Kundnumrets plats i adress-id:t (FNV-1a, 32 bitar, base 36). Kundnumret syns inte i länkar och
- * kalendrar, men hashen skyddar det inte: numren är korta, och SRV visar dem i sökrutan.
- * Får aldrig ändras (regel 3).
+ * Kundnumrets plats i adress-id:t. Kundnumret syns inte i länkar och kalendrar, men hashen skyddar
+ * det inte: numren är korta, och SRV visar dem i sökrutan.
  */
-export function srvKey(customerId: string): string {
-  let h = 0x811c9dc5
-  for (const c of customerId) h = Math.imul(h ^ c.charCodeAt(0), 0x01000193) >>> 0
-  return h.toString(36)
-}
+export const srvKey = idHash
 
 const toAddress = (address: string, city: string, customerId: string): SrvAddress => ({
   building: { raw: `${address}, ${city}`, street: address.trim().replace(/\s+/g, ' '), locality: titleCase(city.trim()), buildingId: srvKey(customerId) },

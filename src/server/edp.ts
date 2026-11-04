@@ -61,6 +61,16 @@ export function encode(text: string): string {
     .replace(/[^\p{L}\p{N}~_-]/gu, '')
 }
 
+/**
+ * Ett värde som inte ska stå i klartext i adress-id:t, eller inte får plats där (FNV-1a, 32 bitar,
+ * base 36). Får aldrig ändras (regel 3).
+ */
+export function idHash(value: string): string {
+  let h = 0x811c9dc5
+  for (const c of value) h = Math.imul(h ^ c.charCodeAt(0), 0x01000193) >>> 0
+  return h.toString(36)
+}
+
 /** "storgatan-1_grillby-909273". Byggnads-id:t sist gör id:t unikt och stabilt. */
 export function edpAddressId(b: EdpBuilding): string {
   return `${encode(b.locality ? `${b.street}, ${b.locality}` : b.street)}-${b.buildingId}`
