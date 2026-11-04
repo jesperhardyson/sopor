@@ -6,7 +6,7 @@ import { isFractionId } from '@/domain/fractions'
 import { buildIcs } from '@/domain/ics'
 import { mergeParts } from '@/domain/schedule'
 import type { Area, Bin, PickupEvent, SchedulePart } from '@/domain/types'
-import type { Source } from '@/sources'
+import { areaNoticeText, type Source } from '@/sources'
 
 export class DataError extends Error {
   name = 'DataError'
@@ -290,6 +290,7 @@ export function buildMunicipality(
       address: { id, street: a.street, locality: a.locality, sourceId: source.id, kommun: source.kommuner[0]?.name ?? source.name },
       kommunName: source.kommuner[0]?.name ?? source.name,
       schedule: mergeParts(a.refs.map((ref) => scheduleFiles.get(ref)!)),
+      notice: areaNoticeText(source),
     }),
   }))
 

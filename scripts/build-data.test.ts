@@ -14,6 +14,13 @@ describe('Avestas riktiga data för 2026', () => {
   const events = (id: string) => out.scheduleFiles.find((s) => s.id === `2026-${id}`)!.events
   const fractionsOn = (id: string, date: string) => events(id).find((e) => e.date === date)?.fractions
 
+  it('har varningen i områdets kalenderfil, med oförändrat UID', () => {
+    const ics = out.ics.find((f) => f.addressId === 'trakt-7')!.content.replace(/\r\n /g, '')
+    expect(ics).toMatch(/X-WR-CALDESC:.*Kontrollera att området stämmer/)
+    expect(ics).toMatch(/^DESCRIPTION:Kontrollera att området stämmer/m)
+    expect(ics).toContain('UID:trakt-7-2026-11-10@sopor.hardyson.se')
+  })
+
   it('har tio områden utan adresser', () => {
     expect(areas.map((a) => a.id)).toEqual(Array.from({ length: 10 }, (_, i) => `trakt-${i + 1}`))
     expect(years[0].addresses).toEqual([])
