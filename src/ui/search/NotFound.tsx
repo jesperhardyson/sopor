@@ -5,7 +5,8 @@ import type { Address } from '@/domain/types'
 import { cn } from '@/lib/utils'
 import { supportedKommuner } from '@/sources'
 
-export function NotFound({ suggestions, className }: { suggestions: Address[]; className?: string }) {
+/** `kommun`: sökningen gällde bara den kommunen, så adressen kan finnas någon annanstans. */
+export function NotFound({ suggestions, kommun, className }: { suggestions: Address[]; kommun?: string; className?: string }) {
   return (
     <div role="status" className={cn('flex flex-col gap-3.5 rounded-[20px] border border-border bg-surface p-5', className)}>
       <div className="flex items-start gap-3.5">
@@ -13,7 +14,7 @@ export function NotFound({ suggestions, className }: { suggestions: Address[]; c
           <SearchX className="size-6" aria-hidden />
         </span>
         <div className="flex min-w-0 flex-col gap-1.5">
-          <h2 className="text-xl font-extrabold tracking-[-0.3px] text-text">Vi hittade inte adressen</h2>
+          <h2 className="text-xl font-extrabold tracking-[-0.3px] text-text">Vi hittade inte adressen{kommun && ` i ${kommun}`}</h2>
           <p className="text-[15px] leading-[1.45] text-text-2">
             Kolla stavningen och prova utan port eller lägenhetsnummer, till exempel ”Storgatan 12”.
           </p>
@@ -35,9 +36,9 @@ export function NotFound({ suggestions, className }: { suggestions: Address[]; c
         </div>
       )}
       <p className="border-t border-border pt-3.5 text-sm font-semibold text-text-2">
-        Sopor finns i {supportedKommuner().length} kommuner. Saknas din?{' '}
-        <Link to="/bidra" className="font-extrabold text-brand-text underline underline-offset-2">
-          Tipsa om din kommun
+        {kommun ? 'Ligger adressen i en annan kommun?' : `Sopor finns i ${supportedKommuner().length} kommuner. Saknas din?`}{' '}
+        <Link to={kommun ? '/' : '/bidra'} className="font-extrabold text-brand-text underline underline-offset-2">
+          {kommun ? 'Sök på startsidan' : 'Tipsa om din kommun'}
         </Link>
       </p>
     </div>

@@ -1,9 +1,9 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { Link, MemoryRouter, Route, Routes } from 'react-router'
+import { Link, MemoryRouter, Route, Routes, useParams } from 'react-router'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { KommunPage } from '@/data/kommun-pages'
-import { kommunPage, kommunPages } from '@/providers/registry'
+import { kommunPage, kommunPages, searchAll, searchInKommun } from '@/providers/registry'
 import { embeddedScript } from '../kommun/embedded'
 import { KommunRoute } from './KommunPage'
 import { KommunerRoute } from './KommunerPage'
@@ -11,7 +11,8 @@ import { KommunerRoute } from './KommunerPage'
 vi.mock('@/providers/registry', () => ({
   kommunPage: vi.fn(),
   kommunPages: vi.fn(),
-  searchAll: async () => ({ addresses: [], failed: [] }),
+  searchAll: vi.fn(async () => ({ addresses: [{ id: 'storgatan-2_stockholm', street: 'Storgatan 2', locality: 'Stockholm', sourceId: 'stockholm', kommun: 'Stockholms kommun' }], failed: [] })),
+  searchInKommun: vi.fn(),
   warmUpSearch: () => {},
   prefetchAddress: () => {},
   suggestAll: async () => [],
@@ -21,6 +22,11 @@ vi.mock('@/providers/registry', () => ({
 const uppsala: KommunPage = { code: '0380', name: 'Uppsala kommun', slug: 'uppsala-kommun', covered: true, sources: [], orter: [] }
 const goteborg: KommunPage = { code: '1480', name: 'Göteborgs kommun', slug: 'goteborgs-kommun', covered: false, sources: [], orter: [] }
 
+function AddressProbe() {
+  const { sourceId, addressId } = useParams()
+  return <p>adressidan {sourceId}/{addressId}</p>
+}
+
 function show(path: string) {
   render(
     <MemoryRouter initialEntries={[path]}>
@@ -28,7 +34,7 @@ function show(path: string) {
       <Routes>
         <Route path="kommuner" element={<KommunerRoute />} />
         <Route path="kommuner/:slug" element={<KommunRoute />} />
-        <Route path=":sourceId/:addressId" element={<p>adressidan</p>} />
+        <Route path=":sourceId/:addressId" element={<AddressProbe />} />
       </Routes>
     </MemoryRouter>,
   )
@@ -37,6 +43,10 @@ function show(path: string) {
 beforeEach(() => {
   vi.mocked(kommunPage).mockImplementation(async (slug) => [uppsala, goteborg].find((k) => k.slug === slug))
   vi.mocked(kommunPages).mockResolvedValue([uppsala, goteborg])
+  vi.mocked(searchInKommun).mockReturnValue({
+    search: async () => ({ addresses: [{ id: 'storgatan-2_uppsala', street: 'Storgatan 2', locality: 'Uppsala', sourceId: 'uppsala', kommun: 'Uppsala kommun' }], failed: [] }),
+    suggest: async () => [],
+  })
 })
 afterEach(() => {
   vi.clearAllMocks()
@@ -77,6 +87,23 @@ describe('KommunRoute', () => {
     expect(await screen.findByRole('heading', { level: 1, name: 'Sophämtning i Uppsala kommun' })).toBeInTheDocument()
   })
 
+  it('söker i kommunen, så att Enter leder till en adress där och inte i en annan kommun', async () => {
+    embed('/kommuner/uppsala-kommun', uppsala)
+    show('/kommuner/uppsala-kommun')
+    await userEvent.type(screen.getByRole('combobox'), 'Storgatan 2{Enter}')
+    expect(await screen.findByText('adressidan uppsala/storgatan-2_uppsala')).toBeInTheDocument()
+    expect(searchInKommun).toHaveBeenCalledWith(expect.objectContaining({ code: '0380', name: 'Uppsala kommun' }))
+    expect(searchAll).not.toHaveBeenCalled()
+  })
+
+  it('förklarar att adressen saknas i just den här kommunen', async () => {
+    vi.mocked(searchInKommun).mockReturnValue({ search: async () => ({ addresses: [], failed: [] }), suggest: async () => [] })
+    embed('/kommuner/uppsala-kommun', uppsala)
+    show('/kommuner/uppsala-kommun')
+    await userEvent.type(screen.getByRole('combobox'), 'Storgatan 2{Enter}')
+    expect(await screen.findByRole('heading', { name: 'Vi hittade inte adressen i Uppsala kommun' })).toBeInTheDocument()
+  })
+
   it('sätter sidans titel', async () => {
     show('/kommuner/uppsala-kommun')
     await waitFor(() => expect(document.title).toBe('Sophämtning i Uppsala kommun – Sopor'))
@@ -84,7 +111,7 @@ describe('KommunRoute', () => {
 
   it('går före adressidans rutt med samma form', async () => {
     show('/kommuner/uppsala-kommun')
-    expect(screen.queryByText('adressidan')).not.toBeInTheDocument()
+    expect(screen.queryByText(/adressidan/)).not.toBeInTheDocument()
   })
 })
 
