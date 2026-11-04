@@ -167,6 +167,8 @@ För en kommun där schemat är publikt per område men kopplingen adress → om
 - [ ] Sätt `selection: 'area'` på källan i `src/sources/index.ts`, med `config: { system: 'static' }`.
 - [ ] Skriv `areaNotice`: vad vi inte vet, eftersom besökaren väljer området själv. Texten visas i kalenderarket, står i kalenderfilen och skickas i API:t, och ett test kräver den.
 - [ ] Skapa `omraden.json` och `schedules.json` enligt [dataformatet](#dataformatet).
+- [ ] Finns samma namn i flera områden, lägg namnet utan förbehåll i `searchTerms` på varje område, så att "Forsbo" också visar "Forsbo – del av". Exakta träffar döljer annars de andra. Lägg undantag i `otherDays`, inte i `places`, eftersom `places` är sökord.
+- [ ] Har källan inga nummer på områdena, låt `day` och `label` tillsammans vara hämtdagen (`Måndag` och `Ojämn vecka` i Säter). Hitta inte på nummer.
 - [ ] Områdets id följer området, inte numret. Byter källan numrering behåller området sitt id och får ett nytt `label`.
 - [ ] **Delas eller slås ett område ihop ska det nya området få ett nytt id.** Det gamla id:t ligger kvar och ska visa ett meddelande om att välja område igen. Ett id får aldrig tas bort eller återanvändas för något annat, eftersom kalenderprenumerationer hänger på det. Meddelandet är inte byggt än och måste byggas före den första ändringen av det slaget.
 

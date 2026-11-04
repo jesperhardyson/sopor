@@ -409,7 +409,7 @@ describe('ResultPage för ett område', () => {
     expect(screen.getByText(`${index.explanation} Jämför gärna med din senaste tömning.`)).toBeInTheDocument()
     expect(screen.getByText('Ingår i området')).toBeInTheDocument()
     expect(screen.getByText('Avesta tätort, Östanfors och Lycka.')).toBeInTheDocument()
-    expect(screen.getByText('Vissa gator i tätorten har en annan hämtdag')).toBeInTheDocument()
+    expect(screen.getByText('Vissa gator har en annan hämtdag')).toBeInTheDocument()
     expect(screen.getByText('Till exempel Stallgatan (måndag, udda vecka).')).toBeInTheDocument()
     expect(screen.queryByText(/beräknad/i)).toBeNull()
   })
@@ -418,7 +418,7 @@ describe('ResultPage för ett område', () => {
     fake = areaProvider({ listAreas: async () => ({ ...index, areas: [{ ...trakt7, otherDays: [] }] }) })
     renderAt('/avesta/trakt-7')
     expect(await screen.findByText('Ingår i området')).toBeInTheDocument()
-    expect(screen.queryByText('Vissa gator i tätorten har en annan hämtdag')).toBeNull()
+    expect(screen.queryByText('Vissa gator har en annan hämtdag')).toBeNull()
   })
 
   it('visar schemat utan rutan när områdena inte går att hämta', async () => {

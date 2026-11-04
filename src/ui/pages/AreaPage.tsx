@@ -1,3 +1,4 @@
+import { kommunInText } from '@/domain/kommun'
 import { ArrowLeft, ArrowRight, CalendarSearch, ChevronRight, MapPin, Search } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation, useParams } from 'react-router'
@@ -39,7 +40,7 @@ function asAddresses(areas: Area[], source: Source): Address[] {
     locality: '',
     sourceId: source.id,
     kommun: source.kommuner[0].name,
-    searchTerms: [...a.searchTerms, a.day],
+    searchTerms: [...a.searchTerms, a.day, a.label],
   }))
 }
 
@@ -135,7 +136,7 @@ export function AreaPage({ today = todayInStockholm() }: { today?: string }) {
                 <MapPin className="size-[22px] shrink-0 text-text" aria-hidden />
                 <div className="flex min-w-0 flex-col gap-1">
                   <h2 className="text-[15px] font-extrabold text-text">
-                    {knownStreet} finns i {source.kommuner[0].name.replace(/ kommun$/, '')}
+                    {knownStreet} finns i {kommunInText(source.kommuner[0].name)}
                   </h2>
                   <p className="text-sm leading-[1.4] text-text">
                     Men schemat visar inte vilket område den hör till. Hitta det med din senaste tömning, eller välj i listan.

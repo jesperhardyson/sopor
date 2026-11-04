@@ -1,3 +1,4 @@
+import { kommunInText } from '@/domain/kommun'
 import { ArrowRight, Map, MapPin, SearchX } from 'lucide-react'
 import { Link } from 'react-router'
 import { streetAndLocality } from '@/domain/address'
@@ -52,7 +53,7 @@ export function NotFound({
           className="inline-flex items-center gap-2 self-start rounded-xl bg-brand-soft px-3.5 py-2.5 text-[15px] font-extrabold text-brand-text"
         >
           <Map className="size-4" aria-hidden />
-          Välj område i {kommun.replace(/ kommun$/, '')}
+          Välj område i {kommunInText(kommun)}
           <ArrowRight className="size-4" aria-hidden />
         </Link>
       )}

@@ -1,3 +1,4 @@
+import { kommunInText } from '@/domain/kommun'
 import { ArrowRight, ChevronDown, LoaderCircle, Map, MapPin, Search, UserCheck, X } from 'lucide-react'
 import { Fragment, useEffect, useId, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
@@ -53,7 +54,6 @@ interface Section {
 }
 
 /** Kommunens namn utan "kommun", för texterna på raden för områdesval. */
-const kommunName = (kommun: string) => kommun.replace(/ kommun$/, '')
 
 /** Raden för områdesval hör till sin kommuns grupp. En kommun utan träffar får en grupp med bara den raden, sist. */
 function withPickers(list: Section[], pickers: AreaPicker[]): Section[] {
@@ -348,7 +348,7 @@ export function AddressSearch({
   }
 
   function renderPicker(picker: AreaPicker, props: React.HTMLAttributes<HTMLLIElement>, selected: boolean, afterHits: boolean) {
-    const name = kommunName(picker.kommun)
+    const name = kommunInText(picker.kommun)
     const key = `omraden/${picker.sourceId}`
     if (picker.hasHits) {
       return (

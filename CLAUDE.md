@@ -6,3 +6,4 @@
 - Använd Context7 för biblioteksdokumentation (Vite, Tailwind v4, shadcn/ui, react-router, Vitest) i stället för att gå på minnet.
 - Vercel: använd Vercel MCP eller `vercel` CLI. Sajten och preview-adresserna är publika (Vercel Authentication avstängd). Ändra inte skyddet utan att användaren ber om det.
 - Avesta har påhittad seed-data (`testData: true`) och är dold på sajten (`hidden: true`). Ta inte bort flaggorna förrän riktig data har lagts in. I testerna görs den synlig via `src/test/show-hidden-sources.ts`.
+- Säter har riktig data men är dold (`hidden: true`) tills schemat efter vecka 53 finns. Lanseringen står i `docs/specs/2026-11-04-sater-omradesval.md`.

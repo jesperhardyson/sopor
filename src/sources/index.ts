@@ -69,6 +69,24 @@ export const ALL_SOURCES: Source[] = [
     hidden: true,
   },
   {
+    id: 'sater',
+    name: 'Säters kommun',
+    url: 'https://sater.se',
+    kommuner: [{ code: '2082', name: 'Säters kommun' }],
+    config: { system: 'static' },
+    selection: 'area',
+    areaNotice: {
+      title: 'Kontrollera att området stämmer',
+      text: 'Du har valt området själv, eftersom Säters kommun inte visar öppet vilka adresser som hör till vilket område. Väljer du fel område kan du missa din tömning.',
+    },
+    emptyScheduleNote: {
+      title: 'Schemat framåt är inte publicerat än',
+      text: 'Säters kommun har bara publicerat hämtveckorna en bit framåt. Datumen visas här när nästa period finns.',
+    },
+    // Datan är riktig, men dold tills schemat efter vecka 53 finns.
+    hidden: true,
+  },
+  {
     id: 'uppsala',
     name: 'Uppsala Vatten',
     url: 'https://www.uppsalavatten.se',

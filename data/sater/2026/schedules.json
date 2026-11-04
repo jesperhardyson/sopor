@@ -1,0 +1,375 @@
+{
+  "year": 2026,
+  "source": "Säters kommun, Hämtningsdagar hushållsavfall (uppdaterad 2026-11-02), https://sater.se/bygga-bo-miljo/avfall-och-atervinning/hamtningsdagar-sophamtning/",
+  "validFrom": "2026-11-02",
+  "validTo": "2027-01-03",
+  "updatedAt": "2026-11-02",
+  "note": "Gäller villa och fritidshus. Ställ ut kärlen senast 05.00 på hämtningsdagen. Hämtning sker även på helgdagar, om du inte får besked om något annat.",
+  "schedules": {
+    "ojamn-mandag": {
+      "name": "Måndag, ojämn vecka",
+      "events": [
+        {
+          "date": "2026-11-02",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-11-16",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-11-30",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-14",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-28",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        }
+      ]
+    },
+    "ojamn-tisdag": {
+      "name": "Tisdag, ojämn vecka",
+      "events": [
+        {
+          "date": "2026-11-03",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-11-17",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-01",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-15",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-29",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        }
+      ]
+    },
+    "ojamn-onsdag": {
+      "name": "Onsdag, ojämn vecka",
+      "events": [
+        {
+          "date": "2026-11-04",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-11-18",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-02",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-16",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-30",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        }
+      ]
+    },
+    "ojamn-torsdag": {
+      "name": "Torsdag, ojämn vecka",
+      "events": [
+        {
+          "date": "2026-11-05",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-11-19",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-03",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-17",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-31",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        }
+      ]
+    },
+    "ojamn-fredag": {
+      "name": "Fredag, ojämn vecka",
+      "events": [
+        {
+          "date": "2026-11-06",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-11-20",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-04",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-18",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2027-01-01",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        }
+      ]
+    },
+    "jamn-mandag": {
+      "name": "Måndag, jämn vecka",
+      "events": [
+        {
+          "date": "2026-11-09",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-11-23",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-07",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-21",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        }
+      ]
+    },
+    "jamn-tisdag": {
+      "name": "Tisdag, jämn vecka",
+      "events": [
+        {
+          "date": "2026-11-10",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-11-24",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-08",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-22",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        }
+      ]
+    },
+    "jamn-onsdag": {
+      "name": "Onsdag, jämn vecka",
+      "events": [
+        {
+          "date": "2026-11-11",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-11-25",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-09",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-23",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        }
+      ]
+    },
+    "jamn-torsdag": {
+      "name": "Torsdag, jämn vecka",
+      "events": [
+        {
+          "date": "2026-11-12",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-11-26",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-10",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-24",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        }
+      ]
+    },
+    "jamn-fredag": {
+      "name": "Fredag, jämn vecka",
+      "events": [
+        {
+          "date": "2026-11-13",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-11-27",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-11",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-25",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        }
+      ]
+    }
+  }
+}
