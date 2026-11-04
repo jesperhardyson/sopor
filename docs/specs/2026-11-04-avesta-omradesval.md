@@ -12,8 +12,9 @@ Sopor gissar inte vilken trakt en adress hör till, eftersom en felaktig gissnin
 
 - En Avestabo hittar sin hämtdag utan konto och kan lägga den i kalendern.
 - Det ska gå att söka på det man känner till: "Avesta tätort", "Östanfors", "Stallgatan" eller "trakt 7".
-- En gatuadress som nämner Avesta, eller söks på kommunsidan, leder till områdesvalet och aldrig till "hittades inte".
-- Avesta tar ingen plats i sökningen för den som bor i en annan kommun på en gata med samma namn.
+- En känd gata i Avesta leder till områdesvalet, även utan ortnamn, så att den som bor där kommer rätt med bara sin adress.
+- Den som bor i en annan kommun på en gata med samma namn ser sin egen kommun först.
+- Sopor är öppen med vad vi inte vet, överallt där schemat visas: på sidan, i kalendern och i API:t.
 - Sidan är tydlig med att användaren har valt området själv och varför.
 - Lösningen är generell, så att andra kommuner med schema per område kan använda den.
 
@@ -45,25 +46,29 @@ Reglerna gäller startsidans sökning och kommunsidan för Avesta. De prövas i 
 | Namn som finns i flera områden | "Backa" | En träff per område, med raden "Backa ingår i området" |
 | Gata som står i ett områdes lista, med eller utan nummer och plats | "Stallgatan", "Stallgatan 5", "Stallgatan 5, Avesta" | Områdesträff |
 | Gata i ett områdes lista med en annan plats | "Stallgatan 5, Stockholm" | Ingen rad för Avesta |
-| Gata med Avesta som plats, känd eller okänd | "Kungsgatan 12, Avesta", "Okändgatan 3, Avesta" | Raden "Välj område i Avesta". Finns områdesträffar visas i stället raden "Se alla områden i Avesta" under dem. |
-| Annan gata utan plats på startsidan | "Kungsgatan", "Kungsgatan 12" | Ingen rad för Avesta, eftersom samma gatunamn finns i många kommuner och vi inte vet att adressen finns i Avesta |
-| Annan känd gata i Avesta på kommunsidan | "Kungsgatan 12" | Raden "Välj område i Avesta" |
+| Gata med Avesta som plats, känd eller okänd | "Kungsgatan 12, Avesta", "Okändgatan 3, Avesta" | Raden "Kungsgatan 12 · Välj område". Finns områdesträffar visas i stället raden "Se alla områden i Avesta" under dem. |
+| Annan känd gata i Avesta, hel gata eller med nummer | "Kungsgatan", "Kungsgatan 12" | Raden "Kungsgatan 12 · Välj område" under rubriken Avesta kommun, efter andra kommuners träffar |
+| Gata eller adress som användaren redan valt område för i den här webbläsaren | "Kungsgatan 12" | Raden "Kungsgatan 12 · Trakt 7 · Ditt val", se Eget val |
 | Halvskrivet ord på startsidan | "Kungsg", "stor" | Ingen rad för Avesta |
 | Början av ord på kommunsidan, i filtret på Välj område och i API:t med `kalla=avesta` | "östan" | Områdesträff |
 | Gata som inte finns i Avesta | "Hornsgatan 1" | Som i dag |
 
 - På startsidan och i `/api/v1/sok` utan `kalla` måste varje ord i frågan vara ett helt ord i områdets namn eller sökord. Början av ett ord räcker bara när sökningen gäller just källan. Vanliga adresser påverkas inte.
 - Småorden "m", "fl" och "och" går inte att söka på i områden: en fråga med bara sådana ord ger inga områden, men "Norr och Sör Nävde" träffar sitt område. Namnet visas oförändrat.
-- "Känd gata" på kommunsidan avgörs med det befintliga gatuindexet från OpenStreetMap (`data/osm/2084.json`). `candidateSources` matchar början av namn, så regeln behöver en exakt jämförelse av gatudelen från `splitPlace`.
-- Gatuindexet är inte komplett. "Hittades inte"-rutan får därför alltid en länk till områdesvalet när sökningen är avgränsad till Avesta.
-- Den som bor i Avesta och söker en gata utan ort på startsidan får ingen rad för Avesta. Det är priset för att andra kommuner inte ska störas, och det gäller så länge kopplingen från adress till område saknas. Vägarna in är att skriva "Avesta", söka på ett område eller gå via kommunsidan.
-- Andra kommuners träffar visas under sina egna rubriker som vanligt.
-- Enter öppnar den enda träffen. Är "Välj område i Avesta" enda raden öppnas områdesvalet.
+- "Känd gata" avgörs med det befintliga gatuindexet från OpenStreetMap (`data/osm/2084.json`). `candidateSources` matchar början av namn, så regeln behöver en exakt jämförelse av gatudelen från `splitPlace`.
+- Gatuindexet är inte komplett. En gata som saknas där hittas bara om frågan nämner Avesta eller på kommunsidan. "Hittades inte"-rutan får därför alltid en länk till områdesvalet när sökningen är avgränsad till Avesta.
+- Raden för gatan är aldrig en träff med schema, och Sopor väljer eller föreslår aldrig ett område utifrån gatunamnet.
+- Andra kommuners träffar visas under sina egna rubriker, och Avestas rad för gatan ligger efter dem. Står gatan i områdeslistan är det i stället en vanlig områdesträff.
+- Enter öppnar den enda träffen. Är raden för gatan enda raden öppnas områdesvalet. Finns andra träffar öppnar Enter ingenting, utan markerar första raden.
+- Raden för gatan tar frågan med till områdesvalet, där gatan visas som stöd och arket Hitta område lyfts fram.
 - Husnummer och bokstav påverkar inte vilket område som visas. Områdeslistan innehåller inga nummer.
 
 ## Skärmar
 
 - **Välj område** (`/avesta/omraden`, så `omraden` får aldrig användas som adress-id): förklaringen, filterfält, genvägen "Vet du inte vilket område?", alla tio områden och kundtjänstens telefonnummer.
+  - **Filter:** "Sök område, ort eller gata". Det söker på områdets namn, orter, gator, "trakt N" och hämtdag, till exempel "tisdag" och "jämn vecka".
+  - **Känd gata utan områdesträff:** i stället för "Inget område matchar" visas "Kungsgatan finns i Avesta, men schemat visar inte vilket område den hör till", med en länk till Hitta område och hela listan under.
+  - **Okänt ord:** "Inget område matchar", som i dag.
 - **Hitta område** (ark): användaren anger senaste tömningen och får det område som hade hämtning den dagen.
   - **Kontroll:** arket visar områdets två senaste tömningar och nästa, och påminner om att en försenad tömning kan ge fel område.
   - **Ingen hämtning den dagen:** "Inget område har hämtning den dagen", med en länk till listan.
@@ -74,6 +79,33 @@ Reglerna gäller startsidans sökning och kommunsidan för Avesta. De prövas i 
   - "Mina kärl" visas inte, eftersom PDF:en inte anger kärlens storlek.
   - Datumen märks inte som beräknade.
   - Arket för att spara heter "Spara område".
+- **Lägg till i kalender** (ark): för källor med områdesval visas varningen under Öppenhet överst, före valen, med en länk till Hitta område.
+- **Byt område:** se Eget val.
+
+## Eget val
+
+Användaren kan koppla sin gata till ett område, men bara i sin egen webbläsare.
+
+- Valet ligger i `localStorage`, med try/catch enligt regel 6 i `AGENTS.md`. Appen fungerar utan lagring, men kommer då inte ihåg valet.
+- Inget skickas till servern. Sopor samlar aldrig in val och räknar aldrig ut ett område från andras val, så ett felklick kan inte påverka någon annan.
+- Valet sparas när användaren öppnar ett område från raden för gatan. Det gäller gatan med sitt husnummer, så som frågan skrevs, normaliserad.
+- Raden i sökningen är alltid märkt "Ditt val", så att den inte ser ut som ett besked från källan. Den har ett sätt att välja ett annat område och ett sätt att glömma valet.
+- "Rensa sparade adresser" tar också bort valen.
+- "Byt område" från ett sparat område ersätter det sparade området med det nya och behåller namnet användaren gett det. Ett område som inte är sparat förblir osparat.
+- Efter bytet visas alltid: "Har du lagt till det gamla området i din kalender? Ta bort det och lägg till det nya." Prenumerationen pekar på områdets id, så vi kan inte ändra den i efterhand och inte se om den finns.
+
+## Öppenhet
+
+Datumen kommer från källan. Det osäkra är om det valda området gäller adressen. Texten ligger per källa i `Source.areaNotice`, så att andra kommuner får sin egen:
+
+> **Kontrollera att området stämmer.** Du har valt området själv, eftersom Avesta Vatten inte publicerar vilka adresser som hör till vilket område. Väljer du fel område kan du missa din tömning.
+
+| Var | Vad |
+|---|---|
+| Resultatsidan | Rutan "Du har valt området själv" |
+| Kalenderarket | Varningen överst, före valen |
+| Kalenderfilen | Texten i varje händelses `DESCRIPTION` och i `X-WR-CALDESC`. `UID` ändras inte, och andra källors kalendrar ändras inte. |
+| API:t | Fälten `selection` och `notice`, se API och integrationer |
 
 ## Datamodell
 
@@ -118,17 +150,20 @@ Regel 1 i `AGENTS.md` gäller: UI:t vet bara att det finns områden, inte att de
 
 ## API och integrationer
 
-Inga befintliga fält ändras, och inga integrationer behöver en ny version för att fortsätta fungera.
+Inga befintliga fält ändras, och inga integrationer behöver en ny version för att fortsätta fungera. Nya fält är tillåtna inom v1, eftersom API:ts stabilitetslöfte säger att fält kan tillkomma och att okända fält ska ignoreras.
 
 | Del | Beteende |
 |---|---|
-| `GET /api/v1/sok` | Hittar områden som träffar. `street` innehåller områdets namn, `locality` är tom och `detail` innehåller hämtdagen. Svaret har inga nya fält. |
+| `GET /api/v1/sok` | Hittar områden som träffar. `street` innehåller områdets namn, `locality` är tom och `detail` innehåller hämtdagen. Gatuindexets rader finns inte i API:t. |
 | `GET /api/v1/adress/avesta/trakt-7` | Fungerar som för en adress. |
+| Nya fält på adressen, i `/sok` och `/adress` | `selection` är `"address"` eller `"area"`. `notice` är källans text för område och `null` för en adress. |
 | `GET /api/v1/kallor` | Avesta visas när källan inte längre är dold. |
 | `openapi.json` och dokumentationen | Får en förklaring av att en träff kan vara ett område. Kontraktstestet ska fortsätta passera. |
 | Homey och Home Assistant | Hittar områden med "Avesta tätort" utan kodändring. |
 
 En adress i Avesta som inte står i områdeslistan ger inga träffar i `/sok`. Homey och Home Assistant får därför en hjälptext när sökningen är tom: "I Avesta söker du på område, till exempel Avesta tätort." Texten släpps med respektive integrations releaseskript.
+
+Att integrationerna ignorerar `selection` och `notice` provas med tester. Att också visa `notice` där kräver en ny version och görs i lanseringen.
 
 ## Årsbyte
 
