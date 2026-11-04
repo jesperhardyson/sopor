@@ -64,9 +64,6 @@ export const ALL_SOURCES: Source[] = [
       title: 'Schemat för nästa år är inte publicerat än',
       text: 'Avesta Vatten publicerar hämtschemat ett år i taget. Datumen visas här när det nya schemat finns.',
     },
-    testData: true,
-    // Dold tills områdesvalet är klart och granskat. Datumen är riktiga, men testData och hidden tas bort först då.
-    hidden: true,
   },
   {
     id: 'uppsala',

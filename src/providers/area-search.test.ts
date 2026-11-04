@@ -1,5 +1,4 @@
 // Sökningen på område med Avestas riktiga områden och det riktiga gatuindexet.
-import '@/test/show-hidden-sources'
 import { readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
