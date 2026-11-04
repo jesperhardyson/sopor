@@ -8,9 +8,10 @@ import { SRV_URL, srvKey } from '../src/server/srv.js'
 import { APPBOLAGET_URL } from '../src/server/appbolaget.js'
 import { idHash } from '../src/server/edp.js'
 import { ROSLAGSVATTEN_URL } from '../src/server/roslagsvatten.js'
+import { BORLANGE_URL } from '../src/server/borlange.js'
 import { UDDEVALLA_URL } from '../src/server/uddevalla.js'
 import type { Source } from '../src/sources/index.js'
-import { checkAppbolagetSource, checkEdpSource, checkNsrSource, checkRoslagsvattenSource, checkSrvSource, checkUddevallaSource, checkSvoaSource, checkVasydSource, checkStaticSource, checkViaSite, unreachableFromHere } from './source-checks'
+import { checkAppbolagetSource, checkBorlangeSource, checkEdpSource, checkNsrSource, checkRoslagsvattenSource, checkSrvSource, checkUddevallaSource, checkSvoaSource, checkVasydSource, checkStaticSource, checkViaSite, unreachableFromHere } from './source-checks'
 
 const json = (body: unknown) =>
   new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json; charset=utf-8' } })
@@ -487,6 +488,60 @@ describe('checkUddevallaSource', () => {
   it('rapporterar okända typer, men inte fyrfackskärl', async () => {
     const tomningar = [pickup('10 m3 Container'), pickup('370 l kärl 1'), pickup('140 l Matkärl')]
     expect((await check(respond([row('A')], tomningar))).unknownWasteTypes).toEqual(['10 m3 Container'])
+  })
+})
+
+describe('checkBorlangeSource', () => {
+  const borlange: Source = { ...source, id: 'borlange', name: 'Borlänge Energi', config: { system: 'borlange' } }
+  const probe = 'stationsgatan-1-1'
+  const row = (id: string) => ({ pickupAddress: 'Stationsgatan 1', id })
+  const karl = (contentType: string, disposalDay = 'Tömning torsdag 5 november') => ({ PickupCity: 'Borlänge', PickupAddress: 'Stationsgatan 1', disposalDay, containerId: '1', contentType, hasMultipleCustomers: false })
+  const respond = (adresser: unknown, svar: unknown = [karl('Restavfall')]) =>
+    vi.fn(async (input: string | URL | Request) => {
+      const body = String(input).includes('/getAdresses') ? adresser : svar
+      if (body instanceof Error) throw body
+      return new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json' } })
+    }) as unknown as typeof fetch
+  const check = (fetchFn: typeof fetch) => checkBorlangeSource(borlange, probe, '2026-11-04', fetchFn)
+
+  it('fungerar med en tömning inom 60 dagar', async () => {
+    expect(await check(respond([row('1')]))).toMatchObject({ state: 'fungerar', baseUrl: BORLANGE_URL, probe, unknownWasteTypes: [] })
+  })
+
+  it('svarar inte vid timeout', async () => {
+    expect((await check(respond(new TypeError('fetch failed')))).state).toBe('svarar-inte')
+  })
+
+  it('har nytt format när Sitevision-adressen har ändrats (404)', async () => {
+    const fetchFn = vi.fn(async () => new Response('', { status: 404 })) as unknown as typeof fetch
+    const r = await check(fetchFn)
+    expect(r.state).toBe('nytt-format')
+    expect(r.error).toContain('404')
+  })
+
+  it('har nytt format vid okänd form och okända datum', async () => {
+    expect((await check(respond({ x: 1 }))).state).toBe('nytt-format')
+    expect((await check(respond([row('1')], [karl('Restavfall', 'Tömning snart')]))).state).toBe('nytt-format')
+  })
+
+  it('är tom när sökningen inte hittar något', async () => {
+    expect((await check(respond([]))).state).toBe('tom')
+  })
+
+  it('har nytt format när flera träffar har nya id', async () => {
+    const r = await check(respond([row('8'), row('9')]))
+    expect(r.state).toBe('nytt-format')
+    expect(r.error).toContain('nytt id hos Borlänge Energi')
+  })
+
+  it('märker om tjänsten börjar svara tomt eller med gamla datum', async () => {
+    expect((await check(respond([row('1')], []))).state).toBe('inga-tomningar')
+    expect((await check(respond([row('1')], [karl('Restavfall', 'Tömning måndag 2 november')]))).state).toBe('inga-tomningar')
+  })
+
+  it('rapporterar okända typer', async () => {
+    const svar = [karl('Grovsopor'), karl('Matavfall')]
+    expect((await check(respond([row('1')], svar))).unknownWasteTypes).toEqual(['Grovsopor'])
   })
 })
 

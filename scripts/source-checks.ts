@@ -9,6 +9,7 @@ import { vasydRule, vasydSchedule, vasydSearch, VASYD_URL } from '../src/server/
 import { NSR_URL, nsrSchedule, nsrSearch } from '../src/server/nsr.js'
 import { APPBOLAGET_URL, appbolagetFind, appbolagetSearch, appbolagetServices, isFee, scheduleFromServices, serviceType } from '../src/server/appbolaget.js'
 import { ROSLAGSVATTEN_URL, roslagsvattenFind, roslagsvattenPickups, roslagsvattenSchedule, roslagsvattenSearch } from '../src/server/roslagsvatten.js'
+import { BORLANGE_URL, borlangeFind, borlangePickups, borlangeSchedule, borlangeSearch } from '../src/server/borlange.js'
 import { UDDEVALLA_URL, uddevallaFind, uddevallaPickups, uddevallaSchedule, uddevallaSearch, uddevallaWasteType } from '../src/server/uddevalla.js'
 import { isKnownSrvJob, SRV_URL, srvFind, srvSchedule, srvSearch, srvWasteType } from '../src/server/srv.js'
 import { parseSvoaAddress, sameSvoaAddress, svoaAddressId, SVOA_URL, svoaFractions, svoaSchedule, svoaSearch, svoaStep } from '../src/server/svoa.js'
@@ -226,6 +227,36 @@ export async function checkAppbolagetSource(source: Source, probe: string, today
     const schedule = scheduleFromServices(services, today)
     const end = addDays(today, HORIZON_DAYS)
     const upcoming = schedule.events.some((e) => e.date >= today && e.date <= end)
+    return { ...base, state: upcoming ? 'fungerar' : 'inga-tomningar', unknownWasteTypes }
+  } catch (error) {
+    return { ...base, state: stateForError(error), error: (error as Error).message }
+  }
+}
+
+/** Borlänge: kontrolladressen är ett adress-id. Ändrade Sitevision-id:n ger 404 från sökningen. Tomma svar blir "inga tömningar". */
+export async function checkBorlangeSource(source: Source, probe: string, today: string, fetchFn: typeof fetch = fetch): Promise<SourceResult> {
+  const base = { sourceId: source.id, name: source.name, baseUrl: BORLANGE_URL, probe }
+  try {
+    const found = await borlangeFind(probe, fetchFn, TIMEOUT_MS)
+    if (!found) {
+      const street = queryFromAddressId(probe)?.query ?? probe
+      const hits = await borlangeSearch(street, fetchFn, TIMEOUT_MS)
+      if (hits.length === 0) return { ...base, state: 'tom' }
+      return { ...base, state: 'nytt-format', error: `Kontrolladressen ${probe} hittades inte (nytt id hos Borlänge Energi?), bara t.ex. ${edpAddressId(hits[0])}` }
+    }
+    const pickups = await borlangePickups(found.raw, today, fetchFn, TIMEOUT_MS)
+    const unknownWasteTypes = [
+      ...new Set(
+        pickups
+          .filter((p) => {
+            const mapped = mapWasteType(p.type)
+            return mapped?.fractions.includes('karl') && !isKnownBin(mapped.label ?? '')
+          })
+          .map((p) => p.type),
+      ),
+    ]
+    const end = addDays(today, HORIZON_DAYS)
+    const upcoming = borlangeSchedule(pickups, today).events.some((e) => e.date <= end)
     return { ...base, state: upcoming ? 'fungerar' : 'inga-tomningar', unknownWasteTypes }
   } catch (error) {
     return { ...base, state: stateForError(error), error: (error as Error).message }

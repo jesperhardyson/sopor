@@ -11,6 +11,7 @@ import { appbolagetFind, appbolagetSchedule } from './appbolaget.js'
 import { SRV_CUSTOMER_TIMEOUT_MS, srvFind, srvSchedule } from './srv.js'
 import { roslagsvattenFind, roslagsvattenPickups, roslagsvattenSchedule } from './roslagsvatten.js'
 import { uddevallaFind, uddevallaPickups, uddevallaSchedule } from './uddevalla.js'
+import { borlangeFind, borlangePickups, borlangeSchedule } from './borlange.js'
 import { vasydSchedule, vasydSearch } from './vasyd.js'
 import { queryFromSvoaId, sameSvoaAddress, SVOA_LIMIT, svoaSchedule, svoaSearch, type SvoaAddress } from './svoa.js'
 import { searchCandidates, toAddress, withDetails, type HandlerOptions } from './handlers.js'
@@ -37,6 +38,7 @@ export async function lookupAddress(
     if (source.config.system === 'srv') return await lookupSrv(source, id, origin, opts)
     if (source.config.system === 'appbolaget') return await lookupAppbolaget(source, source.config.unit, id, opts)
     if (source.config.system === 'uddevalla') return await lookupUddevalla(source, id, opts)
+    if (source.config.system === 'borlange') return await lookupBorlange(source, id, opts)
     if (source.config.system === 'roslagsvatten') return await lookupRoslagsvatten(source, source.config.municipality, id, opts)
     return await lookupStatic(source, id, origin, opts)
   } catch (e) {
@@ -144,6 +146,15 @@ async function lookupUddevalla(source: Source, id: string, opts: HandlerOptions)
   if (!found) return { status: 502 }
   const schedule = uddevallaSchedule(await uddevallaPickups(found.plantNumber, opts.fetchFn, timeoutMs), todayInStockholm(opts.now))
   return { status: 200, address: toAddress(source, found.building, opts.places), schedule }
+}
+
+/** Borlänge: som Uddevalla, men schemat hämtas med källans adresstext. En adress utan kärl är ett tomt schema, inget fel. */
+async function lookupBorlange(source: Source, id: string, opts: HandlerOptions): Promise<Lookup> {
+  const timeoutMs = opts.timeoutMs ?? 5000
+  const found = await borlangeFind(id, opts.fetchFn, timeoutMs)
+  if (!found) return { status: 502 }
+  const today = todayInStockholm(opts.now)
+  return { status: 200, address: toAddress(source, found, opts.places), schedule: borlangeSchedule(await borlangePickups(found.raw, today, opts.fetchFn, timeoutMs), today) }
 }
 
 /** Roslagsvatten: som Uddevalla, men kommunen krävs i varje anrop. */

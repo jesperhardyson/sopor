@@ -7,7 +7,7 @@ export interface Kommun {
 }
 
 /** Hur källans data hämtas. Ny leverantör = ny variant här + ny provider. */
-export type SourceConfig = { system: 'static' } | { system: 'edp'; baseUrl: string } | { system: 'svoa' } | { system: 'vasyd' } | { system: 'nsr' } | { system: 'srv' } | { system: 'appbolaget'; unit: string } | { system: 'uddevalla' } | { system: 'roslagsvatten'; municipality: string }
+export type SourceConfig = { system: 'static' } | { system: 'edp'; baseUrl: string } | { system: 'svoa' } | { system: 'vasyd' } | { system: 'nsr' } | { system: 'srv' } | { system: 'appbolaget'; unit: string } | { system: 'uddevalla' } | { system: 'borlange' } | { system: 'roslagsvatten'; municipality: string }
 
 /**
  * En datakälla för hämtschema, oftast ett avfallsbolag eller en kommun. En källa kan täcka
@@ -322,6 +322,18 @@ export const ALL_SOURCES: Source[] = [
     url: 'https://www.uddevallaenergi.se',
     kommuner: [{ code: '1485', name: 'Uddevalla kommun' }],
     config: { system: 'uddevalla' },
+  },
+  {
+    // Ingen EDP: den publika sökningen på borlange-energi.se (src/server/borlange.ts). Bara nästa tömning per kärl. Täcker inte Säter.
+    id: 'borlange',
+    name: 'Borlänge Energi',
+    url: 'https://www.borlange-energi.se',
+    kommuner: [{ code: '2081', name: 'Borlänge kommun' }],
+    config: { system: 'borlange' },
+    emptyScheduleNote: {
+      title: 'Borlänge Energi visar ingen tömning just nu',
+      text: 'Källan har inga planerade tömningar för den här adressen. Väntar du en tömning, kontakta Borlänge Energi.',
+    },
   },
   {
     // Ingen EDP: hämtningsschemat på roslagsvatten.se (src/server/roslagsvatten.ts). Kommunen krävs i varje anrop, så en källa per kommun.
