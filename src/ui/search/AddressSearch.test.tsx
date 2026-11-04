@@ -662,6 +662,22 @@ describe('AddressSearch', () => {
       expect(row.querySelector('.lucide-map-pin')).not.toBeNull()
     })
 
+    it('behåller nålen för en adress med särskiljare men utan ort', async () => {
+      const lidkoping: Address = { id: 'ringvagen-1', street: 'Ringvägen 1', locality: '', detail: 'Restavfall varje vecka', sourceId: 'lidkoping', kommun: 'Lidköpings kommun' }
+      await renderResult('ringvägen 1', { addresses: [lidkoping] })
+      const [row] = await screen.findAllByRole('option')
+      expect(row.querySelector('.lucide-map-pin')).not.toBeNull()
+      expect(row.querySelector('.lucide-map')).toBeNull()
+    })
+
+    it('skiljer raden för alla områden från träffarna med en rak linje', async () => {
+      await renderResult('Avesta tätort', { addresses: [tatort], areaPickers: [picker(true)] })
+      const row = await screen.findByRole('option', { name: /Se alla områden i Avesta/ })
+      expect(row.className).not.toContain('border-t')
+      expect(row.previousElementSibling).toHaveClass('h-px', 'bg-border')
+      expect(row.previousElementSibling).toHaveAttribute('role', 'none')
+    })
+
     it('visar sökordet som gav träffen', async () => {
       await renderResult('Backa', { addresses: [skogsbo, krylbo], areaPickers: [picker(true)] })
       const options = await screen.findAllByRole('option')

@@ -311,18 +311,19 @@ export function AddressSearch({
     const key = `omraden/${picker.sourceId}`
     if (picker.hasHits) {
       return (
-        <li
-          key={key}
-          {...props}
-          className={cn(
-            'mt-1 flex min-h-11 cursor-pointer items-center justify-between gap-2 rounded-xl border-t border-border px-3 py-2 text-sm font-extrabold text-primary',
-            !afterHits && 'mt-0 border-t-0',
-            selected && 'bg-surface-2',
-          )}
-        >
-          Se alla områden i {name}
-          <ArrowRight className="size-4 shrink-0" aria-hidden />
-        </li>
+        <Fragment key={key}>
+          {afterHits && <li role="none" aria-hidden className="mx-3 my-1 h-px bg-border" />}
+          <li
+            {...props}
+            className={cn(
+              'flex min-h-11 cursor-pointer items-center justify-between gap-2 rounded-xl px-3 py-2 text-sm font-extrabold text-primary',
+              selected && 'bg-surface-2',
+            )}
+          >
+            Se alla områden i {name}
+            <ArrowRight className="size-4 shrink-0" aria-hidden />
+          </li>
+        </Fragment>
       )
     }
     return (
@@ -367,8 +368,8 @@ export function AddressSearch({
       )
     }
     const r = item.address
-    // Ett område har särskiljare men ingen ort: då är kartan rätt ikon i stället för nålen.
-    const RowIcon = r.detail && !r.locality ? Map : MapPin
+    // Ett område har sökord: då är kartan rätt ikon i stället för nålen.
+    const RowIcon = r.searchTerms ? Map : MapPin
     const term = matchedTerm(query, r)
     // Orten kan saknas (Lidköping), och då ska raden varken börja med en punkt eller stå tom.
     const parts = [
