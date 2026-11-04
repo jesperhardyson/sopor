@@ -71,6 +71,8 @@ SRV återvinning (`src/server/srv.ts`, spec `docs/specs/2026-11-03-srv.md`) är 
 
 Appbolaget (`src/server/appbolaget.ts`, spec `docs/specs/2026-11-03-appbolaget.md`) är en plattform med flera kunder, som EDP. En ny kund blir en rad i registret med `{ system: 'appbolaget', unit: '<uuid>' }`. Kundens `Unit` står på kundens egen sajt: sök efter `appbolaget` eller `Unit:` i sajtens JavaScript, eller efter `unit=` i en länk till en PDF med tömningsschemat.
 
+Uddevalla Energi (`src/server/uddevalla.ts`, spec `docs/specs/2026-11-04-uddevalla.md`) är exemplet på en källa som bara har nästa tömning, utan frekvens. Kontrollera i ett stickprov att datumen verkligen ligger framåt. Rambo har samma tjänst men togs inte med, eftersom många datum redan hade passerat.
+
 - [ ] En klient i `src/server/<system>.ts` med sökning, schema och adress-id, testad mot sparade svar i `src/server/__fixtures__/`. Okänd form på svaret kastar `SourceError`, aldrig en tom lista.
 - [ ] En ny variant i `SourceConfig` och en gren i `searchLiveSource` (`src/server/handlers.ts`) och `lookupAddress` (`src/server/lookup.ts`). Ett id som inte längre ger träff ska ge 502, inte 404, så att kalenderprenumerationer inte töms.
 - [ ] En kontroll i bevakningen (`scripts/source-checks.ts`) och en kontrolladress i `PROBES`.

@@ -1,0 +1,29 @@
+[
+ {
+  "type": "140 l Matkärl",
+  "address": "Kungsgatan 10 ",
+  "pickup_date": "2026-11-04",
+  "formatted": "4 nov 2026",
+  "has_deviating_date": false,
+  "message": "",
+  "week_type": "Ordinarie"
+ },
+ {
+  "type": "660 l Restavfall",
+  "address": "Kungsgatan 10 ",
+  "pickup_date": "2026-11-04",
+  "formatted": "4 nov 2026",
+  "has_deviating_date": false,
+  "message": "",
+  "week_type": "Ordinarie"
+ },
+ {
+  "type": "770 l Restavfall",
+  "address": "Kungsgatan 10 ",
+  "pickup_date": "2026-11-04",
+  "formatted": "4 nov 2026",
+  "has_deviating_date": false,
+  "message": "",
+  "week_type": "Ordinarie"
+ }
+]

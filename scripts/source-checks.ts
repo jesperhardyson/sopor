@@ -8,6 +8,7 @@ import { isKnownBin } from '../src/server/fractions-map.js'
 import { vasydRule, vasydSchedule, vasydSearch, VASYD_URL } from '../src/server/vasyd.js'
 import { NSR_URL, nsrSchedule, nsrSearch } from '../src/server/nsr.js'
 import { APPBOLAGET_URL, appbolagetFind, appbolagetSearch, appbolagetServices, isFee, scheduleFromServices, serviceType } from '../src/server/appbolaget.js'
+import { UDDEVALLA_URL, uddevallaFind, uddevallaPickups, uddevallaSchedule, uddevallaSearch, uddevallaWasteType } from '../src/server/uddevalla.js'
 import { isKnownSrvJob, SRV_URL, srvFind, srvSchedule, srvSearch, srvWasteType } from '../src/server/srv.js'
 import { parseSvoaAddress, sameSvoaAddress, svoaAddressId, SVOA_URL, svoaFractions, svoaSchedule, svoaSearch, svoaStep } from '../src/server/svoa.js'
 import type { Source } from '../src/sources/index.js'
@@ -224,6 +225,36 @@ export async function checkAppbolagetSource(source: Source, probe: string, today
     const schedule = scheduleFromServices(services, today)
     const end = addDays(today, HORIZON_DAYS)
     const upcoming = schedule.events.some((e) => e.date >= today && e.date <= end)
+    return { ...base, state: upcoming ? 'fungerar' : 'inga-tomningar', unknownWasteTypes }
+  } catch (error) {
+    return { ...base, state: stateForError(error), error: (error as Error).message }
+  }
+}
+
+/** Uddevalla: kontrolladressen är ett adress-id. Tomma svar blir "inga tömningar", eftersom källan bara har nästa tömning. */
+export async function checkUddevallaSource(source: Source, probe: string, today: string, fetchFn: typeof fetch = fetch): Promise<SourceResult> {
+  const base = { sourceId: source.id, name: source.name, baseUrl: UDDEVALLA_URL, probe }
+  try {
+    const found = await uddevallaFind(probe, fetchFn, TIMEOUT_MS)
+    if (!found) {
+      const street = queryFromAddressId(probe)?.query ?? probe
+      const hits = await uddevallaSearch(street, fetchFn, TIMEOUT_MS)
+      if (hits.length === 0) return { ...base, state: 'tom' }
+      return { ...base, state: 'nytt-format', error: `Kontrolladressen ${probe} hittades inte (nytt värde hos Uddevalla Energi?), bara t.ex. ${edpAddressId(hits[0].building)}` }
+    }
+    const pickups = await uddevallaPickups(found.plantNumber, fetchFn, TIMEOUT_MS)
+    const unknownWasteTypes = [
+      ...new Set(
+        pickups
+          .filter((p) => {
+            const mapped = uddevallaWasteType(p.type)
+            return mapped?.fractions.includes('karl') && !mapped.label?.startsWith('Fyrfackskärl') && !isKnownBin(mapped.label ?? '')
+          })
+          .map((p) => p.type),
+      ),
+    ]
+    const end = addDays(today, HORIZON_DAYS)
+    const upcoming = uddevallaSchedule(pickups, today).events.some((e) => e.date <= end)
     return { ...base, state: upcoming ? 'fungerar' : 'inga-tomningar', unknownWasteTypes }
   } catch (error) {
     return { ...base, state: stateForError(error), error: (error as Error).message }

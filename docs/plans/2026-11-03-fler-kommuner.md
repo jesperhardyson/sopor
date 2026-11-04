@@ -71,12 +71,12 @@ Ordnade efter invånare. Varje rad är en egen spec och plan som `stockholm` och
 | 2 | **SRV återvinning** (klar, `docs/specs/2026-11-03-srv.md`) | Huddinge, Haninge, Botkyrka, Nynäshamn, Salem | 359 000 | 3,4 % | JSON, `srvatervinning.se/rest-api/core/sewagePickup/search` |
 | 3 | ~~**Avfallsapp/Nova**~~ (hoppas över, beslut 5) | Sigtuna, Motala, Upplands-Bro, Söderköping (+ Skaraborg?) | 144 000 | 1,4 % | JSON, `<kund>.avfallsapp.se/wp-json/nova/v1/`. Kunder som kräver token (Nodra, Vänersborg, Teknik i Väst) tas inte med |
 | 4 | **Appbolaget** (klar, `docs/specs/2026-11-03-appbolaget.md`) | Kristianstad, Hässleholm | 138 000 | 1,3 % | JSON, `api-universal.appbolaget.se/waste/…` |
-| 5 | **WordPress-appen** (Rambo, Uddevalla Energi) | Uddevalla, Lysekil, Sotenäs, Munkedal, Tanum | 103 000 | 1,0 % | JSON, `…/wp-json/app/v1/address-flat` och `next-pickup`. Samma form hos båda, *kontrollera* |
+| 5 | **Uddevalla Energi** (klar, `docs/specs/2026-11-04-uddevalla.md`). ~~Rambo~~ hoppas över, beslut 6 | Uddevalla (Lysekil, Sotenäs, Munkedal och Tanum går till fas 5) | 56 000 | 0,5 % | JSON, `app.uddevallaenergi.se/wp-json/app/`. Bara nästa tömning per kärl |
 | 6 | **Roslagsvatten** | Österåker, Ekerö, Vaxholm | 91 000 | 0,9 % | JSON, `POST roslagsvatten.se/schedule` |
 
 **Insats:** en källtyp i taget, som VA Syd. **Vinst:** cirka 1,1 miljoner invånare, **täckningen går från 33 % till cirka 44 %.** Utan Avfallsapp/Nova blir det cirka 950 000 och 42 %.
 
-Avfallsapp/Nova och WordPress-appen är plattformar med flera kunder. Byggs de med kunden som inställning (som `baseUrl` för EDP) blir nästa kund på samma plattform en rad i registret.
+Appbolaget är en plattform med flera kunder. Den byggs med kunden som inställning (som `baseUrl` för EDP), så nästa kund på plattformen blir en rad i registret.
 
 ## Fas 3: Egna källtyper för en kommun
 
@@ -131,3 +131,4 @@ Göteborg, Linköping, Umeå, Karlstad, Halmstad, Eskilstuna, Gävle och Norrkö
 3. **Affärsverken räknas som publik källa.** Token hämtas anonymt från deras open-api, utan inloggning.
 4. **Förfrågningarna i fas 5 blir GitHub-ärenden**, ett per kommun, med ett utkast.
 5. **Avfallsapp/Nova hoppas över** (Sigtuna, Motala, Upplands-Bro, Söderköping och Vallentuna). Sökningen svarar utan token men alltid tomt. Den kräver att en låtsad mobil enhet registreras (`POST /register`) och att adressen kopplas till enheten på leverantörens server (`next-pickup/set-status`), och schemat är bara nästa tömning per kärl. Kommunerna går till fas 5.
+6. **Rambo hoppas över, bara Uddevalla byggs av WordPress-appen** (2026-11-04). Tjänsten ger nästa tömning per kärl utan frekvens. Hos Rambo hade 51 av 114 kärl (45 %) ett datum som redan passerat, som äldst en vecka, och utan frekvens går rätt datum inte att räkna fram. Lysekil, Sotenäs, Munkedal och Tanum går till fas 5, med en fråga om schemat eller frekvensen. Hos Uddevalla Energi hade inget av 94 kärl ett passerat datum, så där byggs källan trots att kalendern bara visar nästa tömning.

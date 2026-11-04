@@ -80,6 +80,8 @@ Kommunerna som redan är live på sajten listas på [Om-sidan](https://sopor.har
 | Vallentuna | Kommunen (PreZero) | – | Bara Avfallsapp (`vallentuna.avfallsapp.se`), som kräver en anonym enhetsregistrering | – | Inte med: Avfallsapp hoppas över (beslut 5 i `docs/plans/2026-11-03-fler-kommuner.md`) |
 | Kristianstad | Renhållningen Kristianstad | – | Appbolaget (`api-universal.appbolaget.se`, `Unit` i sajtens `utility-bar.js`), ger nästa tömning och frekvensen | – | Med (Appbolaget, 2026-11-03) |
 | Hässleholm | Hässleholm Miljö | – | Appbolaget (`Unit` i tömningskalenderns PDF-länk), ger hela årets tömningar | – | Med (Appbolaget, 2026-11-03) |
+| Uddevalla | Uddevalla Energi | – | Egen JSON (`app.uddevallaenergi.se`), ger nästa tömning per kärl utan frekvens | – | Med (2026-11-04) |
+| Lysekil, Sotenäs, Munkedal, Tanum | Rambo | – | Samma tjänst som Uddevalla, men 45 % av kärlen hade ett passerat datum (2026-11-04) | – | Inte med, fråga Rambo om schemat eller frekvensen |
 | Tyresö | Kommunen (Verdis) | – | Bara app (Kretsloppsappen). Ingen publik webbsökning | – | Inte med |
 | Järfälla | Kommunen | – | Nej, e-tjänsten kräver e-legitimation | – | Inte med |
 | Sollentuna | SEOM | – | Nej, Mina sidor (`minasidor.seom.se`) kräver inloggning | – | Inte med |

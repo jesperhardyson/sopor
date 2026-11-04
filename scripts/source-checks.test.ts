@@ -6,8 +6,10 @@ import { VASYD_URL } from '../src/server/vasyd.js'
 import { NSR_URL } from '../src/server/nsr.js'
 import { SRV_URL, srvKey } from '../src/server/srv.js'
 import { APPBOLAGET_URL } from '../src/server/appbolaget.js'
+import { idHash } from '../src/server/edp.js'
+import { UDDEVALLA_URL } from '../src/server/uddevalla.js'
 import type { Source } from '../src/sources/index.js'
-import { checkAppbolagetSource, checkEdpSource, checkNsrSource, checkSrvSource, checkSvoaSource, checkVasydSource, checkStaticSource, checkViaSite, unreachableFromHere } from './source-checks'
+import { checkAppbolagetSource, checkEdpSource, checkNsrSource, checkSrvSource, checkUddevallaSource, checkSvoaSource, checkVasydSource, checkStaticSource, checkViaSite, unreachableFromHere } from './source-checks'
 
 const json = (body: unknown) =>
   new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json; charset=utf-8' } })
@@ -438,5 +440,51 @@ describe('checkAppbolagetSource', () => {
     const service = (description: string, description_verbose = '') => ({ code: { description, description_verbose }, collections: [{ collection_at: '2026-11-05 23:00:00' }] })
     const fastighet = { status: 200, data: { services: [service('Deponi'), service('Budad hämtning'), service('Kärl1', 'Fyrfack kärl 1'), service('Trädgårdsavfall'), service('Restavfall')] } }
     expect((await check(respond({ fastighet }))).unknownWasteTypes).toEqual(['Deponi'])
+  })
+})
+
+describe('checkUddevallaSource', () => {
+  const uddevalla: Source = { ...source, id: 'uddevalla', name: 'Uddevalla Energi', config: { system: 'uddevalla' } }
+  const probe = `kungsgatan-10_uddevalla-${idHash('A')}`
+  const row = (plant_number: string) => ({ plant_number, address: 'Kungsgatan 10, Uddevalla', zip_city: 'Uddevalla' })
+  const pickup = (type: string, pickup_date = '2026-11-05') => ({ type, pickup_date, has_deviating_date: false })
+  const respond = (adresser: unknown, tomningar: unknown = [pickup('660 l Restavfall')]) =>
+    vi.fn(async (input: string | URL | Request) => {
+      const body = String(input).includes('/address-flat') ? adresser : tomningar
+      if (body instanceof Error) throw body
+      return new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json' } })
+    }) as unknown as typeof fetch
+  const check = (fetchFn: typeof fetch) => checkUddevallaSource(uddevalla, probe, '2026-11-04', fetchFn)
+
+  it('fungerar med en tömning inom 60 dagar', async () => {
+    expect(await check(respond([row('A')]))).toMatchObject({ state: 'fungerar', baseUrl: UDDEVALLA_URL, probe, unknownWasteTypes: [] })
+  })
+
+  it('svarar inte vid timeout', async () => {
+    expect((await check(respond(new TypeError('fetch failed')))).state).toBe('svarar-inte')
+  })
+
+  it('har nytt format vid okänd form', async () => {
+    expect((await check(respond({ x: 1 }))).state).toBe('nytt-format')
+  })
+
+  it('är tom när sökningen inte hittar något', async () => {
+    expect((await check(respond([]))).state).toBe('tom')
+  })
+
+  it('har nytt format när flera träffar har nya värden', async () => {
+    const r = await check(respond([row('B'), row('C')]))
+    expect(r.state).toBe('nytt-format')
+    expect(r.error).toContain('nytt värde hos Uddevalla Energi')
+  })
+
+  it('märker om tjänsten börjar svara tomt eller med gamla datum', async () => {
+    expect((await check(respond([row('A')], []))).state).toBe('inga-tomningar')
+    expect((await check(respond([row('A')], [pickup('660 l Restavfall', '2026-10-01')]))).state).toBe('inga-tomningar')
+  })
+
+  it('rapporterar okända typer, men inte fyrfackskärl', async () => {
+    const tomningar = [pickup('10 m3 Container'), pickup('370 l kärl 1'), pickup('140 l Matkärl')]
+    expect((await check(respond([row('A')], tomningar))).unknownWasteTypes).toEqual(['10 m3 Container'])
   })
 })

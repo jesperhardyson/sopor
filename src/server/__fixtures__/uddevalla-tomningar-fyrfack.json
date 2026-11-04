@@ -1,0 +1,20 @@
+[
+ {
+  "type": "370 l kärl 1",
+  "address": "Björkvägen 1 ",
+  "pickup_date": "2026-11-06",
+  "formatted": "6 nov 2026",
+  "has_deviating_date": false,
+  "message": "",
+  "week_type": "Ordinarie"
+ },
+ {
+  "type": "370 l kärl 2",
+  "address": "Björkvägen 1 ",
+  "pickup_date": "2026-11-27",
+  "formatted": "27 nov 2026",
+  "has_deviating_date": false,
+  "message": "",
+  "week_type": "Ordinarie"
+ }
+]
