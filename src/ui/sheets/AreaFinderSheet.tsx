@@ -1,7 +1,7 @@
 import { ArrowRight, CalendarSearch } from 'lucide-react'
 import { useId, useState } from 'react'
 import { Link } from 'react-router'
-import { areaForDate } from '@/domain/areas'
+import { areaDetail, areaForDate } from '@/domain/areas'
 import { monthShort, toUtc, todayInStockholm } from '@/domain/dates'
 import type { Area } from '@/domain/types'
 import { ResponsiveSheet } from './ResponsiveSheet'
@@ -80,9 +80,7 @@ export function AreaFinderSheet({
           <div className={`${box} bg-brand-soft`}>
             <p className="text-xs font-extrabold text-brand-text">Det här bör vara ditt område</p>
             <h3 className="text-xl font-extrabold text-text">{result.area.name}</h3>
-            <p className="text-[15px] font-bold text-text-2">
-              {result.area.day} · {result.area.label}
-            </p>
+            <p className="text-[15px] font-bold text-text-2">{areaDetail(result.area)}</p>
             <p className="text-sm leading-[1.4] text-text-2">{controlText(result.previous, result.next)}</p>
           </div>
         )}

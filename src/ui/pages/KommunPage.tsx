@@ -1,6 +1,7 @@
 import { ArrowRight, SearchX } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation, useParams } from 'react-router'
+import { kommunInText } from '@/domain/kommun'
 import type { KommunPage as KommunPageData } from '@/data/kommun-pages'
 import { kommunPage, searchInKommun } from '@/providers/registry'
 import { SOURCES } from '@/sources'
@@ -62,7 +63,7 @@ function KommunSearch({ page }: { page: KommunPageData }) {
       <AddressSearch search={search} suggest={suggest} kommun={page.name} areaHref={areaHref} />
       {areaHref && (
         <Link to={areaHref} className="inline-flex items-center gap-1.5 self-start text-[15px] font-bold text-primary">
-          Välj område i {page.name.replace(/ kommun$/, '')}
+          Välj område i {kommunInText(page.name)}
           <ArrowRight className="size-4" aria-hidden />
         </Link>
       )}

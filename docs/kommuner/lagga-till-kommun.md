@@ -154,7 +154,7 @@ För källor med `selection: 'area'` i `src/sources/index.ts`. Filen ersätter `
 
 - `explanation` visas överst på sidan där man väljer område, och `help` under områdena. Båda är obligatoriska.
 - `id` är områdets stabila id och används i URL:en (`/avesta/trakt-7`). `omraden` är reserverat, och ett id får inte förekomma två gånger.
-- `name` är det som visas i listan, `day` är tömningsdag och vecka, och `label` är källans eget namn eller nummer ("Trakt 7").
+- `name` är det som visas i listan, `day` är tömningsdag och vecka, och `label` är källans eget namn eller nummer ("Trakt 7"). `label` är valfri, och utan den visas inget märke.
 - `schedule` pekar på en nyckel i samma års `schedules.json`.
 - `places` (orter och byar) och `streets` (gator) räknas upp som källan gör det. Skriv ut förkortningar. En stavning som skiljer sig från OpenStreetMap behåller källans stavning tills den är bekräftad.
 - `searchTerms` är extra söktermer som inte syns, och `otherDays` är andra dagar som området hämtas på. Båda är listor och får vara tomma.
@@ -167,6 +167,8 @@ För en kommun där schemat är publikt per område men kopplingen adress → om
 - [ ] Sätt `selection: 'area'` på källan i `src/sources/index.ts`, med `config: { system: 'static' }`.
 - [ ] Skriv `areaNotice`: vad vi inte vet, eftersom besökaren väljer området själv. Texten visas i kalenderarket, står i kalenderfilen och skickas i API:t, och ett test kräver den.
 - [ ] Skapa `omraden.json` och `schedules.json` enligt [dataformatet](#dataformatet).
+- [ ] Finns samma namn i flera områden, lägg namnet utan förbehåll i `searchTerms` på varje område, så att "Forsbo" också visar "Forsbo – del av". Exakta träffar döljer annars de andra. Lägg undantag i `otherDays`, inte i `places`, eftersom `places` är sökord.
+- [ ] Har källan inga nummer på områdena, utelämna `label` (som i Säter). Hitta inte på nummer.
 - [ ] Områdets id följer området, inte numret. Byter källan numrering behåller området sitt id och får ett nytt `label`.
 - [ ] **Delas eller slås ett område ihop ska det nya området få ett nytt id.** Det gamla id:t ligger kvar och ska visa ett meddelande om att välja område igen. Ett id får aldrig tas bort eller återanvändas för något annat, eftersom kalenderprenumerationer hänger på det. Meddelandet är inte byggt än och måste byggas före den första ändringen av det slaget.
 

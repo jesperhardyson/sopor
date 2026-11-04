@@ -17,7 +17,8 @@ export interface Area {
   id: string
   name: string
   day: string
-  label: string
+  /** Källans eget namn på området, t.ex. "Trakt 7". Inte alla källor har något. */
+  label?: string
   places: string[]
   otherDays: string[]
   /** Sökord (gator, orter) som utöver namnet hittar området */

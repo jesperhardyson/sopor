@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { areaForDate } from './areas'
+import { areaDetail, areaForDate } from './areas'
 import type { Area } from './types'
 
 const area = (id: string, dates: string[]): Area => ({
@@ -41,5 +41,12 @@ describe('areaForDate', () => {
   it('ger outside före och efter alla datum', () => {
     expect(areaForDate('2026-10-12', [A, B])).toEqual({ kind: 'outside' })
     expect(areaForDate('2026-11-11', [A, B])).toEqual({ kind: 'outside' })
+  })
+})
+
+describe('areaDetail', () => {
+  it('visar etiketten efter hämtdagen när den finns', () => {
+    expect(areaDetail({ day: 'Tisdag, jämn vecka', label: 'Trakt 7' })).toBe('Tisdag, jämn vecka · Trakt 7')
+    expect(areaDetail({ day: 'Måndag, ojämn vecka' })).toBe('Måndag, ojämn vecka')
   })
 })

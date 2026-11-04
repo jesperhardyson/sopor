@@ -1,6 +1,7 @@
 import { ArrowRight, ChevronDown, LoaderCircle, Map, MapPin, Search, UserCheck, X } from 'lucide-react'
 import { Fragment, useEffect, useId, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
+import { kommunInText } from '@/domain/kommun'
 import { enterTarget, groupByKommun, matchedTerm, normalize, stableMerge } from '@/domain/search'
 import type { Address } from '@/domain/types'
 import { missingKommuner, prefetchAddress, searchAll, suggestAll, warmUpSearch, type AreaPicker, type SearchOptions, type SearchResult } from '@/providers/registry'
@@ -53,7 +54,6 @@ interface Section {
 }
 
 /** Kommunens namn utan "kommun", för texterna på raden för områdesval. */
-const kommunName = (kommun: string) => kommun.replace(/ kommun$/, '')
 
 /** Raden för områdesval hör till sin kommuns grupp. En kommun utan träffar får en grupp med bara den raden, sist. */
 function withPickers(list: Section[], pickers: AreaPicker[]): Section[] {
@@ -334,9 +334,7 @@ export function AddressSearch({
         </span>
         <span className="flex min-w-0 flex-1 flex-col items-start gap-1">
           <span className="text-base font-extrabold text-text">{picker.street}</span>
-          <span className="text-sm text-text-2">
-            {choice.label} · {choice.day}
-          </span>
+          <span className="text-sm text-text-2">{choice.label ? `${choice.label} · ${choice.day}` : choice.day}</span>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-warn-bg px-2.5 py-0.5 text-[13px] font-extrabold text-warn">
             <UserCheck className="size-3.5" aria-hidden />
             Ditt val, inte från {getSource(picker.sourceId)?.name ?? picker.kommun}
@@ -348,7 +346,7 @@ export function AddressSearch({
   }
 
   function renderPicker(picker: AreaPicker, props: React.HTMLAttributes<HTMLLIElement>, selected: boolean, afterHits: boolean) {
-    const name = kommunName(picker.kommun)
+    const name = kommunInText(picker.kommun)
     const key = `omraden/${picker.sourceId}`
     if (picker.hasHits) {
       return (

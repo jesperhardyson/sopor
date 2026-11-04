@@ -1,6 +1,7 @@
 import { ArrowLeft, ArrowRight, CalendarSearch, ChevronRight, MapPin, Search } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation, useParams } from 'react-router'
+import { kommunInText } from '@/domain/kommun'
 import { searchAddresses } from '@/domain/search'
 import { todayInStockholm } from '@/domain/dates'
 import type { Address, Area } from '@/domain/types'
@@ -135,7 +136,7 @@ export function AreaPage({ today = todayInStockholm() }: { today?: string }) {
                 <MapPin className="size-[22px] shrink-0 text-text" aria-hidden />
                 <div className="flex min-w-0 flex-col gap-1">
                   <h2 className="text-[15px] font-extrabold text-text">
-                    {knownStreet} finns i {source.kommuner[0].name.replace(/ kommun$/, '')}
+                    {knownStreet} finns i {kommunInText(source.kommuner[0].name)}
                   </h2>
                   <p className="text-sm leading-[1.4] text-text">
                     Men schemat visar inte vilket område den hör till. Hitta det med din senaste tömning, eller välj i listan.
@@ -160,7 +161,7 @@ export function AreaPage({ today = todayInStockholm() }: { today?: string }) {
                   <span className="flex min-w-0 flex-1 flex-col gap-1">
                     <span className="flex items-start justify-between gap-2">
                       <span className="text-base font-extrabold text-text">{a.name}</span>
-                      <span className="shrink-0 rounded-full bg-brand-soft px-2.5 py-0.5 text-[13px] font-extrabold text-brand-text">{a.label}</span>
+                      {a.label && <span className="shrink-0 rounded-full bg-brand-soft px-2.5 py-0.5 text-[13px] font-extrabold text-brand-text">{a.label}</span>}
                     </span>
                     <span className="text-[15px] font-bold text-brand-text">{a.day}</span>
                     {a.places.length > 0 && <span className="text-sm text-text-2">{a.places.join(', ')}</span>}

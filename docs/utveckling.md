@@ -26,6 +26,8 @@ Avesta har områdesval (`selection: 'area'`): Avesta Vatten publicerar schemat p
 
 Byggskriptet gör varje område till en rad i `addresses.json` (id `trakt-7`, namnet som `street`, tom ort, och `detail` och `searchTerms` som extra fält) och skriver `public/data/avesta/omraden.json` med förklaringen, hjälptexten och områdena. UI:t säger "område", aldrig "trakt". Formatet står i [checklistan](kommuner/lagga-till-kommun.md#områdesval-utan-adresser).
 
+Säter har samma lösning, med `data/sater/2026/` (spec: `docs/specs/2026-11-04-sater-omradesval.md`).
+
 Så provar du den i webbläsaren:
 
 - Öppna `/avesta/omraden`. Där syns förklaringen, filterfältet och alla tio områden.

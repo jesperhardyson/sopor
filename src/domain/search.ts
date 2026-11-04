@@ -61,8 +61,8 @@ function streetPart(q: string): string | undefined {
   return q.match(/^(.+) \d+\p{L}?$/u)?.[1]
 }
 
-/** Småord i områdens namn ("m.fl.", "Norr och Sör Nävde"). De går inte att söka på, annars ger "fl" nästan alla områden. */
-const FILLER_WORDS = new Set(['m', 'fl', 'och'])
+/** Småord i områdens namn ("m.fl.", "Norr och Sör Nävde", "Forsbo – del av"). De går inte att söka på, annars ger "fl" nästan alla områden. */
+const FILLER_WORDS = new Set(['m', 'fl', 'och', 'del', 'av', 'om', 'by'])
 
 /**
  * Alla ord i frågan finns i samma term (med `areaPrefix` räcker början), eller gatudelen är exakt

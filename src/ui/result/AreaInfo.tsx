@@ -24,7 +24,7 @@ export function AreaInfo({ area, explanation }: { area: Area; explanation: strin
       )}
       {area.otherDays.length > 0 && (
         <div className="flex flex-col gap-1">
-          <h2 className={heading}>Vissa gator i tätorten har en annan hämtdag</h2>
+          <h2 className={heading}>Vissa gator har en annan hämtdag</h2>
           {area.otherDays.map((line) => (
             <p key={line} className={text}>
               {line}

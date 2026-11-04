@@ -142,6 +142,24 @@ describe('AreaPage', () => {
     expect(screen.getByText('Avesta tätort, Östanfors m.fl.')).toBeInTheDocument()
   })
 
+  it('visar inget märke för ett område utan etikett, och filtret skiljer jämn från ojämn', async () => {
+    const { label: _label, ...askon } = index.areas[0]
+    fake = makeProvider({ listAreas: async () => ({ ...index, areas: [{ ...askon, day: 'Måndag, ojämn vecka' }, { ...index.areas[1], day: 'Tisdag, jämn vecka' }] }) })
+    show()
+    expect(await screen.findByText('Måndag, ojämn vecka')).toBeInTheDocument()
+    expect(screen.queryByText('Trakt 1')).toBeNull()
+    await userEvent.type(screen.getByRole('searchbox', { name: 'Sök område, ort eller gata' }), 'ojämn')
+    expect(screen.getByText('Askön, Nyhyttan m.fl.')).toBeInTheDocument()
+    expect(screen.queryByText('Avesta tätort, Östanfors m.fl.')).toBeNull()
+  })
+
+  it('skriver kommunens hela namn när det slutar på s', async () => {
+    knownStreets = { Kungsgatan: 'Kungsgatan' }
+    show('/sater/omraden')
+    await userEvent.type(await screen.findByRole('searchbox', { name: 'Sök område, ort eller gata' }), 'Kungsgatan')
+    expect(await screen.findByRole('heading', { name: 'Kungsgatan finns i Säters kommun' })).toBeInTheDocument()
+  })
+
   it('visar förklaring och hela listan för en känd gata utan områdesträff', async () => {
     knownStreets = { 'Kungsgatan 12': 'Kungsgatan' }
     show()

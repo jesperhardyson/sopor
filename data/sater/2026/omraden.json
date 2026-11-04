@@ -1,0 +1,251 @@
+{
+  "explanation": "Säters kommun visar sophämtningen per område på sin webbplats, men inte vilka adresser som hör till vilket område. Listan gäller villa och fritidshus.",
+  "help": "Osäker? Se dina hämtningsdagar på kommunens Mina sidor med BankID, eller ring kundtjänst på 0225-550 00.",
+  "areas": [
+    {
+      "id": "ojamn-mandag",
+      "name": "Dalsbyn, Finnbo m.fl.",
+      "day": "Måndag, ojämn vecka",
+      "schedule": "ojamn-mandag",
+      "places": [
+        "Dalsbyn",
+        "Finnbo",
+        "Karlsgårdarna",
+        "Klacken",
+        "Knutsbo",
+        "Nordåker",
+        "Norrtull",
+        "Nya Dalsbyn",
+        "Nya staden",
+        "Nämnsbo",
+        "Pungmakarbo",
+        "Uggelbo"
+      ],
+      "streets": [],
+      "searchTerms": [],
+      "otherDays": []
+    },
+    {
+      "id": "ojamn-tisdag",
+      "name": "Ansta, Anstahyttan m.fl.",
+      "day": "Tisdag, ojämn vecka",
+      "schedule": "ojamn-tisdag",
+      "places": [
+        "Ansta",
+        "Anstahyttan",
+        "Arkhyttan – del av",
+        "Bultbo",
+        "Djupdalen",
+        "Dyviken",
+        "Forsbo – del av",
+        "Fäggeby",
+        "Hysta – del av",
+        "Innerstaden",
+        "Nedernora",
+        "Uppbo"
+      ],
+      "streets": [],
+      "searchTerms": [
+        "Arkhyttan",
+        "Forsbo",
+        "Hysta"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "ojamn-onsdag",
+      "name": "Bispberg, Bispbergshyttan m.fl.",
+      "day": "Onsdag, ojämn vecka",
+      "schedule": "ojamn-onsdag",
+      "places": [
+        "Bispberg",
+        "Bispbergshyttan",
+        "Forsbo",
+        "Landa (söder om Dalälven)",
+        "Mårtensgård",
+        "Södersätra",
+        "Vålängarna",
+        "Ängarna"
+      ],
+      "streets": [],
+      "searchTerms": [
+        "Landa"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "ojamn-torsdag",
+      "name": "Aspnäs, Dalkarlsbo m.fl.",
+      "day": "Torsdag, ojämn vecka",
+      "schedule": "ojamn-torsdag",
+      "places": [
+        "Aspnäs",
+        "Dalkarlsbo",
+        "Grängshammar",
+        "Lomtorpet/Marken",
+        "Norbo",
+        "Risshyttan",
+        "Sandvik",
+        "Skenshyttan",
+        "Skenshyttenäs",
+        "Silvbergs-Lövåsen",
+        "Ulvshyttan",
+        "Västerviken"
+      ],
+      "streets": [],
+      "searchTerms": [
+        "Lövåsen"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "ojamn-fredag",
+      "name": "Dammhusviken, Fiskarbo m.fl.",
+      "day": "Fredag, ojämn vecka",
+      "schedule": "ojamn-fredag",
+      "places": [
+        "Arkhyttan – del av",
+        "Dammhusviken",
+        "Fiskarbo",
+        "Götbo",
+        "Lilla Klingsbo",
+        "Lottbosjön",
+        "Lövåsen",
+        "Nyberget",
+        "Ryggen",
+        "Stenverken",
+        "Trylämnet"
+      ],
+      "streets": [],
+      "searchTerms": [
+        "Arkhyttan"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "jamn-mandag",
+      "name": "Burhagen, Gärdet m.fl.",
+      "day": "Måndag, jämn vecka",
+      "schedule": "jamn-mandag",
+      "places": [
+        "Burhagen",
+        "Gärdet",
+        "Havregärdet",
+        "Ovangårdarna"
+      ],
+      "streets": [],
+      "searchTerms": [],
+      "otherDays": []
+    },
+    {
+      "id": "jamn-tisdag",
+      "name": "Björänget, Gussarvshyttan m.fl.",
+      "day": "Tisdag, jämn vecka",
+      "schedule": "jamn-tisdag",
+      "places": [
+        "Björänget",
+        "Gussarvshyttan",
+        "Hysta",
+        "Kraftverket",
+        "Kyrkberget",
+        "Landa",
+        "Pellesgårdarna",
+        "Rasjön",
+        "Skedvi kyrkby",
+        "Stocksbro",
+        "Tomtebo",
+        "Västerby",
+        "Yttersätra",
+        "Österby",
+        "Översätra"
+      ],
+      "streets": [],
+      "searchTerms": [],
+      "otherDays": []
+    },
+    {
+      "id": "jamn-onsdag",
+      "name": "Bobygden, Bodarne m.fl.",
+      "day": "Onsdag, jämn vecka",
+      "schedule": "jamn-onsdag",
+      "places": [
+        "Bobygden",
+        "Bodarne",
+        "Bomsarvet",
+        "Enbacka",
+        "Färjeby",
+        "Gruvby",
+        "Kvarnsveden",
+        "Lilla Bodarna",
+        "Lisselhaga",
+        "Naglarby",
+        "Nedre Tosarby",
+        "Norrby",
+        "Pingbo",
+        "Sjöhaga",
+        "Slättgärdet",
+        "Storhaga",
+        "Tosarby",
+        "Tovholen",
+        "Tyskbo",
+        "Tåå",
+        "Täppgårdarna",
+        "Uddsarvet",
+        "Åkre"
+      ],
+      "streets": [],
+      "searchTerms": [],
+      "otherDays": []
+    },
+    {
+      "id": "jamn-torsdag",
+      "name": "Dalkarlsnäs, Daniels hage m.fl.",
+      "day": "Torsdag, jämn vecka",
+      "schedule": "jamn-torsdag",
+      "places": [
+        "Dalkarlsnäs",
+        "Daniels hage",
+        "Gessån",
+        "Hagalund",
+        "Kullsveden",
+        "Lerviken",
+        "Mora by (inklusive Postvägen)",
+        "Nisshyttan",
+        "Rönningen",
+        "Skönvik (privata tomter, enbostadshus)",
+        "Stoltens fäbodar",
+        "Yttre Heden",
+        "Åsen"
+      ],
+      "streets": [
+        "Postvägen"
+      ],
+      "searchTerms": [],
+      "otherDays": [
+        "Falkgränd och Dahlanders väg ingår inte i Åsen."
+      ]
+    },
+    {
+      "id": "jamn-fredag",
+      "name": "Backa, Bondhyttan m.fl.",
+      "day": "Fredag, jämn vecka",
+      "schedule": "jamn-fredag",
+      "places": [
+        "Backa",
+        "Bondhyttan",
+        "Dammsjön",
+        "Gläcken",
+        "Ingevallsbo",
+        "Källarbo",
+        "Långhag",
+        "Magnilbo",
+        "Rusgården",
+        "Solvarbo",
+        "Våbäck"
+      ],
+      "streets": [],
+      "searchTerms": [],
+      "otherDays": []
+    }
+  ]
+}

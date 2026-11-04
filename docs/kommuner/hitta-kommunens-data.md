@@ -71,7 +71,6 @@ Kommunerna som redan är live på sajten listas på [Om-sidan](https://sopor.har
 
 | Kommun | Sköts av | Schema publikt | Söktjänst per adress | Adress → område | Läge |
 |---|---|---|---|---|---|
-| Säter | Kommunen själv (inte Dala Vatten och Avfall) | Webbsida med områden per veckodag och jämn/udda vecka, plus veckoschema för fraktionerna | Nej. Mina sidor (`minasidorva.sater.se`) är en kundportal från CGI som kräver inloggning | Saknas, behöver begäras | Inte påbörjad |
 | Mölndal | – | – | EDP Future svarar men är tom (`future.molndal.se/FutureWeb`, 2026-11-03) | – | Inte med |
 | Östersund | – | – | EDP Future svarar men är tom (`edp.ostersund.se/FutureWeb`, 2026-11-03) | – | Inte med |
 | Upplands Väsby | Kommunen | – | EDP Future svarar men är tom (`edpfuture.upplandsvasby.se/FutureWeb`). Kommunen hänvisar till inloggning på Mina sidor | – | Inte med |
@@ -105,7 +104,9 @@ Lärdomar så här långt:
 - **En områdeslista i ett schema ersätter inte kommunens tabell.** I Avesta står till exempel "Avesta tätort" och "Skogsbotätort" i olika trakter, samtidigt som en och samma gata kan gå genom båda, och enskilda gator i tätorten ligger i andra trakter. Listan är en ledtråd, men inget att bygga adressökning på.
 - **Rendera PDF:er med kolumner innan du läser av dem.** I Avestas schema kom texten ut i fel ordning och två trakters listor flöt ihop när texten extraherades.
 - **Avesta är live med områdesval.** Schemat kommer från [PDF:en](https://avestavatten.se/avfall/sortera-ratt-ar-latt/hamtningsschema/). EDP svarar men är tom (`minasidor.avestavatten.se/EDPFutureweb`, 2026-11-04), och begäran om tabellen har inte besvarats. Ett nytt verksamhetssystem för VA och avfall [annonserades ut 2026](https://ted.europa.eu/en/notice/298834-2026/html), så kontrollera söktjänsten igen om systemet byts.
+- **Säter är live med områdesval.** Kommunen ansvarar och Borlänge Energi hämtar, men Borlänge Energis sökning har inte Säters adresser (20 gator, 2026-11-04). Schemat kommer från [kommunens sida](https://sater.se/bygga-bo-miljo/avfall-och-atervinning/hamtningsdagar-sophamtning/). Mina sidor (`minasidorva.sater.se`) kräver BankID, och OpenStreetMap har inga gränser för områdena.
 - **Områdesval är ett alternativ när kopplingen saknas.** Är schemat publikt per område men kopplingen adress → område uteblir, kan besökaren välja område i stället (`selection: 'area'`, se [checklistan](lagga-till-kommun.md#områdesval-utan-adresser)). Det kräver att källan listar orter och gator per område.
+- **Ett namn kan finnas i flera områden.** I Säter finns både "Forsbo" och "Forsbo – del av". Söks namnet utan förbehåll måste båda områdena visas, annars kan man få fel hämtdag. Undantag ("Åsen, förutom Falkgränd") får inte bli sökord till området de inte ingår i.
 - **Lantmäteriets adressregister** säger vilka adresser som finns, men inte vilket område de tillhör. Licensen är dessutom oklar för återpublicering. Det ersätter alltså inte kommunens tabell.
 
 En större genomgång av adresskällor och vilka kommuner som har publika källor för hämtschema finns i [undersökningen från oktober 2026](undersokning-2026-10-adresser-och-hamtschema.md).
