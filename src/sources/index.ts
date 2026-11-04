@@ -7,7 +7,7 @@ export interface Kommun {
 }
 
 /** Hur källans data hämtas. Ny leverantör = ny variant här + ny provider. */
-export type SourceConfig = { system: 'static' } | { system: 'edp'; baseUrl: string } | { system: 'svoa' } | { system: 'vasyd' } | { system: 'nsr' } | { system: 'srv' } | { system: 'appbolaget'; unit: string } | { system: 'uddevalla' }
+export type SourceConfig = { system: 'static' } | { system: 'edp'; baseUrl: string } | { system: 'svoa' } | { system: 'vasyd' } | { system: 'nsr' } | { system: 'srv' } | { system: 'appbolaget'; unit: string } | { system: 'uddevalla' } | { system: 'roslagsvatten'; municipality: string }
 
 /**
  * En datakälla för hämtschema, oftast ett avfallsbolag eller en kommun. En källa kan täcka
@@ -322,6 +322,28 @@ export const ALL_SOURCES: Source[] = [
     url: 'https://www.uddevallaenergi.se',
     kommuner: [{ code: '1485', name: 'Uddevalla kommun' }],
     config: { system: 'uddevalla' },
+  },
+  {
+    // Ingen EDP: hämtningsschemat på roslagsvatten.se (src/server/roslagsvatten.ts). Kommunen krävs i varje anrop, så en källa per kommun.
+    id: 'osteraker',
+    name: 'Roslagsvatten',
+    url: 'https://roslagsvatten.se',
+    kommuner: [{ code: '0117', name: 'Österåkers kommun' }],
+    config: { system: 'roslagsvatten', municipality: 'osteraker' },
+  },
+  {
+    id: 'ekero',
+    name: 'Roslagsvatten',
+    url: 'https://roslagsvatten.se',
+    kommuner: [{ code: '0125', name: 'Ekerö kommun' }],
+    config: { system: 'roslagsvatten', municipality: 'ekero' },
+  },
+  {
+    id: 'vaxholm',
+    name: 'Roslagsvatten',
+    url: 'https://roslagsvatten.se',
+    kommuner: [{ code: '0187', name: 'Vaxholms stad' }],
+    config: { system: 'roslagsvatten', municipality: 'vaxholm' },
   },
 ]
 

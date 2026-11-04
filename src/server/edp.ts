@@ -103,7 +103,7 @@ export async function edpSearch(
 }
 
 /** ISO-veckodagarna (1 = måndag … 7 = söndag) som texten nämner. */
-function weekdaysIn(text: string): number[] {
+export function weekdaysIn(text: string): number[] {
   const t = text.toLowerCase()
   return WEEKDAYS.flatMap((day, i) => (t.includes(day) ? [i + 1] : []))
 }

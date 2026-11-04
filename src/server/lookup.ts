@@ -9,6 +9,7 @@ import { edpAddressId, edpSchedule, edpSearch, queryFromAddressId, type EdpBuild
 import { nsrDetails, nsrSchedule, nsrSearch } from './nsr.js'
 import { appbolagetFind, appbolagetSchedule } from './appbolaget.js'
 import { SRV_CUSTOMER_TIMEOUT_MS, srvFind, srvSchedule } from './srv.js'
+import { roslagsvattenFind, roslagsvattenPickups, roslagsvattenSchedule } from './roslagsvatten.js'
 import { uddevallaFind, uddevallaPickups, uddevallaSchedule } from './uddevalla.js'
 import { vasydSchedule, vasydSearch } from './vasyd.js'
 import { queryFromSvoaId, sameSvoaAddress, SVOA_LIMIT, svoaSchedule, svoaSearch, type SvoaAddress } from './svoa.js'
@@ -36,6 +37,7 @@ export async function lookupAddress(
     if (source.config.system === 'srv') return await lookupSrv(source, id, origin, opts)
     if (source.config.system === 'appbolaget') return await lookupAppbolaget(source, source.config.unit, id, opts)
     if (source.config.system === 'uddevalla') return await lookupUddevalla(source, id, opts)
+    if (source.config.system === 'roslagsvatten') return await lookupRoslagsvatten(source, source.config.municipality, id, opts)
     return await lookupStatic(source, id, origin, opts)
   } catch (e) {
     console.error('Uppslagning av adress misslyckades', e)
@@ -141,6 +143,15 @@ async function lookupUddevalla(source: Source, id: string, opts: HandlerOptions)
   const found = await uddevallaFind(id, opts.fetchFn, timeoutMs)
   if (!found) return { status: 502 }
   const schedule = uddevallaSchedule(await uddevallaPickups(found.plantNumber, opts.fetchFn, timeoutMs), todayInStockholm(opts.now))
+  return { status: 200, address: toAddress(source, found.building, opts.places), schedule }
+}
+
+/** Roslagsvatten: som Uddevalla, men kommunen krävs i varje anrop. */
+async function lookupRoslagsvatten(source: Source, municipality: string, id: string, opts: HandlerOptions): Promise<Lookup> {
+  const timeoutMs = opts.timeoutMs ?? 5000
+  const found = await roslagsvattenFind(municipality, id, opts.fetchFn, timeoutMs)
+  if (!found) return { status: 502 }
+  const schedule = roslagsvattenSchedule(await roslagsvattenPickups(municipality, found.buildingId, opts.fetchFn, timeoutMs), todayInStockholm(opts.now))
   return { status: 200, address: toAddress(source, found.building, opts.places), schedule }
 }
 

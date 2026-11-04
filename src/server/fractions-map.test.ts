@@ -54,6 +54,16 @@ describe('mapWasteType', () => {
     expect(isKnownBin('Miljöfarligt avfall')).toBe(true)
   })
 
+  it('läser Roslagsvattens delade kärl "Rest- matavfall"', () => {
+    expect(mapWasteType('Rest- matavfall')).toEqual({ fractions: ['rest', 'mat'] })
+  })
+
+  it('läser Roslagsvattens förpackningar', () => {
+    expect(mapWasteType('Pappersförp.')).toEqual({ fractions: ['papper'] })
+    expect(mapWasteType('Glasförp.ofärg')).toEqual({ fractions: ['glas'] })
+    expect(mapWasteType('Metallförp.')).toEqual({ fractions: ['metall'] })
+  })
+
   it('läser SRV:s delade kärl "Papper och Plast"', () => {
     expect(mapWasteType('Papper och Plast')).toEqual({ fractions: ['papper', 'plast'] })
     expect(mapWasteType('Mat- och restavfall')).toEqual({ fractions: ['mat', 'rest'] })

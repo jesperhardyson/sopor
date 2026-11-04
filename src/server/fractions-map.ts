@@ -69,8 +69,8 @@ export function mapWasteType(
   // Ale skriver det delade kärlet "Plast,Papp", Lidingö "PlastPapper". Ett komma kan också följas av en volym, så bara hela träffar räknas.
   const joined = label.split(/\s*,\s*|(?<=[a-zåäö])(?=[A-ZÅÄÖ])/).map((p) => fractionFor(p.toLowerCase()))
   if (!multi && joined.length > 1 && joined.every((f) => f !== undefined)) return { fractions: [...new Set(joined)] }
-  // NSR skriver det delade kärlet "Mat + Rest", SRV "Papper och Plast".
-  const parts = t.split(/[/+]|\soch\s/).map((p) => p.trim())
+  // NSR skriver det delade kärlet "Mat + Rest", SRV "Papper och Plast", Roslagsvatten "Rest- matavfall".
+  const parts = t.split(/[/+]|-?\soch\s|-\s/).map((p) => p.trim())
   if (parts.length === 1) {
     const fraction = fractionFor(t)
     if (fraction) return { fractions: [fraction] }

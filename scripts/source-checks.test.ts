@@ -7,9 +7,10 @@ import { NSR_URL } from '../src/server/nsr.js'
 import { SRV_URL, srvKey } from '../src/server/srv.js'
 import { APPBOLAGET_URL } from '../src/server/appbolaget.js'
 import { idHash } from '../src/server/edp.js'
+import { ROSLAGSVATTEN_URL } from '../src/server/roslagsvatten.js'
 import { UDDEVALLA_URL } from '../src/server/uddevalla.js'
 import type { Source } from '../src/sources/index.js'
-import { checkAppbolagetSource, checkEdpSource, checkNsrSource, checkSrvSource, checkUddevallaSource, checkSvoaSource, checkVasydSource, checkStaticSource, checkViaSite, unreachableFromHere } from './source-checks'
+import { checkAppbolagetSource, checkEdpSource, checkNsrSource, checkRoslagsvattenSource, checkSrvSource, checkUddevallaSource, checkSvoaSource, checkVasydSource, checkStaticSource, checkViaSite, unreachableFromHere } from './source-checks'
 
 const json = (body: unknown) =>
   new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json; charset=utf-8' } })
@@ -486,5 +487,55 @@ describe('checkUddevallaSource', () => {
   it('rapporterar okända typer, men inte fyrfackskärl', async () => {
     const tomningar = [pickup('10 m3 Container'), pickup('370 l kärl 1'), pickup('140 l Matkärl')]
     expect((await check(respond([row('A')], tomningar))).unknownWasteTypes).toEqual(['10 m3 Container'])
+  })
+})
+
+describe('checkRoslagsvattenSource', () => {
+  const vaxholm: Source = { ...source, id: 'vaxholm', name: 'Roslagsvatten', config: { system: 'roslagsvatten', municipality: 'vaxholm' } }
+  const probe = `eriksövägen-27_vaxholm-${idHash('A')}`
+  const rows = (...bids: string[]) => [{ data: `<ul id="waste-schedule-building-list">${bids.map((b) => `<li data-bid="${b}">Eriksövägen 27, Vaxholm</li>`).join('')}</ul>` }]
+  const schema = (type = 'Restavfall', date = '2026-11-05') => [
+    { data: `<div class="waste-schedule-results"><div class="waste-schedule-inner"><h3>${type}</h3><p>Frekvens: x</p><p>Nästa hämtning: ${date}</p></div></div>` },
+  ]
+  const respond = (sok: unknown, kärl: unknown = schema()) =>
+    vi.fn(async (input: string | URL | Request) => {
+      const body = String(input).endsWith('/search') ? sok : kärl
+      if (body instanceof Error) throw body
+      if (body instanceof Response) return body
+      return new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json' } })
+    }) as unknown as typeof fetch
+  const check = (fetchFn: typeof fetch) => checkRoslagsvattenSource(vaxholm, probe, '2026-11-04', fetchFn)
+
+  it('fungerar med en tömning inom 60 dagar', async () => {
+    expect(await check(respond(rows('A')))).toMatchObject({ state: 'fungerar', baseUrl: ROSLAGSVATTEN_URL, probe, unknownWasteTypes: [] })
+  })
+
+  it('svarar inte vid timeout', async () => {
+    expect((await check(respond(new TypeError('fetch failed')))).state).toBe('svarar-inte')
+  })
+
+  it('har nytt format vid okänd form', async () => {
+    expect((await check(respond({ x: 1 }))).state).toBe('nytt-format')
+  })
+
+  it('är tom när sökningen svarar med sajtens feltext', async () => {
+    const error = () => new Response('The website encountered an unexpected error. Try again later.', { status: 500, headers: { 'Content-Type': 'text/html' } })
+    expect((await check(vi.fn(async () => error()) as unknown as typeof fetch)).state).toBe('tom')
+  })
+
+  it('har nytt format när flera träffar har nya värden', async () => {
+    const r = await check(respond(rows('B', 'C')))
+    expect(r.state).toBe('nytt-format')
+    expect(r.error).toContain('nytt värde hos Roslagsvatten')
+  })
+
+  it('märker om tjänsten börjar svara tomt eller med gamla datum', async () => {
+    expect((await check(respond(rows('A'), schema('Restavfall', '')))).state).toBe('inga-tomningar')
+    expect((await check(respond(rows('A'), schema('Restavfall', '2026-10-01')))).state).toBe('inga-tomningar')
+  })
+
+  it('rapporterar okända kärl men inte fyrfackskärl', async () => {
+    expect((await check(respond(rows('A'), schema('Deponi')))).unknownWasteTypes).toEqual(['Deponi'])
+    expect((await check(respond(rows('A'), schema('Fyrfack 1')))).unknownWasteTypes).toEqual([])
   })
 })
