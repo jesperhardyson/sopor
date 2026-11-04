@@ -94,6 +94,8 @@ Ett skript skapar en HTML-fil per sida efter `vite build`. Filen innehåller sid
 
 Innehållet syns alltså före JavaScript. Sidhuvud och sidfot kommer med appen och kan dyka upp en kort stund senare.
 
+Sidans data bäddas in i filen som ett `<script type="application/json">`-block. Appen läser den direkt när den startar, om sökvägen stämmer. Annars skulle innehållet ersättas av ett laddningsläge medan `kommuner.json` hämtas. Blocket körs inte som skript och påverkas därför inte av CSP:n.
+
 ### Data
 
 Ny ren modul `src/data/kommun-pages.ts`, som tar kommunlistan och orterna från `data/sverige/orter.json` samt `SOURCES` och ger:
