@@ -40,11 +40,25 @@ def test_main_utan_version_avslutar_med_fel():
     assert fel.value.code != 0
 
 
-def test_bara_home_assistant_skapar_github_releaser():
-    # HACS läser senaste GitHub-releasen som version, så ingen annan arbetsflödesfil får skapa en
+def _skapar_release(text: str) -> bool:
+    return "gh release" in text or "softprops/action-gh-release" in text
+
+
+def test_bara_kanda_arbetsfloden_skapar_github_releaser():
+    # HACS tar den första releasen som inte är utkast eller förhandsversion, så ingen annan får skapa en
     arbetsfloden = sorted((REPO / ".github" / "workflows").glob("*.yml"))
     assert arbetsfloden
     for fil in arbetsfloden:
-        text = fil.read_text(encoding="utf-8")
-        skapar = "gh release" in text or "softprops/action-gh-release" in text
-        assert skapar == (fil.name == "home-assistant-release.yml"), fil.name
+        skapar = _skapar_release(fil.read_text(encoding="utf-8"))
+        assert skapar == (fil.name in {"home-assistant-release.yml", "homey-release.yml"}), fil.name
+
+
+def test_homey_releaser_ar_forhandsversioner_sa_att_hacs_hoppar_over_dem():
+    # HACS läser inte flaggan Latest, så --latest=false skulle inte räcka
+    text = (REPO / ".github" / "workflows" / "homey-release.yml").read_text(encoding="utf-8")
+    assert "--prerelease" in text
+
+
+def test_home_assistant_releaser_ar_inte_forhandsversioner():
+    text = (REPO / ".github" / "workflows" / "home-assistant-release.yml").read_text(encoding="utf-8")
+    assert "--prerelease" not in text

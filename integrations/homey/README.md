@@ -47,7 +47,8 @@ git push && git push origin homey-v0.4.2
    - Det skriver ändringsloggen i `.homeychangelog.json`, som visas i App Store.
    - Det committar och taggar `homey-v<version>`.
 2. **Taggen** startar `homey-release.yml`. Arbetsflödet kontrollerar att taggen stämmer med versionen, kör tester och validering på publish-nivå och laddar upp ett utkast till Athom. Det behöver secreten `HOMEY_PAT`, en token från tools.developer.homey.app/me.
-3. **Testversion och publicering** görs för hand på tools.developer.homey.app (*Publish to Test*, och senare *Publish to Live*), så att inget når användarna utan ett aktivt beslut.
+3. **GitHub-releasen** skapas av samma arbetsflöde efter uppladdningen, med ändringsloggen som text. Den är en förhandsversion, eftersom HACS annars skulle läsa den som Home Assistant-integrationens version. Att den finns betyder inte att versionen är publicerad hos Athom.
+4. **Testversion och publicering** görs för hand på tools.developer.homey.app (*Publish to Test*, och senare *Publish to Live*), så att inget når användarna utan ett aktivt beslut.
 
 ## CI
 
