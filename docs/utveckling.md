@@ -87,6 +87,8 @@ Påminnelsen kvällen innan (`VALARM`) följer med i filen, men Google ignorerar
 
 Vercel (Hobby). Vercel kör `npm test && npm run build`, så röda tester når aldrig produktion. `vercel.json` sätter `Content-Type: text/calendar` och cache-headers för `/ics/*`, kort cache för `/data/*` och SPA-rewrite för övriga sökvägar.
 
+Sist i `npm run build` skapar `scripts/prerender.ts` en HTML-fil per kommun och översikten (`/kommuner`, `/kommuner/<slug>`), plus `sitemap.xml` och `404.html`. Filerna innehåller sidans innehåll och metadata, och appen tar över när JavaScript har laddats, med data som är inbäddad i filen. Okända kommuner ger 404. Adressidor har `X-Robots-Tag: noindex`, så att hemadresser inte hamnar i sökmotorerna.
+
 - **Projekt:** `sopor` i Vercel-teamet `badvatten-s-projects`, kopplat till GitHub-repot. Varje push till `main` driftsätts, och varje pull request får en egen preview-deploy.
 - **Domän:** `sopor.hardyson.se`. DNS ligger hos Cloudflare: `A sopor 76.76.21.21`, satt till *DNS only* (inte proxad).
 - **Öppen sajt:** Vercel Authentication är avstängd, så både sajten och preview-adresserna är publika. Bidragsgivare kan alltså testa sina ändringar live. Pull requests från forkar byggs inte förrän förvaltaren godkänt dem i Vercel.
