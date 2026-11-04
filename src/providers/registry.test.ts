@@ -44,6 +44,126 @@ describe('mergeResults', () => {
   })
 })
 
+describe('searchInKommun', () => {
+  const uppsala = { code: '0380', name: 'Uppsala kommun' }
+  const heby = { code: '0331', name: 'Heby kommun' }
+  const adress = (sourceId: string, street: string, locality: string, kommun: string): Address => ({
+    id: `${street}_${locality}`,
+    street,
+    locality,
+    sourceId,
+    kommun,
+  })
+  const inUppsala = adress('uppsala', 'Storgatan 2', 'Uppsala', 'Uppsala kommun')
+  const inStockholm = adress('stockholm', 'Storgatan 2', 'Stockholm', 'Stockholms kommun')
+
+  /** /api/sok svarar per källa, som i produktion: varje källa har sina adresser. */
+  function stubSources(bySource: Record<string, Address[]>, places: Record<string, Record<string, string>> = {}) {
+    const f = vi.fn(async (url: string) => {
+      if (url === '/data/avesta/addresses.json') {
+        return Response.json({ municipalityId: 'avesta', updatedAt: '2026-10-29', addresses: [['avesta-storgatan-12', 'Storgatan 12', 'Avesta', ['2026-a']]] })
+      }
+      if (url === '/data/gator/st.json') return Response.json({ storgatan: ['stockholm', 'uppsala', 'vafab'] })
+      if (url === '/data/orter.json') return Response.json(places)
+      if (url.startsWith('/api/sok')) {
+        const params = new URL(url, 'http://x').searchParams
+        const q = params.get('q') ?? ''
+        const hits = (bySource[params.get('sources') ?? ''] ?? []).filter((a) => `${a.street}, ${a.locality}`.toLowerCase().startsWith(q))
+        return Response.json({ addresses: hits, failed: [] })
+      }
+      return new Response('', { status: 404 })
+    })
+    vi.stubGlobal('fetch', f)
+    return f
+  }
+  const asked = (f: ReturnType<typeof vi.fn>) =>
+    f.mock.calls
+      .map(([u]) => new URL(String(u), 'http://x'))
+      .filter((u) => u.pathname === '/api/sok')
+      .map((u) => u.searchParams.get('sources'))
+
+  afterEach(async () => {
+    vi.unstubAllGlobals()
+    vi.resetModules()
+    await import('@/test/show-hidden-sources')
+  })
+
+  it('frågar bara kommunens källor, även när gatan finns i andra kommuner', async () => {
+    const f = stubSources({ uppsala: [inUppsala], stockholm: [inStockholm] })
+    const { searchInKommun } = await import('./registry')
+    const { addresses } = await searchInKommun(uppsala).search('Storgatan 2')
+    expect(addresses.map((a) => a.sourceId)).toEqual(['uppsala'])
+    expect(new Set(asked(f))).toEqual(new Set(['uppsala']))
+  })
+
+  it('går inte till en annan kommun när man trycker Enter', async () => {
+    const f = stubSources({ uppsala: [], stockholm: [inStockholm] })
+    const { searchInKommun } = await import('./registry')
+    const { addresses } = await searchInKommun(uppsala).search('Okändgatan', undefined, undefined, { submitted: true })
+    expect(addresses).toEqual([])
+    expect(new Set(asked(f))).toEqual(new Set(['uppsala']))
+  })
+
+  it('tar inte med statiska källor i andra kommuner', async () => {
+    stubSources({ uppsala: [] })
+    const { searchInKommun } = await import('./registry')
+    const { addresses } = await searchInKommun(uppsala).search('Storgatan 12')
+    expect(addresses).toEqual([])
+  })
+
+  it('tar bort adresser i källans andra kommuner', async () => {
+    const vasteras = adress('vafab', 'Storgatan 2', 'Västerås', 'Västerås kommun')
+    const hebyAdress = adress('vafab', 'Storgatan 21', 'Heby', 'Heby kommun')
+    stubSources({ vafab: [vasteras, hebyAdress] }, { vafab: { 'västerås': 'Västerås kommun', heby: 'Heby kommun' } })
+    const { searchInKommun } = await import('./registry')
+    const { addresses } = await searchInKommun(heby).search('Storgatan 2')
+    expect(addresses.map((a) => a.locality)).toEqual(['Heby'])
+    expect(addresses[0].kommun).toBe('Heby kommun')
+  })
+
+  it('behåller en adress vars ort inte går att slå upp: den kan ligga i kommunen', async () => {
+    stubSources({ vafab: [adress('vafab', 'Storgatan 2', 'Okänd by', 'Okänd by')] }, { vafab: {} })
+    const { searchInKommun } = await import('./registry')
+    const { addresses } = await searchInKommun(heby).search('Storgatan 2')
+    expect(addresses.map((a) => a.locality)).toEqual(['Okänd by'])
+  })
+
+  it('frågar också med kommunens huvudort när svaret är avkortat, så att kommunens adress inte trängs ut', async () => {
+    const andra = Array.from({ length: 10 }, (_, i) => adress('vafab', `Storgatan 2${i}`, 'Västerås', 'Västerås kommun'))
+    const f = stubSources(
+      { vafab: [...andra, adress('vafab', 'Storgatan 2', 'Heby', 'Heby kommun')] },
+      { vafab: { 'västerås': 'Västerås kommun', heby: 'Heby kommun' } },
+    )
+    // Som källorna: högst tio träffar per fråga.
+    const inner = f.getMockImplementation()!
+    f.mockImplementation(async (url: string) => {
+      const res = await inner(url)
+      if (!url.startsWith('/api/sok')) return res
+      const body = (await res.json()) as { addresses: Address[]; failed: string[] }
+      return Response.json({ ...body, addresses: body.addresses.slice(0, 10) })
+    })
+    const { searchInKommun } = await import('./registry')
+    const { addresses } = await searchInKommun(heby).search('Storgatan 2')
+    expect(addresses.map((a) => a.locality)).toEqual(['Heby'])
+  })
+
+  it('ger förslag bara från kommunens källor', async () => {
+    stubSources({})
+    const { searchInKommun } = await import('./registry')
+    expect(await searchInKommun(uppsala).suggest('Storgtan 12')).toEqual([])
+    const avesta = await searchInKommun({ code: '2084', name: 'Avesta kommun' }).suggest('Storgtan 12')
+    expect(avesta.map((a) => a.sourceId)).toEqual(['avesta'])
+  })
+
+  it('lämnar sökningen utan kommun orörd: den frågar alla källor gatan finns hos', async () => {
+    const f = stubSources({ uppsala: [inUppsala], stockholm: [inStockholm] })
+    const { searchAll } = await import('./registry')
+    const { addresses } = await searchAll('Storgatan 2')
+    expect(new Set(addresses.map((a) => a.sourceId))).toEqual(new Set(['uppsala', 'stockholm']))
+    expect(new Set(asked(f))).toEqual(new Set(['stockholm', 'uppsala', 'vafab']))
+  })
+})
+
 describe('searchAll', () => {
   const avestaIndex = {
     municipalityId: 'avesta',

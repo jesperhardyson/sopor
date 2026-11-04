@@ -246,7 +246,33 @@ describe('AddressSearch', () => {
   it('pekar vidare till bidra-sidan när adressen inte hittas', async () => {
     await userEvent.type(setup(), 'Storgtan 12{Enter}')
     await screen.findByText('Vi hittade inte adressen')
+    expect(screen.queryByRole('link', { name: 'Sök på startsidan' })).toBeNull()
     expect(screen.getByRole('link', { name: 'Tipsa om din kommun' })).toHaveAttribute('href', '/bidra')
+  })
+
+  describe('avgränsad till en kommun', () => {
+    function setupInKommun() {
+      render(
+        <MemoryRouter>
+          <AddressSearch search={async () => ({ addresses: [], failed: [] })} suggest={async () => []} kommun="Uppsala kommun" />
+        </MemoryRouter>,
+      )
+      return screen.getByRole('combobox')
+    }
+
+    it('säger att adressen inte hittades i kommunen, inte i hela landet', async () => {
+      await userEvent.type(setupInKommun(), 'Storgatan 2{Enter}')
+      expect(await screen.findByRole('heading', { name: 'Vi hittade inte adressen i Uppsala kommun' })).toBeInTheDocument()
+      expect(screen.getByText(/Kolla stavningen/)).toBeInTheDocument()
+    })
+
+    it('pekar vidare till startsidan för adresser i andra kommuner', async () => {
+      await userEvent.type(setupInKommun(), 'Storgatan 2{Enter}')
+      await screen.findByRole('heading', { name: 'Vi hittade inte adressen i Uppsala kommun' })
+      expect(screen.getByText(/Ligger adressen i en annan kommun\?/)).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: 'Sök på startsidan' })).toHaveAttribute('href', '/')
+      expect(screen.queryByRole('link', { name: 'Tipsa om din kommun' })).toBeNull()
+    })
   })
 
   it('säger att kommunen saknas när orten ligger i en kommun som Sopor inte har', async () => {

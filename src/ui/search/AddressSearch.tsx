@@ -97,6 +97,7 @@ export function AddressSearch({
   suggest = suggestAll,
   missing = missingKommuner,
   prefetch = prefetchAddress,
+  kommun,
   onActivate,
   onDeactivate,
 }: {
@@ -106,6 +107,8 @@ export function AddressSearch({
   missing?: Missing
   /** Börjar hämta en adress innan den väljs */
   prefetch?: (sourceId: string, addressId: string) => void
+  /** Kommunen som `search` är avgränsad till, för texten när adressen inte hittas */
+  kommun?: string
   /** Fältet fick fokus (startsidans fokusläge) */
   onActivate?: () => void
   /** Användaren tryckte Esc */
@@ -446,7 +449,7 @@ export function AddressSearch({
             (state.missing.length > 0 ? (
               <MissingKommun kommuner={state.missing} className="shadow-[0_12px_32px_#1B231F1F]" />
             ) : (
-              <NotFound suggestions={state.suggestions} className="shadow-[0_12px_32px_#1B231F1F]" />
+              <NotFound suggestions={state.suggestions} kommun={kommun} className="shadow-[0_12px_32px_#1B231F1F]" />
             ))}
           {state.kind === 'error' && (
             <p role="alert" className="rounded-2xl bg-warn-bg px-4 py-3 text-[15px] font-bold text-warn shadow-[0_12px_32px_#1B231F1F]">

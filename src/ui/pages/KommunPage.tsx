@@ -1,8 +1,8 @@
 import { SearchX } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useParams } from 'react-router'
 import type { KommunPage as KommunPageData } from '@/data/kommun-pages'
-import { kommunPage } from '@/providers/registry'
+import { kommunPage, searchInKommun } from '@/providers/registry'
 import { usePageTitle } from '../hooks/usePageTitle'
 import { AllKommunerLink, BackLink, KommunColumn, KommunContent } from '../kommun/KommunContent'
 import { embeddedData } from '../kommun/embedded'
@@ -40,7 +40,7 @@ function KommunView({ slug }: { slug: string }) {
 
   usePageTitle(ready ? `Sophämtning i ${state.page.name} – Sopor` : state.status === 'missing' ? 'Kommunen finns inte – Sopor' : undefined)
 
-  if (ready) return <KommunContent page={state.page} search={<AddressSearch />} />
+  if (ready) return <KommunContent page={state.page} search={<KommunSearch page={state.page} />} />
   return (
     <KommunColumn>
       <BackLink to="/">Startsidan</BackLink>
@@ -49,6 +49,11 @@ function KommunView({ slug }: { slug: string }) {
       {state.status === 'missing' && <UnknownKommun />}
     </KommunColumn>
   )
+}
+
+function KommunSearch({ page }: { page: KommunPageData }) {
+  const { search, suggest } = useMemo(() => searchInKommun(page), [page])
+  return <AddressSearch search={search} suggest={suggest} kommun={page.name} />
 }
 
 function UnknownKommun() {

@@ -1,6 +1,6 @@
 import type { KommunPage } from '@/data/kommun-pages'
 import type { Address } from '@/domain/types'
-import { getSource, placeKommuner, SOURCES, supportedKommuner, type Source } from '@/sources'
+import { getSource, placeKommuner, SOURCES, supportedKommuner, type Kommun, type Source } from '@/sources'
 import { matchesPlace, pickLiveSources, shardKey, splitPlace, type QueryParts, type StreetShard } from '@/data/street-index'
 import { kommunerForPlace } from '@/data/sweden-places'
 import { normalize } from '@/domain/search'
@@ -59,11 +59,25 @@ function loadShard(key: string): Promise<StreetShard | null> {
 export interface SearchOptions {
   /** Användaren tryckte Enter: fråga alla källor även om gatan saknas i indexet. */
   submitted?: boolean
+  /** Sök bara hos kommunens källor och visa bara adresser i kommunen. */
+  kommun?: Kommun
 }
 
+const coversKommun = (source: Source, kommun?: Kommun) => !kommun || placeKommuner(source).some((k) => k.code === kommun.code)
+
+/** Bara adresser som säkert ligger i en annan kommun faller bort: en okänd ort kan ligga i den här. */
+function mayBeInKommun(address: Address, kommun?: Kommun): boolean {
+  if (!kommun || address.kommun === kommun.name) return true
+  const source = getSource(address.sourceId)
+  return !source || !placeKommuner(source).some((k) => k.name === address.kommun)
+}
+
+/** "Köpings kommun" → "köping". Källorna matchar början av orten, så "västerå" hittar Västerås. */
+const mainPlace = (kommun: Kommun) => liveKey(kommun.name.replace(/ kommun$/, '').replace(/^Region /, '').replace(/s$/, ''))
+
 /** Live-källor att fråga (valda av `pickLiveSources`), och frågan uppdelad i gata och plats. */
-async function liveSourcesFor(query: string, { submitted = false }: SearchOptions): Promise<{ sources: string[] } & QueryParts> {
-  const live = SOURCES.filter((s) => s.config.system !== 'static').map((s) => s.id)
+async function liveSourcesFor(query: string, { submitted = false, kommun }: SearchOptions): Promise<{ sources: string[] } & QueryParts> {
+  const live = SOURCES.filter((s) => s.config.system !== 'static' && coversKommun(s, kommun)).map((s) => s.id)
   const none = { sources: [], street: query, place: '' }
   if (live.length === 0 || normalize(query).length < 2) return none
   // Delfilen hämtas redan vid två tecken, så att den finns när frågan blir lång nog att skickas.
@@ -160,18 +174,20 @@ async function searchLive(
   const { sources, street, place } = await liveSourcesFor(liveKey(query), options)
   // Källorna söker på gatan, och orten eller kommunen efter den filtreras här. Är svaret avkortat
   // kan rätt ort saknas; då frågas källan också med "gata, ort", som den matchar på början.
+  // Utan ort i en avgränsad sökning är det kommunens huvudort som frågas.
   const q = liveKey(street)
-  const withPlace = liveKey(`${street}, ${place}`)
+  const narrowTo = place || (options.kommun && mainPlace(options.kommun))
+  const withPlace = liveKey(`${street}, ${narrowTo}`)
   const merge = (base: Address[], extra: Address[]) => [...base, ...extra.filter((a) => !base.some((b) => b.id === a.id))]
   const cachedFor = (id: string) => {
     const base = fromCache(id, q)
-    if (!base || !place || base.length < SOURCE_LIMIT) return base
+    if (!base || !narrowTo || base.length < SOURCE_LIMIT) return base
     const extra = fromCache(id, withPlace)
     return extra && merge(base, extra)
   }
   const fetchFor = async (id: string) => {
     const base = fromCache(id, q) ?? (await fetchSource(id, q, signal))
-    if (!place || base.length < SOURCE_LIMIT) return base
+    if (!narrowTo || base.length < SOURCE_LIMIT) return base
     return merge(base, fromCache(id, withPlace) ?? (await fetchSource(id, withPlace, signal)))
   }
   const hits = sources.map((id) => ({ id, cached: cachedFor(id) }))
@@ -184,7 +200,7 @@ async function searchLive(
         const source = getSource(a.sourceId)
         return source ? { ...a, kommun: kommunForLocality(source, a.locality, places[source.id]) } : a
       })
-      .filter((a) => matchesPlace(a, place))
+      .filter((a) => matchesPlace(a, place) && mayBeInKommun(a, options.kommun))
   }
 
   let addresses: Address[] = []
@@ -248,9 +264,9 @@ export async function searchAll(
   }
   let latest: SearchResult = { addresses: [], failed: [] }
   const live = searchLive(query, signal, options, (partial) => report((latest = partial)))
-  const local = SOURCES.filter((m) => m.config.system === 'static')
+  const local = SOURCES.filter((m) => m.config.system === 'static' && coversKommun(m, options.kommun))
   const localResults = await Promise.allSettled(local.map((m) => providerFor(m).searchAddresses(query, signal)))
-  localAddresses = localResults.some((r) => r.status === 'fulfilled') ? mergeResults(localResults, 8) : []
+  localAddresses = localResults.some((r) => r.status === 'fulfilled') ? mergeResults(localResults, 8).filter((a) => mayBeInKommun(a, options.kommun)) : []
   localDone = true
   report(latest)
   const { addresses, failed } = await live
@@ -317,10 +333,19 @@ export async function placeSuggestions(prefix: string, limit = 5): Promise<Place
 }
 
 /** Förslag för "Menade du:" (bara statiska källor har listan lokalt). */
-export async function suggestAll(query: string, signal?: AbortSignal): Promise<Address[]> {
-  const local = SOURCES.filter((m) => m.config.system === 'static')
+export async function suggestAll(query: string, signal?: AbortSignal, kommun?: Kommun): Promise<Address[]> {
+  const local = SOURCES.filter((m) => m.config.system === 'static' && coversKommun(m, kommun))
   const results = await Promise.allSettled(local.map((m) => providerFor(m).suggestAddresses(query, signal)))
-  return results.some((r) => r.status === 'fulfilled') ? mergeResults(results, 3) : []
+  return results.some((r) => r.status === 'fulfilled') ? mergeResults(results, 3).filter((a) => mayBeInKommun(a, kommun)) : []
+}
+
+/** Sökning och förslag avgränsade till en kommun, för sökfältet på kommunsidan. */
+export function searchInKommun(kommun: Kommun) {
+  return {
+    search: (query: string, signal?: AbortSignal, onPartial?: (partial: SearchResult) => void, options?: SearchOptions) =>
+      searchAll(query, signal, onPartial, { ...options, kommun }),
+    suggest: (query: string, signal?: AbortSignal) => suggestAll(query, signal, kommun),
+  }
 }
 
 export async function getAddress(sourceId: string, addressId: string, signal?: AbortSignal): Promise<Address | null> {

@@ -24,7 +24,6 @@ Lyckat är när:
 
 ## Utanför specen
 
-- Sökning avgränsad till en kommun.
 - Kommande tömningar, kärltyper eller annan schemadata på kommunsidorna.
 - Länkar till varje kommuns egen webbplats. Sådan data finns inte för de kommuner som saknas.
 - Delningsbild per sida (punkt 13 i `docs/plans/2026-11-02-forbattringar.md`).
@@ -53,7 +52,7 @@ Se "Mobil · Kommunsida" och "Desktop · Kommunsida".
 - Länk tillbaka till startsidan.
 - Fraktionsrad.
 - H1: "Sophämtning i Uppsala kommun". Ingress enligt skissen.
-- Det vanliga sökfältet (`AddressSearch`).
+- Det vanliga sökfältet (`AddressSearch`), avgränsat till kommunen: det frågar bara kommunens källor och visar bara adresser i kommunen. Hittas adressen inte säger kortet "Vi hittade inte adressen i Uppsala kommun" och länkar till startsidan för adresser i andra kommuner.
 - "Varifrån kommer schemat?": källans namn och länk. Har kommunen flera källor listas alla.
 - "Orter i kommunen".
 - Länk till `/kommuner`.
@@ -200,7 +199,7 @@ På previewen kontrolleras med `curl` och i webbläsaren:
 - En kommunsida har rätt titel och innehåll utan JavaScript, och appen tar sedan över utan CSP-fel.
 - `/kommuner/finns-inte` ger 404 och visar "Kommunen finns inte".
 - En adressida har `X-Robots-Tag: noindex`, och en kommunsida har det inte.
-- Sökfältet på en kommunsida leder till en adressida.
+- Sökfältet på en kommunsida leder till en adressida i kommunen.
 
 ## Efter lansering
 
