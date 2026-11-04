@@ -21,13 +21,23 @@ function haystack(a: Address): string[] {
   return normalize(`${a.street} ${a.locality}`).split(' ')
 }
 
-export function searchAddresses(query: string, addresses: Address[], limit = 8): Address[] {
+/** Hur frågans ord jämförs med områdens termer. Vanliga adresser matchar alltid på början av ord. */
+export interface SearchMode {
+  /**
+   * Sökningen gäller just källan (kommunsidan, API:t med `kalla`, filtret på Välj område): ett ord
+   * får vara början på ett ord i termen. Annars måste det vara helt, så att halvskrivna frågor på
+   * startsidan inte visar områden för alla.
+   */
+  areaPrefix?: boolean
+}
+
+export function searchAddresses(query: string, addresses: Address[], limit = 8, mode: SearchMode = {}): Address[] {
   const q = normalize(query)
   if (q.length < 2) return []
-  const hits = match(q, addresses, limit)
+  const hits = match(q, addresses, limit, mode)
   // "storgatan 12 k" kan vara husbokstav eller början på orten (Krylbo).
   const split = normalize(query, false)
-  return hits.length === 0 && split !== q ? match(split, addresses, limit) : hits
+  return hits.length === 0 && split !== q ? match(split, addresses, limit, mode) : hits
 }
 
 /**
@@ -51,16 +61,17 @@ function streetPart(q: string): string | undefined {
   return q.match(/^(.+) \d+\p{L}?$/u)?.[1]
 }
 
-/** Alla ord i frågan börjar något ord i samma term, eller gatudelen är exakt lika med termen. */
-function termMatches(q: string, t: { norm: string }): boolean {
+/** Alla ord i frågan finns i samma term (med `areaPrefix` räcker början), eller gatudelen är exakt lika med termen. */
+function termMatches(q: string, t: { norm: string }, { areaPrefix }: SearchMode): boolean {
   const words = t.norm.split(' ')
-  return q.split(' ').every((tok) => words.some((w) => w.startsWith(tok))) || streetPart(q) === t.norm
+  const found = (tok: string) => (areaPrefix ? words.some((w) => w.startsWith(tok)) : words.includes(tok))
+  return q.split(' ').every(found) || streetPart(q) === t.norm
 }
 
-function match(q: string, addresses: Address[], limit: number): Address[] {
+function match(q: string, addresses: Address[], limit: number, mode: SearchMode): Address[] {
   const tokens = q.split(' ')
   const hits = addresses.filter((a) => {
-    if (a.searchTerms) return terms(a).some((t) => termMatches(q, t))
+    if (a.searchTerms) return terms(a).some((t) => termMatches(q, t, mode))
     const words = haystack(a)
     return tokens.every((t) => words.some((w) => w.startsWith(t)))
   })
@@ -87,9 +98,10 @@ export function matchedTerm(query: string, address: Address): string | null {
   if (!address.searchTerms) return null
   const q = normalize(query)
   const [name, ...rest] = terms(address)
-  if (termMatches(q, name)) return null
+  const prefix = { areaPrefix: true }
+  if (termMatches(q, name, prefix)) return null
   const asked = q.split(' ')
-  const hit = rest.find((t) => termMatches(q, t)) ?? rest.find((t) => t.norm.split(' ').every((w) => asked.includes(w)))
+  const hit = rest.find((t) => termMatches(q, t, prefix)) ?? rest.find((t) => t.norm.split(' ').every((w) => asked.includes(w)))
   return hit?.text ?? null
 }
 

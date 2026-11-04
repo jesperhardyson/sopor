@@ -424,6 +424,11 @@ describe('områden som träffar', () => {
     expect(JSON.stringify(body)).not.toContain('searchTerms')
   })
 
+  it('kräver hela ord utan kalla och tillåter början av ord med kalla', async () => {
+    expect((await (await search('q=stallg')).json()).addresses).toEqual([])
+    expect((await (await search('q=stallg&kalla=avesta')).json()).addresses).toEqual([hit])
+  })
+
   it('hittar gatan när frågan nämner Avesta, med och utan kalla', async () => {
     for (const q of ['Stallgatan%205%2C%20Avesta', 'Stallgatan%2C%20Avesta', 'Stallgatan%20Avesta']) {
       expect((await (await search(`q=${q}`)).json()).addresses).toEqual([hit])

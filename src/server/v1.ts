@@ -147,7 +147,7 @@ const v1Address = (a: Address, origin: string) => ({
 })
 
 /** Statiska källor söks lokalt i sin adressfil. */
-async function searchStatic(source: Source, query: string, origin: string, opts: HandlerOptions): Promise<Address[]> {
+async function searchStatic(source: Source, query: string, origin: string, opts: HandlerOptions, areaPrefix: boolean): Promise<Address[]> {
   const index = await siteJson<AddressIndexFile>(origin, `/data/${source.id}/addresses.json`, opts.fetchFn, opts.timeoutMs)
   if (!index) throw new Error(`${source.id} saknar adressfil`)
   const kommun = source.kommuner[0]?.name ?? source.name
@@ -159,11 +159,12 @@ async function searchStatic(source: Source, query: string, origin: string, opts:
     kommun,
     ...(area && { detail: area.detail, searchTerms: area.searchTerms }),
   }))
-  const hits = searchAddresses(query, addresses, SEARCH_LIMIT)
+  const find = (q: string) => searchAddresses(q, addresses, SEARCH_LIMIT, { areaPrefix })
+  const hits = find(query)
   if (source.selection !== 'area') return hits
   // Nämner frågan källans plats söks områdena också på gatudelen, som i registret på sajten.
   const street = await streetAtSourcePlace(query, source, (key) => streetShard(key, origin, opts))
-  return street ? mergeHits(hits, searchAddresses(street, addresses, SEARCH_LIMIT)).slice(0, SEARCH_LIMIT) : hits
+  return street ? mergeHits(hits, find(street)).slice(0, SEARCH_LIMIT) : hits
 }
 
 /** Gatuindexet hjälper till att välja källor. Når vi det inte frågar vi som om gatan saknades. */
@@ -203,7 +204,7 @@ export const handleV1Search: V1Handler = async (request, opts = {}) => {
     opts.places ?? (sources.some((s) => isLive(s) && needsPlaces(s)) ? await loadServerPlaces(url.origin, opts.fetchFn) : undefined)
   const results = await Promise.allSettled(
     sources.map(async (s) =>
-      isLive(s) ? (await searchLiveSource(s, street, place, { ...opts, places })).slice(0, SEARCH_LIMIT) : await searchStatic(s, q, url.origin, opts),
+      isLive(s) ? (await searchLiveSource(s, street, place, { ...opts, places })).slice(0, SEARCH_LIMIT) : await searchStatic(s, q, url.origin, opts, !!kalla),
     ),
   )
   const failed = sources.filter((_, i) => results[i].status === 'rejected').map((s) => s.id)

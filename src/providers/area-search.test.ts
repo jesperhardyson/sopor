@@ -51,6 +51,30 @@ async function areas(query: string, options?: SearchOptions) {
   return addresses.filter((a) => a.sourceId === 'avesta').map((a) => a.id)
 }
 
+describe('halvskrivna frågor', () => {
+  const avesta = { code: '2084', name: 'Avesta kommun' }
+
+  it.each(['st', 'stor', 'stallg', 'östan'])('%s ger inga områden på startsidan', async (query) => {
+    expect(await areas(query)).toEqual([])
+  })
+
+  it.each([
+    ['Storbyn', 'trakt-2'],
+    ['Östanfors', 'trakt-7'],
+    ['Avesta tätort', 'trakt-7'],
+  ])('%s ger området på startsidan', async (query, id) => {
+    expect(await areas(query)).toContain(id)
+  })
+
+  it('östan ger Östanfors på kommunsidan', async () => {
+    expect(await areas('östan', { kommun: avesta })).toContain('trakt-7')
+  })
+
+  it('st ger områden på kommunsidan', async () => {
+    expect((await areas('st', { kommun: avesta })).length).toBeGreaterThan(0)
+  })
+})
+
 describe('områden när frågan nämner en plats', () => {
   it.each(['Näs 12, Gotland', 'Torp 5, Ljusdal', 'Stallgatan 5, Stockholm'])('%s ger inga områden', async (query) => {
     expect(await areas(query)).toEqual([])

@@ -42,12 +42,15 @@ Reglerna gäller startsidans sökning och kommunsidan för Avesta. De prövas i 
 |---|---|---|
 | Områdets namn, ort eller "trakt N" | "Avesta tätort", "Östanfors", "trakt 7" | Områdesträff |
 | Namn som finns i flera områden | "Backa" | En träff per område, med raden "Backa ingår i området" |
-| Gata som står i ett områdes lista, med eller utan nummer | "Stallgatan", "Stallgatan 5" | Områdesträff |
+| Gata som står i ett områdes lista, med eller utan nummer och plats | "Stallgatan", "Stallgatan 5", "Stallgatan 5, Avesta" | Områdesträff |
+| Gata i ett områdes lista med en annan plats | "Stallgatan 5, Stockholm" | Ingen rad för Avesta |
 | Annan känd gata i Avesta, hel gata eller med nummer | "Kungsgatan", "Kungsgatan 12" | Raden "Välj område i Avesta". Finns områdesträffar visas i stället raden "Se alla områden i Avesta" under dem. |
 | Okänd gata med Avesta som plats | "Okändgatan 3, Avesta" | Raden "Välj område i Avesta" |
-| Halvskrivet gatunamn | "Kungsg" | Ingen rad för Avesta, tills gatan är hel eller har nummer |
+| Halvskrivet ord på startsidan | "Kungsg", "stor" | Ingen rad för Avesta, tills ordet är helt |
+| Början av ord på kommunsidan, i filtret på Välj område och i API:t med `kalla=avesta` | "östan" | Områdesträff |
 | Gata som inte finns i Avesta | "Hornsgatan 1" | Som i dag |
 
+- På startsidan och i `/api/v1/sok` utan `kalla` måste varje ord i frågan vara ett helt ord i områdets namn eller sökord. Början av ett ord räcker bara när sökningen gäller just källan. Vanliga adresser påverkas inte.
 - "Känd gata" avgörs med det befintliga gatuindexet från OpenStreetMap (`data/osm/2084.json`). `candidateSources` matchar början av namn, så regeln behöver en exakt jämförelse av gatudelen från `splitPlace`.
 - Gatuindexet är inte komplett. Saknas gatan blir resultatet som för en gata utanför Avesta, om inte frågan nämner Avesta. "Hittades inte"-rutan får därför alltid en länk till områdesvalet när sökningen är avgränsad till Avesta.
 - Andra kommuners träffar visas under sina egna rubriker som vanligt.

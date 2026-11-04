@@ -59,8 +59,8 @@ export function createStaticProvider(source: Source, fetchFn: typeof fetch = (..
   }
 
   return {
-    async searchAddresses(query) {
-      return searchAddresses(query, (await loadIndex()).addresses)
+    async searchAddresses(query, _signal, mode) {
+      return searchAddresses(query, (await loadIndex()).addresses, undefined, mode)
     },
     async suggestAddresses(query) {
       return suggest(query, (await loadIndex()).addresses)

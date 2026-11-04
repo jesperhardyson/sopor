@@ -272,12 +272,14 @@ async function areaPickersFor(query: string, found: Address[], kommun?: Kommun):
  * Sökningen hos en statisk källa. Nämner frågan källans plats söks områdena också på gatudelen.
  * Hela frågan söks alltid, eftersom "Avesta tätort" kan delas i gatan "avesta" och platsen "tätort".
  */
-async function searchStaticSource(source: Source, query: string, signal?: AbortSignal): Promise<Address[]> {
+async function searchStaticSource(source: Source, query: string, signal: AbortSignal | undefined, kommun?: Kommun): Promise<Address[]> {
   const provider = providerFor(source)
-  const hits = await provider.searchAddresses(query, signal)
+  // Sökningen i en kommun gäller just kommunens källor, så där räcker början av ett ord.
+  const mode = { areaPrefix: !!kommun }
+  const hits = await provider.searchAddresses(query, signal, mode)
   if (source.selection !== 'area') return hits
   const street = await streetAtSourcePlace(query, source, loadShard)
-  return street ? mergeHits(hits, await provider.searchAddresses(street, signal)) : hits
+  return street ? mergeHits(hits, await provider.searchAddresses(street, signal, mode)) : hits
 }
 
 /** Väcker sökfunktionen och laddar ort-tabellen i förväg, t.ex. när sökfältet får fokus. */
@@ -305,7 +307,7 @@ export async function searchAll(
   let latest: Omit<SearchResult, 'areaPickers'> = { addresses: [], failed: [] }
   const live = searchLive(query, signal, options, (partial) => report((latest = partial)))
   const local = SOURCES.filter((m) => m.config.system === 'static' && coversKommun(m, options.kommun))
-  const localResults = await Promise.allSettled(local.map((m) => searchStaticSource(m, query, signal)))
+  const localResults = await Promise.allSettled(local.map((m) => searchStaticSource(m, query, signal, options.kommun)))
   localAddresses = localResults.some((r) => r.status === 'fulfilled') ? mergeResults(localResults, 8).filter((a) => mayBeInKommun(a, options.kommun)) : []
   areaPickers = await areaPickersFor(query, localAddresses, options.kommun)
   localDone = true

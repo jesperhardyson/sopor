@@ -89,6 +89,14 @@ describe('AreaPage', () => {
     expect(screen.getByText('Inget område matchar')).toBeInTheDocument()
   })
 
+  it('filtret hittar också på början av ett ord', async () => {
+    show()
+    await screen.findByText('Askön, Nyhyttan m.fl.')
+    await userEvent.type(screen.getByRole('searchbox', { name: 'Sök ort eller gata' }), 'östan')
+    expect(screen.getByText('Avesta tätort, Östanfors m.fl.')).toBeInTheDocument()
+    expect(screen.queryByText('Askön, Nyhyttan m.fl.')).not.toBeInTheDocument()
+  })
+
   it('länkar varje rad till områdets resultat', async () => {
     show()
     await userEvent.click(await screen.findByRole('link', { name: /Östanfors/ }))

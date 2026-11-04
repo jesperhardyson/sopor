@@ -216,6 +216,25 @@ describe('områdessökning', () => {
     expect(ids(searchAddresses('Stallgatan 5 B', AREAS))).toEqual(['trakt-1'])
   })
 
+  it('i en obegränsad sökning måste varje ord vara ett helt ord i termen', () => {
+    expect(searchAddresses('st', AREAS)).toEqual([])
+    expect(searchAddresses('stall', AREAS)).toEqual([])
+    expect(searchAddresses('avesta tät', AREAS)).toEqual([])
+    expect(ids(searchAddresses('Östanfors', AREAS))).toEqual(['trakt-7'])
+  })
+
+  it('prefix gäller när sökningen är avgränsad till källan', () => {
+    const prefix = { areaPrefix: true }
+    expect(ids(searchAddresses('östan', AREAS, 8, prefix))).toEqual(['trakt-7'])
+    expect(ids(searchAddresses('stall', AREAS, 8, prefix))).toEqual(['trakt-1'])
+    expect(searchAddresses('östan', AREAS)).toEqual([])
+  })
+
+  it('vanliga adresser matchar början av ord i båda lägena', () => {
+    expect(ids(searchAddresses('storg', ADDRESSES))).toEqual(ids(searchAddresses('storg', ADDRESSES, 8, { areaPrefix: true })))
+    expect(searchAddresses('storg', ADDRESSES).length).toBeGreaterThan(0)
+  })
+
   it('gatan räknas bara när inget annat än husnummer och bokstav följer', () => {
     expect(searchAddresses('Stallgatan 5, Stockholm', AREAS)).toEqual([])
     expect(searchAddresses('Stallgatan 5 B Stockholm', AREAS)).toEqual([])
@@ -245,6 +264,10 @@ describe('områdessökning', () => {
     it('ger gatan när en plats följer', () => {
       expect(matchedTerm('Stallgatan 5, Avesta', AREAS[0])).toBe('Stallgatan')
       expect(matchedTerm('Stallgatan Avesta', AREAS[0])).toBe('Stallgatan')
+    })
+
+    it('ger sökordet också när bara början är skriven, som på kommunsidan', () => {
+      expect(matchedTerm('stall', AREAS[0])).toBe('Stallgatan')
     })
 
     it('ger null när namnet redan visar träffen', () => {

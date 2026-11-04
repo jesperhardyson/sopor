@@ -79,7 +79,7 @@ export function AreaPage({ today = todayInStockholm() }: { today?: string }) {
   const shown = useMemo(() => {
     if (!index || !source) return []
     if (query.trim().length < 2) return index.areas
-    const hits = searchAddresses(query, asAddresses(index.areas, source), index.areas.length)
+    const hits = searchAddresses(query, asAddresses(index.areas, source), index.areas.length, { areaPrefix: true })
     return hits.map((h) => index.areas.find((a) => a.id === h.id)!)
   }, [index, source, query])
 
