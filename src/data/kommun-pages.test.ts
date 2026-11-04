@@ -81,8 +81,8 @@ describe('buildKommunPages', () => {
     expect(page('1480')).toMatchObject({ covered: false, sources: [] })
   })
 
-  it('visar inte dold testdata: Avesta räknas som saknad', () => {
-    expect(page('2084')).toMatchObject({ covered: false, sources: [] })
+  it('räknar Avesta som täckt, med områdesval', () => {
+    expect(page('2084')).toMatchObject({ covered: true })
   })
 
   it('räknar inte en grannkommun som täckt', () => {

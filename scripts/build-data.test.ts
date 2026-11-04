@@ -100,7 +100,7 @@ describe('kommunsidornas data', () => {
   it('har alla kommuner och räknar bara källor som syns på sajten', () => {
     const pages = readKommunPages()
     expect(pages).toHaveLength(290)
-    expect(pages.find((p) => p.code === '2084')?.covered).toBe(false)
+    expect(pages.find((p) => p.code === '2084')?.covered).toBe(true)
     expect(pages.find((p) => p.code === '0380')?.covered).toBe(true)
   })
 })

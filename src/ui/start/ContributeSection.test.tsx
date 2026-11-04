@@ -1,4 +1,3 @@
-import '@/test/show-hidden-sources'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router'
@@ -19,10 +18,10 @@ describe('MunicipalityStatusList', () => {
     expect(screen.getByRole('button', { name: 'Dölj kommunerna' })).toHaveAttribute('aria-expanded', 'true')
   })
 
-  it('märker kommuner med testdata och visar nästa kommun', async () => {
+  it('visar nästa kommun, utan märkning för testdata när ingen källa har det', async () => {
     render(<MunicipalityStatusList />, { wrapper: MemoryRouter })
     await userEvent.click(screen.getByRole('button', { name: 'Visa alla kommuner' }))
-    expect(screen.getByText('Avesta kommun').parentElement).toHaveTextContent('Testdata')
+    expect(screen.getByText('Avesta kommun').parentElement).not.toHaveTextContent('Testdata')
     expect(screen.getByText('Nästa kommun')).toBeInTheDocument()
   })
 

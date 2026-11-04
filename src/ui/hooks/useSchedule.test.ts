@@ -1,4 +1,3 @@
-import '@/test/show-hidden-sources'
 import { act, renderHook, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Address, Schedule } from '@/domain/types'

@@ -22,11 +22,11 @@ Kör `npm run lint && npm test && npm run build` innan du skickar en pull reques
 
 ## Prova med testdata
 
-Avesta har områdesval (`selection: 'area'`): Avesta Vatten publicerar schemat per område (trakt 1–10) men inte vilka adresser som hör till vilket. Datan är `data/avesta/2026/omraden.json` och `schedules.json`, och en `addresses.csv` finns inte. Datumen är riktiga, men källan har `testData: true` och är dold på sajten (`hidden: true`) tills schemat för 2027 är inlagt och granskat. Testerna gör den synlig via `src/test/show-hidden-sources.ts`.
+Avesta har områdesval (`selection: 'area'`): Avesta Vatten publicerar schemat per område (trakt 1–10) men inte vilka adresser som hör till vilket. Datan är `data/avesta/2026/omraden.json` och `schedules.json`, och en `addresses.csv` finns inte. Schemat gäller till och med 10 januari 2027, och nästa års schema läggs in för hand när PDF:en finns.
 
 Byggskriptet gör varje område till en rad i `addresses.json` (id `trakt-7`, namnet som `street`, tom ort, och `detail` och `searchTerms` som extra fält) och skriver `public/data/avesta/omraden.json` med förklaringen, hjälptexten och områdena. UI:t säger "område", aldrig "trakt". Formatet står i [checklistan](kommuner/lagga-till-kommun.md#områdesval-utan-adresser).
 
-Vill du prova den i webbläsaren, sätt tillfälligt `hidden: false` på Avesta i `src/sources/index.ts` (checka inte in det). Sedan:
+Så provar du den i webbläsaren:
 
 - Öppna `/avesta/omraden`. Där syns förklaringen, filterfältet och alla tio områden.
 - Skriv en ort eller gata från ett område i filtret. Då smalnar listan av.

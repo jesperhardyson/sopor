@@ -169,7 +169,7 @@ Att integrationerna ignorerar `selection` och `notice` provas med tester. Att oc
 
 ## Årsbyte
 
-- Schemat täcker bara 2026, så funktionen släpps först när PDF:en för 2027 finns och är inlagd.
+- Schemat täcker till och med 10 januari 2027. Funktionen släpptes före 2027 års PDF (beslut 2026-11-04), så datumen behöver kompletteras när PDF:en finns.
 - Vid varje nytt år kontrolleras i `docs/kommuner/lagga-till-kommun.md` att områdenas innehåll, veckodagar och nummer är oförändrade innan datumen läggs in.
 - Saknas nästa års schema visar sidan den befintliga tomma vyn med `emptyScheduleNote`.
 
@@ -185,7 +185,7 @@ Att integrationerna ignorerar `selection` och `notice` provas med tester. Att oc
 
 ## Lansering
 
-1. Bygg allt med Avesta dold och kontrollera på en förhandsversion.
+1. Avesta visas på sajten sedan 2026-11-04, före 2027 års schema. Texterna godkändes genom att funktionen provades på en förhandsversion.
 2. Lägg in schemat för 2027 när PDF:en finns.
-3. Ta bort `testData` och `hidden`, uppdatera `CLAUDE.md`, `docs/kommuner/hitta-kommunens-data.md` och kommunsidan för Avesta.
-4. Släpp hjälptexten i Homey och Home Assistant.
+3. Bekräfta stavningarna av Södra Strandnora, Södra Rudö, Gammelsängsvägen och Skillingränd med Avesta Vatten.
+4. Släpp hjälptexten i Homey och Home Assistant, och visa där `notice`.
