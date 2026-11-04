@@ -12,14 +12,12 @@ Har du HACS installerat räcker det att trycka här, så öppnas HACS i din egen
 
 Eller för hand:
 
-1. Öppna HACS i Home Assistant, välj menyn uppe till höger och *Anpassade databaser* (Custom repositories).
-2. Lägg till `jesperhardyson/sopor-home-assistant` med kategorin *Integration*. Det är en spegling av integrationen som uppdateras vid varje release. När integrationen finns i HACS standardlista behövs inte det här steget.
-3. Sök upp *Sophämtning* i HACS, ladda ner den och starta om Home Assistant.
-4. Gå till *Inställningar → Enheter och tjänster → Lägg till integration*, välj *Sophämtning* och sök upp adressen.
+1. Sök upp *Sophämtning* i HACS, ladda ner den och starta om Home Assistant.
+2. Gå till *Inställningar → Enheter och tjänster → Lägg till integration*, välj *Sophämtning* och sök upp adressen.
    - Skriv gata och husnummer, gärna med ort efter ett komma, till exempel `Storgatan 2, Uppsala`.
    - Är det många träffar får du först välja ort, sedan adress.
 
-HACS hämtar versionen från senaste GitHub-releasen i det här repot.
+HACS läser versionen från senaste GitHub-releasen i `jesperhardyson/sopor-home-assistant`, en spegling av integrationen som uppdateras vid varje release.
 
 ## Entiteter
 
