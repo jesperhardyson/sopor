@@ -12,8 +12,9 @@ SOK = json.loads((FIXTURES / "sok.json").read_text(encoding="utf-8"))
 KALLOR = json.loads((FIXTURES / "kallor.json").read_text(encoding="utf-8"))
 
 
-def _mocka(aioclient_mock, q: str, search: Search = SOK, kallor=KALLOR):
+def _mocka(aioclient_mock, q: str, search: Search = SOK, kallor=KALLOR, omraden=None):
     aioclient_mock.get(f"{BASE_URL}/sok", json=search)
+    aioclient_mock.get(f"{BASE_URL}/omraden", json={"apiVersion": "1", "addresses": omraden or [], "failed": []})
     if kallor is None:
         aioclient_mock.get(f"{BASE_URL}/kallor", status=502, text="Bad Gateway")
     else:
@@ -145,6 +146,7 @@ async def test_beskrivningen_utan_antal_nar_kallor_failar(hass, aioclient_mock):
 
 async def test_ingen_traff_utan_kommunlista_ger_not_found(hass, aioclient_mock):
     aioclient_mock.get(f"{BASE_URL}/sok", json={"addresses": [], "failed": []})
+    aioclient_mock.get(f"{BASE_URL}/omraden", json={"apiVersion": "1", "addresses": [], "failed": []})
     aioclient_mock.get(f"{BASE_URL}/kallor", status=502, text="Bad Gateway")
     result = await hass.config_entries.flow.async_init(DOMAIN, context={"source": SOURCE_USER})
     assert result["step_id"] == "user_utan_antal"
@@ -210,3 +212,30 @@ def test_stegets_oversattningar_visar_notice():
         path = Path(__file__).parents[3] / "custom_components/sopor/translations" / f"{lang}.json"
         step = json.loads(path.read_text(encoding="utf-8"))["config"]["step"]["adress_omrade"]
         assert "{notice}" in step["description"]
+
+
+async def test_adress_som_saknas_ger_kommunens_omraden(hass, aioclient_mock):
+    _mocka(aioclient_mock, "Kungsgatan 12", omraden=[_omrade()])
+    result = await _sok(hass, "Kungsgatan 12, Avesta")
+    assert result["step_id"] == "adress_omrade"
+    assert result["description_placeholders"]["notice"] == "Kontrollera att området stämmer."
+    assert [v["value"] for v in _val(result)] == ["avesta/trakt-7"]
+    assert str(aioclient_mock.mock_calls[-1][1]).endswith("/omraden?plats=Avesta")
+
+
+async def test_utan_ort_fragas_inte_efter_omraden(hass, aioclient_mock):
+    _mocka(
+        aioclient_mock, "Kungsgatan 12", search={"apiVersion": "1", "addresses": [], "failed": []}, omraden=[_omrade()]
+    )
+    result = await _sok(hass, "Kungsgatan 12")
+    assert result["errors"] == {"base": "not_found"}
+    assert not [c for c in aioclient_mock.mock_calls if "/omraden" in str(c[1])]
+
+
+async def test_fel_fran_omraden_ger_vanlig_text(hass, aioclient_mock):
+    aioclient_mock.get(f"{BASE_URL}/sok", json={"apiVersion": "1", "addresses": [], "failed": []})
+    aioclient_mock.get(f"{BASE_URL}/kallor", json=KALLOR)
+    aioclient_mock.get(f"{BASE_URL}/omraden", status=502, text="Bad Gateway")
+    result = await _sok(hass, "Kungsgatan 12, Avesta")
+    assert result["step_id"] == "user"
+    assert "base" in result["errors"]

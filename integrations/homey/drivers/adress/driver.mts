@@ -1,7 +1,7 @@
 import Homey from 'homey'
 import type SoporApp from '../../app.mjs'
 import type { SoporSearchHit } from '../../lib/api.mjs'
-import { kommunNames, notices, parseQuery, placeCovered, placeKey, places, searchOutcome } from '../../lib/pairing.mjs'
+import { findHits, kommunNames, notices, parseQuery, placeCovered, placeKey, places } from '../../lib/pairing.mjs'
 import { ANY, fractionChoices } from '../../lib/schedule.mjs'
 import type AddressDevice from './device.mjs'
 
@@ -66,13 +66,14 @@ export default class AddressDriver extends Homey.Driver {
     // Utan träff säger `covered` om orten är en kommun som finns, så att vyn vet om det är stavningen.
     session.setHandler('search', async (input: string) => {
       const { q, place } = parseQuery(input)
-      const outcome = searchOutcome(await client.search(q), place)
+      const outcome = await findHits(client, q, place)
       hits = outcome.hits
       const names = await kommuner
       return {
         result: outcome.result,
         places: outcome.result === 'places' ? places(hits) : [],
-        notices: outcome.result === 'found' ? notices(hits) : [],
+        notices: outcome.result === 'found' || outcome.result === 'areas' ? notices(hits) : [],
+        street: q,
         place,
         covered: place && names.length ? placeCovered(names, place) : null,
       }

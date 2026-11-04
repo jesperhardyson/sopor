@@ -723,10 +723,7 @@
       ],
       "pair": [
         {
-          "id": "sok",
-          "navigation": {
-            "next": "list_devices"
-          }
+          "id": "sok"
         },
         {
           "id": "list_devices",

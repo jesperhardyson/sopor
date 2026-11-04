@@ -117,6 +117,9 @@ class SoporClient:
     async def search(self, q: str) -> Search:
         return cast(Search, await self._get(f"{BASE_URL}/sok", {"q": q}))
 
+    async def areas(self, place: str) -> Search:
+        return cast(Search, await self._get(f"{BASE_URL}/omraden", {"plats": place}))
+
     async def schedule(self, url: str) -> Schedule:
         return cast(Schedule, await self._get(url))
 

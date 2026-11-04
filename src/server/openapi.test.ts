@@ -96,10 +96,10 @@ beforeAll(() => {
 })
 
 describe('openapi.json', () => {
-  it('är version 1 och beskriver exakt de tre endpointsen', () => {
+  it('är version 1 och beskriver exakt de fyra endpointsen', () => {
     expect(spec.openapi).toMatch(/^3\.1/)
     expect(spec.info.version).toBe('1')
-    expect(Object.keys(spec.paths).sort()).toEqual(['/api/v1/adress/{source}/{id}', '/api/v1/kallor', '/api/v1/sok'])
+    expect(Object.keys(spec.paths).sort()).toEqual(['/api/v1/adress/{source}/{id}', '/api/v1/kallor', '/api/v1/omraden', '/api/v1/sok'])
   })
 
   it('har strikta objektscheman där alla fält är obligatoriska', () => {

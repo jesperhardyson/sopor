@@ -361,6 +361,148 @@
         }
       }
     },
+    "/api/v1/omraden": {
+      "get": {
+        "operationId": "listAreas",
+        "summary": "Områden på en plats",
+        "description": "Områdena hos källor med områdesval, till exempel Avesta och Säter, som täcker platsen. Använd den när en adress inte hittas: användaren väljer själv område, och Sopor gissar aldrig vilket område en adress hör till. En plats utan områdesval ger en tom lista. Källor som inte svarade står i failed.",
+        "parameters": [
+          {
+            "name": "plats",
+            "in": "query",
+            "required": true,
+            "description": "Kommunens namn, med eller utan \"kommun\", eller en ort i kommunen. Minst två tecken.",
+            "schema": {
+              "type": "string",
+              "minLength": 2
+            },
+            "example": "Avesta"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Områden.",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "description": "Alltid *.",
+                "schema": {
+                  "type": "string",
+                  "const": "*"
+                }
+              },
+              "Cache-Control": {
+                "description": "public, s-maxage=<sekunder>",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResponse"
+                },
+                "example": {
+                  "apiVersion": "1",
+                  "addresses": [
+                    {
+                      "id": "trakt-7",
+                      "street": "Avesta tätort, Östanfors m.fl.",
+                      "locality": "",
+                      "kommun": "Avesta kommun",
+                      "source": "avesta",
+                      "detail": "Tisdag, jämn vecka · Trakt 7",
+                      "selection": "area",
+                      "notice": "Kontrollera att området stämmer. Väljer du fel område kan du missa din tömning.",
+                      "url": "https://sopor.hardyson.se/api/v1/adress/avesta/trakt-7"
+                    }
+                  ],
+                  "failed": []
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Parametern q saknas eller har färre än tre tecken.",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "description": "Alltid *.",
+                "schema": {
+                  "type": "string",
+                  "const": "*"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "apiVersion": "1",
+                  "error": {
+                    "code": "bad_request",
+                    "message": "Minst tre tecken"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Okänd källa i parametern kalla.",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "description": "Alltid *.",
+                "schema": {
+                  "type": "string",
+                  "const": "*"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "apiVersion": "1",
+                  "error": {
+                    "code": "not_found",
+                    "message": "Källan finns inte"
+                  }
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Svarar ingen källa får du 200 med tom addresses och alla källor i failed. 502 betyder ett oväntat fel hos Sopor.",
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "description": "Alltid *.",
+                "schema": {
+                  "type": "string",
+                  "const": "*"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "apiVersion": "1",
+                  "error": {
+                    "code": "source_unavailable",
+                    "message": "Något gick fel, försök igen senare"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/kallor": {
       "get": {
         "operationId": "listSources",

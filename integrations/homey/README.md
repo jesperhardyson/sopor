@@ -35,6 +35,10 @@ npm run smoke          # appens klient mot produktions-API:t
 npx homey app install  # installera på vald Homey (kolla först med homey select current)
 ```
 
+## Områden
+
+I kommuner utan koppling från adress till område, som Avesta och Säter, väljer användaren område. Hittas ingen adress på orten hämtar parningen områdena från `/api/v1/omraden` och visar källans varning före valet. Spec: `docs/specs/2026-11-04-appar-adress-till-omrade.md`.
+
 ## Släppa en version
 
 ```bash

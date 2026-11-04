@@ -103,6 +103,18 @@ Id:t får skickas procentkodat. Okänd källa eller adress ger `404 not_found`.
 
 Adresssökning, se [Kom igång](#alternativ-2-sök-med-api). Högst tio träffar per källa. Ort eller kommun får stå efter gatan (`storgatan 2 uppsala` eller `storgatan 2, uppsala`): källorna söker då på gatan och träffarna filtreras på början av orten eller kommunen.
 
+### `GET /api/v1/omraden`
+
+Områdena hos källor med områdesval, till exempel Avesta och Säter. Använd den när en adress inte hittas och användaren har angett en ort: användaren väljer då själv område. Sopor gissar aldrig vilket område en adress hör till.
+
+```bash
+curl 'https://sopor.hardyson.se/api/v1/omraden?plats=Avesta'
+```
+
+- `plats` är kommunens namn, med eller utan "kommun", eller en ort i kommunen. Minst två tecken.
+- Svaret har samma form som `/sok`, och varje område har `selection: "area"` och `notice`, som ska visas innan användaren väljer.
+- En plats utan områdesval ger en tom lista.
+
 ### `GET /api/v1/kallor`
 
 Alla synliga källor (id, namn, vilka kommuner de täcker) och alla kända fraktioner med namn, färg och ikon. Cachas i ett dygn. Bra för att bygga en källväljare.

@@ -55,11 +55,11 @@
   }
 
   // Den färdiga listan har ingen plats för text, så källans varning visas före den
-  function showHits(notices) {
+  function showHits(notices, intro) {
     if (!notices.length) return Homey.showView('list_devices')
     placesBox.hidden = true
     document.getElementById('noticeList').replaceChildren(
-      ...notices.map((notice) => {
+      ...[...(intro ? [intro] : []), ...notices].map((notice) => {
         const paragraph = document.createElement('p')
         paragraph.textContent = notice
         return paragraph
@@ -100,9 +100,10 @@
     try {
       // Drivrutinen sparar träffarna åt list_devices
       const answer = await Homey.emit('search', q)
-      const { result, places, notices } = answer
+      const { result, places, notices, street } = answer
       status.textContent = ''
       if (result === 'found') return showHits(notices)
+      if (result === 'areas') return showHits(notices, Homey.__('pair.areaChoice', { street }))
       if (result === 'places') return showPlaces(places)
       status.textContent = result === 'failed' ? Homey.__('pair.failed') : notFound(answer)
     } catch (error) {

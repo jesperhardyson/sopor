@@ -89,6 +89,11 @@ class SoporConfigFlow(ConfigFlow, domain=DOMAIN):
                     if result == "places":
                         self._hits = hits
                         return await self.async_step_ort()
+                    # Utan träff på en namngiven ort väljer användaren bland kommunens områden.
+                    # Utan ort frågas inte, eftersom samma gatunamn finns i många kommuner.
+                    if place and (areas := await self._areas(client, place)):
+                        self._hits = areas
+                        return await self.async_step_adress()
                     if result == "failed":
                         errors["base"] = "sources_failed"
                     else:
@@ -116,6 +121,13 @@ class SoporConfigFlow(ConfigFlow, domain=DOMAIN):
 
     async def async_step_user_utan_antal(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         return await self.async_step_user(user_input)
+
+    async def _areas(self, client: SoporClient, place: str) -> list[SearchHit]:
+        """Fel behandlas som inga områden, så att användaren får den vanliga texten."""
+        try:
+            return (await client.areas(place))["addresses"]
+        except SoporError:
+            return []
 
     async def _kommun_names(self, client: SoporClient) -> list[str]:
         """Kommunernas namn, hämtade en gång. Tom lista när /kallor inte svarar."""

@@ -57,8 +57,8 @@
     "error": {
       "too_short": "Type at least three characters.",
       "sources_failed": "Some sources did not respond. Try again in a while.",
-      "not_found": "No address found. Check the spelling and house number, and that your municipality is included. In Avesta and Säter, search by area, for example Avesta tätort or Bispberg.",
-      "not_found_covered": "No address found in {place}. Check the spelling and house number. In Avesta and Säter, search by area, for example Avesta tätort or Bispberg.",
+      "not_found": "No address found. Check the spelling and house number, and that your municipality is included. In Avesta and Säter you choose an area: add the town after the street, for example Kungsgatan 12, Avesta, or search for a place such as Bispberg.",
+      "not_found_covered": "No address found in {place}. Check the spelling and house number. In Avesta and Säter you choose an area: add the town after the street, for example Kungsgatan 12, Avesta, or search for a place such as Bispberg.",
       "not_found_elsewhere": "No address found in {place}. Check that the municipality is included.",
       "cannot_connect": "Sopor is not responding. Try again in a while."
     },

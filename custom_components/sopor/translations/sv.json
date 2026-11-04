@@ -57,8 +57,8 @@
     "error": {
       "too_short": "Skriv minst tre tecken av gatan.",
       "sources_failed": "Några källor svarade inte. Försök igen om en stund.",
-      "not_found": "Ingen adress hittades. Kontrollera stavningen och husnumret, och att din kommun finns med. I Avesta och Säter söker du på område, till exempel Avesta tätort eller Bispberg.",
-      "not_found_covered": "Ingen adress hittades i {place}. Kontrollera stavningen och husnumret. I Avesta och Säter söker du på område, till exempel Avesta tätort eller Bispberg.",
+      "not_found": "Ingen adress hittades. Kontrollera stavningen och husnumret, och att din kommun finns med. I Avesta och Säter väljer du område: skriv orten efter gatan, till exempel Kungsgatan 12, Avesta, eller sök på en plats som Bispberg.",
+      "not_found_covered": "Ingen adress hittades i {place}. Kontrollera stavningen och husnumret. I Avesta och Säter väljer du område: skriv orten efter gatan, till exempel Kungsgatan 12, Avesta, eller sök på en plats som Bispberg.",
       "not_found_elsewhere": "Ingen adress hittades i {place}. Kontrollera att kommunen finns med.",
       "cannot_connect": "Sopor svarar inte. Försök igen om en stund."
     },

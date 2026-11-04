@@ -3,7 +3,7 @@ import path from 'node:path'
 import { describe, expect, it, vi, type Mock } from 'vitest'
 import { FRACTIONS } from '../domain/fractions.js'
 import type { Source } from '../sources/index.js'
-import { addressCacheControl, handleV1Address, handleV1NotFound, handleV1Search, handleV1Sources, v1, v1Error } from './v1.js'
+import { addressCacheControl, handleV1Address, handleV1Areas, handleV1NotFound, handleV1Search, handleV1Sources, v1, v1Error } from './v1.js'
 
 const fixture = (name: string) => readFileSync(path.resolve(import.meta.dirname, '__fixtures__', name), 'utf8')
 const json = (body: unknown) =>
@@ -46,6 +46,15 @@ const files: Record<string, unknown> = {
       ['trakt-3', 'Fors, Nordanö m.fl.', '', ['2026-trakt-3'], { detail: 'Onsdag, udda vecka · Trakt 3', searchTerms: ['Fors', 'Norr', 'Norr och Sör Nävde'] }],
     ],
   },
+  '/data/avesta/omraden.json': {
+    explanation: 'Förklaring.',
+    help: 'Hjälp.',
+    areas: [
+      { id: 'trakt-3', name: 'Fors, Nordanö m.fl.', day: 'Onsdag, udda vecka', label: 'Trakt 3', places: [], otherDays: [], searchTerms: [], dates: [] },
+      { id: 'utan-etikett', name: 'Dalsbyn m.fl.', day: 'Måndag, ojämn vecka', places: [], otherDays: [], searchTerms: [], dates: [] },
+    ],
+  },
+  '/data/gator/kr.json': { krylbo: ['avesta'], kristinehamn: ['uppsala'] },
   '/data/avesta/schedules/2026-trakt-7.json': {
     id: '2026-trakt-7', validFrom: '2026-01-01', validTo: '2026-12-31', updatedAt: '2026-01-01', bins: [],
     events: [event('2026-11-03')],
@@ -288,6 +297,52 @@ describe('v1', () => {
   it('v1Error har den gemensamma felformen', async () => {
     const res = v1Error(400, 'bad_request', 'Fel')
     expect(await res.json()).toEqual({ apiVersion: '1', error: { code: 'bad_request', message: 'Fel' } })
+  })
+})
+
+describe('handleV1Areas', () => {
+  const areas = (plats: string, o = opts) => v1(handleV1Areas)(get(`/api/v1/omraden?plats=${encodeURIComponent(plats)}`), o)
+  const ids = async (plats: string) => (await (await areas(plats)).json()).addresses.map((a: { id: string }) => a.id)
+
+  it('ger källans områden som träffar, i källans ordning', async () => {
+    const res = await areas('Avesta')
+    expect(res.status).toBe(200)
+    const body = await res.json()
+    expect(body.apiVersion).toBe('1')
+    expect(body.failed).toEqual([])
+    expect(body.addresses.map((a: { id: string }) => a.id)).toEqual(['trakt-3', 'utan-etikett'])
+    expect(body.addresses[0]).toMatchObject({
+      street: 'Fors, Nordanö m.fl.',
+      locality: '',
+      kommun: 'Avesta kommun',
+      source: 'avesta',
+      detail: 'Onsdag, udda vecka · Trakt 3',
+      selection: 'area',
+      url: 'https://preview.test/api/v1/adress/avesta/trakt-3',
+    })
+    expect(body.addresses[0].notice).toBeTruthy()
+    expect(body.addresses[1].detail).toBe('Måndag, ojämn vecka')
+  })
+
+  it('känner igen kommunen med ordet kommun och en ort i kommunen', async () => {
+    expect(await ids('avesta kommun')).toHaveLength(2)
+    expect(await ids('Krylbo')).toHaveLength(2)
+  })
+
+  it('ger en tom lista för en plats utan områdesval', async () => {
+    expect(await ids('Uppsala')).toEqual([])
+    expect(await ids('Kristinehamn')).toEqual([])
+  })
+
+  it('kräver minst två tecken', async () => {
+    expect((await areas('a')).status).toBe(400)
+  })
+
+  it('säger vilken källa som inte svarade', async () => {
+    const down = (async (input: string | URL | Request, init?: RequestInit) =>
+      String(input).includes('omraden.json') ? new Response('', { status: 500 }) : fetchFn(input, init)) as typeof fetch
+    const body = await (await areas('Avesta', { ...opts, fetchFn: down })).json()
+    expect(body).toMatchObject({ addresses: [], failed: ['avesta'] })
   })
 })
 
