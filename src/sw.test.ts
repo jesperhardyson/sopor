@@ -32,15 +32,18 @@ function boot(net: (req: Request) => Promise<Response>) {
   const fetchFn = vi.fn(net)
   new Function('self', 'caches', 'fetch', code)(self, caches, fetchFn)
 
+  /** Det service workern har bett webbläsaren att vänta in */
+  const kept: Promise<unknown>[] = []
+
   /** Svaret service workern ger, eller undefined när den låter webbläsaren sköta anropet. */
   const request = async (pathname: string, mode: RequestMode = 'cors') => {
     let response: Promise<Response> | undefined
     const req = new Request(origin + pathname)
     Object.defineProperty(req, 'mode', { value: mode })
-    handlers.fetch({ request: req, respondWith: (r) => (response = r), waitUntil: () => {} })
+    handlers.fetch({ request: req, respondWith: (r) => (response = r), waitUntil: (p) => void kept.push(p) })
     return response
   }
-  return { request, fetchFn, stores }
+  return { request, fetchFn, stores, kept }
 }
 
 const html = (body: string) => new Response(body, { headers: { 'Content-Type': 'text/html' } })
@@ -65,9 +68,39 @@ describe('service workern', () => {
 
     vi.useFakeTimers()
     sw.fetchFn.mockImplementation(() => new Promise(() => {}))
-    const response = sw.request('/om', 'navigate')
-    await vi.advanceTimersByTimeAsync(3000)
+    let shown = false
+    const response = sw.request('/om', 'navigate').then((r) => {
+      shown = true
+      return r
+    })
+    await vi.advanceTimersByTimeAsync(1499)
+    expect(shown).toBe(false)
+    await vi.advanceTimersByTimeAsync(1)
     expect(await (await response)!.text()).toBe('gammal')
+  })
+
+  it('sparar ett sent svar till nästa besök, även sedan den sparade sidan har visats', async () => {
+    const sw = boot(async () => html('gammal'))
+    await (await sw.request('/', 'navigate'))!.text()
+    await Promise.resolve()
+
+    vi.useFakeTimers()
+    let answer!: (res: Response) => void
+    sw.fetchFn.mockImplementation(() => new Promise((resolve) => (answer = resolve)))
+    const response = sw.request('/om', 'navigate')
+    await vi.advanceTimersByTimeAsync(1500)
+    expect(await (await response)!.text()).toBe('gammal')
+
+    let saved = false
+    void Promise.all(sw.kept).then(() => (saved = true))
+    await vi.advanceTimersByTimeAsync(0)
+    expect(saved).toBe(false) // Webbläsaren får inte stänga service workern innan svaret är sparat
+
+    answer(html('ny'))
+    await vi.advanceTimersByTimeAsync(0)
+    expect(saved).toBe(true)
+    sw.fetchFn.mockRejectedValue(new TypeError('offline'))
+    expect(await (await sw.request('/om', 'navigate'))!.text()).toBe('ny')
   })
 
   it('sparar inte en kommunsida som appens skal, men väl en adressida', async () => {
