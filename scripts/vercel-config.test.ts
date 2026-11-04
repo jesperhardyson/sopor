@@ -108,6 +108,10 @@ describe('vercel.json', () => {
       expect(csp).not.toContain("script-src 'self' 'unsafe-inline'")
     })
 
+    it('tillåter typsnitt som Vite bäddar in som data:-adresser', () => {
+      expect(csp).toContain("font-src 'self' data:")
+    })
+
     it('låser sidan till egna filer och kan inte bäddas in', () => {
       for (const part of ["default-src 'self'", "connect-src 'self'", "object-src 'none'", "base-uri 'self'", "frame-ancestors 'none'"]) {
         expect(csp).toContain(part)
