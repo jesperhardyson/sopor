@@ -14,7 +14,6 @@ import { ErrorState, UnsupportedState } from '../result/ResultStates'
 import { AreaFinderSheet } from '../sheets/AreaFinderSheet'
 
 const page = 'mx-auto flex w-full max-w-[920px] flex-col gap-5 px-5 pt-1 pb-8 md:px-8 md:pt-4 lg:gap-7 lg:px-0 lg:pb-20'
-const MAX_PLACES = 5
 
 /** Vad områdesvalet får med sig: gatan man sökte, området man byter från och om arket ska öppnas direkt. */
 export interface AreaPageState {
@@ -42,11 +41,6 @@ function asAddresses(areas: Area[], source: Source): Address[] {
     kommun: source.kommuner[0].name,
     searchTerms: [...a.searchTerms, a.day],
   }))
-}
-
-function places(area: Area): string {
-  const shown = area.places.slice(0, MAX_PLACES).join(', ')
-  return area.places.length > MAX_PLACES ? `${shown} …` : shown
 }
 
 export function AreaRoute({ today }: { today?: string }) {
@@ -164,11 +158,12 @@ export function AreaPage({ today = todayInStockholm() }: { today?: string }) {
                   className="tryck flex items-center gap-3 border-b border-border px-5 py-4 last:border-b-0"
                 >
                   <span className="flex min-w-0 flex-1 flex-col gap-1">
-                    <span className="text-base font-extrabold text-text">{a.name}</span>
-                    <span className="text-[15px] font-bold text-brand-text">
-                      {a.day} · {a.label}
+                    <span className="flex items-start justify-between gap-2">
+                      <span className="text-base font-extrabold text-text">{a.name}</span>
+                      <span className="shrink-0 rounded-full bg-brand-soft px-2.5 py-0.5 text-[13px] font-extrabold text-brand-text">{a.label}</span>
                     </span>
-                    {a.places.length > 0 && <span className="text-sm text-text-2">{places(a)}</span>}
+                    <span className="text-[15px] font-bold text-brand-text">{a.day}</span>
+                    {a.places.length > 0 && <span className="text-sm text-text-2">{a.places.join(', ')}</span>}
                   </span>
                   <ChevronRight className="size-5 shrink-0 text-text-2" aria-hidden />
                 </Link>

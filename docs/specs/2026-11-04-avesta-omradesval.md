@@ -66,6 +66,7 @@ Reglerna gäller startsidans sökning och kommunsidan för Avesta. De prövas i 
 ## Skärmar
 
 - **Välj område** (`/avesta/omraden`, så `omraden` får aldrig användas som adress-id): förklaringen, filterfält, genvägen "Vet du inte vilket område?", alla tio områden och kundtjänstens telefonnummer.
+  - **Raderna:** områdets namn med `label` som pill på översta raden, hämtdagen under, och alla orter och gator på nedersta raden, så att man kan känna igen sitt område utan att söka.
   - **Filter:** "Sök område, ort eller gata". Det söker på områdets namn, orter, gator, "trakt N" och hämtdag, till exempel "tisdag" och "jämn vecka".
   - **Känd gata utan områdesträff:** i stället för "Inget område matchar" visas "Kungsgatan finns i Avesta, men schemat visar inte vilket område den hör till", med en länk till Hitta område och hela listan under.
   - **Okänt ord:** "Inget område matchar", som i dag.

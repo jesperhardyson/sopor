@@ -6,6 +6,7 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { buildMunicipality, parseAreasFile, parseSchedulesFile } from '@/data/static-format'
 import { buildStreetIndex, type OsmKommun } from '@/data/street-index'
 import { ALL_SOURCES, getSource } from '@/sources'
+import { searchAddresses } from '@/domain/search'
 import { searchAll, type SearchOptions } from './registry'
 
 const root = path.resolve(import.meta.dirname, '../..')
@@ -116,5 +117,25 @@ describe('områden när frågan nämner en plats', () => {
   it('ger ingen rad för områdesval när platsen är en annan', async () => {
     const { areaPickers } = await searchAll('Stallgatan 5, Stockholm')
     expect(areaPickers).toEqual([])
+  })
+})
+
+describe('filtret på Välj område, med riktiga data', () => {
+  const built = buildMunicipality(
+    [
+      {
+        year: 2026,
+        schedules: parseSchedulesFile(read('data/avesta/2026/schedules.json'), 'schedules.json'),
+        addresses: [],
+        areas: parseAreasFile(read('data/avesta/2026/omraden.json'), 'omraden.json'),
+      },
+    ],
+    getSource('avesta')!,
+  ).areas!.areas
+  const asRows = built.map((a) => ({ id: a.id, street: a.name, locality: '', sourceId: 'avesta', kommun: 'Avesta kommun', searchTerms: [...a.searchTerms, a.day] }))
+  const places = built.flatMap((a) => a.places.map((place) => [place, a.id] as const))
+
+  it.each(places)('%s hittar %s', (place, id) => {
+    expect(searchAddresses(place, asRows, asRows.length, { areaPrefix: true }).map((h) => h.id)).toContain(id)
   })
 })

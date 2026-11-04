@@ -75,15 +75,16 @@ describe('AreaPage', () => {
     expect(screen.getByText(index.explanation)).toBeInTheDocument()
     expect(screen.getByText(index.help)).toBeInTheDocument()
     expect(screen.getByText('Askön, Nyhyttan m.fl.')).toBeInTheDocument()
-    expect(screen.getByText('Måndag, udda vecka · Trakt 1')).toBeInTheDocument()
-    expect(screen.getByText('Tisdag, jämn vecka · Trakt 7')).toBeInTheDocument()
+    expect(screen.getByText('Måndag, udda vecka')).toBeInTheDocument()
+    expect(screen.getByText('Trakt 1')).toBeInTheDocument()
+    expect(screen.getByText('Tisdag, jämn vecka')).toBeInTheDocument()
+    expect(screen.getByText('Trakt 7')).toBeInTheDocument()
     expect(document.title).toBe('Välj område – Sopor')
   })
 
-  it('visar högst fem platser och slutar med " …" när fler finns', async () => {
+  it('visar alla platser, så att man kan hitta sitt område i listan', async () => {
     show()
-    expect(await screen.findByText('Klintbo, Baggbo, Högbo, Stallgatan, Storbogatan …')).toBeInTheDocument()
-    expect(screen.getByText('Lycka, Kolarbo')).toBeInTheDocument()
+    expect(await screen.findByText('Klintbo, Baggbo, Högbo, Stallgatan, Storbogatan, Hedbo, Vallby')).toBeInTheDocument()
   })
 
   it('filtrerar på namn och visar en tom ruta utan träff', async () => {
