@@ -1,9 +1,9 @@
-import { ChevronDown, LoaderCircle, MapPin, Search, X } from 'lucide-react'
+import { ArrowRight, ChevronDown, LoaderCircle, Map, MapPin, Search, X } from 'lucide-react'
 import { Fragment, useEffect, useId, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
-import { enterTarget, groupByKommun, normalize, stableMerge } from '@/domain/search'
+import { enterTarget, groupByKommun, matchedTerm, normalize, stableMerge } from '@/domain/search'
 import type { Address } from '@/domain/types'
-import { missingKommuner, prefetchAddress, searchAll, suggestAll, warmUpSearch, type SearchOptions, type SearchResult } from '@/providers/registry'
+import { missingKommuner, prefetchAddress, searchAll, suggestAll, warmUpSearch, type AreaPicker, type SearchOptions, type SearchResult } from '@/providers/registry'
 import { getSource } from '@/sources'
 import { reportMissingKommun } from '@/lib/analytics'
 import { cn } from '@/lib/utils'
@@ -22,7 +22,7 @@ type Search = (
 
 type State =
   | { kind: 'idle' }
-  | { kind: 'results'; query: string; results: Address[]; failed: string[]; pending?: boolean }
+  | { kind: 'results'; query: string; results: Address[]; pickers: AreaPicker[]; failed: string[]; pending?: boolean }
   | { kind: 'notFound'; query: string; suggestions: Address[]; failed: string[]; missing: string[] }
   | { kind: 'error' }
 
@@ -37,7 +37,10 @@ const MAX_ROWS = 15
 const ALL = ''
 
 /** `kommun` saknas på raden som fäller ut hela listan. */
-type Item = { kind: 'address'; address: Address } | { kind: 'more'; kommun?: string; count: number }
+type Item =
+  | { kind: 'address'; address: Address }
+  | { kind: 'more'; kommun?: string; count: number }
+  | { kind: 'picker'; picker: AreaPicker }
 interface Section {
   /** Saknas när alla träffar ligger i en kommun: då visas listan utan rubriker. */
   kommun?: string
@@ -45,8 +48,29 @@ interface Section {
   items: Item[]
 }
 
-function sections(results: Address[], expanded: Set<string>): Section[] {
-  const list = byKommun(results, expanded)
+/** Kommunens namn utan "kommun", för texterna på raden för områdesval. */
+const kommunName = (kommun: string) => kommun.replace(/ kommun$/, '')
+
+/** Raden för områdesval hör till sin kommuns grupp. En kommun utan träffar får en grupp med bara den raden, överst. */
+function withPickers(list: Section[], pickers: AreaPicker[]): Section[] {
+  if (pickers.length === 0) return list
+  const extra: Section[] = []
+  const grouped = list.map((section) => ({ ...section, items: [...section.items] }))
+  for (const picker of pickers) {
+    const item: Item = { kind: 'picker', picker }
+    const section = grouped.find((s) => s.kommun === picker.kommun)
+    if (section) section.items.push(item)
+    else extra.push({ kommun: picker.kommun, total: 0, items: [item] })
+  }
+  return [...extra, ...grouped]
+}
+
+function sections(results: Address[], pickers: AreaPicker[], expanded: Set<string>): Section[] {
+  return withPickers(trimmed(results, pickers.length > 0, expanded), pickers)
+}
+
+function trimmed(results: Address[], grouped: boolean, expanded: Set<string>): Section[] {
+  const list = byKommun(results, expanded, grouped)
   const rows = (section: Section) => section.items.filter((i) => i.kind === 'address').length
   // Inget undantag för en ensam rad till: då skulle rad 16 försvinna när den 17:e kommer.
   if (expanded.has(ALL) || list.reduce((n, section) => n + rows(section), 0) <= MAX_ROWS) return list
@@ -73,11 +97,12 @@ function sections(results: Address[], expanded: Set<string>): Section[] {
   return hidden > 0 ? [...shown, { total: hidden, items: [{ kind: 'more', count: hidden }] }] : shown
 }
 
-function byKommun(results: Address[], expanded: Set<string>): Section[] {
+function byKommun(results: Address[], expanded: Set<string>, grouped: boolean): Section[] {
   const groups = groupByKommun(results)
   const toItems = (list: Address[]): Item[] => list.map((address) => ({ kind: 'address', address }))
   // Rubriker gör bara nytta när någon kommun har flera träffar. Annars står kommunen på raden.
-  if (groups.length < 2 || groups.every((g) => g.addresses.length === 1)) {
+  // Raden för områdesval står alltid under sin kommuns rubrik, så då behövs rubrikerna ändå.
+  if (!grouped && (groups.length < 2 || groups.every((g) => g.addresses.length === 1))) {
     return [{ total: results.length, items: toItems(results) }]
   }
   return groups.map(({ kommun, addresses }) => {
@@ -98,6 +123,7 @@ export function AddressSearch({
   missing = missingKommuner,
   prefetch = prefetchAddress,
   kommun,
+  areaHref,
   onActivate,
   onDeactivate,
 }: {
@@ -109,6 +135,8 @@ export function AddressSearch({
   prefetch?: (sourceId: string, addressId: string) => void
   /** Kommunen som `search` är avgränsad till, för texten när adressen inte hittas */
   kommun?: string
+  /** Länk till områdesvalet, när `kommun` har ett: visas när adressen inte hittas */
+  areaHref?: string
   /** Fältet fick fokus (startsidans fokusläge) */
   onActivate?: () => void
   /** Användaren tryckte Esc */
@@ -164,14 +192,22 @@ export function AddressSearch({
       try {
         setLoading(true)
         skeleton = setTimeout(() => setSlow(true), SKELETON_MS)
-        const { addresses: results, failed } = await search(query, controller.signal, (partial) => {
-          if (!controller.signal.aborted && partial.addresses.length > 0) {
-            setState((prev) => ({ kind: 'results', query, results: keep(prev, partial.addresses), failed: [], pending: true }))
+        const { addresses: results, failed, areaPickers } = await search(query, controller.signal, (partial) => {
+          if (!controller.signal.aborted && (partial.addresses.length > 0 || partial.areaPickers.length > 0)) {
+            setState((prev) => ({
+              kind: 'results',
+              query,
+              results: keep(prev, partial.addresses),
+              pickers: partial.areaPickers,
+              failed: [],
+              pending: true,
+            }))
           }
         })
         if (controller.signal.aborted) return
-        if (results.length > 0) {
-          setState((prev) => ({ kind: 'results', query, results: keep(prev, results), failed }))
+        // Bara raden för områdesval är också ett resultat, inte "hittades inte".
+        if (results.length > 0 || areaPickers.length > 0) {
+          setState((prev) => ({ kind: 'results', query, results: keep(prev, results), pickers: areaPickers, failed }))
         } else {
           const [suggestions, kommuner] = await Promise.all([suggest(query, controller.signal), missing(query, controller.signal)])
           if (!controller.signal.aborted) setState({ kind: 'notFound', query, suggestions, failed, missing: kommuner })
@@ -197,9 +233,10 @@ export function AddressSearch({
   // Förra träffarna står kvar medan man skriver vidare eller suddar, men inte när texten byts ut.
   const related = (a: string, b: string) => normalize(a).startsWith(normalize(b)) || normalize(b).startsWith(normalize(a))
   const results = state.kind === 'results' && related(query, state.query) ? state.results : []
-  const list = sections(results, expanded)
+  const pickers = state.kind === 'results' && related(query, state.query) ? state.pickers : []
+  const list = sections(results, pickers, expanded)
   const items = list.flatMap((s) => s.items)
-  const open = results.length > 0
+  const open = results.length > 0 || pickers.length > 0
   // Svaret gäller frågan det kom för: en kortare fråga utan träffar får inte synas när man skrivit vidare.
   const showNotFound =
     state.kind === 'notFound' &&
@@ -219,12 +256,16 @@ export function AddressSearch({
 
   function choose(item: Item) {
     if (item.kind === 'address') go(item.address)
+    else if (item.kind === 'picker') navigate(`/${item.picker.sourceId}/omraden`)
     else setExpanded((prev) => new Set(prev).add(item.kommun ?? ALL))
   }
 
   /** Enter utan vald rad: öppnar en entydig träff, annars markeras första raden så att man kan välja. */
-  function openOrMark(addresses: Address[]) {
-    const target = enterTarget(query, addresses)
+  function openOrMark(addresses: Address[], areaPickers: AreaPicker[]) {
+    const [only] = areaPickers
+    // Raden för områdesval som enda rad öppnas. Tillsammans med en träff avgör användaren själv.
+    if (addresses.length === 0 && areaPickers.length === 1) return choose({ kind: 'picker', picker: only })
+    const target = areaPickers.some((p) => !p.hasHits) ? undefined : enterTarget(query, addresses)
     if (target) go(target)
     else setActive(0)
   }
@@ -245,16 +286,16 @@ export function AddressSearch({
       }
       // Svarar källor fortfarande kan fler träffar vara på väg, så då avgör den fullständiga sökningen.
       if (open && state.kind === 'results' && state.query === query && !state.pending) {
-        openOrMark(state.results)
+        openOrMark(state.results, state.pickers)
         return
       }
       setSubmitted(true)
       if (normalize(query).length < 2) return
       search(query, undefined, undefined, { submitted: true }).then(
         (fresh) => {
-          if (fresh.addresses.length === 0) return
-          setState({ kind: 'results', query, results: fresh.addresses, failed: fresh.failed })
-          openOrMark(fresh.addresses)
+          if (fresh.addresses.length === 0 && fresh.areaPickers.length === 0) return
+          setState({ kind: 'results', query, results: fresh.addresses, pickers: fresh.areaPickers, failed: fresh.failed })
+          openOrMark(fresh.addresses, fresh.areaPickers)
         },
         () => setState({ kind: 'error' }),
       )
@@ -263,6 +304,39 @@ export function AddressSearch({
       inputRef.current?.blur()
       onDeactivate?.()
     }
+  }
+
+  function renderPicker(picker: AreaPicker, props: React.HTMLAttributes<HTMLLIElement>, selected: boolean, afterHits: boolean) {
+    const name = kommunName(picker.kommun)
+    const key = `omraden/${picker.sourceId}`
+    if (picker.hasHits) {
+      return (
+        <li
+          key={key}
+          {...props}
+          className={cn(
+            'mt-1 flex min-h-11 cursor-pointer items-center justify-between gap-2 rounded-xl border-t border-border px-3 py-2 text-sm font-extrabold text-primary',
+            !afterHits && 'mt-0 border-t-0',
+            selected && 'bg-surface-2',
+          )}
+        >
+          Se alla områden i {name}
+          <ArrowRight className="size-4 shrink-0" aria-hidden />
+        </li>
+      )
+    }
+    return (
+      <li key={key} {...props} className={cn('tryck flex cursor-pointer items-center gap-3 rounded-xl p-3', selected && 'bg-surface-2')}>
+        <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-soft text-brand-text">
+          <Map className="size-[18px]" aria-hidden />
+        </span>
+        <span className="flex min-w-0 flex-1 flex-col gap-1">
+          <span className="text-base font-extrabold text-text">Välj område i {name}</span>
+          <span className="text-sm text-text-2">Här finns schemat per område, inte per adress.</span>
+        </span>
+        <ArrowRight className="size-4 shrink-0 text-primary" aria-hidden />
+      </li>
+    )
   }
 
   function renderItem(item: Item, showKommun: boolean) {
@@ -276,6 +350,7 @@ export function AddressSearch({
       onMouseEnter: () => setActive(i),
       onPointerDown: () => item.kind === 'address' && prefetch(item.address.sourceId, item.address.id),
     }
+    if (item.kind === 'picker') return renderPicker(item.picker, props, i === active, items[i - 1]?.kind === 'address')
     if (item.kind === 'more') {
       return (
         <li
@@ -292,6 +367,9 @@ export function AddressSearch({
       )
     }
     const r = item.address
+    // Ett område har särskiljare men ingen ort: då är kartan rätt ikon i stället för nålen.
+    const RowIcon = r.detail && !r.locality ? Map : MapPin
+    const term = matchedTerm(query, r)
     // Orten kan saknas (Lidköping), och då ska raden varken börja med en punkt eller stå tom.
     const parts = [
       r.locality && <span key="locality">{r.locality}</span>,
@@ -308,7 +386,7 @@ export function AddressSearch({
         className={cn('tryck flex cursor-pointer items-center gap-3 rounded-xl p-3', i === active && 'bg-surface-2')}
       >
         <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-soft text-brand-text">
-          <MapPin className="size-[18px]" aria-hidden />
+          <RowIcon className="size-[18px]" aria-hidden />
         </span>
         <span className="flex min-w-0 flex-col gap-1">
           <span className="text-base font-extrabold text-text">{r.street}</span>
@@ -324,6 +402,7 @@ export function AddressSearch({
           )}
           {/* Särskiljaren kan vara lång (SRV: "Matavfall varannan vecka, Restavfall varje vecka (3 kärl)"), så den får en egen rad. */}
           {r.detail && <span className="text-sm text-text-2">{r.detail}</span>}
+          {term && <span className="text-sm font-extrabold text-primary">{term} ingår i området</span>}
         </span>
       </li>
     )
@@ -406,7 +485,7 @@ export function AddressSearch({
                 {s > 0 && <div aria-hidden className="mx-3 my-1 h-px bg-border" />}
                 <div aria-hidden className="flex items-center gap-2 px-3 pt-2.5 pb-1 text-[13px] text-text-2">
                   <span className="flex-1 font-extrabold">{section.kommun}</span>
-                  <span>{section.total}</span>
+                  {section.total > 0 && <span>{section.total}</span>}
                 </div>
                 <ul role="none" className="flex flex-col">
                   {section.items.map((item) => renderItem(item, false))}
@@ -465,7 +544,7 @@ export function AddressSearch({
             (state.missing.length > 0 ? (
               <MissingKommun kommuner={state.missing} className="shadow-[0_12px_32px_#1B231F1F]" />
             ) : (
-              <NotFound suggestions={state.suggestions} kommun={kommun} className="shadow-[0_12px_32px_#1B231F1F]" />
+              <NotFound suggestions={state.suggestions} kommun={kommun} areaHref={areaHref} className="shadow-[0_12px_32px_#1B231F1F]" />
             ))}
           {state.kind === 'error' && (
             <p role="alert" className="rounded-2xl bg-warn-bg px-4 py-3 text-[15px] font-bold text-warn shadow-[0_12px_32px_#1B231F1F]">

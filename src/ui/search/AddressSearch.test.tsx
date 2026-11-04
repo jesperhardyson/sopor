@@ -5,6 +5,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { searchAddresses, suggest } from '@/domain/search'
 import type { Address } from '@/domain/types'
 import { reportMissingKommun } from '@/lib/analytics'
+import type { SearchResult } from '@/providers/registry'
 import { AddressSearch } from './AddressSearch'
 
 vi.mock('@/lib/analytics', () => ({ reportMissingKommun: vi.fn() }))
@@ -605,5 +606,145 @@ describe('AddressSearch', () => {
     await userEvent.type(screen.getByRole('combobox'), 'storgatan')
     const options = await screen.findAllByRole('option')
     expect(options[0]).toHaveTextContent(/^Storgatan 11Lidköpings kommun$/)
+  })
+
+  describe('områdesval', () => {
+    const area = (id: string, street: string, detail: string, searchTerms: string[]): Address => ({
+      id,
+      street,
+      locality: '',
+      detail,
+      searchTerms,
+      sourceId: 'avesta',
+      kommun: 'Avesta kommun',
+    })
+    const tatort = area('trakt-7', 'Avesta tätort, Östanfors m.fl.', 'Tisdag, jämn vecka · Trakt 7', ['Avesta tätort'])
+    const skogsbo = area('trakt-2', 'Skogsbo tätort, Rosse m.fl.', 'Tisdag, udda vecka · Trakt 2', ['Backa'])
+    const krylbo = area('trakt-4', 'Krylbo stationssidan, Lejde m.fl.', 'Torsdag, udda vecka · Trakt 4', ['Backa'])
+    const hedemora: Address = { id: 'kungsgatan-12', street: 'Kungsgatan 12', locality: 'Hedemora', sourceId: 'hedemora', kommun: 'Hedemoras kommun' }
+    const picker = (hasHits: boolean) => ({ sourceId: 'avesta', kommun: 'Avesta kommun', hasHits })
+
+    function Omraden() {
+      return <p>Områdesvalet</p>
+    }
+
+    function renderResult(query: string, result: Partial<SearchResult>) {
+      render(
+        <MemoryRouter>
+          <Routes>
+            <Route
+              index
+              element={<AddressSearch search={async () => ({ addresses: [], failed: [], areaPickers: [], ...result })} suggest={async () => []} />}
+            />
+            <Route path="avesta/omraden" element={<Omraden />} />
+            <Route path=":sourceId/:addressId" element={<Result />} />
+          </Routes>
+        </MemoryRouter>,
+      )
+      return userEvent.type(screen.getByRole('combobox'), query)
+    }
+
+    it('visar områdets namn och särskiljare med kartikon, och raden för alla områden', async () => {
+      await renderResult('Avesta tätort', { addresses: [tatort], areaPickers: [picker(true)] })
+      const options = await screen.findAllByRole('option')
+      expect(options).toHaveLength(2)
+      expect(options[0]).toHaveTextContent('Avesta tätort, Östanfors m.fl.Tisdag, jämn vecka · Trakt 7')
+      expect(options[0].querySelector('.lucide-map')).not.toBeNull()
+      expect(options[0].querySelector('.lucide-map-pin')).toBeNull()
+      expect(options[1]).toHaveTextContent('Se alla områden i Avesta')
+      expect(screen.getByRole('group', { name: 'Avesta kommun' })).toBeInTheDocument()
+    })
+
+    it('behåller nålen för en adress med särskiljare och ort', async () => {
+      const twin = { ...a('ringvagen-1_1', 'Ringvägen 1', 'Grödinge'), detail: 'Restavfall varje vecka' }
+      await renderResult('ringvägen 1', { addresses: [twin] })
+      const [row] = await screen.findAllByRole('option')
+      expect(row.querySelector('.lucide-map-pin')).not.toBeNull()
+    })
+
+    it('visar sökordet som gav träffen', async () => {
+      await renderResult('Backa', { addresses: [skogsbo, krylbo], areaPickers: [picker(true)] })
+      const options = await screen.findAllByRole('option')
+      expect(options[0]).toHaveTextContent('Backa ingår i området')
+      expect(options[1]).toHaveTextContent('Backa ingår i området')
+    })
+
+    it('visar ingen sökordsrad när namnet själv träffar', async () => {
+      await renderResult('Avesta tätort', { addresses: [tatort], areaPickers: [picker(true)] })
+      await screen.findAllByRole('option')
+      expect(screen.queryByText(/ingår i området/)).toBeNull()
+    })
+
+    it('visar Välj område med förklaring, och andra kommuners träffar under sina rubriker', async () => {
+      await renderResult('Kungsgatan 12', { addresses: [hedemora], areaPickers: [picker(false)] })
+      const options = await screen.findAllByRole('option')
+      expect(within(screen.getByRole('group', { name: 'Avesta kommun' })).getByRole('option')).toHaveTextContent(
+        'Välj område i AvestaHär finns schemat per område, inte per adress.',
+      )
+      expect(within(screen.getByRole('group', { name: 'Hedemoras kommun' })).getByRole('option')).toHaveTextContent('Kungsgatan 12')
+      expect(options).toHaveLength(2)
+    })
+
+    it('är inte "hittades inte" när bara raden för områdesval finns', async () => {
+      await renderResult('Okändgatan 3, Avesta', { areaPickers: [picker(false)] })
+      expect(await screen.findByRole('option', { name: /Välj område i Avesta/ })).toBeInTheDocument()
+      expect(screen.queryByText('Vi hittade inte adressen')).toBeNull()
+    })
+
+    it('går till områdesvalet vid klick på raden', async () => {
+      await renderResult('Kungsgatan 12', { addresses: [hedemora], areaPickers: [picker(false)] })
+      await userEvent.click(await screen.findByRole('option', { name: /Välj område i Avesta/ }))
+      expect(await screen.findByText('Områdesvalet')).toBeInTheDocument()
+    })
+
+    it('går till områdesvalet med piltangent och Enter på raden Se alla områden', async () => {
+      await renderResult('Avesta tätort', { addresses: [tatort], areaPickers: [picker(true)] })
+      await screen.findAllByRole('option')
+      await userEvent.keyboard('{ArrowDown}{ArrowDown}{Enter}')
+      expect(await screen.findByText('Områdesvalet')).toBeInTheDocument()
+    })
+
+    it('öppnar områdesvalet med Enter när raden är den enda', async () => {
+      await renderResult('Okändgatan 3, Avesta{Enter}', { areaPickers: [picker(false)] })
+      expect(await screen.findByText('Områdesvalet')).toBeInTheDocument()
+    })
+
+    it('öppnar inte något med Enter när en träff och Välj område finns', async () => {
+      await renderResult('Kungsgatan 12{Enter}', { addresses: [hedemora], areaPickers: [picker(false)] })
+      await screen.findAllByRole('option')
+      expect(screen.queryByText('Områdesvalet')).toBeNull()
+      expect(screen.queryByText(/^Resultat/)).toBeNull()
+      expect(screen.getAllByRole('option')[0]).toHaveAttribute('aria-selected', 'true')
+    })
+
+    it('öppnar en ensam områdesträff med Enter även med raden Se alla områden', async () => {
+      await renderResult('Avesta tätort{Enter}', { addresses: [tatort], areaPickers: [picker(true)] })
+      expect(await screen.findByText('Resultat avesta/trakt-7')).toBeInTheDocument()
+    })
+
+    it('fäller ut kommunens träffar med Visa N till utan att tappa raden för områdesval', async () => {
+      const many = Array.from({ length: 6 }, (_, i) => area(`trakt-${i + 20}`, `Område ${i}`, 'Måndag', ['Backa']))
+      await renderResult('Backa', { addresses: many, areaPickers: [picker(true)] })
+      await userEvent.click(await screen.findByRole('option', { name: 'Visa 3 till i Avesta kommun' }))
+      expect(screen.getAllByRole('option')).toHaveLength(7)
+      expect(screen.getByRole('option', { name: /Se alla områden i Avesta/ })).toBeInTheDocument()
+    })
+  })
+
+  describe('hittades inte', () => {
+    it('har länken Välj område när sökningen är avgränsad till en kommun med områdesval', async () => {
+      render(
+        <MemoryRouter>
+          <AddressSearch
+            search={async () => ({ addresses: [], failed: [], areaPickers: [] })}
+            suggest={async () => []}
+            kommun="Avesta kommun"
+            areaHref="/avesta/omraden"
+          />
+        </MemoryRouter>,
+      )
+      await userEvent.type(screen.getByRole('combobox'), 'Okändgatan 3{Enter}')
+      expect(await screen.findByRole('link', { name: 'Välj område i Avesta' })).toHaveAttribute('href', '/avesta/omraden')
+    })
   })
 })
