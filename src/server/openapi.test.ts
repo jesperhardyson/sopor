@@ -127,6 +127,14 @@ describe('openapi.json', () => {
   })
 })
 
+describe('beskrivningen av områden', () => {
+  it('SearchHit säger att street och detail kan gälla ett område', () => {
+    const { street, detail } = spec.components.schemas.SearchHit.properties
+    expect(street.description).toMatch(/område/)
+    expect(detail.description).toMatch(/område/)
+  })
+})
+
 describe('kontrakt: riktiga svar följer schemana', () => {
   it('adress med live-källa', async () => {
     const res = await call(handleV1Address, '/api/v1/adress?source=uppsala&id=storgatan-2_uppsala-4004688')
