@@ -22,14 +22,15 @@ Kör `npm run lint && npm test && npm run build` innan du skickar en pull reques
 
 ## Prova med testdata
 
-Avesta har påhittad data i `data/avesta/2026/` (`testData: true`) och är därför dold på sajten (`hidden: true`). Den ersätts när den riktiga kopplingen adress → trakt har kommit från Avesta Vatten och Avfall. Testerna gör den synlig via `src/test/show-hidden-sources.ts`.
+Avesta har områdesval (`selection: 'area'`): Avesta Vatten publicerar schemat per område (trakt 1–10) men inte vilka adresser som hör till vilket. Datan är `data/avesta/2026/omraden.json` och `schedules.json`, och en `addresses.csv` finns inte. Datumen är riktiga, men källan har `testData: true` och är dold på sajten (`hidden: true`) tills schemat för 2027 är inlagt och granskat. Testerna gör den synlig via `src/test/show-hidden-sources.ts`.
+
+Byggskriptet gör varje område till en rad i `addresses.json` (id `trakt-7`, namnet som `street`, tom ort, och `detail` och `searchTerms` som extra fält) och skriver `public/data/avesta/omraden.json` med förklaringen, hjälptexten och områdena. UI:t säger "område", aldrig "trakt". Formatet står i [checklistan](kommuner/lagga-till-kommun.md#områdesval-utan-adresser).
 
 Vill du prova den i webbläsaren, sätt tillfälligt `hidden: false` på Avesta i `src/sources/index.ts` (checka inte in det). Sedan:
 
-- Sök på `storg`. Det ger tre adresser (Krylbo, Avesta, Fors).
-- Sök på `Storgtan 12` och tryck Enter. Det ger "Vi hittade inte adressen" med förslaget "Storgatan 12, Avesta".
-- Öppna `/avesta/krylbo-storgatan-12b`. Där är 6 januari flyttad till 7 januari (trettondedag jul).
-- Öppna `/avesta/fors-storgatan-21`. Där är juldagen flyttad till 28 december.
+- Öppna `/avesta/omraden`. Där syns förklaringen, filterfältet och alla tio områden.
+- Skriv en ort eller gata från ett område i filtret. Då smalnar listan av.
+- Öppna `/avesta/trakt-1`. Där syns områdets kommande tömningar, och en kalender kan prenumereras.
 - Öppna `/hedemora/x`. Det ger läget "Den här adressen finns inte hos Sopor".
 
 ## Så hänger det ihop
@@ -54,6 +55,8 @@ data/<källa>/<år>/addresses.csv   ┘─► scripts/build-data.ts ┼► publi
 | `data/osm/` | gatu- och ortnamn per kommun från OpenStreetMap |
 | `data/sverige/` | orter i hela Sverige och deras kommun, från Wikidata. Ger "Vi finns inte i … än" i sökningen |
 | `integrations/` | Homey-appen och Home Assistant-integrationen, egna paket |
+
+Källor med `selection: 'area'` har `omraden.json` i stället för `addresses.csv`.
 
 UI:t vet aldrig om datan kommer från filer, EDP eller något annat. Genererade filer under `public/data/` och `public/ics/` checkas inte in.
 

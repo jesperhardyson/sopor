@@ -48,6 +48,7 @@ Schemat och kopplingen adress → område läggs in som filer i repot. Formatet 
 
 - [ ] Lägg till källan i `ALL_SOURCES` i `src/sources/index.ts` som ovan, men med `config: { system: 'static' }`.
 - [ ] Skapa `data/<id>/<år>/schedules.json` och `data/<id>/<år>/addresses.csv`. Skriv in flyttade tömningar vid helgdagar som de står i kommunens schema.
+- [ ] Finns ingen koppling adress → område, och är begäran inte besvarad, kan källan i stället välja område (se [Områdesval](#områdesval-utan-adresser)). Då skapas `omraden.json` i stället för `addresses.csv`.
 - [ ] Kör `npm run build:streets` och checka in de nya filerna i `data/osm/`.
 - [ ] Kör `npm run lint && npm test && npm run build`. Build-skriptet stoppar vid okända fraktioner, ogiltiga datum, dubbletter av id och adresser som pekar på ett schema som saknas.
 - [ ] Prova några adresser i `npm run dev`.
@@ -83,7 +84,7 @@ Roslagsvatten (`src/server/roslagsvatten.ts`, spec `docs/specs/2026-11-04-roslag
 
 ## Dataformatet
 
-Gäller bara statiska källor (B).
+Gäller bara statiska källor (B). Källor med områdesval har `omraden.json` i stället för `addresses.csv`.
 
 ### `data/<id>/<år>/schedules.json`
 
@@ -125,6 +126,47 @@ krylbo-storgatan-12b,Storgatan 12 B,Krylbo,onsdag-jamn
 - `id` är adressens stabila id, `<ort>-<gata>-<nummer><bokstav>` utan å, ä och ö. Det används i URL:en och i kalenderprenumerationen. **Ett id får aldrig ändras eller återanvändas**, inte heller om stavningen av gatan rättas.
 - `schedule` pekar på en nyckel i samma års `schedules.json`.
 
+### `data/<id>/<år>/omraden.json`
+
+För källor med `selection: 'area'` i `src/sources/index.ts`. Filen ersätter `addresses.csv`: besökaren väljer område i stället för adress. Formatet är `AreasFile` i `src/data/static-format.ts`.
+
+```json
+{
+  "explanation": "Avesta Vatten publicerar sophämtningen per område, men inte vilka adresser som hör till vilket område.",
+  "help": "Osäker? Fråga Avesta Vatten på 0226-64 55 00.",
+  "areas": [
+    {
+      "id": "trakt-7",
+      "name": "Exempelby, Exempelgatan m.fl.",
+      "day": "Tisdag, jämn vecka",
+      "label": "Trakt 7",
+      "schedule": "trakt-7",
+      "places": ["Exempelby", "Exempelsjön"],
+      "streets": ["Exempelgatan"],
+      "searchTerms": ["trakt 7"],
+      "otherDays": []
+    }
+  ]
+}
+```
+
+- `explanation` visas överst på sidan där man väljer område, och `help` under områdena. Båda är obligatoriska.
+- `id` är områdets stabila id och används i URL:en (`/avesta/trakt-7`). `omraden` är reserverat, och ett id får inte förekomma två gånger.
+- `name` är det som visas i listan, `day` är tömningsdag och vecka, och `label` är källans eget namn eller nummer ("Trakt 7").
+- `schedule` pekar på en nyckel i samma års `schedules.json`.
+- `places` (orter och byar) och `streets` (gator) räknas upp som källan gör det. Skriv ut förkortningar. En stavning som skiljer sig från OpenStreetMap behåller källans stavning tills den är bekräftad.
+- `searchTerms` är extra söktermer som inte syns, och `otherDays` är andra dagar som området hämtas på. Båda är listor och får vara tomma.
+- Varje område blir en rad i sökindexet. Adresser finns inte, och ingen gissar vilken adress som hör till vilket område.
+
+## Områdesval utan adresser
+
+För en kommun där schemat är publikt per område men kopplingen adress → område saknas, och inte väntas komma. Besökaren väljer område i en lista, med hjälp av ort- och gatulistorna.
+
+- [ ] Sätt `selection: 'area'` på källan i `src/sources/index.ts`, med `config: { system: 'static' }`.
+- [ ] Skapa `omraden.json` och `schedules.json` enligt [dataformatet](#dataformatet).
+- [ ] Områdets id följer området, inte numret. Byter källan numrering får id:t ett nytt `label`.
+- [ ] **Delas eller slås ett område ihop ska det nya området få ett nytt id.** Det gamla id:t ligger kvar och ska visa ett meddelande om att välja område igen. Ett id får aldrig tas bort eller återanvändas för något annat, eftersom kalenderprenumerationer hänger på det. Meddelandet är inte byggt än och måste byggas före den första ändringen av det slaget.
+
 ## Uppdatera årets schema
 
 Gäller statiska källor. EDP-källorna hämtas live och behöver inget.
@@ -132,6 +174,7 @@ Gäller statiska källor. EDP-källorna hämtas live och behöver inget.
 - [ ] Skapa `data/<id>/<nytt år>/` med `schedules.json` och `addresses.csv`.
 - [ ] Sätt `validFrom` till det datum då det nya schemat börjar gälla. Från det datumet ersätter den nya filen den gamla, även för adresser som byter trakt.
 - [ ] Behåll samma adress-id som förra året. Nya adresser får nya id.
+- [ ] För källor med område: kontrollera att områdenas innehåll, veckodagar och nummer är oförändrade innan datumen läggs in. Följer ett område inte med ska det få ett nytt id enligt [reglerna för områdesval](#områdesval-utan-adresser).
 - [ ] Låt förra årets mapp ligga kvar, eftersom kalendrar visar historiken.
 - [ ] Kör `npm run lint && npm test && npm run build` och kontrollera några adresser i `npm run dev`.
 

@@ -71,7 +71,7 @@ Kommunerna som redan är live på sajten listas på [Om-sidan](https://sopor.har
 
 | Kommun | Sköts av | Schema publikt | Söktjänst per adress | Adress → område | Läge |
 |---|---|---|---|---|---|
-| Avesta | Avesta Vatten och Avfall AB | PDF per trakt (1–10), en per år | EDP Future SimpleWastePickup finns men är tom | Begärd som allmän handling | Dold på sajten (påhittad testdata), väntar på tabellen |
+| Avesta | Avesta Vatten och Avfall AB | PDF per trakt (1–10), en per år | EDP Future SimpleWastePickup finns men är tom | Begärd som allmän handling | Områdesval byggt, väntar på schemat för 2027. Dold på sajten (`hidden`). PDF:ens stavningar av Södra Strandnora, Södra Rudö, Gammelsängsvägen och Skillingränd skiljer sig från OpenStreetMap och bör bekräftas med Avesta Vatten före lansering |
 | Säter | Kommunen själv (inte Dala Vatten och Avfall) | Webbsida med områden per veckodag och jämn/udda vecka, plus veckoschema för fraktionerna | Nej. Mina sidor (`minasidorva.sater.se`) är en kundportal från CGI som kräver inloggning | Saknas, behöver begäras | Inte påbörjad |
 | Mölndal | – | – | EDP Future svarar men är tom (`future.molndal.se/FutureWeb`, 2026-11-03) | – | Inte med |
 | Östersund | – | – | EDP Future svarar men är tom (`edp.ostersund.se/FutureWeb`, 2026-11-03) | – | Inte med |
@@ -102,6 +102,7 @@ Lärdomar så här långt:
 - **Där EDP:s modul har data räcker en rad i registret** (och gatunamnen från OpenStreetMap). Ett 25-tal källor med ett 50-tal kommuner svarade med data vid kontrollen 2026-10-30. Modulen ger nästa tömning och en frekvens, så kommande datum räknas fram och märks *beräknat*.
 - **En källas id behöver inte vara unikt.** NSR ger två olika adresser samma id, så adress-id:t där är gata, ort och id tillsammans. Kontrollera det innan en ny källtyp låser sitt adress-id.
 - **En sökning med ett enda svar kan ha ett förslags-API bredvid sig.** SRV:s sökning ger bara den bästa träffen, men sidans förslag i sökrutan ger en lista med kundnummer. Läs sajtens JavaScript innan en källa avfärdas.
+- **Områdesval är ett alternativ när kopplingen saknas.** Är schemat publikt per område men kopplingen adress → område uteblir, kan besökaren välja område i stället (`selection: 'area'`, se [checklistan](lagga-till-kommun.md#områdesval-utan-adresser)). Det kräver att källan listar orter och gator per område.
 - **Lantmäteriets adressregister** säger vilka adresser som finns, men inte vilket område de tillhör. Licensen är dessutom oklar för återpublicering. Det ersätter alltså inte kommunens tabell.
 
 En större genomgång av adresskällor och vilka kommuner som har publika källor för hämtschema finns i [undersökningen från oktober 2026](undersokning-2026-10-adresser-och-hamtschema.md).
