@@ -13,8 +13,9 @@ def test_manifest():
     assert manifest["iot_class"] == "cloud_polling"
     assert manifest["integration_type"] == "service"
     assert re.fullmatch(r"\d+\.\d+\.\d+", manifest["version"])
-    assert manifest["documentation"].startswith("https://github.com/jesperhardyson/sopor")
-    assert manifest["issue_tracker"].startswith("https://github.com/jesperhardyson/sopor")
+    # Länkarna ska peka på speglingen, det repo som HACS standardlista pekar på.
+    assert manifest["documentation"] == "https://github.com/jesperhardyson/sopor-home-assistant"
+    assert manifest["issue_tracker"] == "https://github.com/jesperhardyson/sopor-home-assistant/issues"
 
 
 def test_hacs_json():

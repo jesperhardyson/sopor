@@ -24,6 +24,6 @@ Hela beskrivningen, med exempel på automationer, finns i [dokumentationen](http
 
 ## Om det här repot
 
-Det här repot är en spegling för HACS. Integrationen utvecklas i [jesperhardyson/sopor](https://github.com/jesperhardyson/sopor), och varje release kopieras hit. Ärenden tas gärna emot i [sopor-repot](https://github.com/jesperhardyson/sopor/issues), men går också bra här.
+Det här repot är en spegling för HACS. Integrationen utvecklas i [jesperhardyson/sopor](https://github.com/jesperhardyson/sopor), och varje release kopieras hit. Ärenden tas emot [här](https://github.com/jesperhardyson/sopor-home-assistant/issues).
 
 Licens: MIT.
