@@ -18,5 +18,9 @@
   "1.1.0": {
     "en": "Add your waste bins: next emptying, their own flow cards and a put-out switch.",
     "sv": "Lägg till dina sopkärl: nästa tömning, egna flödeskort och en knapp för utställt."
+  },
+  "1.2.0": {
+    "en": "Avesta and Säter: search by area, for example Avesta tätort or Bispberg. The app asks you to check the area before you add it, since a wrong choice can make you miss a collection.",
+    "sv": "Avesta och Säter: sök på område, till exempel Avesta tätort eller Bispberg. Appen ber dig kontrollera området innan du lägger till det, eftersom fel val kan göra att du missar en tömning."
   }
 }
