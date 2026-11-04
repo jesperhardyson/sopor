@@ -115,6 +115,8 @@ export function parseAddressesCsv(text: string, file: string): AddressRow[] {
     for (const col of ADDRESS_COLUMNS) {
       if (!row[col]) throw new DataError(`${file} rad ${no}: "${col}" är tom`)
     }
+    // /<källa>/omraden är sidan för områdesval, så ett sådant id skulle aldrig gå att nå.
+    if (row.id === 'omraden') throw new DataError(`${file} rad ${no}: "omraden" är reserverat`)
     return row as unknown as AddressRow
   })
 }
@@ -293,7 +295,7 @@ export function buildMunicipality(
 
   return {
     index,
-    ...(areasText && { areas: { ...areasText, areas: [...areas.values()].sort((a, b) => a.id.localeCompare(b.id)) } }),
+    ...(areasText && { areas: { ...areasText, areas: [...areas.values()] } }),
     scheduleFiles: [...scheduleFiles.values()],
     ics,
   }

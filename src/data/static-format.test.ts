@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs'
+import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 import type { Source } from '@/sources'
 import {
@@ -37,6 +39,11 @@ describe('parseAddressesCsv', () => {
     expect(parseAddressesCsv(csv, 'a.csv')).toEqual([
       { id: 'krylbo-a-1', street: 'Storgatan 1, uppg. B', locality: 'Krylbo', schedule: 'onsdag-jamn' },
     ])
+  })
+
+  it('stoppar när id är "omraden", som är sökvägen till områdesvalet', () => {
+    expect(() => parseAddressesCsv('id,street,locality,schedule\nomraden,Storgatan 1,Avesta,a\n', 'a.csv')).toThrow(DataError)
+    expect(() => parseAddressesCsv('id,street,locality,schedule\nomraden,Storgatan 1,Avesta,a\n', 'a.csv')).toThrow(/a\.csv rad 2.*omraden/)
   })
 
   it('stoppar vid saknad kolumn och nämner filen', () => {
@@ -284,3 +291,22 @@ describe('buildMunicipality med områden', () => {
 function y(): SchedulesFile {
   return parseSchedulesFile(schedulesJson(), 'y.json')
 }
+
+describe('områdena med riktiga data', () => {
+  const read = (file: string) => JSON.parse(readFileSync(path.resolve(import.meta.dirname, '../../data/avesta/2026', file), 'utf8'))
+
+  it('behåller filens ordning, så att trakt-10 kommer sist', () => {
+    const { areas } = buildMunicipality(
+      [
+        {
+          year: 2026,
+          schedules: parseSchedulesFile(read('schedules.json'), 'schedules.json'),
+          addresses: [],
+          areas: parseAreasFile(read('omraden.json'), 'omraden.json'),
+        },
+      ],
+      avesta,
+    )
+    expect(areas!.areas.map((a) => a.id)).toEqual(Array.from({ length: 10 }, (_, i) => `trakt-${i + 1}`))
+  })
+})
