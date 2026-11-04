@@ -264,9 +264,19 @@ describe('ResultPage', () => {
   })
 
   it('visar ett tomt läge när alla tömningar har passerat', async () => {
+    // Uppsala har inget eget besked, så det allmänna tomma läget visas.
+    fake = makeProvider({
+      getAddress: async (id) => ({ ...villa, id, sourceId: 'uppsala', kommun: 'Uppsala kommun' }),
+      getSchedule: async () => schedule,
+    })
+    renderAt('/uppsala/storgatan-12_uppsala', '2027-03-01')
+    expect(await screen.findByText('Inga kommande tömningar i schemat än')).toBeInTheDocument()
+  })
+
+  it('visar Avestas besked när alla tömningar har passerat', async () => {
     renderAt('/avesta/krylbo-storgatan-12b', '2027-03-01')
     await vi.waitFor(() => resolveSchedule!())
-    expect(await screen.findByText('Inga kommande tömningar i schemat än')).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Schemat för nästa år är inte publicerat än' })).toBeInTheDocument()
   })
 
   it('öppnar kalenderarket och spara-arket', async () => {

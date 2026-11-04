@@ -12,7 +12,8 @@ describe('källregistret', () => {
     const avesta = ALL_SOURCES.find((s) => s.id === 'avesta')!
     expect(avesta.config).toEqual({ system: 'static' })
     expect(avesta.kommuner).toEqual([{ code: '2084', name: 'Avesta kommun' }])
-    expect(avesta).toMatchObject({ testData: true, hidden: true })
+    expect(avesta).toMatchObject({ testData: true, hidden: true, selection: 'area' })
+    expect(avesta.emptyScheduleNote?.title).toBe('Schemat för nästa år är inte publicerat än')
   })
 
   it('visar inte dolda källor', () => {

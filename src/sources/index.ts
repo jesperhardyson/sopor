@@ -50,8 +50,13 @@ export const ALL_SOURCES: Source[] = [
     url: 'https://www.avestavatten.se',
     kommuner: [{ code: '2084', name: 'Avesta kommun' }],
     config: { system: 'static' },
+    selection: 'area',
+    emptyScheduleNote: {
+      title: 'Schemat för nästa år är inte publicerat än',
+      text: 'Avesta Vatten publicerar hämtschemat ett år i taget. Datumen visas här när det nya schemat finns.',
+    },
     testData: true,
-    // Dold tills den riktiga trakt-tabellen har kommit, så att ingen får påhittade datum.
+    // Dold tills områdesvalet är klart och granskat. Datumen är riktiga, men testData och hidden tas bort först då.
     hidden: true,
   },
   {

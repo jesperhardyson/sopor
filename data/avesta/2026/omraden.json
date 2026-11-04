@@ -1,0 +1,356 @@
+{
+  "explanation": "Avesta Vatten publicerar sophämtningen per område, men inte vilka adresser som hör till vilket område.",
+  "help": "Osäker? Fråga Avesta Vatten på 0226-64 55 00.",
+  "areas": [
+    {
+      "id": "trakt-1",
+      "name": "Askön, Nyhyttan m.fl.",
+      "day": "Måndag, udda vecka",
+      "label": "Trakt 1",
+      "schedule": "trakt-1",
+      "places": [
+        "Askön",
+        "Nyhyttan",
+        "Klintbo",
+        "Snickarbo",
+        "Knallasbenning",
+        "Baggbo",
+        "Uppsjövägen",
+        "Ryttargatan",
+        "Stallgatan",
+        "Storbogatan",
+        "Djäknehyttan",
+        "Gammelsängsvägen",
+        "Skultbacken",
+        "Nybydalsvägen",
+        "Lagmansgatan",
+        "Grytnäsgärde",
+        "Högbo",
+        "Rutbo"
+      ],
+      "streets": [
+        "Uppsjövägen",
+        "Ryttargatan",
+        "Stallgatan",
+        "Storbogatan",
+        "Gammelsängsvägen",
+        "Skultbacken",
+        "Nybydalsvägen",
+        "Lagmansgatan"
+      ],
+      "searchTerms": [
+        "trakt 1"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "trakt-2",
+      "name": "Skogsbo tätort, Rosse m.fl.",
+      "day": "Tisdag, udda vecka",
+      "label": "Trakt 2",
+      "schedule": "trakt-2",
+      "places": [
+        "Skogsbo tätort",
+        "Rosse",
+        "Fullsta",
+        "Storbyn",
+        "Gåsbo",
+        "Smedsbo",
+        "Åkersbyn",
+        "Bengtsbo",
+        "Backa",
+        "Björk",
+        "Djup",
+        "Gaddbo",
+        "Hovnäs",
+        "Born",
+        "Tyttbo",
+        "Gålsbo",
+        "Staksbo",
+        "Leknäs"
+      ],
+      "streets": [],
+      "searchTerms": [
+        "trakt 2"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "trakt-3",
+      "name": "Fors, Nordanö, Brogård",
+      "day": "Onsdag, udda vecka",
+      "label": "Trakt 3",
+      "schedule": "trakt-3",
+      "places": [
+        "Fors",
+        "Nordanö",
+        "Brogård"
+      ],
+      "streets": [],
+      "searchTerms": [
+        "trakt 3"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "trakt-4",
+      "name": "Krylbo stationssidan, Lejde m.fl.",
+      "day": "Torsdag, udda vecka",
+      "label": "Trakt 4",
+      "schedule": "trakt-4",
+      "places": [
+        "Lejde",
+        "Backa",
+        "Mesta",
+        "Strandmora",
+        "Ö Strandmora",
+        "Ruduvägen",
+        "Djupvik",
+        "Bredgrind",
+        "Byåsen",
+        "Vadsbro",
+        "Hildursborg",
+        "Skaffarbo",
+        "Västanbäck",
+        "Norrbyn",
+        "Kyrkbyn",
+        "Björka",
+        "Näs",
+        "Svartbro",
+        "Karlbo",
+        "Tillfället",
+        "Krylbo stationssidan"
+      ],
+      "streets": [
+        "Ruduvägen"
+      ],
+      "searchTerms": [
+        "trakt 4"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "trakt-5",
+      "name": "Krylbo västra sidan, Morshyttan m.fl.",
+      "day": "Fredag, udda vecka",
+      "label": "Trakt 5",
+      "schedule": "trakt-5",
+      "places": [
+        "Krylbo västra sidan",
+        "Morshyttan",
+        "Rossberga",
+        "Fornby",
+        "Manhemsvägen",
+        "Ängsbacksvägen",
+        "Rällbovägen",
+        "Kvarnvägen",
+        "Ingeborgsbo"
+      ],
+      "streets": [
+        "Manhemsvägen",
+        "Ängsbacksvägen",
+        "Rällbovägen",
+        "Kvarnvägen"
+      ],
+      "searchTerms": [
+        "trakt 5"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "trakt-6",
+      "name": "Ringänget, Veddarsbo m.fl.",
+      "day": "Måndag, jämn vecka",
+      "label": "Trakt 6",
+      "schedule": "trakt-6",
+      "places": [
+        "Ringänget",
+        "Veddarsbo",
+        "Jädersholmar",
+        "Lund",
+        "Jäder",
+        "Sjövik",
+        "Nor",
+        "Brillingsnäs",
+        "Björkvik",
+        "Haltarsbo",
+        "Pellbo",
+        "Räfsbo",
+        "Kullhyttan",
+        "Skräddarbovägen",
+        "Ingevallsbo",
+        "Axelsbo",
+        "Östanbyn",
+        "Grytnäs kyrkby",
+        "Kårbo",
+        "Hyttbäcken",
+        "Stora Dicka",
+        "Lilla Dicka",
+        "Stigvägen",
+        "Skogsbovägen",
+        "Månsbovägen",
+        "Germundsbo",
+        "Smedsbo",
+        "Fridhem",
+        "Habborsbacken",
+        "Norr och Sör Nävde",
+        "Forsbo",
+        "Rembo",
+        "Stusshyttan",
+        "Knutsbo"
+      ],
+      "streets": [
+        "Skräddarbovägen",
+        "Stigvägen",
+        "Skogsbovägen",
+        "Månsbovägen",
+        "Habborsbacken"
+      ],
+      "searchTerms": [
+        "trakt 6"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "trakt-7",
+      "name": "Avesta tätort, Östanfors m.fl.",
+      "day": "Tisdag, jämn vecka",
+      "label": "Trakt 7",
+      "schedule": "trakt-7",
+      "places": [
+        "Avesta tätort",
+        "Östanfors",
+        "Garpenbergsvägen",
+        "Lycka",
+        "Kolarbo",
+        "Bondarvet",
+        "Överbo",
+        "Nickarvet",
+        "Mörtarbo",
+        "Krommetsbo",
+        "Åsgarn",
+        "Västanberg",
+        "Västansjö"
+      ],
+      "streets": [
+        "Garpenbergsvägen"
+      ],
+      "searchTerms": [
+        "trakt 7"
+      ],
+      "otherDays": [
+        "Till exempel Stallgatan och Storbogatan (måndag, udda vecka) och Bodgatan (onsdag, jämn vecka)."
+      ]
+    },
+    {
+      "id": "trakt-8",
+      "name": "Kaplansgården, Jularbo m.fl.",
+      "day": "Onsdag, jämn vecka",
+      "label": "Trakt 8",
+      "schedule": "trakt-8",
+      "places": [
+        "Kaplansgården",
+        "Jularbo",
+        "Ovanåker",
+        "Kyrkbyvägen",
+        "Sibirien",
+        "Mästerbo",
+        "Isaksbo",
+        "Sonnbo",
+        "Torp",
+        "Korskrogen",
+        "Brovallen",
+        "Igeltjärna",
+        "Betvallen",
+        "Slätmossen",
+        "Alsbo",
+        "Staffansbo",
+        "Tjärna",
+        "Gräsmossvägen",
+        "Bengtsbo",
+        "Älvbro",
+        "Skillingränd",
+        "Bodgatan"
+      ],
+      "streets": [
+        "Kyrkbyvägen",
+        "Gräsmossvägen",
+        "Skillingränd",
+        "Bodgatan"
+      ],
+      "searchTerms": [
+        "trakt 8"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "trakt-9",
+      "name": "Kvarnbro, Utsund m.fl.",
+      "day": "Torsdag, jämn vecka",
+      "label": "Trakt 9",
+      "schedule": "trakt-9",
+      "places": [
+        "Kvarnbro",
+        "Utsund",
+        "Sörbäck",
+        "Rotfallet",
+        "Råby",
+        "Knutsbo",
+        "Bergshyttan",
+        "Bäckeby",
+        "Kärrfallet",
+        "Bäsinge",
+        "Lövsveden",
+        "Östanberg",
+        "Täktbo",
+        "Mestaäng",
+        "Ångermansbo",
+        "S Strandnora",
+        "Jugansbo",
+        "Södra Spisbo",
+        "S.Rudö",
+        "Färjan",
+        "Näckenbäck",
+        "Digeränget",
+        "Hede",
+        "Krångede",
+        "Vatebo",
+        "Byvalla",
+        "Konsjövägen",
+        "Fallet",
+        "Rossberga"
+      ],
+      "streets": [
+        "Konsjövägen"
+      ],
+      "searchTerms": [
+        "trakt 9"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "trakt-10",
+      "name": "Horndal tätort, Tyskbo m.fl.",
+      "day": "Fredag, jämn vecka",
+      "label": "Trakt 10",
+      "schedule": "trakt-10",
+      "places": [
+        "Horndal tätort",
+        "Tyskbo",
+        "Tommesbo",
+        "Grönsinka",
+        "Bjurvalla",
+        "Dalsberga",
+        "Skuggbo",
+        "Grubbo",
+        "Svensbo",
+        "Vansjö"
+      ],
+      "streets": [],
+      "searchTerms": [
+        "trakt 10"
+      ],
+      "otherDays": []
+    }
+  ]
+}

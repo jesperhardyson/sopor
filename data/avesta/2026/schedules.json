@@ -1,715 +1,648 @@
 {
   "year": 2026,
-  "source": "FAKE – seed-data för utveckling, ersätts med riktig data från Avesta Vatten och Avfall",
-  "validFrom": "2026-01-01",
+  "source": "Avesta Vatten och Avfall, Hämtningsdagar för matavfall samt restavfall och papper- och plastförpackningar 2026, version 2 (hamtschema-avesta-2026---version-2.pdf)",
+  "validFrom": "2026-09-01",
   "validTo": "2027-01-10",
-  "updatedAt": "2026-10-29",
+  "updatedAt": "2026-11-04",
   "note": "Påminnelse: ställ ut kärlen senast 06.00 på tömningsdagen.",
   "schedules": {
-    "onsdag-jamn": {
-      "name": "FAKE Trakt 4 – onsdag, varannan vecka",
-      "bins": [
-        {
-          "fraction": "rest",
-          "sizeLiters": 190,
-          "frequencyText": "Var 6:e vecka · onsdagar"
-        },
-        {
-          "fraction": "mat",
-          "sizeLiters": 140,
-          "pickupsPerYear": 26,
-          "frequencyText": "Varannan vecka · onsdagar"
-        },
-        {
-          "fraction": "papper",
-          "sizeLiters": 370,
-          "frequencyText": "Var 6:e vecka · onsdagar"
-        },
-        {
-          "fraction": "plast",
-          "sizeLiters": 370,
-          "frequencyText": "Var 6:e vecka · onsdagar"
-        }
-      ],
+    "trakt-1": {
+      "name": "Trakt 1",
       "events": [
         {
-          "date": "2026-01-07",
+          "date": "2026-09-07",
           "fractions": [
-            "plast",
             "mat"
           ]
         },
         {
-          "date": "2026-01-21",
+          "date": "2026-09-21",
           "fractions": [
-            "rest",
             "mat"
           ]
         },
         {
-          "date": "2026-02-04",
+          "date": "2026-10-05",
           "fractions": [
-            "papper",
-            "mat"
+            "mat",
+            "rest"
           ]
         },
         {
-          "date": "2026-02-18",
+          "date": "2026-10-19",
           "fractions": [
-            "plast",
-            "mat"
+            "mat",
+            "papper"
           ]
         },
         {
-          "date": "2026-03-04",
+          "date": "2026-11-02",
           "fractions": [
-            "rest",
-            "mat"
+            "mat",
+            "plast"
           ]
         },
         {
-          "date": "2026-03-18",
+          "date": "2026-11-16",
           "fractions": [
-            "papper",
-            "mat"
+            "mat",
+            "rest"
           ]
         },
         {
-          "date": "2026-04-01",
+          "date": "2026-11-30",
           "fractions": [
-            "plast",
-            "mat"
+            "mat",
+            "papper"
           ]
         },
         {
-          "date": "2026-04-15",
+          "date": "2026-12-14",
           "fractions": [
-            "rest",
-            "mat"
+            "mat",
+            "plast"
           ]
         },
         {
-          "date": "2026-04-29",
+          "date": "2026-12-28",
           "fractions": [
-            "papper",
-            "mat"
+            "mat",
+            "rest"
           ]
-        },
-        {
-          "date": "2026-05-13",
-          "fractions": [
-            "plast",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-05-27",
-          "fractions": [
-            "rest",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-06-10",
-          "fractions": [
-            "papper",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-06-24",
-          "fractions": [
-            "plast",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-07-08",
-          "fractions": [
-            "rest",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-07-22",
-          "fractions": [
-            "papper",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-08-05",
-          "fractions": [
-            "plast",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-08-19",
-          "fractions": [
-            "rest",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-09-02",
-          "fractions": [
-            "papper",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-09-16",
-          "fractions": [
-            "plast",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-09-30",
-          "fractions": [
-            "rest",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-10-14",
-          "fractions": [
-            "papper",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-10-28",
-          "fractions": [
-            "plast",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-11-11",
-          "fractions": [
-            "rest",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-11-25",
-          "fractions": [
-            "papper",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-12-09",
-          "fractions": [
-            "plast",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-12-23",
-          "fractions": [
-            "rest",
-            "mat"
-          ]
-        },
-        {
-          "date": "2027-01-07",
-          "fractions": [
-            "papper",
-            "mat"
-          ],
-          "deviation": {
-            "originalDate": "2027-01-06",
-            "reason": "trettondedag jul"
-          }
         }
       ]
     },
-    "tisdag-udda": {
-      "name": "FAKE Trakt 2 – tisdag, varannan vecka (utan kärlinfo)",
+    "trakt-2": {
+      "name": "Trakt 2",
       "events": [
-        {
-          "date": "2026-01-13",
-          "fractions": [
-            "plast",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-01-27",
-          "fractions": [
-            "rest",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-02-10",
-          "fractions": [
-            "papper",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-02-24",
-          "fractions": [
-            "plast",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-03-10",
-          "fractions": [
-            "rest",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-03-24",
-          "fractions": [
-            "papper",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-04-07",
-          "fractions": [
-            "plast",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-04-21",
-          "fractions": [
-            "rest",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-05-05",
-          "fractions": [
-            "papper",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-05-19",
-          "fractions": [
-            "plast",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-06-02",
-          "fractions": [
-            "rest",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-06-16",
-          "fractions": [
-            "papper",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-06-30",
-          "fractions": [
-            "plast",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-07-14",
-          "fractions": [
-            "rest",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-07-28",
-          "fractions": [
-            "papper",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-08-11",
-          "fractions": [
-            "plast",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-08-25",
-          "fractions": [
-            "rest",
-            "mat"
-          ]
-        },
         {
           "date": "2026-09-08",
           "fractions": [
-            "papper",
             "mat"
           ]
         },
         {
           "date": "2026-09-22",
           "fractions": [
-            "plast",
             "mat"
           ]
         },
         {
           "date": "2026-10-06",
           "fractions": [
-            "rest",
             "mat"
           ]
         },
         {
           "date": "2026-10-20",
           "fractions": [
-            "papper",
             "mat"
           ]
         },
         {
           "date": "2026-11-03",
           "fractions": [
-            "plast",
-            "mat"
+            "mat",
+            "rest"
           ]
         },
         {
           "date": "2026-11-17",
           "fractions": [
-            "rest",
-            "mat"
+            "mat",
+            "papper"
           ]
         },
         {
           "date": "2026-12-01",
           "fractions": [
-            "papper",
-            "mat"
+            "mat",
+            "plast"
           ]
         },
         {
           "date": "2026-12-15",
           "fractions": [
-            "plast",
-            "mat"
+            "mat",
+            "rest"
           ]
         },
         {
           "date": "2026-12-29",
           "fractions": [
-            "rest",
-            "mat"
+            "mat",
+            "papper"
           ]
         }
       ]
     },
-    "fredag-jamn": {
-      "name": "FAKE Trakt 7 – fredag, varannan vecka",
-      "bins": [
-        {
-          "fraction": "rest",
-          "sizeLiters": 240,
-          "frequencyText": "Var 6:e vecka · fredagar"
-        },
-        {
-          "fraction": "mat",
-          "sizeLiters": 140,
-          "frequencyText": "Varannan vecka · fredagar"
-        },
-        {
-          "fraction": "papper",
-          "frequencyText": "Var 6:e vecka · fredagar"
-        },
-        {
-          "fraction": "plast",
-          "frequencyText": "Var 6:e vecka · fredagar"
-        }
-      ],
+    "trakt-3": {
+      "name": "Trakt 3",
       "events": [
         {
-          "date": "2026-01-09",
+          "date": "2026-09-09",
           "fractions": [
-            "plast",
             "mat"
           ]
         },
         {
-          "date": "2026-01-23",
+          "date": "2026-09-23",
           "fractions": [
-            "rest",
+            "mat",
+            "rest"
+          ]
+        },
+        {
+          "date": "2026-10-07",
+          "fractions": [
+            "mat",
+            "papper"
+          ]
+        },
+        {
+          "date": "2026-10-21",
+          "fractions": [
+            "mat",
+            "plast"
+          ]
+        },
+        {
+          "date": "2026-11-04",
+          "fractions": [
+            "mat",
+            "rest"
+          ]
+        },
+        {
+          "date": "2026-11-18",
+          "fractions": [
+            "mat",
+            "papper"
+          ]
+        },
+        {
+          "date": "2026-12-02",
+          "fractions": [
+            "mat",
+            "plast"
+          ]
+        },
+        {
+          "date": "2026-12-16",
+          "fractions": [
+            "mat",
+            "rest"
+          ]
+        },
+        {
+          "date": "2026-12-30",
+          "fractions": [
+            "mat",
+            "papper"
+          ]
+        }
+      ]
+    },
+    "trakt-4": {
+      "name": "Trakt 4",
+      "events": [
+        {
+          "date": "2026-09-10",
+          "fractions": [
             "mat"
           ]
         },
         {
-          "date": "2026-02-06",
+          "date": "2026-09-24",
           "fractions": [
-            "papper",
+            "mat",
+            "rest"
+          ]
+        },
+        {
+          "date": "2026-10-08",
+          "fractions": [
+            "mat",
+            "papper"
+          ]
+        },
+        {
+          "date": "2026-10-22",
+          "fractions": [
+            "mat",
+            "plast"
+          ]
+        },
+        {
+          "date": "2026-11-05",
+          "fractions": [
+            "mat",
+            "rest"
+          ]
+        },
+        {
+          "date": "2026-11-19",
+          "fractions": [
+            "mat",
+            "papper"
+          ]
+        },
+        {
+          "date": "2026-12-03",
+          "fractions": [
+            "mat",
+            "plast"
+          ]
+        },
+        {
+          "date": "2026-12-17",
+          "fractions": [
+            "mat",
+            "rest"
+          ]
+        },
+        {
+          "date": "2026-12-31",
+          "fractions": [
+            "mat",
+            "papper"
+          ]
+        }
+      ]
+    },
+    "trakt-5": {
+      "name": "Trakt 5",
+      "events": [
+        {
+          "date": "2026-09-11",
+          "fractions": [
             "mat"
           ]
         },
         {
-          "date": "2026-02-20",
+          "date": "2026-09-25",
           "fractions": [
-            "plast",
+            "mat",
+            "rest"
+          ]
+        },
+        {
+          "date": "2026-10-09",
+          "fractions": [
+            "mat",
+            "papper"
+          ]
+        },
+        {
+          "date": "2026-10-23",
+          "fractions": [
+            "mat",
+            "plast"
+          ]
+        },
+        {
+          "date": "2026-11-06",
+          "fractions": [
+            "mat",
+            "rest"
+          ]
+        },
+        {
+          "date": "2026-11-20",
+          "fractions": [
+            "mat",
+            "papper"
+          ]
+        },
+        {
+          "date": "2026-12-04",
+          "fractions": [
+            "mat",
+            "plast"
+          ]
+        },
+        {
+          "date": "2026-12-18",
+          "fractions": [
+            "mat",
+            "rest"
+          ]
+        }
+      ]
+    },
+    "trakt-6": {
+      "name": "Trakt 6",
+      "events": [
+        {
+          "date": "2026-09-14",
+          "fractions": [
             "mat"
           ]
         },
         {
-          "date": "2026-03-06",
+          "date": "2026-09-28",
           "fractions": [
-            "rest",
+            "mat",
+            "rest"
+          ]
+        },
+        {
+          "date": "2026-10-12",
+          "fractions": [
+            "mat",
+            "papper"
+          ]
+        },
+        {
+          "date": "2026-10-26",
+          "fractions": [
+            "mat",
+            "plast"
+          ]
+        },
+        {
+          "date": "2026-11-09",
+          "fractions": [
+            "mat",
+            "rest"
+          ]
+        },
+        {
+          "date": "2026-11-23",
+          "fractions": [
+            "mat",
+            "papper"
+          ]
+        },
+        {
+          "date": "2026-12-07",
+          "fractions": [
+            "mat",
+            "plast"
+          ]
+        },
+        {
+          "date": "2026-12-21",
+          "fractions": [
+            "mat",
+            "rest"
+          ]
+        }
+      ]
+    },
+    "trakt-7": {
+      "name": "Trakt 7",
+      "events": [
+        {
+          "date": "2026-09-01",
+          "fractions": [
             "mat"
           ]
         },
         {
-          "date": "2026-03-20",
+          "date": "2026-09-15",
           "fractions": [
-            "papper",
             "mat"
           ]
         },
         {
-          "date": "2026-04-03",
+          "date": "2026-09-29",
           "fractions": [
-            "plast",
             "mat"
           ]
         },
         {
-          "date": "2026-04-17",
+          "date": "2026-10-13",
           "fractions": [
-            "rest",
+            "mat",
+            "rest"
+          ]
+        },
+        {
+          "date": "2026-10-27",
+          "fractions": [
+            "mat",
+            "papper"
+          ]
+        },
+        {
+          "date": "2026-11-10",
+          "fractions": [
+            "mat",
+            "plast"
+          ]
+        },
+        {
+          "date": "2026-11-24",
+          "fractions": [
+            "mat",
+            "rest"
+          ]
+        },
+        {
+          "date": "2026-12-08",
+          "fractions": [
+            "mat",
+            "papper"
+          ]
+        },
+        {
+          "date": "2026-12-22",
+          "fractions": [
+            "mat",
+            "plast"
+          ]
+        }
+      ]
+    },
+    "trakt-8": {
+      "name": "Trakt 8",
+      "events": [
+        {
+          "date": "2026-09-02",
+          "fractions": [
             "mat"
           ]
         },
         {
-          "date": "2026-05-01",
+          "date": "2026-09-16",
           "fractions": [
-            "papper",
             "mat"
           ]
         },
         {
-          "date": "2026-05-15",
+          "date": "2026-09-30",
           "fractions": [
-            "plast",
             "mat"
           ]
         },
         {
-          "date": "2026-05-29",
+          "date": "2026-10-14",
           "fractions": [
-            "rest",
             "mat"
           ]
         },
         {
-          "date": "2026-06-12",
+          "date": "2026-10-28",
           "fractions": [
-            "papper",
             "mat"
           ]
         },
         {
-          "date": "2026-06-26",
+          "date": "2026-11-11",
           "fractions": [
-            "plast",
+            "mat",
+            "rest"
+          ]
+        },
+        {
+          "date": "2026-11-25",
+          "fractions": [
+            "mat",
+            "papper"
+          ]
+        },
+        {
+          "date": "2026-12-09",
+          "fractions": [
+            "mat",
+            "plast"
+          ]
+        },
+        {
+          "date": "2026-12-23",
+          "fractions": [
+            "mat",
+            "rest"
+          ]
+        }
+      ]
+    },
+    "trakt-9": {
+      "name": "Trakt 9",
+      "events": [
+        {
+          "date": "2026-09-03",
+          "fractions": [
             "mat"
           ]
         },
         {
-          "date": "2026-07-10",
+          "date": "2026-09-17",
           "fractions": [
-            "rest",
             "mat"
           ]
         },
         {
-          "date": "2026-07-24",
+          "date": "2026-10-01",
           "fractions": [
-            "papper",
             "mat"
           ]
         },
         {
-          "date": "2026-08-07",
+          "date": "2026-10-15",
           "fractions": [
-            "plast",
             "mat"
           ]
         },
         {
-          "date": "2026-08-21",
+          "date": "2026-10-29",
           "fractions": [
-            "rest",
             "mat"
           ]
         },
+        {
+          "date": "2026-11-12",
+          "fractions": [
+            "mat",
+            "rest"
+          ]
+        },
+        {
+          "date": "2026-11-26",
+          "fractions": [
+            "mat",
+            "papper"
+          ]
+        },
+        {
+          "date": "2026-12-10",
+          "fractions": [
+            "mat",
+            "plast"
+          ]
+        },
+        {
+          "date": "2026-12-24",
+          "fractions": [
+            "mat",
+            "rest"
+          ]
+        }
+      ]
+    },
+    "trakt-10": {
+      "name": "Trakt 10",
+      "events": [
         {
           "date": "2026-09-04",
           "fractions": [
-            "papper",
             "mat"
           ]
         },
         {
           "date": "2026-09-18",
           "fractions": [
-            "plast",
             "mat"
           ]
         },
         {
           "date": "2026-10-02",
           "fractions": [
-            "rest",
-            "mat"
+            "mat",
+            "rest"
           ]
         },
         {
           "date": "2026-10-16",
           "fractions": [
-            "papper",
-            "mat"
+            "mat",
+            "papper"
           ]
         },
         {
           "date": "2026-10-30",
           "fractions": [
-            "plast",
-            "mat"
+            "mat",
+            "plast"
           ]
         },
         {
           "date": "2026-11-13",
           "fractions": [
-            "rest",
-            "mat"
+            "mat",
+            "rest"
           ]
         },
         {
           "date": "2026-11-27",
           "fractions": [
-            "papper",
-            "mat"
+            "mat",
+            "papper"
           ]
         },
         {
           "date": "2026-12-11",
           "fractions": [
-            "plast",
-            "mat"
+            "mat",
+            "plast"
           ]
         },
         {
-          "date": "2026-12-28",
+          "date": "2026-12-25",
           "fractions": [
-            "rest",
-            "mat"
-          ],
-          "deviation": {
-            "originalDate": "2026-12-25",
-            "reason": "juldagen"
-          }
-        },
-        {
-          "date": "2027-01-08",
-          "fractions": [
-            "papper",
-            "mat"
-          ]
-        }
-      ]
-    },
-    "sommarstuga": {
-      "name": "FAKE Fritidshus – tisdag, varannan vecka maj–september",
-      "events": [
-        {
-          "date": "2026-05-05",
-          "fractions": [
-            "rest",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-05-19",
-          "fractions": [
-            "rest",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-06-02",
-          "fractions": [
-            "rest",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-06-16",
-          "fractions": [
-            "rest",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-06-30",
-          "fractions": [
-            "rest",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-07-14",
-          "fractions": [
-            "rest",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-07-28",
-          "fractions": [
-            "rest",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-08-11",
-          "fractions": [
-            "rest",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-08-25",
-          "fractions": [
-            "rest",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-09-08",
-          "fractions": [
-            "rest",
-            "mat"
-          ]
-        },
-        {
-          "date": "2026-09-22",
-          "fractions": [
-            "rest",
-            "mat"
+            "mat",
+            "rest"
           ]
         }
       ]
