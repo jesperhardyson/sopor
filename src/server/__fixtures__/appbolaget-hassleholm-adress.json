@@ -1,0 +1,14 @@
+{
+ "message": "Successfully fetched item",
+ "status": 200,
+ "data": {
+  "uuid": "4fcea803-1a26-49a1-b66f-b41a631ed823",
+  "alias": "hmab-storgatan-1-vinsloev",
+  "address": "STORGATAN 1",
+  "city": "VINSLÖV",
+  "property_id": "0712403013",
+  "services": null,
+  "deviations": null,
+  "updated_at": "2026-11-03 00:50:12"
+ }
+}

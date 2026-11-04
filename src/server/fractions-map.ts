@@ -5,7 +5,8 @@ const PATTERNS: [RegExp, FractionId][] = [
   [/^rest/, 'rest'],
   // Kungälv kallar restavfallet "Osorterat", Boden "Brännbart" (matavfallet har eget kärl där).
   [/^osorterat/, 'rest'],
-  [/^brännbart/, 'rest'],
+  // Hässleholm Miljö förkortar det "Brä" i det delade kärlet "Brä/Mat".
+  [/^brä(?:nnbart|$)/, 'rest'],
   [/^mat/, 'mat'],
   [/^papp/, 'papper'],
   [/^plast/, 'plast'],
@@ -16,6 +17,8 @@ const PATTERNS: [RegExp, FractionId][] = [
   [/^metal/, 'metall'],
   // "Tidn." i NSR:s "Tidn./glas/metall"
   [/^tidn/, 'tidningar'],
+  // Hässleholm Miljö kallar tidningarna "Returpapper".
+  [/^returpapper/, 'tidningar'],
 ]
 
 const SKIP = [/^slam/, /^latrin/, /^fett/]

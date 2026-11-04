@@ -9,7 +9,7 @@ import { todayInStockholm } from '../src/domain/dates.js'
 import { queryFromAddressId } from '../src/server/edp.js'
 import { SOURCES, type Source } from '../src/sources/index.js'
 import { readYears } from './build-data.js'
-import { checkEdpSource, checkNsrSource, checkSrvSource, checkSvoaSource, checkVasydSource, checkStaticSource, checkViaSite, unreachableFromHere, type SourceResult } from './source-checks.js'
+import { checkAppbolagetSource, checkEdpSource, checkNsrSource, checkSrvSource, checkSvoaSource, checkVasydSource, checkStaticSource, checkViaSite, unreachableFromHere, type SourceResult } from './source-checks.js'
 import { applyIssues, ensureLabels, listOpenIssues, planIssues } from './source-issues.js'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
@@ -53,6 +53,9 @@ export const PROBES: Record<string, string> = {
   nsr: 'rosenvägen-3_helsingborg-71d627516ce56271010a40fdb5d01eed',
   // SRV: Huddinge kommunhus, med kommunen som kund (docs/specs/2026-11-03-srv.md).
   srv: 'kommunalvägen-28_huddinge-iokpga',
+  // Appbolaget: adress-id med adressens uuid (docs/specs/2026-11-03-appbolaget.md). Hovrätten i Kristianstad och Storgatan 1 i Vinslöv.
+  kristianstad: 'västra-storgatan-1_kristianstad-1ec2efb9115c4c52927474398e9f427f',
+  hassleholm: 'storgatan-1_vinslöv-4fcea8031a2649a1b66fb41a631ed823',
 }
 
 /** Väntan före varje ny omgång för källor som inte svarade: 5, 15 och 30 minuter. */
@@ -69,13 +72,13 @@ async function checkOne(
   readValidTo: (id: string) => string[],
 ): Promise<SourceResult> {
   if (source.config.system === 'static') return checkStaticSource(source, readValidTo(source.id), today)
-  const checks = { svoa: checkSvoaSource, vasyd: checkVasydSource, nsr: checkNsrSource, srv: checkSrvSource, edp: checkEdpSource }
+  const checks = { svoa: checkSvoaSource, vasyd: checkVasydSource, nsr: checkNsrSource, srv: checkSrvSource, appbolaget: checkAppbolagetSource, edp: checkEdpSource }
   const check = checks[source.config.system]
   const direct = await check(source, probes[source.id], today, fetchFn)
   if (!unreachableFromHere(direct)) return direct
   // Fungerar källan från sajten är det bara GitHub som stängs ute, och det är inget att larma om.
-  // NSR:s och SRV:s kontrolladresser är adress-id; sajten söker på gatan och orten i dem.
-  const siteProbe = source.config.system === 'nsr' || source.config.system === 'srv' ? (queryFromAddressId(probes[source.id])?.query ?? probes[source.id]) : probes[source.id]
+  // NSR:s, SRV:s och Appbolagets kontrolladresser är adress-id; sajten söker på gatan och orten i dem.
+  const siteProbe = ['nsr', 'srv', 'appbolaget'].includes(source.config.system) ? (queryFromAddressId(probes[source.id])?.query ?? probes[source.id]) : probes[source.id]
   const site = await checkViaSite(source, siteProbe, today, fetchFn)
   if (site.state === 'fungerar') return { ...direct, ...site, error: direct.error }
   return { ...direct, error: `${direct.error}. Via sajten: ${site.error ?? site.state}` }

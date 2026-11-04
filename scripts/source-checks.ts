@@ -7,6 +7,7 @@ import { fetchJson, SourceError } from '../src/server/http.js'
 import { isKnownBin } from '../src/server/fractions-map.js'
 import { vasydRule, vasydSchedule, vasydSearch, VASYD_URL } from '../src/server/vasyd.js'
 import { NSR_URL, nsrSchedule, nsrSearch } from '../src/server/nsr.js'
+import { APPBOLAGET_URL, appbolagetFind, appbolagetSearch, appbolagetServices, isFee, scheduleFromServices, serviceType } from '../src/server/appbolaget.js'
 import { isKnownSrvJob, SRV_URL, srvFind, srvSchedule, srvSearch, srvWasteType } from '../src/server/srv.js'
 import { parseSvoaAddress, sameSvoaAddress, svoaAddressId, SVOA_URL, svoaFractions, svoaSchedule, svoaSearch, svoaStep } from '../src/server/svoa.js'
 import type { Source } from '../src/sources/index.js'
@@ -196,6 +197,31 @@ export async function checkSrvSource(source: Source, probe: string, today: strin
     const jobs = found.containers.flatMap((c) => c.calendars.map((cal) => cal.jobTemplate)).filter((j) => !isKnownSrvJob(j))
     const unknownWasteTypes = [...new Set([...types, ...jobs.map((j) => `Jobb: ${j}`)])]
     const schedule = srvSchedule(found.containers, today)
+    const end = addDays(today, HORIZON_DAYS)
+    const upcoming = schedule.events.some((e) => e.date >= today && e.date <= end)
+    return { ...base, state: upcoming ? 'fungerar' : 'inga-tomningar', unknownWasteTypes }
+  } catch (error) {
+    return { ...base, state: stateForError(error), error: (error as Error).message }
+  }
+}
+
+/** Appbolaget: kontrolladressen är ett adress-id med adressens uuid, och kunden anges med sitt Unit. */
+export async function checkAppbolagetSource(source: Source, probe: string, today: string, fetchFn: typeof fetch = fetch): Promise<SourceResult> {
+  const base = { sourceId: source.id, name: source.name, baseUrl: APPBOLAGET_URL, probe }
+  if (source.config.system !== 'appbolaget') throw new Error(`${source.id} är ingen Appbolaget-källa`)
+  const { unit } = source.config
+  try {
+    const found = await appbolagetFind(unit, probe, fetchFn, TIMEOUT_MS)
+    if (!found) {
+      const street = queryFromAddressId(probe)?.query.split(',')[0].trim() ?? probe
+      const hits = await appbolagetSearch(unit, street, fetchFn, TIMEOUT_MS)
+      if (hits.length === 0) return { ...base, state: 'tom' }
+      return { ...base, state: 'nytt-format', error: `Kontrolladressen ${probe} hittades inte (nytt uuid hos Appbolaget?), bara t.ex. ${edpAddressId(hits[0].building)}` }
+    }
+    const services = await appbolagetServices(unit, found.propertyIds, fetchFn, TIMEOUT_MS)
+    const types = services.filter((s) => !isFee(s)).map(serviceType)
+    const unknownWasteTypes = [...new Set(classifyWasteTypes(types.map((t) => ({ WasteType: t.type, Description: t.description }))).filter((w) => w.status === 'okänd').map((w) => w.wasteType))]
+    const schedule = scheduleFromServices(services, today)
     const end = addDays(today, HORIZON_DAYS)
     const upcoming = schedule.events.some((e) => e.date >= today && e.date <= end)
     return { ...base, state: upcoming ? 'fungerar' : 'inga-tomningar', unknownWasteTypes }

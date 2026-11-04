@@ -1,0 +1,52 @@
+{
+ "message": "Successfully fetched 9 items",
+ "status": 200,
+ "data": [
+  {
+   "uuid": "1ec2efb9-115c-4c52-9274-74398e9f427f",
+   "alias": "krab-vaestra-storgatan-1-kristianstad",
+   "address": "Västra Storgatan 1",
+   "city": "Kristianstad",
+   "designation": "Hovrätten 26"
+  },
+  {
+   "uuid": "ed79b609-980c-48ae-9c5e-3aaa6d60dfd9",
+   "alias": "krab-vaestra-storgatan-11-kristianstad",
+   "address": "Västra Storgatan 11",
+   "city": "Kristianstad",
+   "designation": "Hovrätten 49"
+  },
+  {
+   "uuid": "d5903208-168c-4d2a-a7c1-1f6e817faea7",
+   "alias": "krab-vaestra-storgatan-17-kristianstad",
+   "address": "Västra Storgatan 17",
+   "city": "Kristianstad",
+   "designation": "Hovrätten 17"
+  },
+  {
+   "uuid": "c3a6a766-d101-41f7-94ed-b6e2debeec1e",
+   "alias": "krab-vaestra-storgatan-18-kristianstad",
+   "address": "Västra Storgatan 18",
+   "city": "Kristianstad",
+   "designation": "Allön 2"
+  },
+  {
+   "uuid": "c5e2e474-09cb-42b3-bddd-cb04d97fd408",
+   "alias": "krab-vaestra-storgatan-21-23-kristianstad",
+   "address": "Västra Storgatan 21- 23",
+   "city": "Kristianstad",
+   "designation": "Hovrätten 40"
+  },
+  {
+   "uuid": "6410a17e-38bd-442d-9e1c-6b64472a0b68",
+   "alias": "krab-vaestra-storgatan-41-kristianstad",
+   "address": "Västra Storgatan 41",
+   "city": "Kristianstad",
+   "designation": "General Ulfeldt 11"
+  }
+ ],
+ "pagination": {
+  "next": false,
+  "page": "1"
+ }
+}
