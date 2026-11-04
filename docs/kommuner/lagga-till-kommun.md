@@ -164,16 +164,16 @@ För en kommun där schemat är publikt per område men kopplingen adress → om
 
 - [ ] Sätt `selection: 'area'` på källan i `src/sources/index.ts`, med `config: { system: 'static' }`.
 - [ ] Skapa `omraden.json` och `schedules.json` enligt [dataformatet](#dataformatet).
-- [ ] Områdets id följer området, inte numret. Byter källan numrering får id:t ett nytt `label`.
+- [ ] Områdets id följer området, inte numret. Byter källan numrering behåller området sitt id och får ett nytt `label`.
 - [ ] **Delas eller slås ett område ihop ska det nya området få ett nytt id.** Det gamla id:t ligger kvar och ska visa ett meddelande om att välja område igen. Ett id får aldrig tas bort eller återanvändas för något annat, eftersom kalenderprenumerationer hänger på det. Meddelandet är inte byggt än och måste byggas före den första ändringen av det slaget.
 
 ## Uppdatera årets schema
 
 Gäller statiska källor. EDP-källorna hämtas live och behöver inget.
 
-- [ ] Skapa `data/<id>/<nytt år>/` med `schedules.json` och `addresses.csv`.
+- [ ] Skapa `data/<id>/<nytt år>/` med `schedules.json` och `addresses.csv`, eller `omraden.json` för källor med område.
 - [ ] Sätt `validFrom` till det datum då det nya schemat börjar gälla. Från det datumet ersätter den nya filen den gamla, även för adresser som byter trakt.
-- [ ] Behåll samma adress-id som förra året. Nya adresser får nya id.
+- [ ] Behåll samma adress-id och område-id som förra året. Nya adresser får nya id.
 - [ ] För källor med område: kontrollera att områdenas innehåll, veckodagar och nummer är oförändrade innan datumen läggs in. Följer ett område inte med ska det få ett nytt id enligt [reglerna för områdesval](#områdesval-utan-adresser).
 - [ ] Låt förra årets mapp ligga kvar, eftersom kalendrar visar historiken.
 - [ ] Kör `npm run lint && npm test && npm run build` och kontrollera några adresser i `npm run dev`.

@@ -517,3 +517,8 @@ Det här görs i en egen pull request när PDF:en för 2027 finns:
 2. Ta bort `testData` och `hidden`, och uppdatera `CLAUDE.md`, `sources.test.ts` och `kommun-pages.test.ts`.
 3. Kontrollera flödet på pull requestens förhandsadress.
 4. Släpp integrationerna med `uv run scripts/release.py <version>` och `npm run release` efter merge. Homeys väntande godkännande kan påverka när den versionen når ut.
+5. Godkänn texterna: `emptyScheduleNote`, datum utanför schemat och framtida datum i arket Hitta område.
+6. Bekräfta stavningarna med Avesta Vatten.
+7. Besluta om raden "Schemat för nästa år" från designen.
+8. Besluta om kommunsidans text "Skriv in din adress" i statisk HTML, eftersom man i Avesta väljer område.
+9. Håll Homey- och Home Assistant-releaser tills Avesta lanseras.
