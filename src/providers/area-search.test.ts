@@ -51,6 +51,12 @@ async function areas(query: string, options?: SearchOptions) {
   return addresses.filter((a) => a.sourceId === 'avesta').map((a) => a.id)
 }
 
+describe('söktexten för integrationerna', () => {
+  it.each(index.addresses.map(([id, street]) => [id, street.split(',')[0]]))('%s hittas på första delen av namnet', async (id, first) => {
+    expect(await areas(first)).toContain(id)
+  })
+})
+
 describe('halvskrivna frågor', () => {
   const avesta = { code: '2084', name: 'Avesta kommun' }
 

@@ -4,6 +4,7 @@ import { SITE } from '@/config'
 import type { Address } from '@/domain/types'
 import { apiUrl, defaultOrigin } from '@/lib/calendar-links'
 import { homeySearchText } from '@/lib/homey'
+import { getSource } from '@/sources'
 import { StatusBadge } from './StatusBadge'
 
 function CopyButton({ text, label }: { text: string; label: string }) {
@@ -54,7 +55,8 @@ function Row({ name, status, soon, href, action, actionLabel, children }: {
 
 /** Adressidans ruta om Homey och Home Assistant, med API-länken för utvecklare längst ner. */
 export function SmartHomeBox({ address, origin = defaultOrigin() }: { address: Address; origin?: string }) {
-  const search = homeySearchText(address)
+  const byArea = getSource(address.sourceId)?.selection === 'area'
+  const search = homeySearchText(address, byArea)
   const api = apiUrl(address, origin)
 
   return (
@@ -69,14 +71,14 @@ export function SmartHomeBox({ address, origin = defaultOrigin() }: { address: A
         </div>
       </div>
       <Row name="Homey" status="Testversion" href={SITE.homeyAppUrl} action="Installera" actionLabel="Installera Sophämtning i Homey">
-        <p className="text-[13px] text-text-2">Sök på den här adressen i appen Sophämtning:</p>
+        <p className="text-[13px] text-text-2">Sök på {byArea ? 'det här området' : 'den här adressen'} i appen Sophämtning:</p>
         <div className="flex items-center justify-between gap-2 rounded-[10px] bg-surface px-3 py-2">
           <span className="min-w-0 text-sm font-bold break-words text-text">{search}</span>
           <CopyButton text={search} label="Kopiera söktexten" />
         </div>
       </Row>
       <Row name="Home Assistant" href={SITE.homeAssistantUrl} action="Installera" actionLabel="Installera Sophämtning i Home Assistant">
-        <p className="text-[13px] text-text-2">Sök på samma adress när du lägger till Sophämtning.</p>
+        <p className="text-[13px] text-text-2">Sök på samma {byArea ? 'område' : 'adress'} när du lägger till Sophämtning.</p>
       </Row>
       <div className="flex items-center gap-2 px-0.5">
         <Braces className="size-4 shrink-0 text-text-2" aria-hidden />

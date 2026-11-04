@@ -1,3 +1,4 @@
+import '@/test/show-hidden-sources'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
@@ -24,6 +25,28 @@ describe('homeySearchText', () => {
   })
 })
 
+describe('SmartHomeBox för ett område', () => {
+  const area: Address = {
+    id: 'trakt-7',
+    street: 'Avesta tätort, Östanfors m.fl.',
+    locality: '',
+    detail: 'Tisdag, jämn vecka · Trakt 7',
+    sourceId: 'avesta',
+    kommun: 'Avesta kommun',
+  }
+
+  it('söker på första delen av namnet, eftersom appen läser allt efter kommatecknet som plats', () => {
+    expect(homeySearchText(area, true)).toBe('Avesta tätort, Avesta kommun')
+  })
+
+  it('pratar om området och inte adressen', () => {
+    render(<SmartHomeBox address={area} />)
+    expect(screen.getByText('Avesta tätort, Avesta kommun')).toBeInTheDocument()
+    expect(screen.getByText('Sök på det här området i appen Sophämtning:')).toBeInTheDocument()
+    expect(screen.getByText('Sök på samma område när du lägger till Sophämtning.')).toBeInTheDocument()
+  })
+})
+
 describe('SmartHomeBox', () => {
   it('visar Homey och Home Assistant med länkar', () => {
     render(<SmartHomeBox address={address} />)
@@ -36,6 +59,7 @@ describe('SmartHomeBox', () => {
       'href',
       'https://my.home-assistant.io/redirect/hacs_repository/?owner=jesperhardyson&repository=sopor-home-assistant&category=integration',
     )
+    expect(screen.getByText('Sök på den här adressen i appen Sophämtning:')).toBeInTheDocument()
     expect(screen.getByText('Sök på samma adress när du lägger till Sophämtning.')).toBeInTheDocument()
     expect(screen.getByText('Östra Ågatan 13, Uppsala')).toBeInTheDocument()
   })
