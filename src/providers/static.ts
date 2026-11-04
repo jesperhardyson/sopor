@@ -1,4 +1,4 @@
-import type { AddressIndexFile, ScheduleFile } from '@/data/static-format'
+import type { AddressIndexFile, AreasIndexFile, ScheduleFile } from '@/data/static-format'
 import { mergeParts } from '@/domain/schedule'
 import { searchAddresses, suggest } from '@/domain/search'
 import type { Address } from '@/domain/types'
@@ -15,6 +15,7 @@ interface LoadedIndex {
 export function createStaticProvider(source: Source, fetchFn: typeof fetch = (...args) => fetch(...args)): WasteProvider {
   const base = `/data/${source.id}`
   let indexPromise: Promise<LoadedIndex> | undefined
+  let areasPromise: Promise<AreasIndexFile> | undefined
   const scheduleFiles = new Map<string, Promise<ScheduleFile>>()
 
   async function getJson<T>(url: string): Promise<T> {
@@ -28,12 +29,13 @@ export function createStaticProvider(source: Source, fetchFn: typeof fetch = (..
     indexPromise ??= getJson<AddressIndexFile>(`${base}/addresses.json`).then(
       (file) => ({
         updatedAt: file.updatedAt,
-        addresses: file.addresses.map(([id, street, locality]) => ({
+        addresses: file.addresses.map(([id, street, locality, , area]) => ({
           id,
           street,
           locality,
           sourceId: source.id,
           kommun: source.kommuner[0]?.name ?? source.name,
+          ...area,
         })),
         refs: new Map(file.addresses.map(([id, , , refs]) => [id, refs])),
       }),
@@ -73,6 +75,13 @@ export function createStaticProvider(source: Source, fetchFn: typeof fetch = (..
     },
     async dataUpdatedAt() {
       return (await loadIndex()).updatedAt || null
+    },
+    listAreas() {
+      areasPromise ??= getJson<AreasIndexFile>(`${base}/omraden.json`).catch((error: unknown) => {
+        areasPromise = undefined
+        throw error
+      })
+      return areasPromise
     },
     icsUrl(addressId) {
       return `/ics/${source.id}/${encodeURIComponent(addressId)}.ics`

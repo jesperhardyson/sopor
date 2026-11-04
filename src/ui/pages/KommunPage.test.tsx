@@ -11,7 +11,7 @@ import { KommunerRoute } from './KommunerPage'
 vi.mock('@/providers/registry', () => ({
   kommunPage: vi.fn(),
   kommunPages: vi.fn(),
-  searchAll: vi.fn(async () => ({ addresses: [{ id: 'storgatan-2_stockholm', street: 'Storgatan 2', locality: 'Stockholm', sourceId: 'stockholm', kommun: 'Stockholms kommun' }], failed: [] })),
+  searchAll: vi.fn(async () => ({ addresses: [{ id: 'storgatan-2_stockholm', street: 'Storgatan 2', locality: 'Stockholm', sourceId: 'stockholm', kommun: 'Stockholms kommun' }], failed: [], areaPickers: [] })),
   searchInKommun: vi.fn(),
   warmUpSearch: () => {},
   prefetchAddress: () => {},
@@ -44,7 +44,7 @@ beforeEach(() => {
   vi.mocked(kommunPage).mockImplementation(async (slug) => [uppsala, goteborg].find((k) => k.slug === slug))
   vi.mocked(kommunPages).mockResolvedValue([uppsala, goteborg])
   vi.mocked(searchInKommun).mockReturnValue({
-    search: async () => ({ addresses: [{ id: 'storgatan-2_uppsala', street: 'Storgatan 2', locality: 'Uppsala', sourceId: 'uppsala', kommun: 'Uppsala kommun' }], failed: [] }),
+    search: async () => ({ addresses: [{ id: 'storgatan-2_uppsala', street: 'Storgatan 2', locality: 'Uppsala', sourceId: 'uppsala', kommun: 'Uppsala kommun' }], failed: [], areaPickers: [] }),
     suggest: async () => [],
   })
 })
@@ -97,7 +97,7 @@ describe('KommunRoute', () => {
   })
 
   it('förklarar att adressen saknas i just den här kommunen', async () => {
-    vi.mocked(searchInKommun).mockReturnValue({ search: async () => ({ addresses: [], failed: [] }), suggest: async () => [] })
+    vi.mocked(searchInKommun).mockReturnValue({ search: async () => ({ addresses: [], failed: [], areaPickers: [] }), suggest: async () => [] })
     embed('/kommuner/uppsala-kommun', uppsala)
     show('/kommuner/uppsala-kommun')
     await userEvent.type(screen.getByRole('combobox'), 'Storgatan 2{Enter}')

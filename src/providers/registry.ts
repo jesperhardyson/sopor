@@ -1,7 +1,7 @@
 import type { KommunPage } from '@/data/kommun-pages'
 import type { Address } from '@/domain/types'
 import { getSource, placeKommuner, SOURCES, supportedKommuner, type Kommun, type Source } from '@/sources'
-import { matchesPlace, pickLiveSources, shardKey, splitPlace, type QueryParts, type StreetShard } from '@/data/street-index'
+import { isKnownStreet, matchesPlace, pickLiveSources, shardKey, splitPlace, type QueryParts, type StreetShard } from '@/data/street-index'
 import { kommunerForPlace } from '@/data/sweden-places'
 import { normalize } from '@/domain/search'
 import { kommunForLocality } from '@/sources'
@@ -37,10 +37,19 @@ export function mergeResults(results: PromiseSettledResult<Address[]>[], limit: 
   return ok.flatMap((r) => r.value).slice(0, limit)
 }
 
+/** En källa där man väljer område i stället för adress, och om sökningen redan gav områdesträffar. */
+export interface AreaPicker {
+  sourceId: string
+  kommun: string
+  hasHits: boolean
+}
+
 export interface SearchResult {
   addresses: Address[]
   /** Källor som inte svarade, t.ex. ["uppsala"] */
   failed: string[]
+  /** Källor med områdesval som sökningen ska erbjuda, t.ex. [{ sourceId: "avesta", … }] */
+  areaPickers: AreaPicker[]
 }
 
 const shards = new Map<string, Promise<StreetShard | null>>()
@@ -142,7 +151,7 @@ function wait(ms: number, signal?: AbortSignal): Promise<void> {
 async function askSource(id: string, q: string, signal?: AbortSignal): Promise<Address[]> {
   const res = await fetch(`/api/sok?${new URLSearchParams({ q, sources: id })}`, { signal })
   if (!res.ok) throw new Error(`/api/sok svarade ${res.status}`)
-  const body = (await res.json()) as SearchResult
+  const body = (await res.json()) as Omit<SearchResult, 'areaPickers'>
   if (body.failed.includes(id)) throw new Error(`${id} svarade inte`)
   return body.addresses
 }
@@ -167,8 +176,8 @@ async function searchLive(
   query: string,
   signal: AbortSignal | undefined,
   options: SearchOptions,
-  onPartial: (partial: SearchResult) => void,
-): Promise<SearchResult> {
+  onPartial: (partial: Omit<SearchResult, 'areaPickers'>) => void,
+): Promise<Omit<SearchResult, 'areaPickers'>> {
   const started = Date.now()
   const placesPromise = loadPlaces() // parallellt med sökningen
   const { sources, street, place } = await liveSourcesFor(liveKey(query), options)
@@ -241,6 +250,29 @@ async function searchLive(
   return { addresses, failed }
 }
 
+/**
+ * Källor med områdesval som sökningen ska erbjuda: de som gav områdesträffar, de som har gatan
+ * i frågan (hel gata, med eller utan nummer) och de vars kommun frågan nämner ("Okändgatan 3, Avesta").
+ */
+async function areaPickersFor(query: string, found: Address[], kommun?: Kommun): Promise<AreaPicker[]> {
+  const sources = SOURCES.filter((s) => s.selection === 'area' && coversKommun(s, kommun))
+  if (sources.length === 0 || normalize(query).length < 2) return []
+  const shard = await loadShard(shardKey(query))
+  const { place } = splitPlace(shard, query)
+  const placeShard = place ? await loadShard(shardKey(place)) : null
+  const placeKey = normalize(place, false)
+  const named = (s: Source) =>
+    placeKey !== '' &&
+    (placeKommuner(s).some((k) => normalize(k.name.replace(/ kommun$/, ''), false) === placeKey) ||
+      (placeShard?.[placeKey]?.includes(s.id) ?? false))
+  return sources.flatMap((s) => {
+    const hasHits = found.some((a) => a.sourceId === s.id)
+    // Nämner frågan en annan plats hör gatan inte till källan, hur väl gatan än är känd.
+    const relevant = hasHits || (place ? named(s) : isKnownStreet(shard, query, s.id))
+    return relevant ? [{ sourceId: s.id, kommun: s.kommuner[0]?.name ?? s.name, hasHits }] : []
+  })
+}
+
 /** Väcker sökfunktionen och laddar ort-tabellen i förväg, t.ex. när sökfältet får fokus. */
 export function warmUpSearch(): void {
   void loadPlaces()
@@ -259,18 +291,20 @@ export async function searchAll(
 ): Promise<SearchResult> {
   let localAddresses: Address[] = []
   let localDone = false
-  const report = (live: SearchResult) => {
-    if (localDone && !signal?.aborted) onPartial?.({ addresses: [...localAddresses, ...live.addresses], failed: [] })
+  let areaPickers: AreaPicker[] = []
+  const report = (live: Omit<SearchResult, 'areaPickers'>) => {
+    if (localDone && !signal?.aborted) onPartial?.({ addresses: [...localAddresses, ...live.addresses], failed: [], areaPickers })
   }
-  let latest: SearchResult = { addresses: [], failed: [] }
+  let latest: Omit<SearchResult, 'areaPickers'> = { addresses: [], failed: [] }
   const live = searchLive(query, signal, options, (partial) => report((latest = partial)))
   const local = SOURCES.filter((m) => m.config.system === 'static' && coversKommun(m, options.kommun))
   const localResults = await Promise.allSettled(local.map((m) => providerFor(m).searchAddresses(query, signal)))
   localAddresses = localResults.some((r) => r.status === 'fulfilled') ? mergeResults(localResults, 8).filter((a) => mayBeInKommun(a, options.kommun)) : []
+  areaPickers = await areaPickersFor(query, localAddresses, options.kommun)
   localDone = true
   report(latest)
   const { addresses, failed } = await live
-  return { addresses: [...localAddresses, ...addresses], failed }
+  return { addresses: [...localAddresses, ...addresses], failed, areaPickers }
 }
 
 /**

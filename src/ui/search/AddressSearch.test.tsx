@@ -46,7 +46,7 @@ function setup(addresses = ADDRESSES) {
           element={
             <>
               <AddressSearch
-                search={async (q) => ({ addresses: searchAddresses(q, addresses, 12), failed })}
+                search={async (q) => ({ addresses: searchAddresses(q, addresses, 12), failed, areaPickers: [] })}
                 suggest={async (q) => suggest(q, addresses)}
                 missing={async (q) => (/hedemora/i.test(q) ? ['Hedemora kommun'] : /kil$/i.test(q) ? ['Kils kommun', 'Danderyds kommun'] : [])}
                 onDeactivate={onDeactivate}
@@ -167,7 +167,7 @@ describe('AddressSearch', () => {
     const renderWith = (addresses: Address[]) =>
       render(
         <MemoryRouter>
-          <AddressSearch search={async () => ({ addresses, failed: [] })} suggest={async () => []} />
+          <AddressSearch search={async () => ({ addresses, failed: [], areaPickers: [] })} suggest={async () => []} />
         </MemoryRouter>,
       )
 
@@ -254,7 +254,7 @@ describe('AddressSearch', () => {
     function setupInKommun() {
       render(
         <MemoryRouter>
-          <AddressSearch search={async () => ({ addresses: [], failed: [] })} suggest={async () => []} kommun="Uppsala kommun" />
+          <AddressSearch search={async () => ({ addresses: [], failed: [], areaPickers: [] })} suggest={async () => []} kommun="Uppsala kommun" />
         </MemoryRouter>,
       )
       return screen.getByRole('combobox')
@@ -306,7 +306,7 @@ describe('AddressSearch', () => {
     render(
       <MemoryRouter>
         <AddressSearch
-          search={(q) => (q === 'sto' ? Promise.resolve({ addresses: [], failed: [] }) : new Promise(() => {}))}
+          search={(q) => (q === 'sto' ? Promise.resolve({ addresses: [], failed: [], areaPickers: [] }) : new Promise(() => {}))}
           suggest={async () => []}
         />
       </MemoryRouter>,
@@ -322,7 +322,7 @@ describe('AddressSearch', () => {
     render(
       <MemoryRouter>
         <AddressSearch
-          search={(q) => (q === 'storgx' ? Promise.resolve({ addresses: [], failed: [] }) : new Promise(() => {}))}
+          search={(q) => (q === 'storgx' ? Promise.resolve({ addresses: [], failed: [], areaPickers: [] }) : new Promise(() => {}))}
           suggest={async () => []}
         />
       </MemoryRouter>,
@@ -393,9 +393,9 @@ describe('AddressSearch', () => {
     })
 
     it('väntar på alla källor i stället för att gissa från de som redan svarat', async () => {
-      const search = vi.fn(async (_q: string, _signal?: AbortSignal, onPartial?: (p: { addresses: Address[]; failed: string[] }) => void, options?: { submitted?: boolean }) => {
-        if (options?.submitted) return { addresses: [horn('1', 'Borås'), horn('1', 'Kalmar')], failed: [] }
-        onPartial?.({ addresses: [horn('1', 'Borås')], failed: [] })
+      const search = vi.fn(async (_q: string, _signal?: AbortSignal, onPartial?: (p: { addresses: Address[]; failed: string[]; areaPickers: [] }) => void, options?: { submitted?: boolean }) => {
+        if (options?.submitted) return { addresses: [horn('1', 'Borås'), horn('1', 'Kalmar')], failed: [], areaPickers: [] }
+        onPartial?.({ addresses: [horn('1', 'Borås')], failed: [], areaPickers: [] })
         return new Promise<never>(() => {})
       })
       render(
@@ -451,8 +451,8 @@ describe('AddressSearch', () => {
       <MemoryRouter>
         <AddressSearch
           search={(q, _signal, onPartial) => {
-            onPartial?.({ addresses: searchAddresses(q, ADDRESSES), failed: [] })
-            return new Promise((resolve) => (finish = () => resolve({ addresses: searchAddresses(q, ADDRESSES), failed: [] })))
+            onPartial?.({ addresses: searchAddresses(q, ADDRESSES), failed: [], areaPickers: [] })
+            return new Promise((resolve) => (finish = () => resolve({ addresses: searchAddresses(q, ADDRESSES), failed: [], areaPickers: [] })))
           }}
           suggest={async () => []}
         />
@@ -472,8 +472,8 @@ describe('AddressSearch', () => {
       <MemoryRouter>
         <AddressSearch
           search={(_q, _signal, onPartial) => {
-            onPartial?.({ addresses: [first, second], failed: [] })
-            return new Promise((resolve) => (finish = () => resolve({ addresses: [third, second, first], failed: [] })))
+            onPartial?.({ addresses: [first, second], failed: [], areaPickers: [] })
+            return new Promise((resolve) => (finish = () => resolve({ addresses: [third, second, first], failed: [], areaPickers: [] })))
           }}
           suggest={async () => []}
         />
@@ -492,7 +492,7 @@ describe('AddressSearch', () => {
     render(
       <MemoryRouter>
         <AddressSearch
-          search={(q) => new Promise((resolve) => (finish = () => resolve({ addresses: searchAddresses(q, ADDRESSES), failed: [] })))}
+          search={(q) => new Promise((resolve) => (finish = () => resolve({ addresses: searchAddresses(q, ADDRESSES), failed: [], areaPickers: [] })))}
           suggest={async () => []}
         />
       </MemoryRouter>,
@@ -509,7 +509,7 @@ describe('AddressSearch', () => {
       <MemoryRouter>
         <AddressSearch
           search={(q) =>
-            q.startsWith('storg') ? Promise.resolve({ addresses: searchAddresses(q, ADDRESSES), failed: [] }) : new Promise(() => {})
+            q.startsWith('storg') ? Promise.resolve({ addresses: searchAddresses(q, ADDRESSES), failed: [], areaPickers: [] }) : new Promise(() => {})
           }
           suggest={async () => []}
         />
@@ -528,7 +528,7 @@ describe('AddressSearch', () => {
     render(
       <MemoryRouter>
         <AddressSearch
-          search={(q) => (q === 'storg' ? Promise.resolve({ addresses: searchAddresses(q, ADDRESSES), failed: [] }) : new Promise(() => {}))}
+          search={(q) => (q === 'storg' ? Promise.resolve({ addresses: searchAddresses(q, ADDRESSES), failed: [], areaPickers: [] }) : new Promise(() => {}))}
           suggest={async () => []}
         />
       </MemoryRouter>,
@@ -550,7 +550,7 @@ describe('AddressSearch', () => {
   })
 
   it('ber om en bredare sökning när man trycker Enter', async () => {
-    const search = vi.fn(async () => ({ addresses: [], failed: [] }))
+    const search = vi.fn(async () => ({ addresses: [], failed: [], areaPickers: [] }))
     render(
       <MemoryRouter>
         <AddressSearch search={search} suggest={async () => []} />
@@ -567,7 +567,7 @@ describe('AddressSearch', () => {
     ]
     render(
       <MemoryRouter>
-        <AddressSearch search={async () => ({ addresses: twins, failed: [] })} suggest={async () => []} />
+        <AddressSearch search={async () => ({ addresses: twins, failed: [], areaPickers: [] })} suggest={async () => []} />
       </MemoryRouter>,
     )
     await userEvent.type(screen.getByRole('combobox'), 'vasagatan 20')
@@ -584,7 +584,7 @@ describe('AddressSearch', () => {
     ]
     render(
       <MemoryRouter>
-        <AddressSearch search={async () => ({ addresses: twins, failed: [] })} suggest={async () => []} />
+        <AddressSearch search={async () => ({ addresses: twins, failed: [], areaPickers: [] })} suggest={async () => []} />
       </MemoryRouter>,
     )
     await userEvent.type(screen.getByRole('combobox'), 'ringvägen 1')
@@ -599,7 +599,7 @@ describe('AddressSearch', () => {
     const hits = [lidkoping('storgatan-11-1', 'Storgatan 11'), a('avesta-storgatan-12', 'Storgatan 12', 'Avesta')]
     render(
       <MemoryRouter>
-        <AddressSearch search={async () => ({ addresses: hits, failed: [] })} suggest={async () => []} />
+        <AddressSearch search={async () => ({ addresses: hits, failed: [], areaPickers: [] })} suggest={async () => []} />
       </MemoryRouter>,
     )
     await userEvent.type(screen.getByRole('combobox'), 'storgatan')

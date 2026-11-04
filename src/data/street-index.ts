@@ -154,3 +154,17 @@ export function matchesPlace(a: { locality: string; kommun: string }, place: str
   const p = normalize(place, false)
   return !p || [a.locality, a.kommun].some((name) => normalize(name, false).startsWith(p))
 }
+
+/**
+ * Om frågans gata (utan husnummer) finns hos källan, exakt och inte bara som början av ett namn.
+ * Delfilen har både gator och orter, så en fråga som bara är en ort räknas också.
+ */
+export function isKnownStreet(shard: StreetShard | null, query: string, sourceId: string): boolean {
+  if (!shard) return false
+  const has = (name: string) => shard[name]?.includes(sourceId) ?? false
+  if (has(normalize(query, false))) return true
+  const words = normalize(splitPlace(shard, query).street, false).split(' ')
+  const number = words.findIndex((w) => /^\d/.test(w))
+  const street = (number > 0 ? words.slice(0, number) : words).join(' ')
+  return has(street)
+}

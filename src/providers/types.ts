@@ -1,3 +1,4 @@
+import type { AreasIndexFile } from '@/data/static-format'
 import type { Address, Schedule } from '@/domain/types'
 
 /**
@@ -12,6 +13,8 @@ export interface WasteProvider {
   getSchedule(addressId: string, signal?: AbortSignal): Promise<Schedule | null>
   /** När kommunens data senast uppdaterades (YYYY-MM-DD), om det är känt */
   dataUpdatedAt(signal?: AbortSignal): Promise<string | null>
+  /** Alla områden med förklaringstexter, för källor där man väljer område i stället för adress */
+  listAreas?(signal?: AbortSignal): Promise<AreasIndexFile>
   /** Sökväg till adressens kalenderfil, relativ till sajten */
   icsUrl(addressId: string): string
 }

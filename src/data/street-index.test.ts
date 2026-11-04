@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Source } from '@/sources'
-import { buildStreetIndex, candidateSources, matchesPlace, pickLiveSources, shardKey, splitPlace, type OsmKommun } from './street-index'
+import { buildStreetIndex, candidateSources, isKnownStreet, matchesPlace, pickLiveSources, shardKey, splitPlace, type OsmKommun } from './street-index'
 
 const src = (id: string, kommuner: [string, string][]): Source => ({
   id,
@@ -163,5 +163,29 @@ describe('matchesPlace', () => {
 
   it('släpper igenom allt när platsen saknas', () => {
     expect(matchesPlace(marstrand, '')).toBe(true)
+  })
+})
+
+describe('isKnownStreet', () => {
+  const shard = { kungsgatan: ['avesta'], storgatan: ['avesta', 'uppsala'], avesta: ['avesta'] }
+
+  it('jämför gatudelen exakt, med eller utan husnummer', () => {
+    expect(isKnownStreet(shard, 'Kungsgatan', 'avesta')).toBe(true)
+    expect(isKnownStreet(shard, 'Kungsgatan 12', 'avesta')).toBe(true)
+    expect(isKnownStreet(shard, 'Kungsgatan 12 B, Avesta', 'avesta')).toBe(true)
+  })
+
+  it('godtar inte en början av namnet eller en annan källa', () => {
+    expect(isKnownStreet(shard, 'Kungsg', 'avesta')).toBe(false)
+    expect(isKnownStreet(shard, 'Hornsgatan 1', 'avesta')).toBe(false)
+    expect(isKnownStreet(shard, 'Storgatan 1', 'vafab')).toBe(false)
+  })
+
+  it('godtar en hel fråga som är en ort i delfilen', () => {
+    expect(isKnownStreet(shard, 'Avesta', 'avesta')).toBe(true)
+  })
+
+  it('ger false utan delfil', () => {
+    expect(isKnownStreet(null, 'Kungsgatan', 'avesta')).toBe(false)
   })
 })
