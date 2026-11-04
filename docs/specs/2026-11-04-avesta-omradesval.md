@@ -22,7 +22,7 @@ Sopor gissar inte vilken trakt en adress hör till, eftersom en felaktig gissnin
 
 - Att räkna ut område från adress, koordinater eller kartor.
 - Att ta ut scheman automatiskt ur PDF:en. Datan läggs in för hand, som för andra statiska källor.
-- Att ändra Homeys och Home Assistants flöden utöver en hjälptext.
+- Att ändra Homeys och Home Assistants flöden utöver en hjälptext och varningen från `notice` (se API och integrationer). Beslut 2026-11-04: målet om öppenhet väger tyngre än att lämna flödena helt orörda.
 
 ## Ordval
 
@@ -107,6 +107,7 @@ Datumen kommer från källan. Det osäkra är om det valda området gäller adre
 | Kalenderarket | Varningen överst, före valen |
 | Kalenderfilen | Texten i varje händelses `DESCRIPTION` och i `X-WR-CALDESC`. `UID` ändras inte, och andra källors kalendrar ändras inte. |
 | API:t | Fälten `selection` och `notice`, se API och integrationer |
+| Homey och Home Assistant | Texten från `notice` före valet i parningen, se API och integrationer |
 
 ## Datamodell
 
@@ -165,7 +166,15 @@ Inga befintliga fält ändras, och inga integrationer behöver en ny version fö
 
 En adress i Avesta som inte står i områdeslistan ger inga träffar i `/sok`. Homey och Home Assistant får därför en hjälptext när sökningen är tom: "I Avesta söker du på område, till exempel Avesta tätort." Texten släpps med respektive integrations releaseskript.
 
-Att integrationerna ignorerar `selection` och `notice` provas med tester. Att också visa `notice` där kräver en ny version och görs i lanseringen.
+Äldre versioner av integrationerna ignorerar `selection` och `notice` och fortsätter att fungera. Nya versioner visar `notice` före valet (beslut 2026-11-04):
+
+- **Bara vid valet.** Varningen handlar om valet av område, så den finns inte kvar på enheten eller sensorerna efter parningen.
+- **Bara när den behövs.** Visas när någon träff i listan har `notice`, annars är flödet oförändrat. Har flera träffar samma text visas den en gång. Listan kan blanda källor, men texten namnger källan, så att den som bor i en annan kommun ser att den inte gäller dem.
+- **Home Assistant:** i beskrivningen på steget som listar träffarna. Också när adressen byts med Konfigurera om.
+- **Homey:** i sökvyn, med knappen Fortsätt före den färdiga listan `list_devices`, som saknar plats för text. Också efter valet av ort när träffarna är många.
+- **Språk:** `notice` finns bara på svenska. Engelska användare ser en fast mening med det viktigaste och sedan API:ts text oförändrad: "You choose this area yourself, so check that it is right. The wrong area can make you miss a collection. From Sopor, in Swedish only:".
+
+Att visa varningen kräver en ny version av integrationerna, som släpps med respektive releaseskript.
 
 ## Årsbyte
 
@@ -180,7 +189,7 @@ Att integrationerna ignorerar `selection` och `notice` provas med tester. Att oc
 - **Sökning i UI:** varje rad i tabellen under Sökregler, inklusive Enter och kommunsidan.
 - **Sidor:** Välj område, arket Hitta område och resultatsidan, med tangentbord och skärmläsare för arket.
 - **API:** kontraktstest mot `openapi.json`, `/sok` med område och `/adress` och ICS för `trakt-7`.
-- **Integrationer:** Homey och Home Assistant med ett område som träff, och hjälptexten vid tom sökning.
+- **Integrationer:** Homey och Home Assistant med ett område som träff, varningen i en blandad lista och utan område, och hjälptexten vid tom sökning.
 - **Testdata:** tester som läser Avestas datafiler uppdateras till riktiga data. Tester som mockar `fetch` får behålla sina påhittade id:n.
 
 ## Lansering
@@ -188,4 +197,4 @@ Att integrationerna ignorerar `selection` och `notice` provas med tester. Att oc
 1. Avesta visas på sajten sedan 2026-11-04, före 2027 års schema. Texterna godkändes genom att funktionen provades på en förhandsversion.
 2. Lägg in schemat för 2027 när PDF:en finns.
 3. Bekräfta stavningarna av Södra Strandnora, Södra Rudö, Gammelsängsvägen och Skillingränd med Avesta Vatten.
-4. Släpp hjälptexten i Homey och Home Assistant, och visa där `notice`.
+4. Släpp hjälptexten och varningen från `notice` i Homey och Home Assistant.

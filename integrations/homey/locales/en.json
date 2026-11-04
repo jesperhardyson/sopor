@@ -13,7 +13,9 @@
     "notFoundCovered": "No address found in __place__. Check the spelling and house number. In Avesta and Säter, search by area, for example Avesta tätort or Bispberg.",
     "notFoundElsewhere": "No address found in __place__. Check that the municipality is included.",
     "coverage": "Sopor covers __count__ Swedish municipalities.",
-    "coverageLink": "See which"
+    "coverageLink": "See which",
+    "noticeIntro": "You choose this area yourself, so check that it is right. The wrong area can make you miss a collection. From Sopor, in Swedish only:",
+    "continue": "Continue"
   },
   "device": {
     "gone": "The address no longer exists at the source. Repair or remove the device.",

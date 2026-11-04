@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import type { SoporSearchHit } from './api.mjs'
-import { MAX_LIST, kommunNames, parseQuery, placeCovered, places, searchOutcome } from './pairing.mjs'
+import { MAX_LIST, kommunNames, notices, parseQuery, placeCovered, places, searchOutcome } from './pairing.mjs'
 
 const hit = (street: string, locality: string, kommun = `${locality} kommun`): SoporSearchHit => ({
-  id: `${street}-${locality}`, street, locality, kommun, source: 'x', detail: null, url: `https://sopor.hardyson.se/${street}`,
+  id: `${street}-${locality}`, street, locality, kommun, source: 'x', detail: null, notice: null, url: `https://sopor.hardyson.se/${street}`,
 })
 
 const many = (locality: string, n: number) => Array.from({ length: n }, (_, i) => hit(`Storgatan ${i + 1}`, locality))
@@ -75,5 +75,22 @@ describe('kommunerna som finns', () => {
     const outcome = searchOutcome({ addresses: [omrade], failed: [] }, '')
     expect(outcome.result).toBe('found')
     expect(outcome.hits).toEqual([omrade])
+  })
+})
+
+describe('varningen före valet', () => {
+  const area = (name: string, notice: string) => ({ ...hit(name, ''), notice })
+
+  it('är tom när ingen träff har någon', () => {
+    expect(notices([hit('Storgatan 2', 'Uppsala')])).toEqual([])
+  })
+
+  it('visar samma text en gång, också i en blandad lista', () => {
+    const hits = [hit('Storgatan 2', 'Uppsala'), area('Trakt 1', 'Avesta'), area('Trakt 2', 'Avesta')]
+    expect(notices(hits)).toEqual(['Avesta'])
+  })
+
+  it('visar varje källas egen text i listans ordning', () => {
+    expect(notices([area('Trakt 1', 'Avesta'), area('Norr', 'Säter')])).toEqual(['Avesta', 'Säter'])
   })
 })

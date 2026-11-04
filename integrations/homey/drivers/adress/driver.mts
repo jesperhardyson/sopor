@@ -1,7 +1,7 @@
 import Homey from 'homey'
 import type SoporApp from '../../app.mjs'
 import type { SoporSearchHit } from '../../lib/api.mjs'
-import { kommunNames, parseQuery, placeCovered, placeKey, places, searchOutcome } from '../../lib/pairing.mjs'
+import { kommunNames, notices, parseQuery, placeCovered, placeKey, places, searchOutcome } from '../../lib/pairing.mjs'
 import { ANY, fractionChoices } from '../../lib/schedule.mjs'
 import type AddressDevice from './device.mjs'
 
@@ -72,14 +72,16 @@ export default class AddressDriver extends Homey.Driver {
       return {
         result: outcome.result,
         places: outcome.result === 'places' ? places(hits) : [],
+        notices: outcome.result === 'found' ? notices(hits) : [],
         place,
         covered: place && names.length ? placeCovered(names, place) : null,
       }
     })
 
-    // Användaren valde en ort bland många träffar
+    // Användaren valde en ort bland många träffar. Svarar med varningarna för den ortens träffar.
     session.setHandler('place', async (key: string) => {
       hits = hits.filter((hit) => placeKey(hit) === key)
+      return { notices: notices(hits) }
     })
 
     session.setHandler('list_devices', async () =>

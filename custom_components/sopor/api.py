@@ -20,6 +20,7 @@ class Address(TypedDict):
 
 class SearchHit(Address):
     url: str
+    notice: str | None
 
 
 class Search(TypedDict):

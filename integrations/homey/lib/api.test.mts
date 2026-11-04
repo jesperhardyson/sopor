@@ -45,10 +45,11 @@ describe('API-klienten', () => {
 })
 
 describe('fält som tillkommit i API:t', () => {
-  it('ignorerar selection och notice', async () => {
+  it('behåller notice och tål fält som appen inte använder', async () => {
     const hit = { id: 'trakt-7', street: 'Avesta tätort', locality: '', kommun: 'Avesta kommun', source: 'avesta', detail: null, selection: 'area', notice: 'Kontrollera området.', url: 'https://x' }
     const fetch = vi.fn(async () => json(200, { apiVersion: '1', addresses: [hit], failed: [] }))
     const result = await createClient({ fetch, userAgent: 'x' }).search('avesta')
-    expect(JSON.stringify(result)).toContain('trakt-7')
+    expect(result.addresses[0].id).toBe('trakt-7')
+    expect(result.addresses[0].notice).toBe('Kontrollera området.')
   })
 })

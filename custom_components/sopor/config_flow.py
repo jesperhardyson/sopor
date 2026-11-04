@@ -35,6 +35,7 @@ from .logic import (
     hit_title,
     kommun_names,
     not_found_error,
+    notice_text,
     parse_query,
     place_key,
     places,
@@ -146,8 +147,11 @@ class SoporConfigFlow(ConfigFlow, domain=DOMAIN):
             hit = next(hit for hit in self._hits if _hit_value(hit) == user_input["adress"])
             return await self._finish(hit)
         options = [SelectOptionDict(value=_hit_value(hit), label=hit_label(hit)) for hit in self._hits]
+        # Texten före källans varning finns bara i det egna stegets översättningar
+        notice = notice_text(self._hits)
         return self.async_show_form(
-            step_id="adress",
+            step_id="adress_omrade" if notice else "adress",
+            description_placeholders={"notice": notice} if notice else None,
             data_schema=probatio.Schema(
                 {
                     probatio.Required("adress"): SelectSelector(
@@ -156,6 +160,9 @@ class SoporConfigFlow(ConfigFlow, domain=DOMAIN):
                 }
             ),
         )
+
+    async def async_step_adress_omrade(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+        return await self.async_step_adress(user_input)
 
     async def _finish(self, hit: SearchHit) -> ConfigFlowResult:
         """Avslutar med den valda träffen. Reconfigure grenar här."""

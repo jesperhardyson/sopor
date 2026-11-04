@@ -263,6 +263,11 @@ def hit_title(hit: SearchHit) -> str:
     return f"{hit['street']}, {hit['locality'] or hit['kommun']}"
 
 
+def notice_text(hits: list[SearchHit]) -> str:
+    """Källornas varningar om områdesval, varje text en gång. Tom när ingen träff har någon."""
+    return "\n\n".join(dict.fromkeys(hit["notice"] for hit in hits if hit.get("notice")))
+
+
 def hit_label(hit: SearchHit) -> str:
     return f"{hit_title(hit)}, {hit['detail']}" if hit["detail"] else hit_title(hit)
 
