@@ -161,11 +161,12 @@ async function lookupStatic(source: Source, id: string, origin: string, opts: Ha
   if (!index) return { status: 502 }
   const row = index.addresses.find(([rowId]) => rowId === id)
   if (!row) return { status: 404 }
-  const [, street, locality, refs] = row
+  const [, street, locality, refs, area] = row
   const parts = await Promise.all(
     refs.map((ref) => siteJson<ScheduleFile>(origin, `${base}/schedules/${encodeURIComponent(ref)}.json`, opts.fetchFn, opts.timeoutMs)),
   )
   if (parts.some((p) => p === null)) return { status: 502 }
   const address: Address = { id, street, locality, sourceId: source.id, kommun: source.kommuner[0]?.name ?? source.name }
+  if (area) address.detail = area.detail
   return { status: 200, address, schedule: mergeParts(parts as ScheduleFile[]) }
 }

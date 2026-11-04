@@ -552,11 +552,11 @@
           },
           "street": {
             "type": "string",
-            "description": "Gatuadress, t.ex. \"Storgatan 2\"."
+            "description": "Gatuadress, t.ex. \"Storgatan 2\". En träff kan också vara ett område (en källa som delar in kommunen i områden i stället för adresser); då är det områdets namn, t.ex. \"Avesta tätort\"."
           },
           "locality": {
             "type": "string",
-            "description": "Ort."
+            "description": "Ort. Tom för ett område."
           },
           "kommun": {
             "type": "string",
@@ -571,7 +571,7 @@
               "string",
               "null"
             ],
-            "description": "Skiljer träffar med samma gata och ort åt, t.ex. \"Byggnad 78838\". null när det saknas."
+            "description": "Skiljer träffar med samma gata och ort åt, t.ex. \"Byggnad 78838\". För ett område är det hämtdagen, t.ex. \"Tisdag, jämn vecka · Trakt 7\". null när det saknas."
           }
         }
       },
@@ -599,7 +599,7 @@
           },
           "locality": {
             "type": "string",
-            "description": "Ort."
+            "description": "Ort. Tom för ett område."
           },
           "kommun": {
             "type": "string",

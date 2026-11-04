@@ -28,6 +28,7 @@ const SOURCES: Source[] = [
     kommuner: [{ code: '0001', name: 'Trög kommun' }],
     config: { system: 'edp', baseUrl: 'https://trog.test/FutureWeb' },
   },
+  { id: 'avesta', name: 'Avesta AB', url: 'https://avesta.test', kommuner: [{ code: '1', name: 'Avesta kommun' }], config: { system: 'static' }, selection: 'area' },
   { id: 'statisk', name: 'Statisk AB', url: 'https://statisk.test', kommuner: [{ code: '0002', name: 'Statiska kommun' }], config: { system: 'static' }, testData: true },
 ]
 
@@ -41,6 +42,16 @@ const files: Record<string, unknown> = {
       ['rik-1', 'Storgatan 1', 'Örebro', ['rik']],
       ['tom-1', 'Storgatan 2', 'Örebro', ['tom']],
     ],
+  },
+  '/data/avesta/addresses.json': {
+    sourceId: 'avesta',
+    updatedAt: '2026-01-01',
+    addresses: [['trakt-7', 'Avesta tätort', '', ['tom'], { detail: 'Tisdag, jämn vecka · Trakt 7', searchTerms: ['Trakt 7'] }]],
+  },
+  '/data/avesta/schedules/tom.json': {
+    id: 'tom', validFrom: '2026-01-01', validTo: '2026-12-31', updatedAt: '2026-01-01',
+    bins: [{ fraction: 'rest' }],
+    events: [{ date: '2026-11-03', fractions: ['mat'] }],
   },
   // Alla valfria fält ifyllda
   '/data/statisk/schedules/rik.json': {
@@ -150,6 +161,14 @@ describe('kontrakt: riktiga svar följer schemana', () => {
     expect(statisk.addresses.length).toBe(2)
     validate('SearchResponse', statisk)
     validate('SearchResponse', await (await call(handleV1Search, '/api/v1/sok?q=zzzzzz&kalla=uppsala')).json())
+  })
+
+  it('sök och adress för ett område', async () => {
+    const hits = await (await call(handleV1Search, '/api/v1/sok?q=trakt%207&kalla=avesta')).json()
+    expect(hits.addresses).toHaveLength(1)
+    expect(hits.addresses[0]).toMatchObject({ street: 'Avesta tätort', locality: '', detail: 'Tisdag, jämn vecka · Trakt 7' })
+    validate('SearchResponse', hits)
+    validate('AddressResponse', await (await call(handleV1Address, '/api/v1/adress?source=avesta&id=trakt-7')).json())
   })
 
   it('källor', async () => {

@@ -151,7 +151,14 @@ async function searchStatic(source: Source, query: string, origin: string, opts:
   const index = await siteJson<AddressIndexFile>(origin, `/data/${source.id}/addresses.json`, opts.fetchFn, opts.timeoutMs)
   if (!index) throw new Error(`${source.id} saknar adressfil`)
   const kommun = source.kommuner[0]?.name ?? source.name
-  const addresses = index.addresses.map(([id, street, locality]) => ({ id, street, locality, sourceId: source.id, kommun }))
+  const addresses = index.addresses.map(([id, street, locality, , area]) => ({
+    id,
+    street,
+    locality,
+    sourceId: source.id,
+    kommun,
+    ...(area && { detail: area.detail, searchTerms: area.searchTerms }),
+  }))
   return searchAddresses(query, addresses, SEARCH_LIMIT)
 }
 

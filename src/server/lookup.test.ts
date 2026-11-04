@@ -31,7 +31,10 @@ const files: Record<string, unknown> = {
   '/data/avesta/addresses.json': {
     sourceId: 'avesta',
     updatedAt: '2026-01-01',
-    addresses: [['storgatan-1', 'Storgatan 1', 'Avesta', ['2026-a', '2026-b']]],
+    addresses: [
+      ['storgatan-1', 'Storgatan 1', 'Avesta', ['2026-a', '2026-b']],
+      ['trakt-7', 'Avesta tätort', '', ['2026-a'], { detail: 'Tisdag, jämn vecka · Trakt 7', searchTerms: ['Trakt 7'] }],
+    ],
   },
   // Utan ordning i filen och mellan delarna
   '/data/avesta/schedules/2026-a.json': part('2026-a', '2026-01-01', '2026-06-30', ['2026-03-10', '2026-01-10']),
@@ -85,6 +88,14 @@ describe('lookupAddress', () => {
     if (r.status !== 200) throw new Error(`status ${r.status}`)
     expect(r.address).toEqual({ id: 'storgatan-1', street: 'Storgatan 1', locality: 'Avesta', sourceId: 'avesta', kommun: 'Avesta kommun' })
     expect(r.schedule.events.map((e) => e.date)).toEqual(['2026-01-10', '2026-03-10', '2026-07-10', '2026-09-10'])
+  })
+
+  it('slår upp ett område med detail', async () => {
+    const r = await lookupAddress(avesta, 'trakt-7', 'https://x', { ...opts, fetchFn: staticFetch })
+    if (r.status !== 200) throw new Error(`status ${r.status}`)
+    expect(r.address).toEqual({
+      id: 'trakt-7', street: 'Avesta tätort', locality: '', sourceId: 'avesta', kommun: 'Avesta kommun', detail: 'Tisdag, jämn vecka · Trakt 7',
+    })
   })
 
   it('ger 404 för okänt statiskt id', async () => {
