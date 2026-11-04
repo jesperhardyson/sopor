@@ -60,7 +60,7 @@ describe('vercel.json', () => {
     const rewrite = config.rewrites.find((r) => r.destination === '/index.html')!
     const re = new RegExp(`^${rewrite.source}$`)
     for (const p of ['/avesta/krylbo-storgatan-12b', '/om', '/']) expect(re.test(p)).toBe(true)
-    for (const p of ['/ics/avesta/x.ics', '/data/avesta/addresses.json', '/assets/x.js', '/api/sok', '/api/v1/kallor']) {
+    for (const p of ['/ics/avesta/x.ics', '/ics/avesta/morgon/x.ics', '/data/avesta/addresses.json', '/assets/x.js', '/api/sok', '/api/v1/kallor']) {
       expect(re.test(p)).toBe(false)
     }
   })
@@ -86,6 +86,11 @@ describe('vercel.json', () => {
     for (const p of ['/kommuner/uppsala-kommun', '/kommuner', '/om', '/', '/api/v1/kallor', '/ics/uppsala/x.ics', '/data/gator/st.json', '/assets/x.js']) {
       expect(re.test(p), p).toBe(false)
     }
+  })
+
+  it('skickar kalenderfiler med vald påminnelsetid till api/ics', () => {
+    const rewrite = config.rewrites.find((r) => r.source === '/ics/:source/:reminder/:file')
+    expect(rewrite?.destination).toBe('/api/ics?source=:source&reminder=:reminder&file=:file')
   })
 
   it('skickar kalenderfiler som inte finns statiskt till api/ics', () => {

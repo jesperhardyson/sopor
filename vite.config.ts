@@ -43,12 +43,13 @@ function soporApi(): Plugin {
         }
 
         let fn = routes[url.pathname.match(/^\/api\/(\w+)$/)?.[1] ?? '']
-        // /ics/<källa>/<fil> för live-källor (statiska filer i public/ serveras av Vite)
-        const ics = url.pathname.match(/^\/ics\/([^/]+)\/([^/]+)$/)
+        // /ics/<källa>[/<påminnelse>]/<fil> för live-källor och vald tid (statiska filer i public/ serveras av Vite)
+        const ics = url.pathname.match(/^\/ics\/([^/]+)\/(?:([^/]+)\/)?([^/]+)$/)
         if (!fn && ics && !existsSync(path.join(import.meta.dirname, 'public', decodeURIComponent(url.pathname)))) {
           fn = routes.ics
           url.searchParams.set('source', ics[1])
-          url.searchParams.set('file', decodeURIComponent(ics[2]))
+          url.searchParams.set('file', decodeURIComponent(ics[3]))
+          if (ics[2]) url.searchParams.set('reminder', ics[2])
         }
         if (!fn) return next()
         const handlers = await server.ssrLoadModule('/src/server/handlers.ts')

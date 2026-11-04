@@ -2,6 +2,7 @@
 // testas direkt och köras av Vites dev-server.
 
 import { buildIcs, buildNoticeIcs } from '../domain/ics.js'
+import { DEFAULT_REMINDER, reminderFromLink } from '../domain/reminders.js'
 import { todayInStockholm } from '../domain/dates.js'
 import { normalize } from '../domain/search.js'
 import type { Address } from '../domain/types.js'
@@ -171,8 +172,11 @@ export async function handleSchedule(url: URL, opts: HandlerOptions = {}): Promi
   return json({ address: r.address, schedule: r.schedule }, 200, CACHE_SCHEDULE)
 }
 
-/** GET /api/ics?source=uppsala&file=storgatan-2_uppsala-4004688.ics (via rewrite från /ics/…) */
+/** GET /api/ics?source=uppsala&file=storgatan-2_uppsala-4004688.ics&reminder=morgon (via rewrite från /ics/…) */
 export async function handleIcs(url: URL, opts: HandlerOptions = {}): Promise<Response> {
+  const param = url.searchParams.get('reminder')
+  const reminder = param === null ? DEFAULT_REMINDER : reminderFromLink(param)
+  if (!reminder) return new Response('Hittades inte', { status: 404, headers: { 'Cache-Control': CACHE_PARTIAL } })
   const id = decodeId((url.searchParams.get('file') ?? '').replace(/\.ics$/, ''))
   const r = await lookup(url, opts, id)
   // Källan nere, eller ett tomt schema från en live-källa (kan vara ett nytt format hos källan):
@@ -188,7 +192,7 @@ export async function handleIcs(url: URL, opts: HandlerOptions = {}): Promise<Re
       headers: { 'Content-Type': 'text/calendar; charset=utf-8', 'Cache-Control': 'public, s-maxage=3600' },
     })
   }
-  const content = buildIcs({ address: r.address, kommunName: r.address.kommun, schedule: r.schedule, notice: areaNoticeText(live) })
+  const content = buildIcs({ address: r.address, kommunName: r.address.kommun, schedule: r.schedule, notice: areaNoticeText(live), reminder })
   return new Response(content, {
     headers: { 'Content-Type': 'text/calendar; charset=utf-8', 'Cache-Control': CACHE_SCHEDULE },
   })

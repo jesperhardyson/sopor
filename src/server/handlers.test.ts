@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
 import type { Source } from '@/sources'
-import { handleIcs, handleSchedule, handleSearch, searchCandidates } from './handlers'
+import { CACHE_PARTIAL, handleIcs, handleSchedule, handleSearch, searchCandidates } from './handlers'
 
 const dir = path.resolve(import.meta.dirname, '__fixtures__')
 const fixture = (name: string) => readFileSync(path.join(dir, name), 'utf8')
@@ -112,6 +112,41 @@ describe('handleIcs', () => {
     const text = await res.text()
     expect(text).toContain('UID:storgatan-2_uppsala-4004688-2026-11-04@sopor.hardyson.se')
     expect(text).toContain('(beräknat)')
+  })
+
+  const icsUrl = (extra: string, source = 'uppsala') =>
+    new URL(`https://x/api/ics?source=${source}&file=storgatan-2_uppsala-4004688.ics${extra}`)
+
+  it('bygger filen med vald påminnelsetid', async () => {
+    const text = await (await handleIcs(icsUrl('&reminder=morgon'), opts)).text()
+    expect(text).toContain('TRIGGER:PT6H')
+    expect(text).not.toContain('TRIGGER:-PT6H')
+  })
+
+  it('använder förvalet utan parameter', async () => {
+    expect(await (await handleIcs(icsUrl(''), opts)).text()).toContain('TRIGGER:-PT6H')
+  })
+
+  it.each(['kvall-18', 'okand', '', 'constructor', '__proto__'])('ger 404 för %j utan att fråga källan', async (value) => {
+    vi.mocked(fetchFn).mockClear()
+    const res = await handleIcs(icsUrl(`&reminder=${value}`), opts)
+    expect(res.status).toBe(404)
+    expect(res.headers.get('Cache-Control')).toBe(CACHE_PARTIAL)
+    expect(fetchFn).not.toHaveBeenCalled()
+  })
+
+  it('svarar 502 med vald tid när källan är nere, så att kalenderappen behåller det den har', async () => {
+    const res = await handleIcs(icsUrl('&reminder=morgon', 'trog'), opts)
+    expect(res.status).toBe(502)
+    expect(res.headers.get('Cache-Control')).toBe('no-store')
+  })
+
+  it('ger notisfilen utan påminnelse när adressen inte finns, även med vald tid', async () => {
+    const res = await handleIcs(new URL('https://x/api/ics?source=uppsala&file=nygatan-9_uppsala-123.ics&reminder=morgon'), opts)
+    expect(res.status).toBe(200)
+    const text = (await res.text()).replace(/\r\n /g, '')
+    expect(text).toContain('SUMMARY:Sopor: adressen hittades inte')
+    expect(text).not.toContain('BEGIN:VALARM')
   })
 })
 
