@@ -22,7 +22,7 @@ Säters kommun ansvarar för sophämtningen och Borlänge Energi utför den. Kom
 | `id` | `trakt-7` | `ojamn-mandag` |
 | `name` | Från PDF:en | De två första namnen i kommunens lista utan förbehåll, plus "m.fl." |
 | `day` och `label` | "Tisdag, jämn vecka" och "Trakt 7" | "Måndag" och "Ojämn vecka". Säter har inga nummer, och vi hittar inte på några. |
-| `testData` | Ja | Nej, datan är riktig. Källan är bara dold. |
+| Synlighet | Live | Dold tills schemat efter vecka 53 finns |
 
 ## Data
 

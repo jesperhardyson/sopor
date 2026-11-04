@@ -1,4 +1,3 @@
-import '@/test/show-hidden-sources'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Address } from '@/domain/types'
 import type { Source } from '@/sources'
@@ -85,7 +84,6 @@ describe('searchInKommun', () => {
   afterEach(async () => {
     vi.unstubAllGlobals()
     vi.resetModules()
-    await import('@/test/show-hidden-sources')
   })
 
   it('frågar bara kommunens källor, även när gatan finns i andra kommuner', async () => {
@@ -186,7 +184,6 @@ describe('searchAll', () => {
   afterEach(async () => {
     vi.unstubAllGlobals()
     vi.resetModules() // tömmer sökcachen mellan testerna
-    await import('@/test/show-hidden-sources') // det nya källregistret ska också visa Avesta
   })
 
   const up = (street: string): Address => ({ id: `${street}-1`, street, locality: 'Uppsala', sourceId: 'uppsala', kommun: 'Uppsala kommun' })
@@ -477,7 +474,6 @@ describe('missingKommuner', () => {
   afterEach(async () => {
     vi.unstubAllGlobals()
     vi.resetModules()
-    await import('@/test/show-hidden-sources')
   })
 
   async function missing(query: string) {
@@ -616,7 +612,6 @@ describe('searchAll: val av område', () => {
 
   beforeEach(async () => {
     vi.resetModules()
-    await import('@/test/show-hidden-sources') // föregående grupp lämnar ett register utan Avesta
     vi.stubGlobal(
       'fetch',
       vi.fn(async (url: string) => {
@@ -633,7 +628,6 @@ describe('searchAll: val av område', () => {
   afterEach(async () => {
     vi.unstubAllGlobals()
     vi.resetModules()
-    await import('@/test/show-hidden-sources')
   })
 
   async function pickers(query: string, options?: SearchOptions) {

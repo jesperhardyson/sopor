@@ -8,11 +8,13 @@ describe('källregistret', () => {
     for (const id of ids) expect(id).toMatch(/^[a-z0-9-]+$/)
   })
 
-  it('har Avesta som dold statisk källa med testdata', () => {
+  it('har Avesta som synlig statisk källa med områdesval', () => {
     const avesta = ALL_SOURCES.find((s) => s.id === 'avesta')!
     expect(avesta.config).toEqual({ system: 'static' })
     expect(avesta.kommuner).toEqual([{ code: '2084', name: 'Avesta kommun' }])
-    expect(avesta).toMatchObject({ testData: true, hidden: true, selection: 'area' })
+    expect(avesta).toMatchObject({ selection: 'area' })
+    expect(avesta.hidden).toBeUndefined()
+    expect(avesta.testData).toBeUndefined()
     expect(avesta.emptyScheduleNote?.title).toBe('Schemat för nästa år är inte publicerat än')
   })
 
@@ -25,8 +27,8 @@ describe('källregistret', () => {
 
   it('visar inte dolda källor', () => {
     expect(SOURCES.some((s) => s.hidden)).toBe(false)
-    expect(getSource('avesta')).toBeUndefined()
-    expect(supportedKommuner().map((k) => k.name)).not.toContain('Avesta kommun')
+    expect(getSource('avesta')).toBeDefined()
+    expect(supportedKommuner().map((k) => k.name)).toContain('Avesta kommun')
   })
 
   it('listar kommunerna som stöds, sorterade och utan dubbletter', () => {

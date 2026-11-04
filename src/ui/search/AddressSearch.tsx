@@ -1,7 +1,7 @@
-import { kommunInText } from '@/domain/kommun'
 import { ArrowRight, ChevronDown, LoaderCircle, Map, MapPin, Search, UserCheck, X } from 'lucide-react'
 import { Fragment, useEffect, useId, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
+import { kommunInText } from '@/domain/kommun'
 import { enterTarget, groupByKommun, matchedTerm, normalize, stableMerge } from '@/domain/search'
 import type { Address } from '@/domain/types'
 import { missingKommuner, prefetchAddress, searchAll, suggestAll, warmUpSearch, type AreaPicker, type SearchOptions, type SearchResult } from '@/providers/registry'

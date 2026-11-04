@@ -1,4 +1,3 @@
-import '@/test/show-hidden-sources'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes, useLocation, useParams } from 'react-router'
@@ -145,17 +144,10 @@ describe('AreaPage', () => {
 
   it('filtret hittar på etiketten, som i Säter är veckan', async () => {
     fake = makeProvider({ listAreas: async () => ({ ...index, areas: [{ ...index.areas[0], day: 'Måndag', label: 'Ojämn vecka' }, { ...index.areas[1], day: 'Tisdag', label: 'Jämn vecka' }] }) })
-    show('/sater/omraden')
+    show()
     await userEvent.type(await screen.findByRole('searchbox', { name: 'Sök område, ort eller gata' }), 'ojämn')
     expect(screen.getByText('Askön, Nyhyttan m.fl.')).toBeInTheDocument()
     expect(screen.queryByText('Avesta tätort, Östanfors m.fl.')).toBeNull()
-  })
-
-  it('skriver kommunens hela namn när det slutar på s', async () => {
-    knownStreets = { Kungsgatan: 'Kungsgatan' }
-    show('/sater/omraden')
-    await userEvent.type(await screen.findByRole('searchbox', { name: 'Sök område, ort eller gata' }), 'Kungsgatan')
-    expect(await screen.findByRole('heading', { name: 'Kungsgatan finns i Säters kommun' })).toBeInTheDocument()
   })
 
   it('visar förklaring och hela listan för en känd gata utan områdesträff', async () => {

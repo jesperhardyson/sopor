@@ -1,7 +1,7 @@
-import { kommunInText } from '@/domain/kommun'
 import { ArrowRight, Map, MapPin, SearchX } from 'lucide-react'
 import { Link } from 'react-router'
 import { streetAndLocality } from '@/domain/address'
+import { kommunInText } from '@/domain/kommun'
 import type { Address } from '@/domain/types'
 import { cn } from '@/lib/utils'
 import { supportedKommuner } from '@/sources'

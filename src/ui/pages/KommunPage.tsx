@@ -1,7 +1,7 @@
-import { kommunInText } from '@/domain/kommun'
 import { ArrowRight, SearchX } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation, useParams } from 'react-router'
+import { kommunInText } from '@/domain/kommun'
 import type { KommunPage as KommunPageData } from '@/data/kommun-pages'
 import { kommunPage, searchInKommun } from '@/providers/registry'
 import { SOURCES } from '@/sources'

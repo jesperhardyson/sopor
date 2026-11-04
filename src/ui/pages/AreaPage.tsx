@@ -1,7 +1,7 @@
-import { kommunInText } from '@/domain/kommun'
 import { ArrowLeft, ArrowRight, CalendarSearch, ChevronRight, MapPin, Search } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation, useParams } from 'react-router'
+import { kommunInText } from '@/domain/kommun'
 import { searchAddresses } from '@/domain/search'
 import { todayInStockholm } from '@/domain/dates'
 import type { Address, Area } from '@/domain/types'
