@@ -216,6 +216,11 @@ describe('områdessökning', () => {
     expect(ids(searchAddresses('Stallgatan 5 B', AREAS))).toEqual(['trakt-1'])
   })
 
+  it('gatan räknas bara när inget annat än husnummer och bokstav följer', () => {
+    expect(searchAddresses('Stallgatan 5, Stockholm', AREAS)).toEqual([])
+    expect(searchAddresses('Stallgatan 5 B Stockholm', AREAS)).toEqual([])
+  })
+
   it('orelaterad gata ger inget', () => {
     expect(searchAddresses('Kungsgatan 12', AREAS)).toEqual([])
   })
@@ -231,6 +236,15 @@ describe('områdessökning', () => {
   describe('matchedTerm', () => {
     it('ger sökordet som gav träff', () => {
       expect(matchedTerm('Backa', AREAS[2])).toBe('Backa')
+    })
+
+    it('ger gatan när ett husnummer följer', () => {
+      expect(matchedTerm('Stallgatan 5', AREAS[0])).toBe('Stallgatan')
+    })
+
+    it('ger gatan när en plats följer', () => {
+      expect(matchedTerm('Stallgatan 5, Avesta', AREAS[0])).toBe('Stallgatan')
+      expect(matchedTerm('Stallgatan Avesta', AREAS[0])).toBe('Stallgatan')
     })
 
     it('ger null när namnet redan visar träffen', () => {

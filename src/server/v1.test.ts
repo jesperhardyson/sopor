@@ -42,7 +42,7 @@ const files: Record<string, unknown> = {
     sourceId: 'avesta',
     updatedAt: '2026-01-01',
     addresses: [
-      ['trakt-7', 'Avesta tätort', '', ['2026-trakt-7'], { detail: 'Tisdag, jämn vecka · Trakt 7', searchTerms: ['Trakt 7'] }],
+      ['trakt-7', 'Avesta tätort', '', ['2026-trakt-7'], { detail: 'Tisdag, jämn vecka · Trakt 7', searchTerms: ['Trakt 7', 'Stallgatan'] }],
     ],
   },
   '/data/avesta/schedules/2026-trakt-7.json': {
@@ -422,6 +422,18 @@ describe('områden som träffar', () => {
     const body = await (await search('q=trakt%207&kalla=avesta')).json()
     expect(body.addresses).toEqual([hit])
     expect(JSON.stringify(body)).not.toContain('searchTerms')
+  })
+
+  it('hittar gatan när frågan nämner Avesta, med och utan kalla', async () => {
+    for (const q of ['Stallgatan%205%2C%20Avesta', 'Stallgatan%2C%20Avesta', 'Stallgatan%20Avesta']) {
+      expect((await (await search(`q=${q}`)).json()).addresses).toEqual([hit])
+      expect((await (await search(`q=${q}&kalla=avesta`)).json()).addresses).toEqual([hit])
+    }
+  })
+
+  it('hittar inte gatan när frågan nämner en annan plats', async () => {
+    const body = await (await search('q=Stallgatan%205%2C%20Stockholm')).json()
+    expect(body.addresses).toEqual([])
   })
 
   it('en gatuadress ger inga träffar och inget fel', async () => {

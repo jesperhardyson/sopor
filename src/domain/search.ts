@@ -46,10 +46,9 @@ function terms(a: Address): { text: string; norm: string }[] {
   return [a.street, ...(a.searchTerms ?? [])].map((text) => ({ text, norm: normalize(text) }))
 }
 
-/** Gatudelen av "stallgatan 5b", bara när ett husnummer följer. */
+/** Gatudelen av "stallgatan 5b", bara när husnummer och bokstav står sist. "näs 12 gotland" är ingen gata i listan. */
 function streetPart(q: string): string | undefined {
-  const { name, number } = splitStreet(q)
-  return number ? name : undefined
+  return q.match(/^(.+) \d+\p{L}?$/u)?.[1]
 }
 
 /** Alla ord i frågan börjar något ord i samma term, eller gatudelen är exakt lika med termen. */
@@ -89,7 +88,14 @@ export function matchedTerm(query: string, address: Address): string | null {
   const q = normalize(query)
   const [name, ...rest] = terms(address)
   if (termMatches(q, name)) return null
-  return rest.find((t) => termMatches(q, t))?.text ?? null
+  const asked = q.split(' ')
+  const hit = rest.find((t) => termMatches(q, t)) ?? rest.find((t) => t.norm.split(' ').every((w) => asked.includes(w)))
+  return hit?.text ?? null
+}
+
+/** Träffarna från två sökningar, utan dubbletter. */
+export function mergeHits(first: Address[], second: Address[]): Address[] {
+  return [...first, ...second.filter((a) => !first.some((b) => b.id === a.id))]
 }
 
 /** Damerau-Levenshtein (optimal string alignment) */

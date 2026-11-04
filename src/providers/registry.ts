@@ -1,9 +1,9 @@
 import type { KommunPage } from '@/data/kommun-pages'
 import type { Address } from '@/domain/types'
 import { getSource, placeKommuner, SOURCES, supportedKommuner, type Kommun, type Source } from '@/sources'
-import { isKnownStreet, matchesPlace, pickLiveSources, shardKey, splitPlace, type QueryParts, type StreetShard } from '@/data/street-index'
+import { isKnownStreet, matchesPlace, namesSource, pickLiveSources, shardKey, splitPlace, streetAtSourcePlace, type QueryParts, type StreetShard } from '@/data/street-index'
 import { kommunerForPlace } from '@/data/sweden-places'
-import { normalize } from '@/domain/search'
+import { mergeHits, normalize } from '@/domain/search'
 import { kommunForLocality } from '@/sources'
 import { createApiProvider } from './api'
 import { loadKommunPages, loadPlaces, loadSwedenPlaces } from './places'
@@ -260,17 +260,24 @@ async function areaPickersFor(query: string, found: Address[], kommun?: Kommun):
   const shard = await loadShard(shardKey(query))
   const { place } = splitPlace(shard, query)
   const placeShard = place ? await loadShard(shardKey(place)) : null
-  const placeKey = normalize(place, false)
-  const named = (s: Source) =>
-    placeKey !== '' &&
-    (placeKommuner(s).some((k) => normalize(k.name.replace(/ kommun$/, ''), false) === placeKey) ||
-      (placeShard?.[placeKey]?.includes(s.id) ?? false))
   return sources.flatMap((s) => {
     const hasHits = found.some((a) => a.sourceId === s.id)
     // Nämner frågan en annan plats hör gatan inte till källan, hur väl gatan än är känd.
-    const relevant = hasHits || (place ? named(s) : isKnownStreet(shard, query, s.id))
+    const relevant = hasHits || (place ? namesSource(place, placeShard, s) : isKnownStreet(shard, query, s.id))
     return relevant ? [{ sourceId: s.id, kommun: s.kommuner[0]?.name ?? s.name, hasHits }] : []
   })
+}
+
+/**
+ * Sökningen hos en statisk källa. Nämner frågan källans plats söks områdena också på gatudelen.
+ * Hela frågan söks alltid, eftersom "Avesta tätort" kan delas i gatan "avesta" och platsen "tätort".
+ */
+async function searchStaticSource(source: Source, query: string, signal?: AbortSignal): Promise<Address[]> {
+  const provider = providerFor(source)
+  const hits = await provider.searchAddresses(query, signal)
+  if (source.selection !== 'area') return hits
+  const street = await streetAtSourcePlace(query, source, loadShard)
+  return street ? mergeHits(hits, await provider.searchAddresses(street, signal)) : hits
 }
 
 /** Väcker sökfunktionen och laddar ort-tabellen i förväg, t.ex. när sökfältet får fokus. */
@@ -298,7 +305,7 @@ export async function searchAll(
   let latest: Omit<SearchResult, 'areaPickers'> = { addresses: [], failed: [] }
   const live = searchLive(query, signal, options, (partial) => report((latest = partial)))
   const local = SOURCES.filter((m) => m.config.system === 'static' && coversKommun(m, options.kommun))
-  const localResults = await Promise.allSettled(local.map((m) => providerFor(m).searchAddresses(query, signal)))
+  const localResults = await Promise.allSettled(local.map((m) => searchStaticSource(m, query, signal)))
   localAddresses = localResults.some((r) => r.status === 'fulfilled') ? mergeResults(localResults, 8).filter((a) => mayBeInKommun(a, options.kommun)) : []
   areaPickers = await areaPickersFor(query, localAddresses, options.kommun)
   localDone = true

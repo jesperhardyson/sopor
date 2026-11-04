@@ -5,9 +5,9 @@ import { secondsToStockholmMidnight, todayInStockholm } from '../domain/dates.js
 import { FRACTIONS, sortFractions } from '../domain/fractions.js'
 import { nextPerFraction, pickupSummary } from '../domain/next.js'
 import { upcoming } from '../domain/schedule.js'
-import { normalize, searchAddresses } from '../domain/search.js'
+import { mergeHits, normalize, searchAddresses } from '../domain/search.js'
 import type { Address, FractionId, Schedule } from '../domain/types.js'
-import { pickLiveSources, shardKey, splitPlace, type StreetShard } from '../data/street-index.js'
+import { pickLiveSources, shardKey, splitPlace, streetAtSourcePlace, type StreetShard } from '../data/street-index.js'
 import type { AddressIndexFile } from '../data/static-format.js'
 import { isLive, needsPlaces, SOURCES, type Source } from '../sources/index.js'
 import { CACHE_PARTIAL, CACHE_SEARCH, decodeId, searchLiveSource, type HandlerOptions } from './handlers.js'
@@ -159,7 +159,11 @@ async function searchStatic(source: Source, query: string, origin: string, opts:
     kommun,
     ...(area && { detail: area.detail, searchTerms: area.searchTerms }),
   }))
-  return searchAddresses(query, addresses, SEARCH_LIMIT)
+  const hits = searchAddresses(query, addresses, SEARCH_LIMIT)
+  if (source.selection !== 'area') return hits
+  // Nämner frågan källans plats söks områdena också på gatudelen, som i registret på sajten.
+  const street = await streetAtSourcePlace(query, source, (key) => streetShard(key, origin, opts))
+  return street ? mergeHits(hits, searchAddresses(street, addresses, SEARCH_LIMIT)).slice(0, SEARCH_LIMIT) : hits
 }
 
 /** Gatuindexet hjälper till att välja källor. Når vi det inte frågar vi som om gatan saknades. */

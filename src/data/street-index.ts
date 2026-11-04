@@ -155,6 +155,34 @@ export function matchesPlace(a: { locality: string; kommun: string }, place: str
   return !p || [a.locality, a.kommun].some((name) => normalize(name, false).startsWith(p))
 }
 
+/** Om platsen är källans kommun, eller en ort eller gata hos källan enligt platsens delfil. */
+export function namesSource(place: string, placeShard: StreetShard | null, source: Source): boolean {
+  const key = normalize(place, false)
+  if (key === '') return false
+  return (
+    placeKommuner(source).some((k) => normalize(k.name.replace(/ kommun$/, ''), false) === key) ||
+    (placeShard?.[key]?.includes(source.id) ?? false)
+  )
+}
+
+/**
+ * Gatudelen när frågan nämner källans kommun eller en ort i den: "Stallgatan 5, Avesta" → "stallgatan 5".
+ * Undefined när frågan inte nämner någon plats eller nämner en annan. Gator som saknas i indexet
+ * delar `splitPlace` inte, så utan plats prövas sista ordet: "Storbogatan Avesta".
+ */
+export async function streetAtSourcePlace(
+  query: string,
+  source: Source,
+  loadShard: (key: string) => Promise<StreetShard | null>,
+): Promise<string | undefined> {
+  if (normalize(query).length < 2) return undefined
+  const parts = splitPlace(await loadShard(shardKey(query)), query)
+  const words = parts.street.split(' ')
+  const { street, place } = parts.place ? parts : { street: words.slice(0, -1).join(' '), place: words.at(-1) ?? '' }
+  if (!street || !place) return undefined
+  return namesSource(place, await loadShard(shardKey(place)), source) ? street : undefined
+}
+
 /**
  * Om frågans gata (utan husnummer) finns hos källan, exakt och inte bara som början av ett namn.
  * Delfilen har både gator och orter, så en fråga som bara är en ort räknas också.
