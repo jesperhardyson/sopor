@@ -150,6 +150,13 @@ describe('AreaPage', () => {
     expect(screen.queryByText('Avesta tätort, Östanfors m.fl.')).toBeNull()
   })
 
+  it('skriver kommunens hela namn när det slutar på s', async () => {
+    knownStreets = { Kungsgatan: 'Kungsgatan' }
+    show('/sater/omraden')
+    await userEvent.type(await screen.findByRole('searchbox', { name: 'Sök område, ort eller gata' }), 'Kungsgatan')
+    expect(await screen.findByRole('heading', { name: 'Kungsgatan finns i Säters kommun' })).toBeInTheDocument()
+  })
+
   it('visar förklaring och hela listan för en känd gata utan områdesträff', async () => {
     knownStreets = { 'Kungsgatan 12': 'Kungsgatan' }
     show()

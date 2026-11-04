@@ -101,6 +101,7 @@ describe('kommunsidornas data', () => {
     const pages = readKommunPages()
     expect(pages).toHaveLength(290)
     expect(pages.find((p) => p.code === '2084')?.covered).toBe(true)
+    expect(pages.find((p) => p.code === '2082')?.covered).toBe(true)
     expect(pages.find((p) => p.code === '0380')?.covered).toBe(true)
   })
 })

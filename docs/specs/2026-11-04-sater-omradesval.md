@@ -11,7 +11,7 @@ Säters kommun ansvarar för sophämtningen och Borlänge Energi utför den. Kom
 - En Säterbo hittar sin hämtdag utan konto och kan lägga den i kalendern.
 - Det går att söka på ort, som "Bispberg" eller "Innerstaden", och på de gator kommunen nämner.
 - En ort som finns i flera områden visar alla, så att ingen ser bara ett av dem.
-- Säter är dold tills schemat för tiden efter vecka 53 finns.
+- Säter visas från 2026-11-04 (beslut samma dag), före schemat för tiden efter vecka 53.
 
 ## Skillnader mot Avesta
 
@@ -22,12 +22,11 @@ Säters kommun ansvarar för sophämtningen och Borlänge Energi utför den. Kom
 | `id` | `trakt-7` | `ojamn-mandag` |
 | `name` | Från PDF:en | De två första namnen i kommunens lista utan förbehåll, plus "m.fl." |
 | `day` och `label` | "Tisdag, jämn vecka" och "Trakt 7" | "Måndag" och "Ojämn vecka". Säter har inga nummer, och vi hittar inte på några. |
-| Synlighet | Live | Dold tills schemat efter vecka 53 finns |
 
 ## Data
 
 - `data/sater/2026/schedules.json` har vecka 45–53, alltså 2026-11-02 till 2027-01-03, som kommunen har publicerat dem. Tidigare datum läggs inte in, och datum efter vecka 53 räknas inte fram.
-- Ojämn vecka har hämtning vecka 53 och skulle få nästa vecka 1. Vad som gäller där är okänt, och det är en anledning till att källan är dold.
+- Ojämn vecka har hämtning vecka 53 och skulle få nästa vecka 1. Vad som gäller där är okänt, och efter 2027-01-03 visar sidan `emptyScheduleNote` tills fortsättningen är inlagd.
 - `note` säger att schemat gäller villa och fritidshus, att kärlen ställs ut senast 05.00 och att hämtning sker även på helgdagar om man inte får besked om något annat.
 
 ## Sökning
@@ -56,8 +55,7 @@ Säters kommun ansvarar för sophämtningen och Borlänge Energi utför den. Kom
 
 ## Lansering
 
-1. Be kommunen om schemat efter vecka 53 och om vad sommarhämtningen innebär för schemat.
-2. Lägg in `data/sater/2027/` och kontrollera att områdena är oförändrade.
-3. Ta bort `hidden`, och uppdatera `CLAUDE.md`, `sources.test.ts` och tabellen i `docs/kommuner/hitta-kommunens-data.md`.
-4. Kontrollera flödet på en förhandsversion, eftersom det inte går medan källan är dold.
-5. Utöka hjälptexten i Homey och Home Assistant, som bara nämner Avesta.
+1. Säter visas på sajten sedan 2026-11-04, före schemat efter vecka 53.
+2. Be kommunen om schemat efter vecka 53, och om vad som gäller vecka 1 och vad sommarhämtningen innebär för schemat.
+3. Lägg in fortsättningen och kontrollera att områdena är oförändrade.
+4. Utöka hjälptexten i Homey och Home Assistant, som bara nämner Avesta, med respektive releaseskript.

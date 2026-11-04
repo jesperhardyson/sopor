@@ -80,8 +80,6 @@ export const ALL_SOURCES: Source[] = [
       title: 'Schemat framåt är inte publicerat än',
       text: 'Säters kommun har bara publicerat hämtveckorna en bit framåt. Datumen visas här när nästa period finns.',
     },
-    // Datan är riktig, men dold tills schemat efter vecka 53 finns.
-    hidden: true,
   },
   {
     id: 'uppsala',

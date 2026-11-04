@@ -113,8 +113,9 @@ describe('sökning på Säters områden', () => {
 })
 
 describe('Säter i registret', () => {
-  it('är dold, med områdesval och utan testdata', () => {
-    expect(source).toMatchObject({ hidden: true, selection: 'area', config: { system: 'static' }, kommuner: [{ code: '2082', name: 'Säters kommun' }] })
+  it('är synlig, med områdesval och utan testdata', () => {
+    expect(source.hidden).toBeUndefined()
+    expect(source).toMatchObject({ selection: 'area', config: { system: 'static' }, kommuner: [{ code: '2082', name: 'Säters kommun' }] })
     expect(source.testData).toBeUndefined()
     expect(source.areaNotice?.text).toContain('Väljer du fel område')
   })
