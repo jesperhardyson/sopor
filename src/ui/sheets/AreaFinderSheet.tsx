@@ -20,7 +20,7 @@ const box = 'flex flex-col gap-2 rounded-[14px] p-4'
 
 function NoMatch({ title, text }: { title: string; text: string }) {
   return (
-    <div role="status" className={`${box} bg-earth-soft`}>
+    <div className={`${box} bg-earth-soft`}>
       <h3 className="text-[17px] font-extrabold text-text">{title}</h3>
       <p className="text-[15px] leading-[1.4] text-text-2">{text}</p>
     </div>
@@ -67,6 +67,8 @@ export function AreaFinderSheet({
           />
         </div>
       </div>
+      {/* Området är alltid monterat, så att skärmläsare märker när innehållet byts. */}
+      <div role="status" aria-live="polite" className="flex flex-col gap-[18px] empty:hidden">
       {date > today && <NoMatch title="Datumet har inte varit än" text="Ange dagen då kärlet senast tömdes." />}
       {result?.kind === 'found' && (
         <div className={`${box} bg-brand-soft`}>
@@ -87,6 +89,7 @@ export function AreaFinderSheet({
       {result?.kind === 'outside' && (
         <NoMatch title="Vi har inget schema för det datumet" text="Schemat för den perioden saknas. Prova ett annat datum eller välj område i listan." />
       )}
+      </div>
       <div className="flex flex-col gap-2">
         {result?.kind === 'found' && (
           <Link

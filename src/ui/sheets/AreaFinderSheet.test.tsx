@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router'
 import { describe, expect, it, vi } from 'vitest'
@@ -29,6 +29,16 @@ function pick(date: string) {
 }
 
 describe('AreaFinderSheet', () => {
+  it('har en statusregion som finns redan innan ett datum valts och rymmer resultatet', () => {
+    show()
+    const status = screen.getByRole('status')
+    expect(status).toBeEmptyDOMElement()
+    pick('2026-10-27')
+    expect(within(screen.getByRole('status')).getByText('Det här bör vara ditt område')).toBeInTheDocument()
+    pick('2026-10-24')
+    expect(within(screen.getByRole('status')).getByText('Inget område har hämtning den dagen')).toBeInTheDocument()
+  })
+
   it('har rubrik, förklaring och ett datumfält som inte släpper fram framtiden', () => {
     show()
     expect(screen.getByRole('heading', { name: 'När tömdes ditt kärl senast?' })).toBeInTheDocument()
