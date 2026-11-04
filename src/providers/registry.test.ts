@@ -645,14 +645,13 @@ describe('searchAll: val av område', () => {
 
   const iAvesta = { kommun: { code: '2084', name: 'Avesta kommun' } }
 
-  it('ger ingen väljare för en gata utan plats, eftersom gatunamnet kan höra till vilken kommun som helst', async () => {
-    expect(await pickers('Kungsgatan')).toEqual([])
-    expect(await pickers('Kungsgatan 12')).toEqual([])
+  it('ger en väljare med gatan för en hel känd gata, med eller utan nummer', async () => {
+    expect(await pickers('Kungsgatan')).toEqual([{ ...avesta, hasHits: false, street: 'Kungsgatan' }])
+    expect(await pickers('kungsgatan 12')).toEqual([{ ...avesta, hasHits: false, street: 'Kungsgatan 12' }])
   })
 
-  it('ger en väljare för en hel känd gata på kommunsidan, med eller utan nummer', async () => {
-    expect(await pickers('Kungsgatan', iAvesta)).toEqual([{ ...avesta, hasHits: false }])
-    expect(await pickers('Kungsgatan 12', iAvesta)).toEqual([{ ...avesta, hasHits: false }])
+  it('ger en väljare för en hel känd gata på kommunsidan', async () => {
+    expect(await pickers('Kungsgatan 12', iAvesta)).toEqual([{ ...avesta, hasHits: false, street: 'Kungsgatan 12' }])
   })
 
   it('ger ingen väljare på kommunsidan för en gata som inte finns där', async () => {
@@ -660,8 +659,8 @@ describe('searchAll: val av område', () => {
   })
 
   it('ger en väljare när frågan nämner Avesta, även för en okänd gata', async () => {
-    expect(await pickers('Kungsgatan 12 Avesta')).toEqual([{ ...avesta, hasHits: false }])
-    expect(await pickers('Okändgatan 3, Avesta')).toEqual([{ ...avesta, hasHits: false }])
+    expect(await pickers('Kungsgatan 12 Avesta')).toEqual([{ ...avesta, hasHits: false, street: 'Kungsgatan 12' }])
+    expect(await pickers('Okändgatan 3, Avesta')).toEqual([{ ...avesta, hasHits: false, street: 'Okändgatan 3' }])
   })
 
   it('ger ingen väljare för en halvskriven gata eller en gata som inte finns i Avesta', async () => {
@@ -703,7 +702,7 @@ describe('searchAll: val av område', () => {
     })
     expect(await pickers('Kungsgatan', iAvesta)).toEqual([])
     down = false
-    expect(await pickers('Kungsgatan', iAvesta)).toEqual([{ ...avesta, hasHits: false }])
+    expect(await pickers('Kungsgatan', iAvesta)).toEqual([{ ...avesta, hasHits: false, street: 'Kungsgatan' }])
   })
 
   it('hämtar en delfil igen efter ett serverfel, men inte en som inte finns', async () => {
@@ -713,7 +712,7 @@ describe('searchAll: val av område', () => {
     stub.mockImplementation(async (url) => (down && url === '/data/gator/ku.json' ? new Response('', { status: 500 }) : working(url)))
     expect(await pickers('Kungsgatan', iAvesta)).toEqual([])
     down = false
-    expect(await pickers('Kungsgatan', iAvesta)).toEqual([{ ...avesta, hasHits: false }])
+    expect(await pickers('Kungsgatan', iAvesta)).toEqual([{ ...avesta, hasHits: false, street: 'Kungsgatan' }])
 
     await pickers('Zzzgatan')
     await pickers('Zzzgatan')

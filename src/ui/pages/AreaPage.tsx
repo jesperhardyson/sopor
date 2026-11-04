@@ -1,9 +1,12 @@
-import { ArrowLeft, ArrowRight, CalendarSearch, ChevronRight, Search } from 'lucide-react'
-import { useMemo, useState } from 'react'
-import { Link, useParams } from 'react-router'
+import { ArrowLeft, ArrowRight, CalendarSearch, ChevronRight, MapPin, Search } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
+import { Link, useLocation, useParams } from 'react-router'
 import { searchAddresses } from '@/domain/search'
 import { todayInStockholm } from '@/domain/dates'
 import type { Address, Area } from '@/domain/types'
+import { moveChoices, rememberChoice, replaceSaved } from '@/lib/storage'
+import { cn } from '@/lib/utils'
+import { knownAreaStreet } from '@/providers/registry'
 import { getSource, type Source } from '@/sources'
 import { useAreas } from '../hooks/useAreas'
 import { usePageTitle } from '../hooks/usePageTitle'
@@ -12,6 +15,13 @@ import { AreaFinderSheet } from '../sheets/AreaFinderSheet'
 
 const page = 'mx-auto flex w-full max-w-[920px] flex-col gap-5 px-5 pt-1 pb-8 md:px-8 md:pt-4 lg:gap-7 lg:px-0 lg:pb-20'
 const MAX_PLACES = 5
+
+/** Vad områdesvalet får med sig: gatan man sökte, området man byter från och om arket ska öppnas direkt. */
+export interface AreaPageState {
+  street?: string
+  from?: string
+  find?: boolean
+}
 
 function BackLink() {
   return (
@@ -30,7 +40,7 @@ function asAddresses(areas: Area[], source: Source): Address[] {
     locality: '',
     sourceId: source.id,
     kommun: source.kommuner[0].name,
-    searchTerms: a.searchTerms,
+    searchTerms: [...a.searchTerms, a.day],
   }))
 }
 
@@ -49,17 +59,49 @@ export function AreaPage({ today = todayInStockholm() }: { today?: string }) {
   const source = getSource(sourceId)
   const supported = source?.selection === 'area'
   const [state, retry] = useAreas(supported ? source : undefined)
+  const nav = (useLocation().state ?? {}) as AreaPageState
   const [query, setQuery] = useState('')
-  const [finder, setFinder] = useState(false)
+  const [finder, setFinder] = useState(nav.find === true)
+  const [known, setKnown] = useState<{ query: string; street: string }>()
   usePageTitle('Välj område – Sopor')
 
   const index = state.status === 'ready' ? state.index : undefined
-  const shown = useMemo(() => {
+  const hits = useMemo(() => {
     if (!index || !source) return []
     if (query.trim().length < 2) return index.areas
-    const hits = searchAddresses(query, asAddresses(index.areas, source), index.areas.length, { areaPrefix: true })
-    return hits.map((h) => index.areas.find((a) => a.id === h.id)!)
+    const found = searchAddresses(query, asAddresses(index.areas, source), index.areas.length, { areaPrefix: true })
+    return found.map((h) => index.areas.find((a) => a.id === h.id)!)
   }, [index, source, query])
+
+  // En gata som finns i kommunen men inte i områdeslistan är ingen återvändsgränd: då står hela listan kvar.
+  const noHits = index !== undefined && hits.length === 0
+  useEffect(() => {
+    if (!noHits) return
+    let current = true
+    knownAreaStreet(sourceId, query).then(
+      (street) => {
+        if (current) setKnown(street ? { query, street } : undefined)
+      },
+      () => {},
+    )
+    return () => {
+      current = false
+    }
+  }, [noHits, sourceId, query])
+  const knownStreet = noHits && known?.query === query ? known.street : undefined
+  const shown = knownStreet && index ? index.areas : hits
+
+  /** Valet stannar i webbläsaren. Byter man område följer det sparade området och tidigare val med. */
+  function choose(area: Area) {
+    if (nav.from && nav.from !== area.id) {
+      replaceSaved(sourceId, nav.from, { id: area.id, street: area.name })
+      moveChoices(sourceId, nav.from, area)
+    }
+    if (nav.street) rememberChoice({ sourceId, street: nav.street, areaId: area.id, label: area.label, day: area.day })
+  }
+  // Kommer man från en gata är Hitta område nästa steg, så på mobil ligger det före filtret.
+  const filterOrder = nav.street ? 'order-3' : 'order-2'
+  const linkState = (area: Area) => (nav.from && nav.from !== area.id ? { areaChanged: true } : undefined)
 
   if (!source || !supported) {
     return (
@@ -83,17 +125,30 @@ export function AreaPage({ today = todayInStockholm() }: { today?: string }) {
         // På mobil ligger delarna i en kolumn i den ordning orden anger, på desktop delas de i två kolumner.
         <div className="flex flex-col gap-5 lg:grid lg:grid-cols-[minmax(0,520px)_minmax(0,360px)] lg:items-start lg:gap-x-10">
           <div className="contents lg:flex lg:flex-col lg:gap-5">
-            <label className="order-2 flex h-14 items-center gap-2.5 rounded-2xl border border-border bg-surface px-4 focus-within:border-primary lg:order-none">
+            <label className={cn('flex h-14 items-center gap-2.5 rounded-2xl border border-border bg-surface px-4 focus-within:border-primary lg:order-none', filterOrder)}>
               <Search className="size-5 shrink-0 text-text-2" aria-hidden />
               <input
                 type="search"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                aria-label="Sök ort eller gata"
-                placeholder="Sök ort eller gata"
+                aria-label="Sök område, ort eller gata"
+                placeholder="Sök område, ort eller gata"
                 className="min-w-0 flex-1 bg-transparent text-base text-text outline-none placeholder:text-text-2"
               />
             </label>
+            {knownStreet && (
+              <div role="status" className={cn('flex gap-3 rounded-[20px] bg-surface-2 p-5 lg:order-none', filterOrder)}>
+                <MapPin className="size-[22px] shrink-0 text-text" aria-hidden />
+                <div className="flex min-w-0 flex-col gap-1">
+                  <h2 className="text-[15px] font-extrabold text-text">
+                    {knownStreet} finns i {source.kommuner[0].name.replace(/ kommun$/, '')}
+                  </h2>
+                  <p className="text-sm leading-[1.4] text-text">
+                    Men schemat visar inte vilket område den hör till. Hitta det med din senaste tömning, eller välj i listan.
+                  </p>
+                </div>
+              </div>
+            )}
             <div className="order-4 flex flex-col overflow-hidden rounded-3xl bg-surface lg:order-none lg:rounded-[20px]">
               {shown.length === 0 && (
                 <p role="status" className="px-5 py-5 text-[15px] text-text-2">
@@ -104,6 +159,8 @@ export function AreaPage({ today = todayInStockholm() }: { today?: string }) {
                 <Link
                   key={a.id}
                   to={`/${source.id}/${a.id}`}
+                  state={linkState(a)}
+                  onClick={() => choose(a)}
                   className="tryck flex items-center gap-3 border-b border-border px-5 py-4 last:border-b-0"
                 >
                   <span className="flex min-w-0 flex-1 flex-col gap-1">
@@ -120,13 +177,24 @@ export function AreaPage({ today = todayInStockholm() }: { today?: string }) {
           </div>
           <div className="contents lg:flex lg:flex-col lg:gap-5">
             <div className="order-1 flex flex-col gap-1.5 rounded-[20px] bg-surface-2 p-5 lg:order-none">
-              <h2 className="text-base font-extrabold text-text">Därför väljer du område i stället för adress</h2>
-              <p className="text-[15px] leading-[1.45] text-text-2">{index.explanation}</p>
+              {nav.street ? (
+                <>
+                  <h2 className="text-base font-extrabold text-text">Du sökte {nav.street}</h2>
+                  <p className="text-[15px] leading-[1.45] text-text-2">
+                    Schemat visar inte vilket område adressen hör till, så vi kan inte välja åt dig. Väljer du fel kan du missa din tömning.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <h2 className="text-base font-extrabold text-text">Därför väljer du område i stället för adress</h2>
+                  <p className="text-[15px] leading-[1.45] text-text-2">{index.explanation}</p>
+                </>
+              )}
             </div>
             <button
               type="button"
               onClick={() => setFinder(true)}
-              className="tryck order-3 flex items-center gap-3 rounded-[20px] bg-brand-soft px-5 py-4 text-left lg:order-none"
+              className={cn('tryck flex items-center gap-3 rounded-[20px] bg-brand-soft px-5 py-4 text-left lg:order-none', nav.street ? 'order-2' : 'order-3')}
             >
               <CalendarSearch className="size-6 shrink-0 text-brand-text" aria-hidden />
               <span className="flex min-w-0 flex-1 flex-col">
@@ -139,7 +207,7 @@ export function AreaPage({ today = todayInStockholm() }: { today?: string }) {
           </div>
         </div>
       )}
-      {index && <AreaFinderSheet open={finder} onOpenChange={setFinder} areas={index.areas} sourceId={source.id} today={today} />}
+      {index && <AreaFinderSheet open={finder} onOpenChange={setFinder} areas={index.areas} sourceId={source.id} today={today} onChoose={choose} linkState={linkState} />}
     </div>
   )
 }

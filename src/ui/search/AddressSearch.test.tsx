@@ -1,12 +1,13 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter, Route, Routes, useParams } from 'react-router'
-import { describe, expect, it, vi } from 'vitest'
+import { MemoryRouter, Route, Routes, useParams, useLocation } from 'react-router'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { searchAddresses, suggest } from '@/domain/search'
 import type { Address } from '@/domain/types'
 import { reportMissingKommun } from '@/lib/analytics'
 import type { SearchResult } from '@/providers/registry'
 import { AddressSearch } from './AddressSearch'
+import { loadChoice, rememberChoice } from '@/lib/storage'
 
 vi.mock('@/lib/analytics', () => ({ reportMissingKommun: vi.fn() }))
 
@@ -624,8 +625,11 @@ describe('AddressSearch', () => {
     const hedemora: Address = { id: 'kungsgatan-12', street: 'Kungsgatan 12', locality: 'Hedemora', sourceId: 'hedemora', kommun: 'Hedemoras kommun' }
     const picker = (hasHits: boolean) => ({ sourceId: 'avesta', kommun: 'Avesta kommun', hasHits })
 
+    beforeEach(() => localStorage.clear())
+
     function Omraden() {
-      return <p>Områdesvalet</p>
+      const street = (useLocation().state as { street?: string } | null)?.street
+      return <p>{street ? `Områdesvalet: ${street}` : 'Områdesvalet'}</p>
     }
 
     function renderResult(query: string, result: Partial<SearchResult>) {
@@ -699,6 +703,54 @@ describe('AddressSearch', () => {
       )
       expect(within(screen.getByRole('group', { name: 'Hedemoras kommun' })).getByRole('option')).toHaveTextContent('Kungsgatan 12')
       expect(options).toHaveLength(2)
+    })
+
+    it('lägger raden för gatan sist, efter andra kommuners träffar', async () => {
+      await renderResult('Kungsgatan 12', { addresses: [hedemora], areaPickers: [{ ...picker(false), street: 'Kungsgatan 12' }] })
+      const groups = await screen.findAllByRole('group')
+      expect(groups.map((g) => g.getAttribute('aria-label'))).toEqual(['Hedemoras kommun', 'Avesta kommun'])
+      expect(within(groups[1]).getByRole('option')).toHaveTextContent('Kungsgatan 12Välj område i Avesta. Här finns schemat per område, inte per adress.')
+    })
+
+    describe('eget val', () => {
+      const choice = { sourceId: 'avesta', street: 'Kungsgatan 12', areaId: 'trakt-7', label: 'Trakt 7', day: 'Tisdag, jämn vecka' }
+      const withStreet = { areaPickers: [{ ...picker(false), street: 'Kungsgatan 12' }] }
+      beforeEach(() => rememberChoice(choice))
+
+      it('märks som användarens eget val och öppnar området', async () => {
+        await renderResult('Kungsgatan 12', withStreet)
+        const row = await screen.findByRole('option', { name: /Ditt val/ })
+        expect(row).toHaveTextContent('Trakt 7 · Tisdag, jämn vecka')
+        expect(row).toHaveTextContent(/Ditt val, inte från/)
+        await userEvent.click(row)
+        expect(await screen.findByText('Resultat avesta/trakt-7')).toBeInTheDocument()
+      })
+
+      it('går att ändra med tangentbordet och tar med gatan', async () => {
+        await renderResult('Kungsgatan 12', withStreet)
+        await screen.findByRole('option', { name: /Ditt val/ })
+        await userEvent.keyboard('{ArrowDown}{ArrowDown}{Enter}')
+        expect(await screen.findByText('Områdesvalet: Kungsgatan 12')).toBeInTheDocument()
+      })
+
+      it('går att glömma, och då visas raden för att välja område igen', async () => {
+        await renderResult('Kungsgatan 12', withStreet)
+        await userEvent.click(await screen.findByRole('option', { name: 'Glöm valet' }))
+        expect(screen.queryByRole('option', { name: /Ditt val/ })).toBeNull()
+        expect(screen.getByRole('option', { name: /Välj område i Avesta/ })).toBeInTheDocument()
+        expect(loadChoice('avesta', 'Kungsgatan 12')).toBeUndefined()
+      })
+
+      it('öppnar valet med Enter när det är enda raden', async () => {
+        await renderResult('Kungsgatan 12{Enter}', withStreet)
+        expect(await screen.findByText('Resultat avesta/trakt-7')).toBeInTheDocument()
+      })
+    })
+
+    it('tar med gatan till områdesvalet', async () => {
+      await renderResult('Kungsgatan 12', { areaPickers: [{ ...picker(false), street: 'Kungsgatan 12' }] })
+      await userEvent.click(await screen.findByRole('option', { name: /Kungsgatan 12/ }))
+      expect(await screen.findByText('Områdesvalet: Kungsgatan 12')).toBeInTheDocument()
     })
 
     it('är inte "hittades inte" när bara raden för områdesval finns', async () => {

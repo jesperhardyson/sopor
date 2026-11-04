@@ -7,7 +7,9 @@
     "locality": "Uppsala",
     "kommun": "Uppsala kommun",
     "source": "uppsala",
-    "detail": null
+    "detail": null,
+    "selection": "address",
+    "notice": null
   },
   "next": [
     {

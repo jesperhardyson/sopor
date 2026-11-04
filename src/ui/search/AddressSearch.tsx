@@ -1,4 +1,4 @@
-import { ArrowRight, ChevronDown, LoaderCircle, Map, MapPin, Search, X } from 'lucide-react'
+import { ArrowRight, ChevronDown, LoaderCircle, Map, MapPin, Search, UserCheck, X } from 'lucide-react'
 import { Fragment, useEffect, useId, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { enterTarget, groupByKommun, matchedTerm, normalize, stableMerge } from '@/domain/search'
@@ -6,6 +6,7 @@ import type { Address } from '@/domain/types'
 import { missingKommuner, prefetchAddress, searchAll, suggestAll, warmUpSearch, type AreaPicker, type SearchOptions, type SearchResult } from '@/providers/registry'
 import { getSource } from '@/sources'
 import { reportMissingKommun } from '@/lib/analytics'
+import { forgetChoice, loadChoice, type AreaChoice } from '@/lib/storage'
 import { cn } from '@/lib/utils'
 import { Skeleton } from '../result/ResultStates'
 import { MissingKommun } from './MissingKommun'
@@ -40,7 +41,10 @@ const ALL = ''
 type Item =
   | { kind: 'address'; address: Address }
   | { kind: 'more'; kommun?: string; count: number }
-  | { kind: 'picker'; picker: AreaPicker }
+  | { kind: 'picker'; picker: AreaPicker; choice?: AreaChoice }
+  /** Egna rader för tangentbordet, som visas på samma rad under valet. */
+  | { kind: 'changeChoice'; picker: AreaPicker; choice: AreaChoice }
+  | { kind: 'forgetChoice'; picker: AreaPicker; choice: AreaChoice }
 interface Section {
   /** Saknas när alla träffar ligger i en kommun: då visas listan utan rubriker. */
   kommun?: string
@@ -51,18 +55,22 @@ interface Section {
 /** Kommunens namn utan "kommun", för texterna på raden för områdesval. */
 const kommunName = (kommun: string) => kommun.replace(/ kommun$/, '')
 
-/** Raden för områdesval hör till sin kommuns grupp. En kommun utan träffar får en grupp med bara den raden, överst. */
+/** Raden för områdesval hör till sin kommuns grupp. En kommun utan träffar får en grupp med bara den raden, sist. */
 function withPickers(list: Section[], pickers: AreaPicker[]): Section[] {
   if (pickers.length === 0) return list
   const extra: Section[] = []
   const grouped = list.map((section) => ({ ...section, items: [...section.items] }))
   for (const picker of pickers) {
-    const item: Item = { kind: 'picker', picker }
+    const choice = picker.street && !picker.hasHits ? loadChoice(picker.sourceId, picker.street) : undefined
+    const items: Item[] = [
+      { kind: 'picker', picker, choice },
+      ...(choice ? ([{ kind: 'changeChoice', picker, choice }, { kind: 'forgetChoice', picker, choice }] as const) : []),
+    ]
     const section = grouped.find((s) => s.kommun === picker.kommun)
-    if (section) section.items.push(item)
-    else extra.push({ kommun: picker.kommun, total: 0, items: [item] })
+    if (section) section.items.push(...items)
+    else extra.push({ kommun: picker.kommun, total: 0, items })
   }
-  return [...extra, ...grouped]
+  return [...grouped, ...extra]
 }
 
 function sections(results: Address[], pickers: AreaPicker[], expanded: Set<string>): Section[] {
@@ -152,6 +160,8 @@ export function AddressSearch({
   const [loading, setLoading] = useState(false)
   const [slow, setSlow] = useState(false)
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
+  // Valen ligger i lagringen, så listan behöver ritas om när ett val glöms.
+  const [, setForgotten] = useState(0)
   const rootRef = useRef<HTMLDivElement>(null)
 
   // Klick utanför avbryter sökningen och lämnar fokusläget, så att ingen gammal träfflista blir kvar.
@@ -256,7 +266,17 @@ export function AddressSearch({
 
   function choose(item: Item) {
     if (item.kind === 'address') go(item.address)
-    else if (item.kind === 'picker') navigate(`/${item.picker.sourceId}/omraden`)
+    else if (item.kind === 'picker') {
+      const { sourceId, street, hasHits } = item.picker
+      const choice = item.choice ?? (street && !hasHits ? loadChoice(sourceId, street) : undefined)
+      if (choice) navigate(`/${sourceId}/${choice.areaId}`)
+      else navigate(`/${sourceId}/omraden`, { state: { street } })
+    } else if (item.kind === 'changeChoice') navigate(`/${item.picker.sourceId}/omraden`, { state: { street: item.picker.street, from: item.choice.areaId } })
+    else if (item.kind === 'forgetChoice') {
+      forgetChoice(item.picker.sourceId, item.choice.street)
+      setActive(-1)
+      setForgotten((n) => n + 1)
+    }
     else setExpanded((prev) => new Set(prev).add(item.kommun ?? ALL))
   }
 
@@ -306,6 +326,27 @@ export function AddressSearch({
     }
   }
 
+  function renderChoice(picker: AreaPicker, choice: AreaChoice, props: React.HTMLAttributes<HTMLLIElement>, selected: boolean) {
+    return (
+      <li key={`val/${picker.sourceId}`} {...props} className={cn('tryck flex cursor-pointer items-center gap-3 rounded-xl p-3', selected && 'bg-surface-2')}>
+        <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-soft text-brand-text">
+          <Map className="size-[18px]" aria-hidden />
+        </span>
+        <span className="flex min-w-0 flex-1 flex-col items-start gap-1">
+          <span className="text-base font-extrabold text-text">{picker.street}</span>
+          <span className="text-sm text-text-2">
+            {choice.label} · {choice.day}
+          </span>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-warn-bg px-2.5 py-0.5 text-[13px] font-extrabold text-warn">
+            <UserCheck className="size-3.5" aria-hidden />
+            Ditt val, inte från {getSource(picker.sourceId)?.name ?? picker.kommun}
+          </span>
+        </span>
+        <ArrowRight className="size-4 shrink-0 text-primary" aria-hidden />
+      </li>
+    )
+  }
+
   function renderPicker(picker: AreaPicker, props: React.HTMLAttributes<HTMLLIElement>, selected: boolean, afterHits: boolean) {
     const name = kommunName(picker.kommun)
     const key = `omraden/${picker.sourceId}`
@@ -332,8 +373,8 @@ export function AddressSearch({
           <Map className="size-[18px]" aria-hidden />
         </span>
         <span className="flex min-w-0 flex-1 flex-col gap-1">
-          <span className="text-base font-extrabold text-text">Välj område i {name}</span>
-          <span className="text-sm text-text-2">Här finns schemat per område, inte per adress.</span>
+          <span className="text-base font-extrabold text-text">{picker.street ?? `Välj område i ${name}`}</span>
+          <span className="text-sm text-text-2">{picker.street && `Välj område i ${name}. `}Här finns schemat per område, inte per adress.</span>
         </span>
         <ArrowRight className="size-4 shrink-0 text-primary" aria-hidden />
       </li>
@@ -342,16 +383,38 @@ export function AddressSearch({
 
   function renderItem(item: Item, showKommun: boolean) {
     const i = items.indexOf(item)
-    const props = {
-      id: `${listId}-${i}`,
+    const optionProps = (n: number, target: Item) => ({
+      id: `${listId}-${n}`,
       role: 'option',
-      'aria-selected': i === active,
+      'aria-selected': n === active,
       onMouseDown: (e: React.MouseEvent) => e.preventDefault(),
-      onClick: () => choose(item),
-      onMouseEnter: () => setActive(i),
-      onPointerDown: () => item.kind === 'address' && prefetch(item.address.sourceId, item.address.id),
+      onClick: () => choose(target),
+      onMouseEnter: () => setActive(n),
+      onPointerDown: () => target.kind === 'address' && prefetch(target.address.sourceId, target.address.id),
+    })
+    const props = optionProps(i, item)
+    if (item.kind === 'picker') {
+      if (item.choice) return renderChoice(item.picker, item.choice, props, i === active)
+      return renderPicker(item.picker, props, i === active, items[i - 1]?.kind === 'address')
     }
-    if (item.kind === 'picker') return renderPicker(item.picker, props, i === active, items[i - 1]?.kind === 'address')
+    // Båda alternativen står på samma rad, men är egna steg för piltangenterna.
+    if (item.kind === 'forgetChoice') return null
+    if (item.kind === 'changeChoice') {
+      const link = (n: number, target: Item, label: string) => (
+        <li {...optionProps(n, target)} className={cn('flex min-h-11 cursor-pointer items-center rounded-lg px-1.5 text-sm font-extrabold text-primary', n === active && 'bg-surface-2')}>
+          {label}
+        </li>
+      )
+      return (
+        <li key={`andra/${item.picker.sourceId}`} role="none">
+          <ul role="none" className="flex flex-wrap items-center gap-x-1 pr-3 pb-1 pl-[54px]">
+            {link(i, item, 'Välj ett annat område')}
+            <li role="none" aria-hidden className="text-sm text-text-2">·</li>
+            {link(i + 1, items[i + 1], 'Glöm valet')}
+          </ul>
+        </li>
+      )
+    }
     if (item.kind === 'more') {
       return (
         <li

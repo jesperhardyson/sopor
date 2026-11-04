@@ -16,6 +16,13 @@ describe('källregistret', () => {
     expect(avesta.emptyScheduleNote?.title).toBe('Schemat för nästa år är inte publicerat än')
   })
 
+  it('kräver en varning för varje källa med områdesval', () => {
+    for (const s of ALL_SOURCES.filter((x) => x.selection === 'area')) {
+      expect(s.areaNotice?.title, s.id).toBeTruthy()
+      expect(s.areaNotice?.text, s.id).toBeTruthy()
+    }
+  })
+
   it('visar inte dolda källor', () => {
     expect(SOURCES.some((s) => s.hidden)).toBe(false)
     expect(getSource('avesta')).toBeUndefined()

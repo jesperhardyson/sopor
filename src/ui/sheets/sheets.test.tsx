@@ -10,6 +10,11 @@ import { SaveSheet } from './SaveSheet'
 const villa: Address = { id: 'krylbo-storgatan-12b', street: 'Storgatan 12 B', locality: 'Krylbo', sourceId: 'uppsala', kommun: 'Avesta kommun' }
 
 describe('CalendarSheet', () => {
+  it('visar ingen varning för en vanlig adress', () => {
+    render(<CalendarSheet open onOpenChange={() => {}} address={villa} icsPath="/ics/avesta/krylbo-storgatan-12b.ics" />)
+    expect(screen.queryByText(/Kontrollera/)).toBeNull()
+  })
+
   it('har fyra sätt att lägga till kalendern och ett notistips', () => {
     render(<CalendarSheet open onOpenChange={() => {}} address={villa} icsPath="/ics/avesta/krylbo-storgatan-12b.ics" />)
     expect(screen.getByRole('heading', { name: 'Lägg till i kalender' })).toBeInTheDocument()

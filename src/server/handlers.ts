@@ -6,7 +6,7 @@ import { todayInStockholm } from '../domain/dates.js'
 import { normalize } from '../domain/search.js'
 import type { Address } from '../domain/types.js'
 import { matchesPlace } from '../data/street-index.js'
-import { isLive, kommunForLocality, SOURCES, type LiveSource, type Source } from '../sources/index.js'
+import { areaNoticeText, isLive, kommunForLocality, SOURCES, type LiveSource, type Source } from '../sources/index.js'
 import { edpAddressId, edpSearch, type EdpBuilding } from './edp.js'
 import { svoaAddressId, svoaSearch } from './svoa.js'
 import { vasydSearch } from './vasyd.js'
@@ -182,7 +182,7 @@ export async function handleIcs(url: URL, opts: HandlerOptions = {}): Promise<Re
       headers: { 'Content-Type': 'text/calendar; charset=utf-8', 'Cache-Control': 'public, s-maxage=3600' },
     })
   }
-  const content = buildIcs({ address: r.address, kommunName: r.address.kommun, schedule: r.schedule })
+  const content = buildIcs({ address: r.address, kommunName: r.address.kommun, schedule: r.schedule, notice: areaNoticeText(live) })
   return new Response(content, {
     headers: { 'Content-Type': 'text/calendar; charset=utf-8', 'Cache-Control': CACHE_SCHEDULE },
   })

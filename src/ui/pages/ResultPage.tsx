@@ -1,6 +1,6 @@
-import { ArrowLeft, Bookmark, CalendarPlus } from 'lucide-react'
+import { ArrowLeft, Bookmark, CalendarPlus, TriangleAlert } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router'
+import { Link, useLocation, useNavigate, useParams } from 'react-router'
 import { streetAndLocality } from '@/domain/address'
 import { formatLong, todayInStockholm } from '@/domain/dates'
 import { nextPickup, upcoming } from '@/domain/schedule'
@@ -27,12 +27,30 @@ import { usePageTitle } from '../hooks/usePageTitle'
 const dot = "inline-flex items-center before:inline-block before:w-5 before:text-center before:content-['·']"
 const page = 'mx-auto flex w-full max-w-[920px] flex-col gap-5 px-5 pt-1 pb-8 md:px-8 md:pt-4 lg:gap-7 lg:px-0 lg:pb-20'
 
-function BackLink({ area, sourceId }: { area?: boolean; sourceId?: string }) {
+function BackLink({ area, sourceId, addressId }: { area?: boolean; sourceId?: string; addressId?: string }) {
   return (
-    <Link to={area ? `/${sourceId}/omraden` : '/'} className="inline-flex items-center gap-1.5 self-start py-1.5 text-[15px] font-extrabold text-primary">
+    <Link to={area ? `/${sourceId}/omraden` : '/'} state={area && addressId ? { from: addressId } : undefined} className="inline-flex items-center gap-1.5 self-start py-1.5 text-[15px] font-extrabold text-primary">
       <ArrowLeft className="size-[18px]" aria-hidden />
       {area ? 'Byt område' : 'Byt adress'}
     </Link>
+  )
+}
+
+/** En prenumeration pekar på områdets id, så en kalender med det gamla området går inte att ändra härifrån. */
+function AreaChangedNotice({ onDismiss }: { onDismiss: () => void }) {
+  return (
+    <div role="status" className="flex gap-3 rounded-[14px] bg-warn-bg px-4 py-3.5 text-warn">
+      <TriangleAlert className="size-[22px] shrink-0" aria-hidden />
+      <div className="flex min-w-0 flex-col items-start gap-1">
+        <h2 className="text-[15px] font-extrabold">Du har bytt område</h2>
+        <p className="text-sm leading-[1.4]">
+          Har du lagt till det gamla området i din kalender? Ta bort det och lägg till det nya, annars visar kalendern fel dagar.
+        </p>
+        <button type="button" onClick={onDismiss} className="min-h-11 text-sm font-extrabold">
+          Jag förstår
+        </button>
+      </div>
+    </div>
   )
 }
 
@@ -71,6 +89,10 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
   const byArea = source?.selection === 'area'
   const [areas] = useAreas(byArea ? source : undefined)
   const [sheet, setSheet] = useState<'calendar' | 'save' | null>(null)
+  const location = useLocation()
+  const navigate = useNavigate()
+  const areaChanged = (location.state as { areaChanged?: boolean } | null)?.areaChanged === true
+  const dismissChanged = () => navigate(location.pathname, { replace: true, state: null })
   const [savedName, setSavedName] = useState(() => findSaved(sourceId, addressId)?.name)
   usePageTitle(address ? `${streetAndLocality(address)} – Sopor` : undefined)
 
@@ -93,7 +115,7 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
   if (fetched === null || state.status === 'missing') {
     return (
       <div className={page}>
-        <BackLink area={byArea} sourceId={sourceId} />
+        <BackLink area={byArea} sourceId={sourceId} addressId={addressId} />
         <NotFound suggestions={[]} />
         <AddressSearch />
       </div>
@@ -102,7 +124,7 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
 
   const header = (
     <div className="flex flex-col gap-2.5">
-      <BackLink area={byArea} sourceId={sourceId} />
+      <BackLink area={byArea} sourceId={sourceId} addressId={addressId} />
       <div className="flex items-center gap-3">
         <div className="flex min-w-0 flex-1 flex-col gap-1.5">
           <h1 className="text-[28px] leading-tight font-extrabold tracking-[-0.6px] text-text lg:text-[40px]">
@@ -167,6 +189,7 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
   return (
     <div className={page}>
       {header}
+      {areaChanged && <AreaChangedNotice onDismiss={dismissChanged} />}
       {state.status === 'stale' && (
         <StaleNotice sourceName={source.name} fetchedAt={formatLong(state.fetchedAt)} onRetry={retry} />
       )}
@@ -201,6 +224,9 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
             onOpenChange={(o) => setSheet(o ? 'calendar' : null)}
             address={address}
             icsPath={providerFor(source).icsUrl(address.id)}
+            notice={source.areaNotice}
+            findState={byArea ? { from: addressId, find: true } : undefined}
+            findTo={byArea ? `/${sourceId}/omraden` : undefined}
           />
           <SaveSheet
             key={savedName ?? ''}

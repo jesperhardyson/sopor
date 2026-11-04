@@ -146,6 +146,7 @@ Regel 1 i `AGENTS.md` gäller: UI:t vet bara att det finns områden, inte att de
 - ICS-UID behåller formatet: `trakt-7-2026-11-10@sopor.hardyson.se`.
 - Områdets id följer området, inte numret. Byter Avesta Vatten numrering får id:t ett nytt `label`. Delas eller slås ett område ihop får det nya området ett nytt id, och det gamla id:t ligger kvar med ett meddelande om att välja område igen.
 - När en adresstabell kommer kan adresser få egna id:n som pekar på samma schema. Befintliga område-id:n ligger kvar.
+- Då behöver ingen spara om sin kalender. En kalender med fel område rättar sig inte själv, eftersom vi inte vet vilken adress den gäller, så områdenas `notice` och kalendertext ändras till att man nu kan söka på sin adress, och kalendern får en händelse om det. Eget val och sparade områden ligger kvar tills användaren byter.
 - `check:ids` skulle stoppa att de påhittade adresserna i `data/avesta/2026/addresses.csv` tas bort. Vakten får ett engångsundantag för just de id:na, eftersom Avesta har varit dold.
 
 ## API och integrationer

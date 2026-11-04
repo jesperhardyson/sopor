@@ -1,4 +1,5 @@
-import { BellRing, Calendar, CalendarDays, ChevronRight, Download, RefreshCw, type LucideIcon } from 'lucide-react'
+import { BellRing, Calendar, CalendarDays, ChevronRight, Download, RefreshCw, TriangleAlert, type LucideIcon } from 'lucide-react'
+import { Link } from 'react-router'
 import type { Address } from '@/domain/types'
 import { absoluteIcsUrl, defaultOrigin, googleCalendarUrl, isAndroid, webcalUrl } from '@/lib/calendar-links'
 import { cn } from '@/lib/utils'
@@ -55,12 +56,20 @@ export function CalendarSheet({
   address,
   icsPath,
   origin = defaultOrigin(),
+  notice,
+  findTo,
+  findState,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
   address: Address
   icsPath: string
   origin?: string
+  /** Källor med områdesval: varningen att området är användarens eget val */
+  notice?: { title: string; text: string }
+  /** Vart "Kontrollera med din senaste tömning" leder */
+  findTo?: string
+  findState?: unknown
 }) {
   const webcal = webcalUrl(absoluteIcsUrl(icsPath, origin))
   // Android har ingen app för webcal, så där går prenumerationen via Google Kalender.
@@ -72,6 +81,20 @@ export function CalendarSheet({
       title="Lägg till i kalender"
       description={`Få alla tömningar för ${address.street} direkt i din kalender.`}
     >
+      {notice && (
+        <div className="flex gap-3 rounded-[14px] bg-warn-bg px-4 py-3.5 text-warn">
+          <TriangleAlert className="size-[22px] shrink-0" aria-hidden />
+          <div className="flex min-w-0 flex-col items-start gap-1">
+            <h3 className="text-[15px] font-extrabold">{notice.title}</h3>
+            <p className="text-sm leading-[1.4]">{notice.text}</p>
+            {findTo && (
+              <Link to={findTo} state={findState} className="text-sm font-extrabold underline">
+                Kontrollera med din senaste tömning
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
       <div className="flex flex-col gap-2">
         <Option href={subscribe} icon={RefreshCw} title="Prenumerera" description="Uppdateras automatiskt vid ändringar (webcal)" best />
         <Option href={googleCalendarUrl(webcal)} icon={Calendar} title="Google Kalender" description="Prenumerera via ditt Google-konto" />

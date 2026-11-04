@@ -46,8 +46,10 @@ export function buildIcs(input: {
   kommunName: string
   schedule: Schedule
   host?: string
+  /** Vad vi inte vet om schemat gäller, när användaren valt område själv */
+  notice?: string
 }): string {
-  const { address, kommunName, schedule, host = 'sopor.hardyson.se' } = input
+  const { address, kommunName, schedule, notice, host = 'sopor.hardyson.se' } = input
   const stamp = `${compact(schedule.updatedAt)}T000000Z`
 
   const lines = [
@@ -57,7 +59,7 @@ export function buildIcs(input: {
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
     `X-WR-CALNAME:${escapeText(`Sopor – ${streetAndLocality(address)}`)}`,
-    `X-WR-CALDESC:${escapeText(`Hämtschema för ${streetAndLocality(address)} (${kommunName}). ${DISCLAIMER}`)}`,
+    `X-WR-CALDESC:${escapeText([`Hämtschema för ${streetAndLocality(address)} (${kommunName}).`, notice, DISCLAIMER].filter(Boolean).join(' '))}`,
     'REFRESH-INTERVAL;VALUE=DURATION:P1D',
     'X-PUBLISHED-TTL:P1D',
   ]
@@ -65,7 +67,7 @@ export function buildIcs(input: {
   for (const event of schedule.events) {
     const names = sortFractions(event.fractions).map((f) => event.labels?.[f] ?? FRACTIONS[f].name)
     const summary = `Sopor: ${names.join(' + ')}${event.estimated ? ' (beräknat)' : ''}`
-    const description = [event.warning, deviationText(event), event.estimated ? ESTIMATE_NOTE : undefined, DISCLAIMER]
+    const description = [event.warning, deviationText(event), event.estimated ? ESTIMATE_NOTE : undefined, notice, DISCLAIMER]
       .filter(Boolean)
       .join('\n')
     lines.push(

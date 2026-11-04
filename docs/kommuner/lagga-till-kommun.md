@@ -163,6 +163,7 @@ För källor med `selection: 'area'` i `src/sources/index.ts`. Filen ersätter `
 För en kommun där schemat är publikt per område men kopplingen adress → område saknas, och inte väntas komma. Besökaren väljer område i en lista, med hjälp av ort- och gatulistorna.
 
 - [ ] Sätt `selection: 'area'` på källan i `src/sources/index.ts`, med `config: { system: 'static' }`.
+- [ ] Skriv `areaNotice`: vad vi inte vet, eftersom besökaren väljer området själv. Texten visas i kalenderarket, står i kalenderfilen och skickas i API:t, och ett test kräver den.
 - [ ] Skapa `omraden.json` och `schedules.json` enligt [dataformatet](#dataformatet).
 - [ ] Områdets id följer området, inte numret. Byter källan numrering behåller området sitt id och får ett nytt `label`.
 - [ ] **Delas eller slås ett område ihop ska det nya området få ett nytt id.** Det gamla id:t ligger kvar och ska visa ett meddelande om att välja område igen. Ett id får aldrig tas bort eller återanvändas för något annat, eftersom kalenderprenumerationer hänger på det. Meddelandet är inte byggt än och måste byggas före den första ändringen av det slaget.

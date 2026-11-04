@@ -9,7 +9,7 @@ import { mergeHits, normalize, searchAddresses } from '../domain/search.js'
 import type { Address, FractionId, Schedule } from '../domain/types.js'
 import { pickLiveSources, shardKey, splitPlace, streetAtSourcePlace, type StreetShard } from '../data/street-index.js'
 import type { AddressIndexFile } from '../data/static-format.js'
-import { isLive, needsPlaces, SOURCES, type Source } from '../sources/index.js'
+import { areaNoticeText, isLive, needsPlaces, SOURCES, type Source } from '../sources/index.js'
 import { CACHE_PARTIAL, CACHE_SEARCH, decodeId, searchLiveSource, type HandlerOptions } from './handlers.js'
 import { lookupAddress } from './lookup.js'
 import { loadServerPlaces, siteJson } from './site.js'
@@ -124,6 +124,7 @@ export const handleV1Address: V1Handler = async (request, opts = {}) => {
         kommun: address.kommun,
         source: address.sourceId,
         detail: address.detail ?? null,
+        ...selectionFields(source),
       },
       ...scheduleBody(schedule, today),
       links: { ics: `${url.origin}/ics/${path}.ics`, web: `${url.origin}/${path}` },
@@ -136,13 +137,19 @@ export const handleV1Address: V1Handler = async (request, opts = {}) => {
 
 const SEARCH_LIMIT = 10
 
-const v1Address = (a: Address, origin: string) => ({
+const selectionFields = (source: Source | undefined) => ({
+  selection: source?.selection ?? 'address',
+  notice: areaNoticeText(source) ?? null,
+})
+
+const v1Address = (a: Address, origin: string, sources: Source[]) => ({
   id: a.id,
   street: a.street,
   locality: a.locality,
   kommun: a.kommun,
   source: a.sourceId,
   detail: a.detail ?? null,
+  ...selectionFields(sources.find((s) => s.id === a.sourceId)),
   url: `${origin}/api/v1/adress/${a.sourceId}/${encodeURIComponent(a.id)}`,
 })
 
@@ -208,7 +215,7 @@ export const handleV1Search: V1Handler = async (request, opts = {}) => {
     ),
   )
   const failed = sources.filter((_, i) => results[i].status === 'rejected').map((s) => s.id)
-  const addresses = results.flatMap((r) => (r.status === 'fulfilled' ? r.value : [])).map((a) => v1Address(a, url.origin))
+  const addresses = results.flatMap((r) => (r.status === 'fulfilled' ? r.value : [])).map((a) => v1Address(a, url.origin, sources))
   return v1Json({ addresses, failed }, 200, failed.length > 0 ? CACHE_PARTIAL : CACHE_SEARCH)
 }
 

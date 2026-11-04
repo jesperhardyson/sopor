@@ -33,12 +33,18 @@ export function AreaFinderSheet({
   areas,
   sourceId,
   today = todayInStockholm(),
+  onChoose,
+  linkState,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
   areas: Area[]
   sourceId: string
   today?: string
+  /** Användaren går vidare till området */
+  onChoose?: (area: Area) => void
+  /** Följer med till resultatsidan, beroende på vilket område som valdes */
+  linkState?: (area: Area) => unknown
 }) {
   const inputId = useId()
   const [date, setDate] = useState('')
@@ -94,6 +100,8 @@ export function AreaFinderSheet({
         {result?.kind === 'found' && (
           <Link
             to={`/${sourceId}/${result.area.id}`}
+            state={linkState?.(result.area)}
+            onClick={() => onChoose?.(result.area)}
             className="inline-flex h-14 items-center justify-center gap-2 rounded-[14px] bg-primary text-base font-extrabold text-on-primary"
           >
             <ArrowRight className="size-5" aria-hidden />

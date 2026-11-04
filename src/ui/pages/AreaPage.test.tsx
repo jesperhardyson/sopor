@@ -1,9 +1,10 @@
 import '@/test/show-hidden-sources'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter, Route, Routes, useParams } from 'react-router'
+import { MemoryRouter, Route, Routes, useLocation, useParams } from 'react-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { AreasIndexFile } from '@/data/static-format'
+import { loadChoice, loadSaved, upsertSaved } from '@/lib/storage'
 import type { WasteProvider } from '@/providers/types'
 import { AreaRoute } from './AreaPage'
 
@@ -24,7 +25,11 @@ const index: AreasIndexFile = {
 }
 
 let fake: WasteProvider
-vi.mock('@/providers/registry', () => ({ providerFor: () => fake }))
+let knownStreets: Record<string, string> = {}
+vi.mock('@/providers/registry', () => ({
+  providerFor: () => fake,
+  knownAreaStreet: async (_source: string, query: string) => knownStreets[query],
+}))
 
 function makeProvider(over: Partial<WasteProvider> = {}): WasteProvider {
   return {
@@ -41,10 +46,11 @@ function makeProvider(over: Partial<WasteProvider> = {}): WasteProvider {
 
 function Probe() {
   const { sourceId, addressId } = useParams()
-  return <p>resultat {sourceId}/{addressId}</p>
+  const changed = (useLocation().state as { areaChanged?: boolean } | null)?.areaChanged
+  return <p>resultat {sourceId}/{addressId}{changed && ' områdesbyte: ja'}</p>
 }
 
-function show(path = '/avesta/omraden') {
+function show(path: string | { pathname: string; state: unknown } = '/avesta/omraden') {
   render(
     <MemoryRouter initialEntries={[path]}>
       <Routes>
@@ -57,6 +63,8 @@ function show(path = '/avesta/omraden') {
 
 beforeEach(() => {
   fake = makeProvider()
+  knownStreets = {}
+  localStorage.clear()
 })
 
 describe('AreaPage', () => {
@@ -81,7 +89,7 @@ describe('AreaPage', () => {
   it('filtrerar på namn och visar en tom ruta utan träff', async () => {
     show()
     await screen.findByText('Askön, Nyhyttan m.fl.')
-    await userEvent.type(screen.getByRole('searchbox', { name: 'Sök ort eller gata' }), 'Östanfors')
+    await userEvent.type(screen.getByRole('searchbox', { name: 'Sök område, ort eller gata' }), 'Östanfors')
     expect(screen.getByText('Avesta tätort, Östanfors m.fl.')).toBeInTheDocument()
     expect(screen.queryByText('Askön, Nyhyttan m.fl.')).not.toBeInTheDocument()
     await userEvent.clear(screen.getByRole('searchbox'))
@@ -92,7 +100,7 @@ describe('AreaPage', () => {
   it('filtret hittar också på början av ett ord', async () => {
     show()
     await screen.findByText('Askön, Nyhyttan m.fl.')
-    await userEvent.type(screen.getByRole('searchbox', { name: 'Sök ort eller gata' }), 'östan')
+    await userEvent.type(screen.getByRole('searchbox', { name: 'Sök område, ort eller gata' }), 'östan')
     expect(screen.getByText('Avesta tätort, Östanfors m.fl.')).toBeInTheDocument()
     expect(screen.queryByText('Askön, Nyhyttan m.fl.')).not.toBeInTheDocument()
   })
@@ -122,5 +130,51 @@ describe('AreaPage', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Försök igen' }))
     await waitFor(() => expect(screen.getByRole('heading', { name: 'Välj ditt område' })).toBeInTheDocument())
     expect(listAreas).toHaveBeenCalledTimes(2)
+  })
+
+  it('filtret hittar på hämtdagen', async () => {
+    show()
+    await userEvent.type(await screen.findByRole('searchbox', { name: 'Sök område, ort eller gata' }), 'tisdag')
+    expect(screen.getByText('Avesta tätort, Östanfors m.fl.')).toBeInTheDocument()
+    expect(screen.queryByText('Askön, Nyhyttan m.fl.')).toBeNull()
+    await userEvent.clear(screen.getByRole('searchbox'))
+    await userEvent.type(screen.getByRole('searchbox'), 'jämn vecka')
+    expect(screen.getByText('Avesta tätort, Östanfors m.fl.')).toBeInTheDocument()
+  })
+
+  it('visar förklaring och hela listan för en känd gata utan områdesträff', async () => {
+    knownStreets = { 'Kungsgatan 12': 'Kungsgatan' }
+    show()
+    await userEvent.type(await screen.findByRole('searchbox'), 'Kungsgatan 12')
+    expect(await screen.findByRole('heading', { name: 'Kungsgatan finns i Avesta' })).toBeInTheDocument()
+    expect(screen.getByText('Askön, Nyhyttan m.fl.')).toBeInTheDocument()
+    expect(screen.queryByText('Inget område matchar')).toBeNull()
+  })
+
+  it('säger att inget matchar för ett okänt ord', async () => {
+    show()
+    await userEvent.type(await screen.findByRole('searchbox'), 'Zzzgatan')
+    expect(await screen.findByText('Inget område matchar')).toBeInTheDocument()
+  })
+
+  it('visar gatan man sökte, sparar valet lokalt och väljer inget åt användaren', async () => {
+    show({ pathname: '/avesta/omraden', state: { street: 'Kungsgatan 12' } })
+    expect(await screen.findByRole('heading', { name: 'Du sökte Kungsgatan 12' })).toBeInTheDocument()
+    expect(loadChoice('avesta', 'Kungsgatan 12')).toBeUndefined()
+    await userEvent.click(screen.getByRole('link', { name: /Avesta tätort/ }))
+    expect(loadChoice('avesta', 'Kungsgatan 12')).toMatchObject({ areaId: 'trakt-7', label: 'Trakt 7' })
+  })
+
+  it('byter ett sparat område och säger till resultatsidan att området är bytt', async () => {
+    upsertSaved({ sourceId: 'avesta', addressId: 'trakt-1', name: 'Hemma', street: 'Askön, Nyhyttan m.fl.', locality: '', savedAt: '2026-11-04' })
+    show({ pathname: '/avesta/omraden', state: { from: 'trakt-1' } })
+    await userEvent.click(await screen.findByRole('link', { name: /Avesta tätort/ }))
+    expect(loadSaved()).toMatchObject([{ addressId: 'trakt-7', name: 'Hemma', street: 'Avesta tätort, Östanfors m.fl.' }])
+    expect(await screen.findByText(/områdesbyte: ja/)).toBeInTheDocument()
+  })
+
+  it('öppnar arket direkt från kalenderdialogen', async () => {
+    show({ pathname: '/avesta/omraden', state: { find: true } })
+    expect(await screen.findByRole('heading', { name: 'När tömdes ditt kärl senast?' })).toBeInTheDocument()
   })
 })

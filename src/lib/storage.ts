@@ -1,3 +1,4 @@
+import { normalize } from '@/domain/search'
 import type { Address, Schedule } from '@/domain/types'
 
 export interface SavedAddress {
@@ -87,8 +88,22 @@ export function findSaved(sourceId: string, addressId: string): SavedAddress | u
   return loadSaved().find((a) => same(a, sourceId, addressId))
 }
 
+/**
+ * Byter ett sparat område mot ett annat på samma plats i listan. Ett eget namn följer med.
+ * Ett område som inte var sparat förblir osparat.
+ */
+export function replaceSaved(sourceId: string, oldId: string, address: { id: string; street: string }): SavedAddress[] {
+  const old = findSaved(sourceId, oldId)
+  if (!old || oldId === address.id) return loadSaved()
+  forgetSchedules((key) => key === scheduleKey(sourceId, oldId))
+  const name = old.name === old.street ? address.street : old.name
+  const list = loadSaved().filter((a) => !same(a, sourceId, address.id))
+  return store(list.map((a) => (same(a, sourceId, oldId) ? { ...a, addressId: address.id, street: address.street, locality: '', name } : a)))
+}
+
 export function clearSaved(): SavedAddress[] {
   forgetSchedules(() => true)
+  writeChoices({})
   return store([])
 }
 
@@ -139,4 +154,59 @@ export function storeSchedule(entry: StoredSchedule) {
 export function loadStoredSchedule(sourceId: string, addressId: string): StoredSchedule | undefined {
   const entry = readSchedules()[scheduleKey(sourceId, addressId)]
   return isStored(entry) ? entry : undefined
+}
+
+/**
+ * Området användaren själv valt för en gata. Valet stannar i den här webbläsaren: det skickas aldrig
+ * till servern och säger inget om vilket område gatan egentligen hör till.
+ */
+export interface AreaChoice {
+  sourceId: string
+  street: string
+  areaId: string
+  label: string
+  day: string
+}
+
+const CHOICES_KEY = 'sopor.areaChoices.v1'
+const choiceKey = (sourceId: string, street: string) => `${sourceId}/${normalize(street, false)}`
+
+function readChoices(): Record<string, AreaChoice> {
+  try {
+    const parsed: unknown = JSON.parse(localStorage.getItem(CHOICES_KEY) ?? '{}')
+    return typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed) ? (parsed as Record<string, AreaChoice>) : {}
+  } catch {
+    return {}
+  }
+}
+
+function writeChoices(all: Record<string, AreaChoice>) {
+  try {
+    if (Object.keys(all).length === 0) localStorage.removeItem(CHOICES_KEY)
+    else localStorage.setItem(CHOICES_KEY, JSON.stringify(all))
+  } catch {
+    // Utan lagring får användaren välja område igen nästa gång.
+  }
+}
+
+export function loadChoice(sourceId: string, street: string): AreaChoice | undefined {
+  const choice = readChoices()[choiceKey(sourceId, street)]
+  return typeof choice?.areaId === 'string' && typeof choice.label === 'string' && typeof choice.day === 'string' ? choice : undefined
+}
+
+export function rememberChoice(choice: AreaChoice) {
+  writeChoices({ ...readChoices(), [choiceKey(choice.sourceId, choice.street)]: choice })
+}
+
+export function forgetChoice(sourceId: string, street: string) {
+  const { [choiceKey(sourceId, street)]: _forgotten, ...rest } = readChoices()
+  writeChoices(rest)
+}
+
+/** Användaren har bytt område, så gator som pekade på det gamla området följer med till det nya. */
+export function moveChoices(sourceId: string, fromAreaId: string, area: { id: string; label: string; day: string }) {
+  const moved = Object.entries(readChoices()).map(([key, c]) =>
+    [key, c.sourceId === sourceId && c.areaId === fromAreaId ? { ...c, areaId: area.id, label: area.label, day: area.day } : c] as const,
+  )
+  writeChoices(Object.fromEntries(moved))
 }

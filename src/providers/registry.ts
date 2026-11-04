@@ -42,6 +42,8 @@ export interface AreaPicker {
   sourceId: string
   kommun: string
   hasHits: boolean
+  /** Frågan utan plats, "Kungsgatan 12". Bara en sökning användaren gjort, inget vi vet om adressen. */
+  street?: string
 }
 
 export interface SearchResult {
@@ -259,10 +261,26 @@ async function searchLive(
 }
 
 /**
- * Källor med områdesval som sökningen ska erbjuda: de som gav områdesträffar och de vars kommun frågan
- * nämner ("Okändgatan 3, Avesta"). På kommunsidan räcker en känd gata, eftersom sökningen redan gäller kommunen.
- * Annars ger ett gatunamn ingen rad: vi vet inte att adressen finns hos källan, och samma namn finns i många kommuner.
+ * Källor med områdesval som sökningen ska erbjuda: de som gav områdesträffar, de som har gatan
+ * i frågan (hel gata, med eller utan nummer) och de vars kommun frågan nämner ("Okändgatan 3, Avesta").
  */
+/** Frågan utan plats och med stor bokstav, så som raden i träfflistan visar den. */
+function streetOnly(query: string, place: string): string {
+  const q = query.replace(/\s+/g, ' ').trim()
+  const at = place ? q.toLowerCase().lastIndexOf(place) : -1
+  const street = at > 0 ? q.slice(0, at).replace(/[,\s]+$/, '') : q
+  return street.charAt(0).toUpperCase() + street.slice(1)
+}
+
+/** Gatans namn utan nummer om den finns hos källan, så att områdesvalet kan säga att den är känd. */
+export async function knownAreaStreet(sourceId: string, query: string): Promise<string | undefined> {
+  const shard = await loadShard(shardKey(query))
+  if (!isKnownStreet(shard, query, sourceId)) return undefined
+  const words = streetOnly(query, '').split(' ')
+  const number = words.findIndex((w) => /^\d/.test(w))
+  return (number > 0 ? words.slice(0, number) : words).join(' ')
+}
+
 async function areaPickersFor(query: string, found: Address[], kommun?: Kommun): Promise<AreaPicker[]> {
   const sources = SOURCES.filter((s) => s.selection === 'area' && coversKommun(s, kommun))
   if (sources.length === 0 || normalize(query).length < 2) return []
@@ -272,8 +290,10 @@ async function areaPickersFor(query: string, found: Address[], kommun?: Kommun):
   return sources.flatMap((s) => {
     const hasHits = found.some((a) => a.sourceId === s.id)
     // Nämner frågan en annan plats hör gatan inte till källan, hur väl gatan än är känd.
-    const relevant = hasHits || (place ? namesSource(place, placeShard, s) : !!kommun && isKnownStreet(shard, query, s.id))
-    return relevant ? [{ sourceId: s.id, kommun: s.kommuner[0]?.name ?? s.name, hasHits }] : []
+    const relevant = hasHits || (place ? namesSource(place, placeShard, s) : isKnownStreet(shard, query, s.id))
+    if (!relevant) return []
+    const picker = { sourceId: s.id, kommun: s.kommuner[0]?.name ?? s.name, hasHits }
+    return [hasHits ? picker : { ...picker, street: streetOnly(query, place) }]
   })
 }
 

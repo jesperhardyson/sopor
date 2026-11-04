@@ -51,7 +51,7 @@ function makeProvider(over: Partial<WasteProvider> = {}): WasteProvider {
   }
 }
 
-function renderAt(path: string, today = '2026-10-30') {
+function renderAt(path: string | { pathname: string; state: unknown }, today = '2026-10-30') {
   render(
     <MemoryRouter initialEntries={[path]}>
       <Routes>
@@ -369,6 +369,30 @@ describe('ResultPage för ett område', () => {
     renderAt('/avesta/trakt-7')
     expect(await screen.findByRole('link', { name: 'Byt område' })).toHaveAttribute('href', '/avesta/omraden')
     expect(screen.queryByRole('link', { name: 'Byt adress' })).toBeNull()
+  })
+
+  it('varnar om den gamla kalendern efter ett områdesbyte, och varningen går att stänga', async () => {
+    fake = areaProvider()
+    renderAt({ pathname: '/avesta/trakt-7', state: { areaChanged: true } })
+    expect(await screen.findByRole('heading', { name: 'Du har bytt område' })).toBeInTheDocument()
+    expect(screen.getByText(/Ta bort det och lägg till det nya/)).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Jag förstår' }))
+    expect(screen.queryByRole('heading', { name: 'Du har bytt område' })).toBeNull()
+  })
+
+  it('varnar inte om kalendern utan ett områdesbyte', async () => {
+    fake = areaProvider()
+    renderAt('/avesta/trakt-7')
+    await screen.findByRole('link', { name: 'Byt område' })
+    expect(screen.queryByRole('heading', { name: 'Du har bytt område' })).toBeNull()
+  })
+
+  it('visar varningen i kalenderarket för ett område', async () => {
+    fake = areaProvider()
+    renderAt('/avesta/trakt-7')
+    await userEvent.click(await screen.findByRole('button', { name: 'Lägg till i kalender' }))
+    expect(await screen.findByRole('heading', { name: 'Kontrollera att området stämmer' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Kontrollera med din senaste tömning' })).toHaveAttribute('href', '/avesta/omraden')
   })
 
   it('visar dag och trakt från detail utan tom ort', async () => {

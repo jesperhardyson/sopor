@@ -38,6 +38,11 @@ export interface Source {
   testData?: boolean
   /** Visas inte på sajten: inte i sökning, på Om-sidan, i API:t eller i byggd data. Datan valideras ändå vid build. */
   hidden?: boolean
+  /**
+   * Krävs för källor med områdesval: vad vi inte vet, eftersom användaren valt området själv. Följer
+   * med överallt där schemat visas, i kalenderarket, kalenderfilen och API:t.
+   */
+  areaNotice?: { title: string; text: string }
   /** Visas i stället för "Inga kommande tömningar" när en adress hos källan har ett tomt schema. */
   emptyScheduleNote?: { title: string; text: string }
 }
@@ -51,6 +56,10 @@ export const ALL_SOURCES: Source[] = [
     kommuner: [{ code: '2084', name: 'Avesta kommun' }],
     config: { system: 'static' },
     selection: 'area',
+    areaNotice: {
+      title: 'Kontrollera att området stämmer',
+      text: 'Du har valt området själv, eftersom Avesta Vatten inte publicerar vilka adresser som hör till vilket område. Väljer du fel område kan du missa din tömning.',
+    },
     emptyScheduleNote: {
       title: 'Schemat för nästa år är inte publicerat än',
       text: 'Avesta Vatten publicerar hämtschemat ett år i taget. Datumen visas här när det nya schemat finns.',
@@ -400,3 +409,6 @@ export function kommunForLocality(source: Source, locality: string, places: Reco
   return places[normalize(locality, false)] ?? locality
 }
 
+/** Varningen som en rad text, för kalenderfilen och API:t. */
+export const areaNoticeText = (source: Pick<Source, 'areaNotice'> | undefined): string | undefined =>
+  source?.areaNotice && `${source.areaNotice.title}. ${source.areaNotice.text}`

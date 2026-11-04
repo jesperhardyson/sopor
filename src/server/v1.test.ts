@@ -22,7 +22,7 @@ const SOURCES: Source[] = [
   edp('trog', 'trog.test', 'Trög kommun'),
   { ...edp('statisk', 'statisk.test', 'Statiska kommun'), config: { system: 'static' } },
   { ...edp('dold', 'dold.test', 'Dolda kommun'), hidden: true },
-  { ...edp('avesta', 'avesta.test', 'Avesta kommun'), config: { system: 'static' }, selection: 'area' },
+  { ...edp('avesta', 'avesta.test', 'Avesta kommun'), config: { system: 'static' }, selection: 'area', areaNotice: { title: 'Kontrollera området', text: 'Du har valt det själv.' } },
 ]
 
 const event = (date: string) => ({ date, fractions: ['mat'], estimated: false })
@@ -94,6 +94,8 @@ describe('handleV1Address', () => {
       kommun: 'Uppsala kommun',
       source: 'uppsala',
       detail: null,
+      selection: 'address',
+      notice: null,
     })
   })
 
@@ -305,7 +307,7 @@ describe('handleV1Search', () => {
     expect(body.failed).toEqual([])
     expect(body.addresses.length).toBeGreaterThan(0)
     for (const a of body.addresses) {
-      expect(Object.keys(a).sort()).toEqual(['detail', 'id', 'kommun', 'locality', 'source', 'street', 'url'])
+      expect(Object.keys(a).sort()).toEqual(['detail', 'id', 'kommun', 'locality', 'notice', 'selection', 'source', 'street', 'url'])
       expect(a.url).toBe(`https://preview.test/api/v1/adress/uppsala/${encodeURIComponent(a.id)}`)
     }
     expect(hosts()).toContain('uppsala.test')
@@ -380,6 +382,8 @@ describe('handleV1Search', () => {
         kommun: 'Statiska kommun',
         source: 'statisk',
         detail: null,
+        selection: 'address',
+        notice: null,
         url: `https://preview.test/api/v1/adress/statisk/${encodeURIComponent('storgatan-1_örebro')}`,
       },
     ])
@@ -410,6 +414,8 @@ describe('områden som träffar', () => {
     kommun: 'Avesta kommun',
     source: 'avesta',
     detail: 'Tisdag, jämn vecka · Trakt 7',
+    selection: 'area',
+    notice: 'Kontrollera området. Du har valt det själv.',
     url: 'https://preview.test/api/v1/adress/avesta/trakt-7',
   }
 
@@ -464,6 +470,7 @@ describe('områden som träffar', () => {
     const body = await (await address('source=avesta&id=trakt-7')).json()
     expect(body.address).toEqual({
       id: 'trakt-7', street: 'Avesta tätort', locality: '', kommun: 'Avesta kommun', source: 'avesta', detail: 'Tisdag, jämn vecka · Trakt 7',
+      selection: 'area', notice: 'Kontrollera området. Du har valt det själv.',
     })
     expect(body.events.map((e: { date: string }) => e.date)).toEqual(['2026-11-03'])
     expect(JSON.stringify(body)).not.toContain('searchTerms')
