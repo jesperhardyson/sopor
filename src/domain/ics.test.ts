@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { buildIcs } from './ics'
+import { REMINDER_IDS, type ReminderId } from './reminders'
 import type { Address, Schedule } from './types'
 
 const address: Address = {
@@ -113,6 +114,43 @@ describe('buildIcs', () => {
     expect(desc).toContain('Infaller på julafton – kan flyttas.')
     expect(desc).toContain('Beräknat datum – helgdagar kan flytta tömningen. Kolla kommunens besked.')
     expect(lines).toContain('UID:krylbo-storgatan-12b-2026-12-24@sopor.hardyson.se')
+  })
+})
+
+describe('buildIcs med vald påminnelsetid', () => {
+  const icsWith = (reminder: ReminderId) => buildIcs({ address, kommunName: 'Avesta kommun', schedule, reminder })
+
+  it.each<[ReminderId, string[], string[]]>([
+    ['kvall-20', ['TRIGGER:-PT4H'], ['DESCRIPTION:I morgon: Restavfall + Matavfall']],
+    ['morgon', ['TRIGGER:PT6H'], ['DESCRIPTION:I dag: Restavfall + Matavfall']],
+    [
+      'kvall-och-morgon',
+      ['TRIGGER:-PT6H', 'TRIGGER:PT6H'],
+      ['DESCRIPTION:I morgon: Restavfall + Matavfall', 'DESCRIPTION:I dag: Restavfall + Matavfall'],
+    ],
+  ])('bygger påminnelserna för %s', (reminder, triggers, descriptions) => {
+    const lines = vevent(icsWith(reminder), '2026-11-11')
+    expect(lines.filter((l) => l.startsWith('TRIGGER:'))).toEqual(triggers)
+    expect(lines.filter((l) => l === 'BEGIN:VALARM')).toHaveLength(triggers.length)
+    for (const description of descriptions) expect(lines).toContain(description)
+  })
+
+  it('har samma UID för alla val', () => {
+    for (const id of REMINDER_IDS) {
+      expect(vevent(icsWith(id), '2026-11-11')).toContain('UID:krylbo-storgatan-12b-2026-11-11@sopor.hardyson.se')
+    }
+  })
+
+  it('ger samma fil för förvalet som utan val', () => {
+    expect(icsWith('kvall-18')).toBe(ics())
+  })
+
+  it('viker rader vid 75 oktetter även med två påminnelser och långa namn', () => {
+    const fractions = ['rest', 'mat', 'papper', 'plast', 'glas', 'metall'] as const
+    const long: Schedule = { ...schedule, events: [{ date: '2026-11-11', fractions: [...fractions] }] }
+    const text = buildIcs({ address, kommunName: 'Avesta kommun', schedule: long, reminder: 'kvall-och-morgon' })
+    expect(unfold(text).filter((l) => l === 'BEGIN:VALARM')).toHaveLength(2)
+    for (const line of text.split('\r\n')) expect(new TextEncoder().encode(line).length).toBeLessThanOrEqual(75)
   })
 })
 

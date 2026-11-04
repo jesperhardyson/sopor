@@ -243,7 +243,7 @@ När den riktiga trakt-tabellen finns: ett kontrollskript som jämför `addresse
 - `SUMMARY: Sopor: Restavfall + Matavfall`. Fraktionsordningen följer registret.
 - `UID: <addressId>-<faktiskt datum>@sopor.hardyson.se`. Datumen är unika per adress, eftersom en tömning per datum slår ihop fraktionerna. Avvikelser står redan i datan när den publiceras, så en flyttad tömning är bara en händelse på sitt nya datum (*min bedömning*).
 - `DESCRIPTION` med avvikelsetext och friskrivning.
-- VALARM kl. 18:00 kvällen innan (`TRIGGER:-PT6H`).
+- VALARM kl. 18:00 kvällen innan (`TRIGGER:-PT6H`) som förval. Övriga tider: se `2026-11-04-kalender-paminnelsetid.md`.
 - `X-WR-CALNAME: Sopor – Storgatan 12 B, Krylbo`, `REFRESH-INTERVAL`/`X-PUBLISHED-TTL` på 1 dygn, CRLF och radvikning enligt RFC 5545.
 - `DTSTAMP` sätts från datans `updatedAt`, inte från byggtiden, så att filen bara ändras när datan ändras.
 - **Uppdateringar:** Prenumerationer (webcal, Google, Apple) hämtar om filen själva. Ändrad data når användaren vid nästa hämtning. Apple hämtar enligt användarens inställning, Google bestämmer själv, ofta inom ett dygn men ibland längre. `REFRESH-INTERVAL` är bara ett önskemål som Google ignorerar. Varje deploy på Vercel tömmer CDN-cachen, så inget gammalt ligger kvar hos oss. En nedladdad .ics uppdateras aldrig, och arket säger det redan ("Uppdateras inte").

@@ -96,6 +96,10 @@
       "destination": "/api/ics?source=:source&file=:file"
     },
     {
+      "source": "/ics/:source/:reminder/:file",
+      "destination": "/api/ics?source=:source&reminder=:reminder&file=:file"
+    },
+    {
       "source": "/api/v1/adress/:source/:id",
       "destination": "/api/v1/adress?source=:source&id=:id"
     },

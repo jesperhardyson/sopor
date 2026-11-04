@@ -7036,7 +7036,7 @@
       "name": "Mobil · Lägg till i kalender",
       "clip": true,
       "width": 375,
-      "height": 812,
+      "height": 941,
       "fill": "$bg",
       "layout": "vertical",
       "children": [
@@ -10153,14 +10153,14 @@
           "name": "Dimning",
           "fill": "#0B120E99",
           "width": 375,
-          "height": 812
+          "height": 941
         },
         {
           "type": "frame",
           "id": "U2jEeH",
           "layoutPosition": "absolute",
           "x": 0,
-          "y": 239,
+          "y": 40,
           "name": "Ark",
           "width": 375,
           "fill": "$surface",
@@ -10228,6 +10228,235 @@
                   "fontFamily": "$font-ui",
                   "fontSize": 15,
                   "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "o67Pd",
+              "name": "Påminnelsetid",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "y5J1qr",
+                  "name": "Fråga",
+                  "fill": "$text",
+                  "content": "När vill du bli påmind?",
+                  "fontFamily": "$font-ui",
+                  "fontSize": 15,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "frame",
+                  "id": "iFJ9o",
+                  "name": "Rad 1",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "CpVbC",
+                      "name": "Val: Kvällen innan, kl. 18",
+                      "width": "fill_container",
+                      "height": 56,
+                      "fill": "$brand-soft",
+                      "cornerRadius": 14,
+                      "stroke": "$primary",
+                      "strokeWidth": 1.5,
+                      "gap": 10,
+                      "padding": [
+                        8,
+                        12
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "x5zqp8",
+                          "name": "Markering",
+                          "width": 18,
+                          "height": 18,
+                          "fill": "$primary",
+                          "cornerRadius": 9,
+                          "stroke": "$primary",
+                          "strokeWidth": 1.5,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "W7nLRi",
+                              "name": "Punkt",
+                              "width": 8,
+                              "height": 8,
+                              "fill": "$on-primary",
+                              "cornerRadius": 4
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "akysC",
+                          "name": "Etikett",
+                          "fill": "$brand-text",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Kvällen innan, kl. 18",
+                          "lineHeight": 1.25,
+                          "fontFamily": "$font-ui",
+                          "fontSize": 14,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "IcsIZ",
+                      "name": "Val: Kvällen innan, kl. 20",
+                      "width": "fill_container",
+                      "height": 56,
+                      "fill": "$surface",
+                      "cornerRadius": 14,
+                      "stroke": "$border",
+                      "strokeWidth": 1,
+                      "gap": 10,
+                      "padding": [
+                        8,
+                        12
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "emMZx",
+                          "name": "Markering",
+                          "width": 18,
+                          "height": 18,
+                          "fill": "$surface",
+                          "cornerRadius": 9,
+                          "stroke": "$border",
+                          "strokeWidth": 1.5,
+                          "justifyContent": "center",
+                          "alignItems": "center"
+                        },
+                        {
+                          "type": "text",
+                          "id": "ervrB",
+                          "name": "Etikett",
+                          "fill": "$text",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Kvällen innan, kl. 20",
+                          "lineHeight": 1.25,
+                          "fontFamily": "$font-ui",
+                          "fontSize": 14,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "q7Kuj9",
+                  "name": "Rad 2",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "YOTEc",
+                      "name": "Val: Samma morgon, kl. 06",
+                      "width": "fill_container",
+                      "height": 56,
+                      "fill": "$surface",
+                      "cornerRadius": 14,
+                      "stroke": "$border",
+                      "strokeWidth": 1,
+                      "gap": 10,
+                      "padding": [
+                        8,
+                        12
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "I9HBnI",
+                          "name": "Markering",
+                          "width": 18,
+                          "height": 18,
+                          "fill": "$surface",
+                          "cornerRadius": 9,
+                          "stroke": "$border",
+                          "strokeWidth": 1.5,
+                          "justifyContent": "center",
+                          "alignItems": "center"
+                        },
+                        {
+                          "type": "text",
+                          "id": "Qehzk",
+                          "name": "Etikett",
+                          "fill": "$text",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Samma morgon, kl. 06",
+                          "lineHeight": 1.25,
+                          "fontFamily": "$font-ui",
+                          "fontSize": 14,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "rxwZ4",
+                      "name": "Val: Kväll och morgon",
+                      "width": "fill_container",
+                      "height": 56,
+                      "fill": "$surface",
+                      "cornerRadius": 14,
+                      "stroke": "$border",
+                      "strokeWidth": 1,
+                      "gap": 10,
+                      "padding": [
+                        8,
+                        12
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "cyxqb",
+                          "name": "Markering",
+                          "width": 18,
+                          "height": 18,
+                          "fill": "$surface",
+                          "cornerRadius": 9,
+                          "stroke": "$border",
+                          "strokeWidth": 1.5,
+                          "justifyContent": "center",
+                          "alignItems": "center"
+                        },
+                        {
+                          "type": "text",
+                          "id": "DxiMY",
+                          "name": "Etikett",
+                          "fill": "$text",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Kväll och morgon",
+                          "lineHeight": 1.25,
+                          "fontFamily": "$font-ui",
+                          "fontSize": 14,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    }
+                  ]
                 }
               ]
             },
@@ -10621,6 +10850,44 @@
                       "fill": "$text-2"
                     }
                   ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Yxn7s",
+              "name": "Notis",
+              "width": "fill_container",
+              "fill": "$surface-2",
+              "cornerRadius": 14,
+              "gap": 10,
+              "padding": [
+                12,
+                14
+              ],
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "N6Dp5",
+                  "name": "Klocka",
+                  "width": 18,
+                  "height": 18,
+                  "icon": "bell-ring",
+                  "library": "lucide",
+                  "fill": "$text-2"
+                },
+                {
+                  "type": "text",
+                  "id": "hjGHw",
+                  "name": "Text",
+                  "fill": "$text-2",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Påminnelsen kommer kvällen innan kl. 18. Slå på notiser för kalendern i din kalenderapp. Google Kalender visar troligen inte påminnelser från prenumerationer. Vill du byta tid senare tar du bort kalendern och lägger till den igen.",
+                  "lineHeight": 1.4,
+                  "fontFamily": "$font-ui",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
                 }
               ]
             },
@@ -31129,6 +31396,235 @@
             },
             {
               "type": "frame",
+              "id": "U4LsZi",
+              "name": "Påminnelsetid",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "N4p5v",
+                  "name": "Fråga",
+                  "fill": "$text",
+                  "content": "När vill du bli påmind?",
+                  "fontFamily": "$font-ui",
+                  "fontSize": 15,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "frame",
+                  "id": "Pq0Nd",
+                  "name": "Rad 1",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "iAC5j",
+                      "name": "Val: Kvällen innan, kl. 18",
+                      "width": "fill_container",
+                      "height": 56,
+                      "fill": "$brand-soft",
+                      "cornerRadius": 14,
+                      "stroke": "$primary",
+                      "strokeWidth": 1.5,
+                      "gap": 10,
+                      "padding": [
+                        8,
+                        12
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "mGLTC",
+                          "name": "Markering",
+                          "width": 18,
+                          "height": 18,
+                          "fill": "$primary",
+                          "cornerRadius": 9,
+                          "stroke": "$primary",
+                          "strokeWidth": 1.5,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "V9Bdv",
+                              "name": "Punkt",
+                              "width": 8,
+                              "height": 8,
+                              "fill": "$on-primary",
+                              "cornerRadius": 4
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "ahUZy",
+                          "name": "Etikett",
+                          "fill": "$brand-text",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Kvällen innan, kl. 18",
+                          "lineHeight": 1.25,
+                          "fontFamily": "$font-ui",
+                          "fontSize": 14,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "DaGxn",
+                      "name": "Val: Kvällen innan, kl. 20",
+                      "width": "fill_container",
+                      "height": 56,
+                      "fill": "$surface",
+                      "cornerRadius": 14,
+                      "stroke": "$border",
+                      "strokeWidth": 1,
+                      "gap": 10,
+                      "padding": [
+                        8,
+                        12
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "FVfPS",
+                          "name": "Markering",
+                          "width": 18,
+                          "height": 18,
+                          "fill": "$surface",
+                          "cornerRadius": 9,
+                          "stroke": "$border",
+                          "strokeWidth": 1.5,
+                          "justifyContent": "center",
+                          "alignItems": "center"
+                        },
+                        {
+                          "type": "text",
+                          "id": "YsIkn",
+                          "name": "Etikett",
+                          "fill": "$text",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Kvällen innan, kl. 20",
+                          "lineHeight": 1.25,
+                          "fontFamily": "$font-ui",
+                          "fontSize": 14,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "z2xeZ",
+                  "name": "Rad 2",
+                  "width": "fill_container",
+                  "gap": 8,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "z80hR",
+                      "name": "Val: Samma morgon, kl. 06",
+                      "width": "fill_container",
+                      "height": 56,
+                      "fill": "$surface",
+                      "cornerRadius": 14,
+                      "stroke": "$border",
+                      "strokeWidth": 1,
+                      "gap": 10,
+                      "padding": [
+                        8,
+                        12
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "duFKa",
+                          "name": "Markering",
+                          "width": 18,
+                          "height": 18,
+                          "fill": "$surface",
+                          "cornerRadius": 9,
+                          "stroke": "$border",
+                          "strokeWidth": 1.5,
+                          "justifyContent": "center",
+                          "alignItems": "center"
+                        },
+                        {
+                          "type": "text",
+                          "id": "mwnZu",
+                          "name": "Etikett",
+                          "fill": "$text",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Samma morgon, kl. 06",
+                          "lineHeight": 1.25,
+                          "fontFamily": "$font-ui",
+                          "fontSize": 14,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "pgkwY",
+                      "name": "Val: Kväll och morgon",
+                      "width": "fill_container",
+                      "height": 56,
+                      "fill": "$surface",
+                      "cornerRadius": 14,
+                      "stroke": "$border",
+                      "strokeWidth": 1,
+                      "gap": 10,
+                      "padding": [
+                        8,
+                        12
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "ReAJ4",
+                          "name": "Markering",
+                          "width": 18,
+                          "height": 18,
+                          "fill": "$surface",
+                          "cornerRadius": 9,
+                          "stroke": "$border",
+                          "strokeWidth": 1.5,
+                          "justifyContent": "center",
+                          "alignItems": "center"
+                        },
+                        {
+                          "type": "text",
+                          "id": "R7Sge",
+                          "name": "Etikett",
+                          "fill": "$text",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Kväll och morgon",
+                          "lineHeight": 1.25,
+                          "fontFamily": "$font-ui",
+                          "fontSize": 14,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
               "id": "Ez0RN",
               "name": "Alternativ",
               "width": "fill_container",
@@ -31517,6 +32013,44 @@
                       "fill": "$text-2"
                     }
                   ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Ro1fn",
+              "name": "Notis",
+              "width": "fill_container",
+              "fill": "$surface-2",
+              "cornerRadius": 14,
+              "gap": 10,
+              "padding": [
+                12,
+                14
+              ],
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "YGn79",
+                  "name": "Klocka",
+                  "width": 18,
+                  "height": 18,
+                  "icon": "bell-ring",
+                  "library": "lucide",
+                  "fill": "$text-2"
+                },
+                {
+                  "type": "text",
+                  "id": "oB8rK",
+                  "name": "Text",
+                  "fill": "$text-2",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Påminnelsen kommer kvällen innan kl. 18. Slå på notiser för kalendern i din kalenderapp. Google Kalender visar troligen inte påminnelser från prenumerationer. Vill du byta tid senare tar du bort kalendern och lägger till den igen.",
+                  "lineHeight": 1.4,
+                  "fontFamily": "$font-ui",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
                 }
               ]
             },

@@ -1,6 +1,7 @@
 import type { Address, Schedule } from '@/domain/types'
 import { kommunForLocality, type Source } from '@/sources'
 import { loadPlaces } from './places'
+import { icsPath } from './ics-path'
 import type { WasteProvider } from './types'
 
 type Loaded = { address: Address; schedule: Schedule } | null
@@ -47,8 +48,8 @@ export function createApiProvider(source: Source, fetchFn: typeof fetch = (...ar
     async dataUpdatedAt() {
       return null
     },
-    icsUrl(addressId) {
-      return `/ics/${source.id}/${encodeURIComponent(addressId)}.ics`
+    icsUrl(addressId, reminder) {
+      return icsPath(source.id, addressId, reminder)
     },
   }
 }

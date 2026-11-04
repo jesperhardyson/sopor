@@ -1,6 +1,7 @@
 import { streetAndLocality } from './address.js'
 import { addDays, formatLong } from './dates.js'
 import { FRACTIONS, sortFractions } from './fractions.js'
+import { DEFAULT_REMINDER, REMINDERS, type ReminderId } from './reminders.js'
 import type { Address, PickupEvent, Schedule } from './types.js'
 
 export const DISCLAIMER = 'Inofficiell tjänst. Vid avvikelser gäller kommunens information.'
@@ -48,8 +49,9 @@ export function buildIcs(input: {
   host?: string
   /** Vad vi inte vet om schemat gäller, när användaren valt område själv */
   notice?: string
+  reminder?: ReminderId
 }): string {
-  const { address, kommunName, schedule, notice, host = 'sopor.hardyson.se' } = input
+  const { address, kommunName, schedule, notice, host = 'sopor.hardyson.se', reminder = DEFAULT_REMINDER } = input
   const stamp = `${compact(schedule.updatedAt)}T000000Z`
 
   const lines = [
@@ -79,11 +81,13 @@ export function buildIcs(input: {
       `SUMMARY:${escapeText(summary)}`,
       `DESCRIPTION:${escapeText(description)}`,
       'TRANSP:TRANSPARENT',
-      'BEGIN:VALARM',
-      'ACTION:DISPLAY',
-      `DESCRIPTION:${escapeText(`I morgon: ${names.join(' + ')}`)}`,
-      'TRIGGER:-PT6H',
-      'END:VALARM',
+      ...REMINDERS[reminder].alarms.flatMap(({ trigger, prefix }) => [
+        'BEGIN:VALARM',
+        'ACTION:DISPLAY',
+        `DESCRIPTION:${escapeText(`${prefix}: ${names.join(' + ')}`)}`,
+        `TRIGGER:${trigger}`,
+        'END:VALARM',
+      ]),
       'END:VEVENT',
     )
   }

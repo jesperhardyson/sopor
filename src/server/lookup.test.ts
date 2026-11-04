@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
 import type { Source } from '../sources/index.js'
+import { handleIcs } from './handlers.js'
 import { lookupAddress } from './lookup.js'
 import { siteJson } from './site.js'
 
@@ -121,6 +122,15 @@ describe('lookupAddress', () => {
       return Promise.resolve(p.endsWith('2026-b.json') ? new Response('', { status: 404 }) : staticFetch(input))
     }) as unknown as typeof fetch
     expect(await lookupAddress(avesta, 'storgatan-1', 'https://x', { ...opts, fetchFn: missing })).toEqual({ status: 502 })
+  })
+})
+
+describe('handleIcs med en statisk källa', () => {
+  it('bygger filen med vald påminnelsetid', async () => {
+    const url = new URL('https://x/api/ics?source=avesta&file=storgatan-1.ics&reminder=kvall-20')
+    const res = await handleIcs(url, { ...opts, fetchFn: staticFetch })
+    expect(res.status).toBe(200)
+    expect(await res.text()).toContain('TRIGGER:-PT4H')
   })
 })
 

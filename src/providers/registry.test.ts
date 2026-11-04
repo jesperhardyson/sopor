@@ -19,6 +19,12 @@ describe('providerFor', () => {
     expect(providerFor(getSource('avesta')!).icsUrl('x')).toBe('/ics/avesta/x.ics')
   })
 
+  it('lägger valet i sökvägen, men inte förvalet', () => {
+    const provider = providerFor(getSource('avesta')!)
+    expect(provider.icsUrl('x', 'kvall-18')).toBe('/ics/avesta/x.ics')
+    expect(provider.icsUrl('x', 'morgon')).toBe('/ics/avesta/morgon/x.ics')
+  })
+
   it('ger live-källor en provider som går via Sopors API', () => {
     const edp: Source = { ...getSource('avesta')!, id: 'testkalla', config: { system: 'edp', baseUrl: 'https://x' } }
     expect(providerFor(edp).icsUrl('a_b-1')).toBe('/ics/testkalla/a_b-1.ics')
