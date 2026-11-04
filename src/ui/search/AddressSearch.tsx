@@ -1,7 +1,7 @@
 import { ChevronDown, LoaderCircle, MapPin, Search, X } from 'lucide-react'
 import { Fragment, useEffect, useId, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
-import { groupByKommun, normalize, stableMerge } from '@/domain/search'
+import { enterTarget, groupByKommun, normalize, stableMerge } from '@/domain/search'
 import type { Address } from '@/domain/types'
 import { missingKommuner, prefetchAddress, searchAll, suggestAll, warmUpSearch, type SearchOptions, type SearchResult } from '@/providers/registry'
 import { getSource } from '@/sources'
@@ -222,6 +222,13 @@ export function AddressSearch({
     else setExpanded((prev) => new Set(prev).add(item.kommun ?? ALL))
   }
 
+  /** Enter utan vald rad: öppnar en entydig träff, annars markeras första raden så att man kan välja. */
+  function openOrMark(addresses: Address[]) {
+    const target = enterTarget(query, addresses)
+    if (target) go(target)
+    else setActive(0)
+  }
+
   function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'ArrowDown' && open) {
       e.preventDefault()
@@ -232,14 +239,23 @@ export function AddressSearch({
     } else if (e.key === 'Enter') {
       e.preventDefault()
       // Listan kan höra till en äldre fråga om man trycker Enter innan debouncen hunnit köra.
-      if (open && state.kind === 'results' && state.query === query) {
-        choose(items[Math.max(active, 0)])
+      if (open && active >= 0 && state.kind === 'results' && state.query === query) {
+        choose(items[active])
+        return
+      }
+      // Svarar källor fortfarande kan fler träffar vara på väg, så då avgör den fullständiga sökningen.
+      if (open && state.kind === 'results' && state.query === query && !state.pending) {
+        openOrMark(state.results)
         return
       }
       setSubmitted(true)
       if (normalize(query).length < 2) return
       search(query, undefined, undefined, { submitted: true }).then(
-        (fresh) => fresh.addresses.length > 0 && go(fresh.addresses[0]),
+        (fresh) => {
+          if (fresh.addresses.length === 0) return
+          setState({ kind: 'results', query, results: fresh.addresses, failed: fresh.failed })
+          openOrMark(fresh.addresses)
+        },
         () => setState({ kind: 'error' }),
       )
     } else if (e.key === 'Escape') {

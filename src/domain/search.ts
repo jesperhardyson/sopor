@@ -30,6 +30,17 @@ export function searchAddresses(query: string, addresses: Address[], limit = 8):
   return hits.length === 0 && split !== q ? match(split, addresses, limit) : hits
 }
 
+/**
+ * Adressen som Enter öppnar utan att man valt en rad: den enda träffen, eller den enda som är just
+ * det man skrev. "Hornsgatan 1" får inte öppna Hornsgatan 10 eller gissa mellan Borås och Kalmar.
+ */
+export function enterTarget(query: string, addresses: Address[]): Address | undefined {
+  if (addresses.length === 1) return addresses[0]
+  const q = normalize(query)
+  const exact = addresses.filter((a) => normalize(a.street) === q || normalize(`${a.street} ${a.locality}`) === q)
+  return exact.length === 1 ? exact[0] : undefined
+}
+
 function match(q: string, addresses: Address[], limit: number): Address[] {
   const tokens = q.split(' ')
   return addresses
