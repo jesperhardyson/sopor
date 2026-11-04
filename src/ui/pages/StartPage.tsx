@@ -80,7 +80,13 @@ export function StartPage() {
         <p className="flex items-center gap-2 px-1 text-sm text-text-2 lg:justify-center lg:text-[15px]">
           <MapPin className="size-4 shrink-0 text-primary" aria-hidden />
           <span>
-            {kommunLine()}{' '}
+            {supportedKommuner().length > 3 ? (
+              <Link to="/kommuner" className="underline underline-offset-2">
+                {kommunLine()}
+              </Link>
+            ) : (
+              kommunLine()
+            )}{' '}
             <Link to="/#finns-din-kommun" className="font-extrabold text-earth underline underline-offset-2">
               Finns din kommun?
             </Link>

@@ -155,3 +155,10 @@ describe('StartPage och Finns din kommun?', () => {
     expect(screen.getByRole('combobox')).toHaveFocus()
   })
 })
+
+describe('StartPage länk till kommunerna', () => {
+  it('länkar antalet kommuner till översikten', () => {
+    setup()
+    expect(screen.getByRole('link', { name: /^Just nu: \d+ kommuner\.$/ })).toHaveAttribute('href', '/kommuner')
+  })
+})

@@ -4,6 +4,8 @@ import { beforeSend } from '@/lib/analytics'
 import { Layout } from './layout/Layout'
 import { AboutPage } from './pages/AboutPage'
 import { BidraPage } from './pages/BidraPage'
+import { KommunerRoute } from './pages/KommunerPage'
+import { KommunRoute } from './pages/KommunPage'
 import { ResultRoute } from './pages/ResultPage'
 import { StartPage } from './pages/StartPage'
 
@@ -15,6 +17,8 @@ export function App() {
           <Route index element={<StartPage />} />
           <Route path="om" element={<AboutPage />} />
           <Route path="bidra" element={<BidraPage />} />
+          <Route path="kommuner" element={<KommunerRoute />} />
+          <Route path="kommuner/:slug" element={<KommunRoute />} />
           <Route path=":sourceId/:addressId" element={<ResultRoute />} />
           <Route path="*" element={<StartPage />} />
         </Route>
