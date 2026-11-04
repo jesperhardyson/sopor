@@ -18,6 +18,14 @@ updates:
     groups:
       homey:
         patterns: ['*']
+  # Bara testmiljön: integrationen själv har inga beroenden (requirements: [] i manifest.json)
+  - package-ecosystem: uv
+    directory: /integrations/home-assistant
+    schedule:
+      interval: weekly
+    groups:
+      home-assistant:
+        patterns: ['*']
   - package-ecosystem: github-actions
     directory: /
     schedule:
