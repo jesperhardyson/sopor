@@ -8,4 +8,4 @@ Spec: `docs/specs/2026-11-04-roslagsvatten.md`. Tester först i varje steg, och 
 - [x] `checkRoslagsvattenSource` och kontrolladresserna i `PROBES`.
 - [x] Planen för fler kommuner, `lagga-till-kommun.md` och `hitta-kommunens-data.md`.
 - [x] Stickprov mot Roslagsvatten: 120 adresser ur cirka 26 000, inga fel eller krockande id. Uppslaget missade adresser med `:` och `/`, så det söker nu brett när gatan inte ger något.
-- [ ] Förhandsvisningen på Vercel.
+- [x] Förhandsvisningen på Vercel: sökning, schema och kalender i alla tre kommunerna.
