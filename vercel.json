@@ -33,6 +33,15 @@
       ]
     },
     {
+      "source": "/((?!kommuner/|api/|ics/|data/|assets/)[^/]+/[^/]+)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
+        }
+      ]
+    },
+    {
       "source": "/assets/(.*)",
       "headers": [
         {
@@ -75,6 +84,14 @@
   ],
   "rewrites": [
     {
+      "source": "/kommuner",
+      "destination": "/kommuner/index.html"
+    },
+    {
+      "source": "/kommuner/:slug",
+      "destination": "/kommuner/:slug/index.html"
+    },
+    {
       "source": "/ics/:source/:file",
       "destination": "/api/ics?source=:source&file=:file"
     },
@@ -87,7 +104,7 @@
       "destination": "/api/v1/okand"
     },
     {
-      "source": "/((?!data/|ics/|assets/|api/).*)",
+      "source": "/((?!data/|ics/|assets/|api/|kommuner/).*)",
       "destination": "/index.html"
     }
   ]

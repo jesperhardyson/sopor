@@ -137,6 +137,10 @@ Gäller statiska källor. EDP-källorna hämtas live och behöver inget.
 
 Prenumererade kalendrar hämtar den nya filen själva.
 
+## Kommunsidan
+
+En ny kommun i `src/sources/index.ts` får sin sida på `/kommuner/<slug>` automatiskt, med källan och sökfältet. Du behöver inte göra något. Slugen ändras aldrig: byter en kommun namn läggs den gamla slugen som undantag i `src/data/kommun-pages.ts`, och `src/data/kommun-slugs.json` vakar över det.
+
 ## Pull request
 
 Öppna en pull request och fyll i mallen, med länk till kommunens publika källa. GitHub Actions kör samma kontroller, och stoppar ändringar som tar bort eller byter namn på ett befintligt adress-id.

@@ -2,7 +2,7 @@ import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { buildMunicipality } from '@/data/static-format'
 import { ALL_SOURCES } from '@/sources'
-import { readYears } from './build-data'
+import { readKommunPages, readYears } from './build-data'
 
 describe('seed-datan för Avesta', () => {
   const years = readYears(path.resolve(import.meta.dirname, '../data/avesta'))
@@ -21,5 +21,14 @@ describe('seed-datan för Avesta', () => {
       originalDate: '2027-01-06',
       reason: 'trettondedag jul',
     })
+  })
+})
+
+describe('kommunsidornas data', () => {
+  it('har alla kommuner och räknar bara källor som syns på sajten', () => {
+    const pages = readKommunPages()
+    expect(pages).toHaveLength(290)
+    expect(pages.find((p) => p.code === '2084')?.covered).toBe(false)
+    expect(pages.find((p) => p.code === '0380')?.covered).toBe(true)
   })
 })

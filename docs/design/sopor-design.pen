@@ -103878,6 +103878,2029 @@
           ]
         }
       ]
+    },
+    {
+      "type": "frame",
+      "id": "x28Esb",
+      "x": 0,
+      "y": 19448,
+      "name": "Kommunsida · skiss",
+      "fill": "$bg",
+      "layout": "vertical",
+      "gap": 32,
+      "padding": 64,
+      "children": [
+        {
+          "type": "text",
+          "id": "SOFjZ",
+          "name": "Rubrik",
+          "fill": "$text",
+          "content": "Kommunsida",
+          "fontFamily": "$font-ui",
+          "fontSize": 36,
+          "fontWeight": "800"
+        },
+        {
+          "type": "text",
+          "id": "EA26f",
+          "name": "Underrubrik",
+          "fill": "$text-2",
+          "content": "En statisk sida per kommun för den som googlar sophämtning, plus en översikt. Adresser: /kommuner och /kommuner/uppsala-kommun. Uppsala och Göteborg är exempel.",
+          "fontFamily": "$font-ui",
+          "fontSize": 16,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "wSbhc",
+          "name": "Rad",
+          "gap": 64,
+          "children": [
+            {
+              "type": "frame",
+              "id": "l2Cug6",
+              "name": "Mobil · Kommunsida",
+              "clip": true,
+              "width": 375,
+              "fill": "$bg",
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "iBJNS",
+                  "type": "ref",
+                  "ref": "gBy0W",
+                  "name": "Sidhuvud",
+                  "width": "fill_container"
+                },
+                {
+                  "type": "frame",
+                  "id": "F62Mg4",
+                  "name": "Innehåll",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "padding": [
+                    28,
+                    20,
+                    48,
+                    20
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "CGedV",
+                      "name": "Kolumn",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 32,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "UaB6k",
+                          "name": "Tillbaka",
+                          "gap": 6,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "mXL9M",
+                              "name": "Pil",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "arrow-left",
+                              "library": "lucide",
+                              "fill": "$primary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "A9F8HB",
+                              "name": "Text",
+                              "fill": "$primary",
+                              "content": "Startsidan",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 14,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "JjcM2",
+                          "name": "Hero",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 24,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "KyEmE",
+                              "name": "Fraktionsrad",
+                              "gap": 8,
+                              "children": [
+                                {
+                                  "id": "A3SO8p",
+                                  "type": "ref",
+                                  "ref": "vPeSE",
+                                  "name": "Ikon rest",
+                                  "width": 36,
+                                  "height": 36,
+                                  "cornerRadius": 11
+                                },
+                                {
+                                  "id": "R1PnH",
+                                  "type": "ref",
+                                  "ref": "F5iQxg",
+                                  "name": "Ikon mat",
+                                  "width": 36,
+                                  "height": 36,
+                                  "cornerRadius": 11
+                                },
+                                {
+                                  "id": "t3Dly",
+                                  "type": "ref",
+                                  "ref": "o5jApD",
+                                  "name": "Ikon papper",
+                                  "width": 36,
+                                  "height": 36,
+                                  "cornerRadius": 11
+                                },
+                                {
+                                  "id": "hqr01",
+                                  "type": "ref",
+                                  "ref": "Qc4qi",
+                                  "name": "Ikon plast",
+                                  "width": 36,
+                                  "height": 36,
+                                  "cornerRadius": 11
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "SFaBQ",
+                              "name": "Rubrik",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 10,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "gl86S",
+                                  "name": "H1",
+                                  "fill": "$text",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Sophämtning i Uppsala kommun",
+                                  "lineHeight": 1.1,
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 34,
+                                  "fontWeight": "800"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "St9EG",
+                                  "name": "Ingress",
+                                  "fill": "$text-2",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Skriv in din adress så ser du när dina kärl töms. Lägg schemat i kalendern, så slipper du hålla reda på det.",
+                                  "lineHeight": 1.45,
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 17,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "Q4up6w",
+                              "name": "Adressfält",
+                              "width": "fill_container",
+                              "height": 62,
+                              "fill": "$surface",
+                              "cornerRadius": 18,
+                              "stroke": "$border",
+                              "strokeWidth": 1.5,
+                              "effect": {
+                                "type": "shadow",
+                                "shadowType": "outer",
+                                "color": "#1B231F0D",
+                                "offset": {
+                                  "x": 0,
+                                  "y": 4
+                                },
+                                "blur": 16
+                              },
+                              "gap": 10,
+                              "padding": [
+                                0,
+                                16,
+                                0,
+                                18
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "D5prm2",
+                                  "name": "Sökikon",
+                                  "width": 20,
+                                  "height": 20,
+                                  "icon": "search",
+                                  "library": "lucide",
+                                  "fill": "$text-2"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "Jwa44",
+                                  "name": "Platshållare",
+                                  "fill": "$text-2",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Skriv din adress, t.ex. Storgatan 2",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 16,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "j0uEib",
+                          "name": "Källa",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 10,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "wRQ6k",
+                              "name": "H2",
+                              "fill": "$text",
+                              "content": "Varifrån kommer schemat?",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 20,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "text",
+                              "id": "dSuBO",
+                              "name": "Text",
+                              "fill": "$text-2",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Schemat för Uppsala kommun hämtas från Uppsala Vatten. Sopor är en inofficiell tjänst, och vid tveksamhet gäller deras uppgifter.",
+                              "lineHeight": 1.45,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 15,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "paxWn",
+                              "name": "Länk",
+                              "gap": 6,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "Coux3",
+                                  "name": "Text",
+                                  "fill": "$primary",
+                                  "content": "Uppsala Vatten",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 15,
+                                  "fontWeight": "700"
+                                },
+                                {
+                                  "type": "icon",
+                                  "id": "cTPL6",
+                                  "name": "Extern",
+                                  "width": 14,
+                                  "height": 14,
+                                  "icon": "external-link",
+                                  "library": "lucide",
+                                  "fill": "$primary"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "sX5Hg",
+                          "name": "Orter",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 10,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "T7cZGX",
+                              "name": "H2",
+                              "fill": "$text",
+                              "content": "Orter i kommunen",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 20,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "text",
+                              "id": "nEcAW",
+                              "name": "Lista",
+                              "fill": "$text-2",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Uppsala, Storvreta, Björklinge, Vattholma, Bälinge, Järlåsa och fler.",
+                              "lineHeight": 1.45,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 15,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "T0eW4",
+                          "name": "Fler kommuner",
+                          "gap": 6,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "uT6j1",
+                              "name": "Text",
+                              "fill": "$primary",
+                              "content": "Se alla kommuner",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 15,
+                              "fontWeight": "700"
+                            },
+                            {
+                              "type": "icon",
+                              "id": "KsiPK",
+                              "name": "Pil",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "arrow-right",
+                              "library": "lucide",
+                              "fill": "$primary"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "id": "B0Gud",
+                  "type": "ref",
+                  "ref": "fqF9s",
+                  "name": "Sidfot",
+                  "width": "fill_container"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "QN41k",
+              "name": "Desktop · Kommunsida",
+              "clip": true,
+              "width": 1280,
+              "fill": "$bg",
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "Y5SaB",
+                  "type": "ref",
+                  "ref": "HMzkq",
+                  "name": "Sidhuvud",
+                  "width": "fill_container"
+                },
+                {
+                  "type": "frame",
+                  "id": "FVFPx",
+                  "name": "Innehåll",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "padding": [
+                    56,
+                    0,
+                    48,
+                    0
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "Qj3dK",
+                      "name": "Kolumn",
+                      "width": 640,
+                      "layout": "vertical",
+                      "gap": 32,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "Fd49i",
+                          "name": "Tillbaka",
+                          "gap": 6,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "kzCz0",
+                              "name": "Pil",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "arrow-left",
+                              "library": "lucide",
+                              "fill": "$primary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "XdMN2",
+                              "name": "Text",
+                              "fill": "$primary",
+                              "content": "Startsidan",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 14,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "ynQSK",
+                          "name": "Hero",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 24,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "Spoxw",
+                              "name": "Fraktionsrad",
+                              "gap": 8,
+                              "children": [
+                                {
+                                  "id": "X3Ico6",
+                                  "type": "ref",
+                                  "ref": "vPeSE",
+                                  "name": "Ikon rest",
+                                  "width": 36,
+                                  "height": 36,
+                                  "cornerRadius": 11
+                                },
+                                {
+                                  "id": "ngHIP",
+                                  "type": "ref",
+                                  "ref": "F5iQxg",
+                                  "name": "Ikon mat",
+                                  "width": 36,
+                                  "height": 36,
+                                  "cornerRadius": 11
+                                },
+                                {
+                                  "id": "z7ardv",
+                                  "type": "ref",
+                                  "ref": "o5jApD",
+                                  "name": "Ikon papper",
+                                  "width": 36,
+                                  "height": 36,
+                                  "cornerRadius": 11
+                                },
+                                {
+                                  "id": "b1Q1Wr",
+                                  "type": "ref",
+                                  "ref": "Qc4qi",
+                                  "name": "Ikon plast",
+                                  "width": 36,
+                                  "height": 36,
+                                  "cornerRadius": 11
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "hPf0p",
+                              "name": "Rubrik",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 10,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "YhDhz",
+                                  "name": "H1",
+                                  "fill": "$text",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Sophämtning i Uppsala kommun",
+                                  "lineHeight": 1.1,
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 44,
+                                  "fontWeight": "800"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "go1pI",
+                                  "name": "Ingress",
+                                  "fill": "$text-2",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Skriv in din adress så ser du när dina kärl töms. Lägg schemat i kalendern, så slipper du hålla reda på det.",
+                                  "lineHeight": 1.45,
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 17,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "e0Yn1d",
+                              "name": "Adressfält",
+                              "width": "fill_container",
+                              "height": 62,
+                              "fill": "$surface",
+                              "cornerRadius": 18,
+                              "stroke": "$border",
+                              "strokeWidth": 1.5,
+                              "effect": {
+                                "type": "shadow",
+                                "shadowType": "outer",
+                                "color": "#1B231F0D",
+                                "offset": {
+                                  "x": 0,
+                                  "y": 4
+                                },
+                                "blur": 16
+                              },
+                              "gap": 10,
+                              "padding": [
+                                0,
+                                16,
+                                0,
+                                18
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "Kudpv",
+                                  "name": "Sökikon",
+                                  "width": 20,
+                                  "height": 20,
+                                  "icon": "search",
+                                  "library": "lucide",
+                                  "fill": "$text-2"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "uri34",
+                                  "name": "Platshållare",
+                                  "fill": "$text-2",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Skriv din adress, t.ex. Storgatan 2",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 16,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "IWF0i",
+                          "name": "Källa",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 10,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "hBNC1",
+                              "name": "H2",
+                              "fill": "$text",
+                              "content": "Varifrån kommer schemat?",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 20,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "text",
+                              "id": "fMxyw",
+                              "name": "Text",
+                              "fill": "$text-2",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Schemat för Uppsala kommun hämtas från Uppsala Vatten. Sopor är en inofficiell tjänst, och vid tveksamhet gäller deras uppgifter.",
+                              "lineHeight": 1.45,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 15,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "K3A1A",
+                              "name": "Länk",
+                              "gap": 6,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "Pg5wv",
+                                  "name": "Text",
+                                  "fill": "$primary",
+                                  "content": "Uppsala Vatten",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 15,
+                                  "fontWeight": "700"
+                                },
+                                {
+                                  "type": "icon",
+                                  "id": "hdocS",
+                                  "name": "Extern",
+                                  "width": 14,
+                                  "height": 14,
+                                  "icon": "external-link",
+                                  "library": "lucide",
+                                  "fill": "$primary"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "YYaCd",
+                          "name": "Orter",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 10,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Ckc2Z",
+                              "name": "H2",
+                              "fill": "$text",
+                              "content": "Orter i kommunen",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 20,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "text",
+                              "id": "ARxwQ",
+                              "name": "Lista",
+                              "fill": "$text-2",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Uppsala, Storvreta, Björklinge, Vattholma, Bälinge, Järlåsa och fler.",
+                              "lineHeight": 1.45,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 15,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "mfiF6",
+                          "name": "Fler kommuner",
+                          "gap": 6,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "I7z0qI",
+                              "name": "Text",
+                              "fill": "$primary",
+                              "content": "Se alla kommuner",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 15,
+                              "fontWeight": "700"
+                            },
+                            {
+                              "type": "icon",
+                              "id": "Uiti3",
+                              "name": "Pil",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "arrow-right",
+                              "library": "lucide",
+                              "fill": "$primary"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "hExm3",
+                  "name": "Sidfotsyta",
+                  "width": "fill_container",
+                  "stroke": "$border",
+                  "strokeWidth": {
+                    "top": 1
+                  },
+                  "justifyContent": "center",
+                  "children": [
+                    {
+                      "id": "bqAQg",
+                      "type": "ref",
+                      "ref": "fqF9s",
+                      "name": "Sidfot",
+                      "width": 920,
+                      "strokeWidth": 0
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "K7qMYV",
+          "name": "Rad saknas och översikt",
+          "gap": 64,
+          "children": [
+            {
+              "type": "frame",
+              "id": "ZD61Z",
+              "name": "Mobil · Kommunsida, saknas",
+              "clip": true,
+              "width": 375,
+              "fill": "$bg",
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "CmTtI",
+                  "type": "ref",
+                  "ref": "gBy0W",
+                  "name": "Sidhuvud",
+                  "width": "fill_container"
+                },
+                {
+                  "type": "frame",
+                  "id": "SLKTm",
+                  "name": "Innehåll",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "padding": [
+                    28,
+                    20,
+                    48,
+                    20
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "Aq54W",
+                      "name": "Kolumn",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 32,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "wZZe6",
+                          "name": "Tillbaka",
+                          "gap": 6,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "ORi2v",
+                              "name": "Pil",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "arrow-left",
+                              "library": "lucide",
+                              "fill": "$primary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "keSY8",
+                              "name": "Text",
+                              "fill": "$primary",
+                              "content": "Startsidan",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 14,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "zjgVw",
+                          "name": "Rubrik",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 10,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "KuHe9",
+                              "name": "H1",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Sophämtning i Göteborgs kommun",
+                              "lineHeight": 1.1,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 34,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "text",
+                              "id": "mCCaN",
+                              "name": "Ingress",
+                              "fill": "$text-2",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Sopor finns inte i Göteborgs kommun än. Tills dess hittar du hämtschemat hos kommunen eller avfallsbolaget.",
+                              "lineHeight": 1.45,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 17,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Sz2Cw",
+                          "name": "Tipsa",
+                          "width": "fill_container",
+                          "fill": "$earth-soft",
+                          "cornerRadius": 16,
+                          "layout": "vertical",
+                          "gap": 12,
+                          "padding": 20,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "ryDE9",
+                              "name": "H2",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Hjälp till att få in kommunen",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 18,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "text",
+                              "id": "Y7yAl",
+                              "name": "Text",
+                              "fill": "$text-2",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Berätta var kommunen publicerar sitt hämtschema, så kan vi lägga in den.",
+                              "lineHeight": 1.45,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 15,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "VyA2b",
+                              "name": "Länk",
+                              "gap": 6,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "q06bI",
+                                  "name": "Text",
+                                  "fill": "$earth",
+                                  "content": "Tipsa om din kommun",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 15,
+                                  "fontWeight": "800"
+                                },
+                                {
+                                  "type": "icon",
+                                  "id": "tLUEV",
+                                  "name": "Pil",
+                                  "width": 16,
+                                  "height": 16,
+                                  "icon": "arrow-right",
+                                  "library": "lucide",
+                                  "fill": "$earth"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "mnyPx",
+                          "name": "Orter",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 10,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "k0jrf7",
+                              "name": "H2",
+                              "fill": "$text",
+                              "content": "Orter i kommunen",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 20,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "text",
+                              "id": "uwOKQ",
+                              "name": "Lista",
+                              "fill": "$text-2",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Göteborg, Angered, Torslanda, Hisings Backa, Billdal och fler.",
+                              "lineHeight": 1.45,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 15,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Tjehm",
+                          "name": "Fler kommuner",
+                          "gap": 6,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Ovah3",
+                              "name": "Text",
+                              "fill": "$primary",
+                              "content": "Se alla kommuner",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 15,
+                              "fontWeight": "700"
+                            },
+                            {
+                              "type": "icon",
+                              "id": "KahCB",
+                              "name": "Pil",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "arrow-right",
+                              "library": "lucide",
+                              "fill": "$primary"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "id": "Bgdvu",
+                  "type": "ref",
+                  "ref": "fqF9s",
+                  "name": "Sidfot",
+                  "width": "fill_container"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "XDGqM",
+              "name": "Mobil · Alla kommuner",
+              "clip": true,
+              "width": 375,
+              "fill": "$bg",
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "P8qvJ",
+                  "type": "ref",
+                  "ref": "gBy0W",
+                  "name": "Sidhuvud",
+                  "width": "fill_container"
+                },
+                {
+                  "type": "frame",
+                  "id": "R2tV7i",
+                  "name": "Innehåll",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "padding": [
+                    28,
+                    20,
+                    48,
+                    20
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "JV3pW",
+                      "name": "Kolumn",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 32,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "gHj7q",
+                          "name": "Tillbaka",
+                          "gap": 6,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "f4HnlN",
+                              "name": "Pil",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "arrow-left",
+                              "library": "lucide",
+                              "fill": "$primary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "gaTu7",
+                              "name": "Text",
+                              "fill": "$primary",
+                              "content": "Startsidan",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 14,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "z6m7Pf",
+                          "name": "Rubrik",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 10,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Fp7yt",
+                              "name": "H1",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Sophämtning i Sveriges kommuner",
+                              "lineHeight": 1.1,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 34,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "text",
+                              "id": "C586Z",
+                              "name": "Ingress",
+                              "fill": "$text-2",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Sopor finns i 71 av Sveriges 290 kommuner, och fler kommer.",
+                              "lineHeight": 1.45,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 17,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Kmah0",
+                          "name": "Här finns Sopor (71)",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 12,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "JUnn9",
+                              "name": "H2",
+                              "fill": "$text",
+                              "content": "Här finns Sopor (71)",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 20,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "m3vH4k",
+                              "name": "Kolumner",
+                              "width": "fill_container",
+                              "gap": 16,
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "Lo7iE",
+                                  "name": "Kolumn",
+                                  "width": "fill_container",
+                                  "layout": "vertical",
+                                  "gap": 8,
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "W9u6j",
+                                      "name": "Alvesta kommun",
+                                      "fill": "$primary",
+                                      "content": "Alvesta kommun",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 15,
+                                      "fontWeight": "700"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "n2BPGh",
+                                      "name": "Arboga kommun",
+                                      "fill": "$primary",
+                                      "content": "Arboga kommun",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 15,
+                                      "fontWeight": "700"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "JMdNC",
+                                      "name": "Bodens kommun",
+                                      "fill": "$primary",
+                                      "content": "Bodens kommun",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 15,
+                                      "fontWeight": "700"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "xFLWL",
+                                      "name": "Borås kommun",
+                                      "fill": "$primary",
+                                      "content": "Borås kommun",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 15,
+                                      "fontWeight": "700"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "vXrht",
+                                  "name": "Kolumn",
+                                  "width": "fill_container",
+                                  "layout": "vertical",
+                                  "gap": 8,
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "DH0pW",
+                                      "name": "Stockholms kommun",
+                                      "fill": "$primary",
+                                      "content": "Stockholms kommun",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 15,
+                                      "fontWeight": "700"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "UHkxB",
+                                      "name": "Uppsala kommun",
+                                      "fill": "$primary",
+                                      "content": "Uppsala kommun",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 15,
+                                      "fontWeight": "700"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "D00aj",
+                                      "name": "Västerås kommun",
+                                      "fill": "$primary",
+                                      "content": "Västerås kommun",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 15,
+                                      "fontWeight": "700"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "X1qNN",
+                                      "name": "Örebro kommun",
+                                      "fill": "$primary",
+                                      "content": "Örebro kommun",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 15,
+                                      "fontWeight": "700"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "K3mqhb",
+                          "name": "Inte än (219)",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 12,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "FUH7p",
+                              "name": "H2",
+                              "fill": "$text",
+                              "content": "Inte än (219)",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 20,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "Wq0lV",
+                              "name": "Kolumner",
+                              "width": "fill_container",
+                              "gap": 16,
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "UtG8X",
+                                  "name": "Kolumn",
+                                  "width": "fill_container",
+                                  "layout": "vertical",
+                                  "gap": 8,
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "bdbpV",
+                                      "name": "Ale kommun",
+                                      "fill": "$text-2",
+                                      "content": "Ale kommun",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 15,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "pnuCs",
+                                      "name": "Alingsås kommun",
+                                      "fill": "$text-2",
+                                      "content": "Alingsås kommun",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 15,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "YwwJf",
+                                      "name": "Bollnäs kommun",
+                                      "fill": "$text-2",
+                                      "content": "Bollnäs kommun",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 15,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "uUIWs",
+                                      "name": "Falu kommun",
+                                      "fill": "$text-2",
+                                      "content": "Falu kommun",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 15,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "Hd9BE",
+                                  "name": "Kolumn",
+                                  "width": "fill_container",
+                                  "layout": "vertical",
+                                  "gap": 8,
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "huxEY",
+                                      "name": "Göteborgs kommun",
+                                      "fill": "$text-2",
+                                      "content": "Göteborgs kommun",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 15,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "bKFUP",
+                                      "name": "Linköpings kommun",
+                                      "fill": "$text-2",
+                                      "content": "Linköpings kommun",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 15,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "m9fkg",
+                                      "name": "Umeå kommun",
+                                      "fill": "$text-2",
+                                      "content": "Umeå kommun",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 15,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "O0Qe5",
+                                      "name": "Region Gotland",
+                                      "fill": "$text-2",
+                                      "content": "Region Gotland",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 15,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "id": "HwNlb",
+                  "type": "ref",
+                  "ref": "fqF9s",
+                  "name": "Sidfot",
+                  "width": "fill_container"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "AHtUk",
+              "name": "Desktop · Kommunsida, saknas",
+              "clip": true,
+              "width": 1280,
+              "fill": "$bg",
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "SMLMs",
+                  "type": "ref",
+                  "ref": "HMzkq",
+                  "name": "Sidhuvud",
+                  "width": "fill_container"
+                },
+                {
+                  "type": "frame",
+                  "id": "b0EwD2",
+                  "name": "Innehåll",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "padding": [
+                    56,
+                    0,
+                    48,
+                    0
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "yP7Qp",
+                      "name": "Kolumn",
+                      "width": 640,
+                      "layout": "vertical",
+                      "gap": 32,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "pTqOq",
+                          "name": "Tillbaka",
+                          "gap": 6,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "IivbG",
+                              "name": "Pil",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "arrow-left",
+                              "library": "lucide",
+                              "fill": "$primary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "Caf3G",
+                              "name": "Text",
+                              "fill": "$primary",
+                              "content": "Startsidan",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 14,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "rajQx",
+                          "name": "Rubrik",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 10,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "xiZBk",
+                              "name": "H1",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Sophämtning i Göteborgs kommun",
+                              "lineHeight": 1.1,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 44,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "text",
+                              "id": "TGYb4",
+                              "name": "Ingress",
+                              "fill": "$text-2",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Sopor finns inte i Göteborgs kommun än. Tills dess hittar du hämtschemat hos kommunen eller avfallsbolaget.",
+                              "lineHeight": 1.45,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 17,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "XaZ1h",
+                          "name": "Tipsa",
+                          "width": "fill_container",
+                          "fill": "$earth-soft",
+                          "cornerRadius": 16,
+                          "layout": "vertical",
+                          "gap": 12,
+                          "padding": 20,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "GuI2P",
+                              "name": "H2",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Hjälp till att få in kommunen",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 18,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "text",
+                              "id": "KYJrg",
+                              "name": "Text",
+                              "fill": "$text-2",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Berätta var kommunen publicerar sitt hämtschema, så kan vi lägga in den.",
+                              "lineHeight": 1.45,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 15,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "ney9B",
+                              "name": "Länk",
+                              "gap": 6,
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "uGvYf",
+                                  "name": "Text",
+                                  "fill": "$earth",
+                                  "content": "Tipsa om din kommun",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 15,
+                                  "fontWeight": "800"
+                                },
+                                {
+                                  "type": "icon",
+                                  "id": "ymGk6",
+                                  "name": "Pil",
+                                  "width": 16,
+                                  "height": 16,
+                                  "icon": "arrow-right",
+                                  "library": "lucide",
+                                  "fill": "$earth"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Y4ckej",
+                          "name": "Orter",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 10,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Jzawl",
+                              "name": "H2",
+                              "fill": "$text",
+                              "content": "Orter i kommunen",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 20,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "text",
+                              "id": "hZnXu",
+                              "name": "Lista",
+                              "fill": "$text-2",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Göteborg, Angered, Torslanda, Hisings Backa, Billdal och fler.",
+                              "lineHeight": 1.45,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 15,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "AW1vC",
+                          "name": "Fler kommuner",
+                          "gap": 6,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "OHKno",
+                              "name": "Text",
+                              "fill": "$primary",
+                              "content": "Se alla kommuner",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 15,
+                              "fontWeight": "700"
+                            },
+                            {
+                              "type": "icon",
+                              "id": "mdHKf",
+                              "name": "Pil",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "arrow-right",
+                              "library": "lucide",
+                              "fill": "$primary"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "u0VZ80",
+                  "name": "Sidfotsyta",
+                  "width": "fill_container",
+                  "stroke": "$border",
+                  "strokeWidth": {
+                    "top": 1
+                  },
+                  "justifyContent": "center",
+                  "children": [
+                    {
+                      "id": "OnFhj",
+                      "type": "ref",
+                      "ref": "fqF9s",
+                      "name": "Sidfot",
+                      "width": 920,
+                      "strokeWidth": 0
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "W4WeF",
+              "name": "Desktop · Alla kommuner",
+              "clip": true,
+              "width": 1280,
+              "fill": "$bg",
+              "layout": "vertical",
+              "children": [
+                {
+                  "id": "EUFHe",
+                  "type": "ref",
+                  "ref": "HMzkq",
+                  "name": "Sidhuvud",
+                  "width": "fill_container"
+                },
+                {
+                  "type": "frame",
+                  "id": "hFzRR",
+                  "name": "Innehåll",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "padding": [
+                    56,
+                    0,
+                    48,
+                    0
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "A9jkb",
+                      "name": "Kolumn",
+                      "width": 640,
+                      "layout": "vertical",
+                      "gap": 32,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "QFCsG",
+                          "name": "Tillbaka",
+                          "gap": 6,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "NJTY0",
+                              "name": "Pil",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "arrow-left",
+                              "library": "lucide",
+                              "fill": "$primary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "EPaKh",
+                              "name": "Text",
+                              "fill": "$primary",
+                              "content": "Startsidan",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 14,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "ctHOg",
+                          "name": "Rubrik",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 10,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "FpJmW",
+                              "name": "H1",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Sophämtning i Sveriges kommuner",
+                              "lineHeight": 1.1,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 44,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "text",
+                              "id": "qqmzh",
+                              "name": "Ingress",
+                              "fill": "$text-2",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Sopor finns i 71 av Sveriges 290 kommuner, och fler kommer.",
+                              "lineHeight": 1.45,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 17,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "MlPNI",
+                          "name": "Här finns Sopor (71)",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 12,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "srQJQ",
+                              "name": "H2",
+                              "fill": "$text",
+                              "content": "Här finns Sopor (71)",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 20,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "stJbS",
+                              "name": "Kolumner",
+                              "width": "fill_container",
+                              "gap": 16,
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "xlk7M",
+                                  "name": "Kolumn",
+                                  "width": "fill_container",
+                                  "layout": "vertical",
+                                  "gap": 8,
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "r1UDj7",
+                                      "name": "Alvesta kommun",
+                                      "fill": "$primary",
+                                      "content": "Alvesta kommun",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 15,
+                                      "fontWeight": "700"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "E7hmg",
+                                      "name": "Arboga kommun",
+                                      "fill": "$primary",
+                                      "content": "Arboga kommun",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 15,
+                                      "fontWeight": "700"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "XmbiK",
+                                      "name": "Bodens kommun",
+                                      "fill": "$primary",
+                                      "content": "Bodens kommun",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 15,
+                                      "fontWeight": "700"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "gilxA",
+                                      "name": "Borås kommun",
+                                      "fill": "$primary",
+                                      "content": "Borås kommun",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 15,
+                                      "fontWeight": "700"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "c4iydH",
+                                  "name": "Kolumn",
+                                  "width": "fill_container",
+                                  "layout": "vertical",
+                                  "gap": 8,
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "JhBPq",
+                                      "name": "Stockholms kommun",
+                                      "fill": "$primary",
+                                      "content": "Stockholms kommun",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 15,
+                                      "fontWeight": "700"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "ZEtIn",
+                                      "name": "Uppsala kommun",
+                                      "fill": "$primary",
+                                      "content": "Uppsala kommun",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 15,
+                                      "fontWeight": "700"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "ZFmDU",
+                                      "name": "Västerås kommun",
+                                      "fill": "$primary",
+                                      "content": "Västerås kommun",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 15,
+                                      "fontWeight": "700"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "MnAX4",
+                                      "name": "Örebro kommun",
+                                      "fill": "$primary",
+                                      "content": "Örebro kommun",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 15,
+                                      "fontWeight": "700"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "uD6Bq",
+                          "name": "Inte än (219)",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 12,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "qT0N8",
+                              "name": "H2",
+                              "fill": "$text",
+                              "content": "Inte än (219)",
+                              "fontFamily": "$font-ui",
+                              "fontSize": 20,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "JwhI3",
+                              "name": "Kolumner",
+                              "width": "fill_container",
+                              "gap": 16,
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "WRhgL",
+                                  "name": "Kolumn",
+                                  "width": "fill_container",
+                                  "layout": "vertical",
+                                  "gap": 8,
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "suzoo",
+                                      "name": "Ale kommun",
+                                      "fill": "$text-2",
+                                      "content": "Ale kommun",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 15,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "STzhC",
+                                      "name": "Alingsås kommun",
+                                      "fill": "$text-2",
+                                      "content": "Alingsås kommun",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 15,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "EYkGz",
+                                      "name": "Bollnäs kommun",
+                                      "fill": "$text-2",
+                                      "content": "Bollnäs kommun",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 15,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "VludO",
+                                      "name": "Falu kommun",
+                                      "fill": "$text-2",
+                                      "content": "Falu kommun",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 15,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "QZhJu",
+                                  "name": "Kolumn",
+                                  "width": "fill_container",
+                                  "layout": "vertical",
+                                  "gap": 8,
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "I6yvXd",
+                                      "name": "Göteborgs kommun",
+                                      "fill": "$text-2",
+                                      "content": "Göteborgs kommun",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 15,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "vuycw",
+                                      "name": "Linköpings kommun",
+                                      "fill": "$text-2",
+                                      "content": "Linköpings kommun",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 15,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "Zfssk",
+                                      "name": "Umeå kommun",
+                                      "fill": "$text-2",
+                                      "content": "Umeå kommun",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 15,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "a4O3SK",
+                                      "name": "Region Gotland",
+                                      "fill": "$text-2",
+                                      "content": "Region Gotland",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 15,
+                                      "fontWeight": "normal"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "wDgAU",
+                  "name": "Sidfotsyta",
+                  "width": "fill_container",
+                  "stroke": "$border",
+                  "strokeWidth": {
+                    "top": 1
+                  },
+                  "justifyContent": "center",
+                  "children": [
+                    {
+                      "id": "T7cT4Z",
+                      "type": "ref",
+                      "ref": "fqF9s",
+                      "name": "Sidfot",
+                      "width": 920,
+                      "strokeWidth": 0
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ],
   "themes": {

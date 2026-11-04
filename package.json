@@ -15,7 +15,7 @@
     "build:data": "tsx scripts/build-data.ts",
     "predev": "npm run build:data",
     "dev": "vite",
-    "build": "npm run build:data && tsc -b && vite build",
+    "build": "npm run build:data && tsc -b && vite build && tsx --tsconfig tsconfig.app.json scripts/prerender.ts",
     "preview": "vite preview",
     "test": "vitest run",
     "typecheck": "tsc -b",

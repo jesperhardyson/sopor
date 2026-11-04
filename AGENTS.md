@@ -32,7 +32,7 @@ Home Assistant-integrationen (`custom_components/sopor/`, tester i `integrations
 
 1. **Providergränsen.** UI:t pratar bara med `WasteProvider` (`src/providers/types.ts`) via `src/providers/registry.ts`. Ingen kod utanför `src/providers/`, `src/server/`, `src/data/` och `scripts/` får känna till trakter, `scheduleRefs`, EDP eller andra källdetaljer.
 2. **Ingen databas och inga konton.** Vercel Functions (`api/`) används bara som proxy och cache mot publika källor. Logiken ligger i `src/server/handlers.ts`. Kod som funktionerna når (`api/`, `src/server/`, `src/domain/`, `src/sources/`) använder relativa importer med filändelsen `.js`, eftersom Vercel kompilerar fil för fil (ett test vakar över det).
-3. **Stabila id.** Adress-id (i `addresses.csv`) och ICS-UID (`<adress-id>-<datum>@sopor.hardyson.se`) får aldrig ändra format eller återanvändas, eftersom kalenderprenumerationer hänger på dem.
+3. **Stabila id.** Adress-id (i `addresses.csv`) och ICS-UID (`<adress-id>-<datum>@sopor.hardyson.se`) får aldrig ändra format eller återanvändas, eftersom kalenderprenumerationer hänger på dem. Kommunsidornas slug (`/kommuner/<slug>`, låsta i `src/data/kommun-slugs.json`) får aldrig ändras när de är publicerade, eftersom sökmotorer och länkar hänger på dem.
 4. **Bara publika källor utan inloggning.** Inga anrop mot inloggade tjänster (Mina sidor, BankID, kundportaler, apptoken). Svar cachas och anropen hålls få; User-Agent är `Sopor/1.0 (+https://sopor.hardyson.se)`.
 5. **Datum** är strängar på formen `YYYY-MM-DD`. Aritmetik görs i `src/domain/dates.ts` (UTC-midnatt). "I dag" räknas i `Europe/Stockholm`.
 6. **localStorage** används alltid med try/catch. Appen ska fungera utan lagring.

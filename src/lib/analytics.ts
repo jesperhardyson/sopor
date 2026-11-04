@@ -8,7 +8,7 @@ import type { BeforeSendEvent } from '@vercel/analytics/react'
 export function redactUrl(url: string): string {
   const u = new URL(url)
   const parts = u.pathname.split('/').filter(Boolean)
-  const path = parts.length === 2 && !['om', 'saknas'].includes(parts[0]) ? `/${parts[0]}/[adress]` : u.pathname
+  const path = parts.length === 2 && !['om', 'saknas', 'kommuner'].includes(parts[0]) ? `/${parts[0]}/[adress]` : u.pathname
   return `${u.origin}${path}`
 }
 

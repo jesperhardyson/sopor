@@ -1,3 +1,4 @@
+import type { KommunPage } from '@/data/kommun-pages'
 import type { Address } from '@/domain/types'
 import { getSource, placeKommuner, SOURCES, supportedKommuner, type Source } from '@/sources'
 import { matchesPlace, pickLiveSources, shardKey, splitPlace, type QueryParts, type StreetShard } from '@/data/street-index'
@@ -5,7 +6,7 @@ import { kommunerForPlace } from '@/data/sweden-places'
 import { normalize } from '@/domain/search'
 import { kommunForLocality } from '@/sources'
 import { createApiProvider } from './api'
-import { loadPlaces, loadSwedenPlaces } from './places'
+import { loadKommunPages, loadPlaces, loadSwedenPlaces } from './places'
 import { createStaticProvider } from './static'
 import type { WasteProvider } from './types'
 
@@ -325,4 +326,15 @@ export async function suggestAll(query: string, signal?: AbortSignal): Promise<A
 export async function getAddress(sourceId: string, addressId: string, signal?: AbortSignal): Promise<Address | null> {
   const m = getSource(sourceId)
   return m ? providerFor(m).getAddress(addressId, signal) : null
+}
+
+/** Alla kommunsidor. Null när filen inte går att hämta. */
+export function kommunPages(): Promise<KommunPage[] | null> {
+  return loadKommunPages()
+}
+
+/** En kommunsida. Undefined när kommunen inte finns, null när filen inte går att hämta. */
+export async function kommunPage(slug: string): Promise<KommunPage | undefined | null> {
+  const pages = await loadKommunPages()
+  return pages && pages.find((p) => p.slug === slug)
 }

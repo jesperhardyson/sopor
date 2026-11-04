@@ -19,6 +19,10 @@ describe('redactUrl', () => {
     expect(redactUrl('https://sopor.hardyson.se/om')).toBe('https://sopor.hardyson.se/om')
   })
 
+  it('lämnar kommunsidorna orörda, de innehåller ingen adress', () => {
+    expect(redactUrl('https://sopor.hardyson.se/kommuner/uppsala-kommun')).toBe('https://sopor.hardyson.se/kommuner/uppsala-kommun')
+  })
+
   it('lämnar sidvisningarna för saknade kommuner orörda', () => {
     expect(redactUrl('https://sopor.hardyson.se/saknas/stockholms-kommun')).toBe(
       'https://sopor.hardyson.se/saknas/stockholms-kommun',
