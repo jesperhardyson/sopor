@@ -3,6 +3,7 @@ import { mergeParts } from '@/domain/schedule'
 import { searchAddresses, suggest } from '@/domain/search'
 import type { Address } from '@/domain/types'
 import type { Source } from '@/sources'
+import { icsPath } from './ics-path'
 import type { WasteProvider } from './types'
 
 interface LoadedIndex {
@@ -83,8 +84,8 @@ export function createStaticProvider(source: Source, fetchFn: typeof fetch = (..
       })
       return areasPromise
     },
-    icsUrl(addressId) {
-      return `/ics/${source.id}/${encodeURIComponent(addressId)}.ics`
+    icsUrl(addressId, reminder) {
+      return icsPath(source.id, addressId, reminder)
     },
   }
 }

@@ -46,6 +46,12 @@ describe('createApiProvider', () => {
     await expect(createApiProvider(vafab, fakeFetch(502)).getSchedule(address.id)).rejects.toThrow()
   })
 
+  it('kodar id:t även med vald påminnelsetid', () => {
+    expect(createApiProvider(vafab, fakeFetch()).icsUrl('älvvägen-3_örebro-1', 'kvall-20')).toBe(
+      '/ics/vafab/kvall-20/%C3%A4lvv%C3%A4gen-3_%C3%B6rebro-1.ics',
+    )
+  })
+
   it('pekar kalenderfilen på /ics med kodat id', () => {
     expect(createApiProvider(vafab, fakeFetch()).icsUrl('älvvägen-3_örebro-1')).toBe('/ics/vafab/%C3%A4lvv%C3%A4gen-3_%C3%B6rebro-1.ics')
   })

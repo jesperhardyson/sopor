@@ -1,5 +1,7 @@
+import { useId, useState } from 'react'
 import { BellRing, Calendar, CalendarDays, ChevronRight, Download, RefreshCw, TriangleAlert, type LucideIcon } from 'lucide-react'
 import { Link } from 'react-router'
+import { DEFAULT_REMINDER, REMINDER_IDS, REMINDERS, type ReminderId } from '@/domain/reminders'
 import type { Address } from '@/domain/types'
 import { absoluteIcsUrl, defaultOrigin, googleCalendarUrl, isAndroid, webcalUrl } from '@/lib/calendar-links'
 import { cn } from '@/lib/utils'
@@ -50,37 +52,75 @@ function Option({
   )
 }
 
-export function CalendarSheet({
-  open,
-  onOpenChange,
-  address,
-  icsPath,
-  origin = defaultOrigin(),
+const NOTIFICATIONS =
+  'Slå på notiser för kalendern i din kalenderapp. Google Kalender visar troligen inte påminnelser från prenumerationer. Vill du byta tid senare tar du bort kalendern och lägger till den igen.'
+
+/** Tiden hålls ihop på raden: "Kvällen innan, / kl. 18". */
+function ReminderLabel({ text }: { text: string }) {
+  const [first, time] = text.split(', ')
+  return time ? <>{first}, <span className="whitespace-nowrap">{time}</span></> : text
+}
+
+function ReminderChoice({ value, onChange }: { value: ReminderId; onChange: (reminder: ReminderId) => void }) {
+  const name = useId()
+  return (
+    <fieldset className="flex min-w-0 flex-col gap-2 border-0 p-0">
+      <legend className="mb-2 p-0 text-[15px] font-extrabold text-text">När vill du bli påmind?</legend>
+      <div className="grid grid-cols-2 gap-2">
+        {REMINDER_IDS.map((id) => {
+          const checked = id === value
+          return (
+            <label
+              key={id}
+              className={cn(
+                'flex min-h-14 cursor-pointer items-center gap-2.5 rounded-[14px] border px-3 py-2 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-primary',
+                checked ? 'border-[1.5px] border-primary bg-brand-soft' : 'border-border bg-surface hover:bg-bg',
+              )}
+            >
+              <input type="radio" name={name} checked={checked} onChange={() => onChange(id)} className="sr-only" />
+              <span
+                className={cn(
+                  'inline-flex size-[18px] shrink-0 items-center justify-center rounded-full border-[1.5px]',
+                  checked ? 'border-primary bg-primary' : 'border-border bg-surface',
+                )}
+                aria-hidden
+              >
+                {checked && <span className="size-2 rounded-full bg-on-primary" />}
+              </span>
+              <span className={cn('min-w-0 text-sm leading-[1.25] font-bold', checked ? 'text-brand-text' : 'text-text')}>
+                <ReminderLabel text={REMINDERS[id].label} />
+              </span>
+            </label>
+          )
+        })}
+      </div>
+    </fieldset>
+  )
+}
+
+/** Ligger inuti arket, som avmonteras när det stängs, så valet börjar om varje gång det öppnas. */
+function CalendarContent({
+  onClose,
+  icsUrl,
+  origin,
   notice,
   findTo,
   findState,
 }: {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  address: Address
-  icsPath: string
-  origin?: string
-  /** Källor med områdesval: varningen att området är användarens eget val */
+  onClose: () => void
+  icsUrl: (reminder: ReminderId) => string
+  origin: string
   notice?: { title: string; text: string }
-  /** Vart "Kontrollera med din senaste tömning" leder */
   findTo?: string
   findState?: unknown
 }) {
-  const webcal = webcalUrl(absoluteIcsUrl(icsPath, origin))
+  const [reminder, setReminder] = useState<ReminderId>(DEFAULT_REMINDER)
+  const path = icsUrl(reminder)
+  const webcal = webcalUrl(absoluteIcsUrl(path, origin))
   // Android har ingen app för webcal, så där går prenumerationen via Google Kalender.
   const subscribe = isAndroid() ? googleCalendarUrl(webcal) : webcal
   return (
-    <ResponsiveSheet
-      open={open}
-      onOpenChange={onOpenChange}
-      title="Lägg till i kalender"
-      description={`Få alla tömningar för ${address.street} direkt i din kalender.`}
-    >
+    <>
       {notice && (
         <div className="flex gap-3 rounded-[14px] bg-warn-bg px-4 py-3.5 text-warn">
           <TriangleAlert className="size-[22px] shrink-0" aria-hidden />
@@ -95,12 +135,13 @@ export function CalendarSheet({
           </div>
         </div>
       )}
+      <ReminderChoice value={reminder} onChange={setReminder} />
       <div className="flex flex-col gap-2">
         <Option href={subscribe} icon={RefreshCw} title="Prenumerera" description="Uppdateras automatiskt vid ändringar (webcal)" best />
         <Option href={googleCalendarUrl(webcal)} icon={Calendar} title="Google Kalender" description="Prenumerera via ditt Google-konto" />
         <Option href={webcal} icon={CalendarDays} title="Apple Kalender" description="iPhone, iPad och Mac" />
         <Option
-          href={icsPath}
+          href={path}
           icon={Download}
           title="Ladda ner .ics"
           description="En fil med kommande tömningar. Uppdateras inte."
@@ -108,15 +149,55 @@ export function CalendarSheet({
       </div>
       <p className="flex items-start gap-2.5 rounded-[14px] bg-surface-2 px-3.5 py-3 text-sm leading-[1.4] text-text-2">
         <BellRing className="mt-0.5 size-[18px] shrink-0" aria-hidden />
-        Vill du bli påmind kvällen innan? Slå på notiser för kalendern i din kalenderapp. Google och Apple stänger ofta av dem för prenumerationer.
+        {`${REMINDERS[reminder].sentence} ${NOTIFICATIONS}`}
       </p>
       <button
         type="button"
-        onClick={() => onOpenChange(false)}
+        onClick={onClose}
         className="h-[52px] rounded-[14px] bg-surface-2 text-base font-extrabold text-text"
       >
         Stäng
       </button>
+    </>
+  )
+}
+
+export function CalendarSheet({
+  open,
+  onOpenChange,
+  address,
+  icsUrl,
+  origin = defaultOrigin(),
+  notice,
+  findTo,
+  findState,
+}: {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  address: Address
+  icsUrl: (reminder: ReminderId) => string
+  origin?: string
+  /** Källor med områdesval: varningen att området är användarens eget val */
+  notice?: { title: string; text: string }
+  /** Vart "Kontrollera med din senaste tömning" leder */
+  findTo?: string
+  findState?: unknown
+}) {
+  return (
+    <ResponsiveSheet
+      open={open}
+      onOpenChange={onOpenChange}
+      title="Lägg till i kalender"
+      description={`Få alla tömningar för ${address.street} direkt i din kalender.`}
+    >
+      <CalendarContent
+        onClose={() => onOpenChange(false)}
+        icsUrl={icsUrl}
+        origin={origin}
+        notice={notice}
+        findTo={findTo}
+        findState={findState}
+      />
     </ResponsiveSheet>
   )
 }

@@ -1,4 +1,5 @@
 import type { AreasIndexFile } from '@/data/static-format'
+import type { ReminderId } from '@/domain/reminders'
 import type { SearchMode } from '@/domain/search'
 import type { Address, Schedule } from '@/domain/types'
 
@@ -17,5 +18,5 @@ export interface WasteProvider {
   /** Alla områden med förklaringstexter, för källor där man väljer område i stället för adress */
   listAreas?(signal?: AbortSignal): Promise<AreasIndexFile>
   /** Sökväg till adressens kalenderfil, relativ till sajten */
-  icsUrl(addressId: string): string
+  icsUrl(addressId: string, reminder?: ReminderId): string
 }

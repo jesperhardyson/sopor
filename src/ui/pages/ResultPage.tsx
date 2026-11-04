@@ -223,7 +223,7 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
             open={sheet === 'calendar'}
             onOpenChange={(o) => setSheet(o ? 'calendar' : null)}
             address={address}
-            icsPath={providerFor(source).icsUrl(address.id)}
+            icsUrl={(reminder) => providerFor(source).icsUrl(address.id, reminder)}
             notice={source.areaNotice}
             findState={byArea ? { from: addressId, find: true } : undefined}
             findTo={byArea ? `/${sourceId}/omraden` : undefined}
