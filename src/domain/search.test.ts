@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { enterTarget, fairShare, groupByKommun, normalize, searchAddresses, stableMerge, suggest } from './search'
+import { enterTarget, fairShare, groupByKommun, matchedTerm, normalize, searchAddresses, stableMerge, suggest } from './search'
 import type { Address } from './types'
 
 const a = (id: string, street: string, locality: string): Address => ({ id, street, locality, sourceId: 'avesta', kommun: 'Avesta kommun' })
@@ -181,5 +181,64 @@ describe('enterTarget', () => {
 
   it('räknar husbokstaven som en del av adressen', () => {
     expect(enterTarget('storgatan 12 b', [a('x', 'Storgatan 12 B', 'Krylbo'), a('y', 'Storgatan 12', 'Avesta')])?.id).toBe('x')
+  })
+})
+
+describe('områdessökning', () => {
+  const area = (id: string, street: string, searchTerms: string[]): Address => ({ ...a(id, street, 'Avesta'), searchTerms })
+  const AREAS: Address[] = [
+    area('trakt-1', 'Trakt 1', ['trakt 1', 'Stallgatan', 'Askön']),
+    area('trakt-10', 'Trakt 10', ['trakt 10', 'Horndal tätort']),
+    area('trakt-2', 'Trakt 2', ['Backa']),
+    area('trakt-4', 'Trakt 4', ['Backa']),
+    area('trakt-7', 'Avesta tätort, Östanfors m.fl.', []),
+  ]
+
+  it('områden hittas på sitt namn', () => {
+    expect(ids(searchAddresses('Avesta tätort', AREAS))).toEqual(['trakt-7'])
+    expect(ids(searchAddresses('AVESTA TÄTORT', AREAS))).toEqual(['trakt-7'])
+  })
+
+  it('områden hittas på sökord', () => {
+    expect(ids(searchAddresses('Askön', AREAS))).toEqual(['trakt-1'])
+  })
+
+  it('ett exakt sökord utesluter längre', () => {
+    expect(ids(searchAddresses('trakt 1', AREAS))).toEqual(['trakt-1'])
+  })
+
+  it('alla områden med samma namn visas', () => {
+    expect(ids(searchAddresses('Backa', AREAS))).toEqual(['trakt-2', 'trakt-4'])
+  })
+
+  it('gata i listan med nummer', () => {
+    expect(ids(searchAddresses('Stallgatan 5', AREAS))).toEqual(['trakt-1'])
+    expect(ids(searchAddresses('Stallgatan 5 B', AREAS))).toEqual(['trakt-1'])
+  })
+
+  it('orelaterad gata ger inget', () => {
+    expect(searchAddresses('Kungsgatan 12', AREAS)).toEqual([])
+  })
+
+  it('ord får inte hämtas från olika sökord', () => {
+    expect(searchAddresses('Askön Stallgatan', AREAS)).toEqual([])
+  })
+
+  it('adresser utan sökord fungerar som förut', () => {
+    expect(ids(searchAddresses('storgatan 12b', [...AREAS, ...ADDRESSES]))).toEqual(['krylbo-storgatan-12b'])
+  })
+
+  describe('matchedTerm', () => {
+    it('ger sökordet som gav träff', () => {
+      expect(matchedTerm('Backa', AREAS[2])).toBe('Backa')
+    })
+
+    it('ger null när namnet redan visar träffen', () => {
+      expect(matchedTerm('Avesta tätort', AREAS[4])).toBeNull()
+    })
+
+    it('ger null för en adress utan sökord', () => {
+      expect(matchedTerm('Storgatan', ADDRESSES[0])).toBeNull()
+    })
   })
 })

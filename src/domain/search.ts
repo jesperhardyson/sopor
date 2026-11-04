@@ -41,13 +41,34 @@ export function enterTarget(query: string, addresses: Address[]): Address | unde
   return exact.length === 1 ? exact[0] : undefined
 }
 
+/** Adressens termer: namnet och sökorden. Bara områden har sökord. */
+function terms(a: Address): { text: string; norm: string }[] {
+  return [a.street, ...(a.searchTerms ?? [])].map((text) => ({ text, norm: normalize(text) }))
+}
+
+/** Gatudelen av "stallgatan 5b", bara när ett husnummer följer. */
+function streetPart(q: string): string | undefined {
+  const { name, number } = splitStreet(q)
+  return number ? name : undefined
+}
+
+/** Alla ord i frågan börjar något ord i samma term, eller gatudelen är exakt lika med termen. */
+function termMatches(q: string, t: { norm: string }): boolean {
+  const words = t.norm.split(' ')
+  return q.split(' ').every((tok) => words.some((w) => w.startsWith(tok))) || streetPart(q) === t.norm
+}
+
 function match(q: string, addresses: Address[], limit: number): Address[] {
   const tokens = q.split(' ')
-  return addresses
-    .filter((a) => {
-      const words = haystack(a)
-      return tokens.every((t) => words.some((w) => w.startsWith(t)))
-    })
+  const hits = addresses.filter((a) => {
+    if (a.searchTerms) return terms(a).some((t) => termMatches(q, t))
+    const words = haystack(a)
+    return tokens.every((t) => words.some((w) => w.startsWith(t)))
+  })
+  // Ett sökord som är exakt det man skrev utesluter områden där det bara är början på något längre.
+  const exact = (a: Address) => terms(a).some((t) => t.norm === q || t.norm === streetPart(q))
+  const narrowed = hits.some((a) => a.searchTerms && exact(a)) ? hits.filter((a) => !a.searchTerms || exact(a)) : hits
+  return narrowed
     .map((a) => ({ a, starts: normalize(a.street).startsWith(q) ? 0 : 1 }))
     .sort(
       (x, y) =>
@@ -57,6 +78,18 @@ function match(q: string, addresses: Address[], limit: number): Address[] {
     )
     .slice(0, limit)
     .map((x) => x.a)
+}
+
+/**
+ * Sökordet som gav träff på ett område, för att visa varför det kom med. Null när namnet redan
+ * visar det och för adresser utan sökord.
+ */
+export function matchedTerm(query: string, address: Address): string | null {
+  if (!address.searchTerms) return null
+  const q = normalize(query)
+  const [name, ...rest] = terms(address)
+  if (termMatches(q, name)) return null
+  return rest.find((t) => termMatches(q, t))?.text ?? null
 }
 
 /** Damerau-Levenshtein (optimal string alignment) */
