@@ -59,6 +59,11 @@ describe('Avestas riktiga data för 2026', () => {
     }
   })
 
+  it('har inga förkortningar i platsnamnen', () => {
+    const abbreviated = areas.flatMap((a) => a.places.map((p) => `${a.id}: ${p}`)).filter((p) => /: [A-ZÅÄÖ]\.|: [A-ZÅÄÖ] |\.$/.test(p))
+    expect(abbreviated).toEqual([])
+  })
+
   it('har alla områdets gator bland dess platser', () => {
     for (const area of areas) for (const street of area.streets) expect(area.places).toContain(street)
   })
