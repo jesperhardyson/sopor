@@ -67,28 +67,28 @@ export function AreaFinderSheet({
           />
         </div>
       </div>
-      {/* Området är alltid monterat, så att skärmläsare märker när innehållet byts. */}
-      <div role="status" aria-live="polite" className="flex flex-col gap-[18px] empty:hidden">
-      {date > today && <NoMatch title="Datumet har inte varit än" text="Ange dagen då kärlet senast tömdes." />}
-      {result?.kind === 'found' && (
-        <div className={`${box} bg-brand-soft`}>
-          <p className="text-xs font-extrabold text-brand-text">Det här bör vara ditt område</p>
-          <h3 className="text-xl font-extrabold text-text">{result.area.name}</h3>
-          <p className="text-[15px] font-bold text-text-2">
-            {result.area.day} · {result.area.label}
-          </p>
-          <p className="text-sm leading-[1.4] text-text-2">{controlText(result.previous, result.next)}</p>
-        </div>
-      )}
-      {result?.kind === 'none' && (
-        <NoMatch
-          title="Inget område har hämtning den dagen"
-          text="Hämtning sker måndag till fredag. Prova ett annat datum eller välj område i listan."
-        />
-      )}
-      {result?.kind === 'outside' && (
-        <NoMatch title="Vi har inget schema för det datumet" text="Schemat för den perioden saknas. Prova ett annat datum eller välj område i listan." />
-      )}
+      {/* Området är alltid monterat och synligt, så att skärmläsare märker när innehållet byts. Tomt tar det bort sitt eget glapp med negativ marginal. */}
+      <div role="status" aria-live="polite" className="flex flex-col gap-[18px] empty:-my-[9px]">
+        {date > today && <NoMatch title="Datumet har inte varit än" text="Ange dagen då kärlet senast tömdes." />}
+        {result?.kind === 'found' && (
+          <div className={`${box} bg-brand-soft`}>
+            <p className="text-xs font-extrabold text-brand-text">Det här bör vara ditt område</p>
+            <h3 className="text-xl font-extrabold text-text">{result.area.name}</h3>
+            <p className="text-[15px] font-bold text-text-2">
+              {result.area.day} · {result.area.label}
+            </p>
+            <p className="text-sm leading-[1.4] text-text-2">{controlText(result.previous, result.next)}</p>
+          </div>
+        )}
+        {result?.kind === 'none' && (
+          <NoMatch
+            title="Inget område har hämtning den dagen"
+            text="Hämtning sker måndag till fredag. Prova ett annat datum eller välj område i listan."
+          />
+        )}
+        {result?.kind === 'outside' && (
+          <NoMatch title="Vi har inget schema för det datumet" text="Schemat för den perioden saknas. Prova ett annat datum eller välj område i listan." />
+        )}
       </div>
       <div className="flex flex-col gap-2">
         {result?.kind === 'found' && (

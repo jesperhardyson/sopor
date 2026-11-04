@@ -33,6 +33,8 @@ describe('AreaFinderSheet', () => {
     show()
     const status = screen.getByRole('status')
     expect(status).toBeEmptyDOMElement()
+    expect(status.className).not.toContain('hidden')
+    expect(status).toBeVisible()
     pick('2026-10-27')
     expect(within(screen.getByRole('status')).getByText('Det här bör vara ditt område')).toBeInTheDocument()
     pick('2026-10-24')
