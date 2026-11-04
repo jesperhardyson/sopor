@@ -109474,17 +109474,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "ZZ0nO",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "YPy67",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Askön, Nyhyttan m.fl.",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "ZZ0nO",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Askön, Nyhyttan m.fl.",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "sCSP8",
+                              "name": "Trakt 1-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "P1eeAd",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 1",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -109493,7 +109525,7 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Måndag, udda vecka · Trakt 1",
+                          "content": "Måndag, udda vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
@@ -109505,7 +109537,7 @@
                           "fill": "$text-2",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Klintbo, Baggbo, Högbo, Stallgatan, Storbogatan …",
+                          "content": "Askön, Nyhyttan, Klintbo, Snickarbo, Knallasbenning, Baggbo, Uppsjövägen, Ryttargatan, Stallgatan, Storbogatan, Djäknehyttan, Gammelsängsvägen, Skultbacken, Nybydalsvägen, Lagmansgatan, Grytnäsgärde, Högbo, Rutbo",
                           "lineHeight": 1.35,
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
@@ -109550,17 +109582,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "aNMN5",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "N5rhs",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Skogsbo tätort, Rosse m.fl.",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "aNMN5",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Skogsbo tätort, Rosse m.fl.",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "IXJb4",
+                              "name": "Trakt 2-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "ao6D8",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 2",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -109569,7 +109633,7 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Tisdag, udda vecka · Trakt 2",
+                          "content": "Tisdag, udda vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
@@ -109581,7 +109645,7 @@
                           "fill": "$text-2",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Fullsta, Storbyn, Gåsbo, Smedsbo, Backa …",
+                          "content": "Skogsbo tätort, Rosse, Fullsta, Storbyn, Gåsbo, Smedsbo, Åkersbyn, Bengtsbo, Backa, Björk, Djup, Gaddbo, Hovnäs, Born, Tyttbo, Gålsbo, Staksbo, Leknäs",
                           "lineHeight": 1.35,
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
@@ -109626,17 +109690,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "qnp46",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "OPYE3",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Fors, Nordanö, Brogård",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "qnp46",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Fors, Nordanö, Brogård",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "YTEAX",
+                              "name": "Trakt 3-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "z0IgF",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 3",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -109645,10 +109741,23 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Onsdag, udda vecka · Trakt 3",
+                          "content": "Onsdag, udda vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "z5wiEx",
+                          "name": "Platser",
+                          "fill": "$text-2",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Fors, Nordanö, Brogård",
+                          "lineHeight": 1.35,
+                          "fontFamily": "$font-ui",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -109689,17 +109798,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "VsDX3",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "smx6e",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Krylbo stationssidan, Lejde m.fl.",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "VsDX3",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Krylbo stationssidan, Lejde m.fl.",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "qNECD",
+                              "name": "Trakt 4-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "Wyx32",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 4",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -109708,7 +109849,7 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Torsdag, udda vecka · Trakt 4",
+                          "content": "Torsdag, udda vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
@@ -109720,7 +109861,7 @@
                           "fill": "$text-2",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Backa, Mesta, Strandmora, Djupvik, Näs …",
+                          "content": "Lejde, Backa, Mesta, Strandmora, Östra Strandmora, Ruduvägen, Djupvik, Bredgrind, Byåsen, Vadsbro, Hildursborg, Skaffarbo, Västanbäck, Norrbyn, Kyrkbyn, Björka, Näs, Svartbro, Karlbo, Tillfället, Krylbo stationssidan",
                           "lineHeight": 1.35,
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
@@ -109765,17 +109906,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "Ndjs8",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "RDam1",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Krylbo västra sidan, Morshyttan m.fl.",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Ndjs8",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Krylbo västra sidan, Morshyttan m.fl.",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "Bkfa1",
+                              "name": "Trakt 5-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "RBlac",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 5",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -109784,7 +109957,7 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Fredag, udda vecka · Trakt 5",
+                          "content": "Fredag, udda vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
@@ -109796,7 +109969,7 @@
                           "fill": "$text-2",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Rossberga, Fornby, Manhemsvägen, Ingeborgsbo …",
+                          "content": "Krylbo västra sidan, Morshyttan, Rossberga, Fornby, Manhemsvägen, Ängsbacksvägen, Rällbovägen, Kvarnvägen, Ingeborgsbo",
                           "lineHeight": 1.35,
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
@@ -109841,17 +110014,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "bupYw",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "m1EjhC",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Ringänget, Veddarsbo m.fl.",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "bupYw",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Ringänget, Veddarsbo m.fl.",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "X2lsxU",
+                              "name": "Trakt 6-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "Ix0jq",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 6",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -109860,7 +110065,7 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Måndag, jämn vecka · Trakt 6",
+                          "content": "Måndag, jämn vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
@@ -109872,7 +110077,7 @@
                           "fill": "$text-2",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Jäder, Lund, Grytnäs kyrkby, Stigvägen …",
+                          "content": "Ringänget, Veddarsbo, Jädersholmar, Lund, Jäder, Sjövik, Nor, Brillingsnäs, Björkvik, Haltarsbo, Pellbo, Räfsbo, Kullhyttan, Skräddarbovägen, Ingevallsbo, Axelsbo, Östanbyn, Grytnäs kyrkby, Kårbo, Hyttbäcken, Stora Dicka, Lilla Dicka, Stigvägen, Skogsbovägen, Månsbovägen, Germundsbo, Smedsbo, Fridhem, Habborsbacken, Norr och Sör Nävde, Forsbo, Rembo, Stusshyttan, Knutsbo",
                           "lineHeight": 1.35,
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
@@ -109917,17 +110122,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "WI0Sd",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "V6oNKK",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Avesta tätort, Östanfors m.fl.",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "WI0Sd",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Avesta tätort, Östanfors m.fl.",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "JWgce",
+                              "name": "Trakt 7-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "jUPuT",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 7",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -109936,7 +110173,7 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Tisdag, jämn vecka · Trakt 7",
+                          "content": "Tisdag, jämn vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
@@ -109948,7 +110185,7 @@
                           "fill": "$text-2",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Lycka, Kolarbo, Överbo, Åsgarn, Västansjö …",
+                          "content": "Avesta tätort, Östanfors, Garpenbergsvägen, Lycka, Kolarbo, Bondarvet, Överbo, Nickarvet, Mörtarbo, Krommetsbo, Åsgarn, Västanberg, Västansjö",
                           "lineHeight": 1.35,
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
@@ -109993,17 +110230,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "FEDfF",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "VTYYD",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Kaplansgården, Jularbo m.fl.",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "FEDfF",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Kaplansgården, Jularbo m.fl.",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "fTqya",
+                              "name": "Trakt 8-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "duqor",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 8",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -110012,7 +110281,7 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Onsdag, jämn vecka · Trakt 8",
+                          "content": "Onsdag, jämn vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
@@ -110024,7 +110293,7 @@
                           "fill": "$text-2",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Sibirien, Bodgatan, Älvbro, Torp, Brovallen …",
+                          "content": "Kaplansgården, Jularbo, Ovanåker, Kyrkbyvägen, Sibirien, Mästerbo, Isaksbo, Sonnbo, Torp, Korskrogen, Brovallen, Igeltjärna, Betvallen, Slätmossen, Alsbo, Staffansbo, Tjärna, Gräsmossvägen, Bengtsbo, Älvbro, Skillingränd, Bodgatan",
                           "lineHeight": 1.35,
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
@@ -110069,17 +110338,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "ZTWrs",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "G9Msw",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Kvarnbro, Utsund m.fl.",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "ZTWrs",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Kvarnbro, Utsund m.fl.",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "mn2ty",
+                              "name": "Trakt 9-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "t0ZEiD",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 9",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -110088,7 +110389,7 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Torsdag, jämn vecka · Trakt 9",
+                          "content": "Torsdag, jämn vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
@@ -110100,7 +110401,7 @@
                           "fill": "$text-2",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Bergshyttan, Råby, Färjan, Hede, Rossberga …",
+                          "content": "Kvarnbro, Utsund, Sörbäck, Rotfallet, Råby, Knutsbo, Bergshyttan, Bäckeby, Kärrfallet, Bäsinge, Lövsveden, Östanberg, Täktbo, Mestaäng, Ångermansbo, Södra Strandnora, Jugansbo, Södra Spisbo, Södra Rudö, Färjan, Näckenbäck, Digeränget, Hede, Krångede, Vatebo, Byvalla, Konsjövägen, Fallet, Rossberga",
                           "lineHeight": 1.35,
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
@@ -110145,17 +110446,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "B0gZz",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "b8VpC",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Horndal tätort, Tyskbo m.fl.",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "B0gZz",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Horndal tätort, Tyskbo m.fl.",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "ze4K3",
+                              "name": "Trakt 10-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "e5TZv",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 10",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -110164,7 +110497,7 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Fredag, jämn vecka · Trakt 10",
+                          "content": "Fredag, jämn vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
@@ -110176,7 +110509,7 @@
                           "fill": "$text-2",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Tommesbo, Grönsinka, Bjurvalla, Vansjö",
+                          "content": "Horndal tätort, Tyskbo, Tommesbo, Grönsinka, Bjurvalla, Dalsberga, Skuggbo, Grubbo, Svensbo, Vansjö",
                           "lineHeight": 1.35,
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
@@ -113761,7 +114094,7 @@
       "type": "frame",
       "id": "Xl7y8",
       "x": 0,
-      "y": 24300,
+      "y": 25500,
       "name": "Desktop · Välj område",
       "width": 1280,
       "fill": "$bg",
@@ -113951,16 +114284,48 @@
                               "gap": 3,
                               "children": [
                                 {
-                                  "type": "text",
-                                  "id": "Q9J4J",
-                                  "name": "Område",
-                                  "fill": "$text",
-                                  "textGrowth": "fixed-width",
+                                  "type": "frame",
+                                  "id": "YLFWw",
+                                  "name": "Rubrikrad",
                                   "width": "fill_container",
-                                  "content": "Askön, Nyhyttan m.fl.",
-                                  "fontFamily": "$font-ui",
-                                  "fontSize": 16,
-                                  "fontWeight": "800"
+                                  "gap": 8,
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "Q9J4J",
+                                      "name": "Område",
+                                      "fill": "$text",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "Askön, Nyhyttan m.fl.",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 16,
+                                      "fontWeight": "800"
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "SDm6D",
+                                      "name": "Trakt 1-pill",
+                                      "fill": "$brand-soft",
+                                      "cornerRadius": 999,
+                                      "padding": [
+                                        3,
+                                        10
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "MVhiN",
+                                          "name": "Text",
+                                          "fill": "$brand-text",
+                                          "content": "Trakt 1",
+                                          "fontFamily": "$font-ui",
+                                          "fontSize": 13,
+                                          "fontWeight": "800"
+                                        }
+                                      ]
+                                    }
+                                  ]
                                 },
                                 {
                                   "type": "text",
@@ -113969,7 +114334,7 @@
                                   "fill": "$brand-text",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "Måndag, udda vecka · Trakt 1",
+                                  "content": "Måndag, udda vecka",
                                   "fontFamily": "$font-ui",
                                   "fontSize": 14,
                                   "fontWeight": "700"
@@ -113981,7 +114346,7 @@
                                   "fill": "$text-2",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "Klintbo, Baggbo, Högbo, Stallgatan, Storbogatan …",
+                                  "content": "Askön, Nyhyttan, Klintbo, Snickarbo, Knallasbenning, Baggbo, Uppsjövägen, Ryttargatan, Stallgatan, Storbogatan, Djäknehyttan, Gammelsängsvägen, Skultbacken, Nybydalsvägen, Lagmansgatan, Grytnäsgärde, Högbo, Rutbo",
                                   "fontFamily": "$font-ui",
                                   "fontSize": 13,
                                   "fontWeight": "normal"
@@ -114025,16 +114390,48 @@
                               "gap": 3,
                               "children": [
                                 {
-                                  "type": "text",
-                                  "id": "ZtMHL",
-                                  "name": "Område",
-                                  "fill": "$text",
-                                  "textGrowth": "fixed-width",
+                                  "type": "frame",
+                                  "id": "KcgyT",
+                                  "name": "Rubrikrad",
                                   "width": "fill_container",
-                                  "content": "Skogsbo tätort, Rosse m.fl.",
-                                  "fontFamily": "$font-ui",
-                                  "fontSize": 16,
-                                  "fontWeight": "800"
+                                  "gap": 8,
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "ZtMHL",
+                                      "name": "Område",
+                                      "fill": "$text",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "Skogsbo tätort, Rosse m.fl.",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 16,
+                                      "fontWeight": "800"
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "dwzsm",
+                                      "name": "Trakt 2-pill",
+                                      "fill": "$brand-soft",
+                                      "cornerRadius": 999,
+                                      "padding": [
+                                        3,
+                                        10
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "x2LyMN",
+                                          "name": "Text",
+                                          "fill": "$brand-text",
+                                          "content": "Trakt 2",
+                                          "fontFamily": "$font-ui",
+                                          "fontSize": 13,
+                                          "fontWeight": "800"
+                                        }
+                                      ]
+                                    }
+                                  ]
                                 },
                                 {
                                   "type": "text",
@@ -114043,7 +114440,7 @@
                                   "fill": "$brand-text",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "Tisdag, udda vecka · Trakt 2",
+                                  "content": "Tisdag, udda vecka",
                                   "fontFamily": "$font-ui",
                                   "fontSize": 14,
                                   "fontWeight": "700"
@@ -114055,7 +114452,7 @@
                                   "fill": "$text-2",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "Fullsta, Storbyn, Gåsbo, Smedsbo, Backa …",
+                                  "content": "Skogsbo tätort, Rosse, Fullsta, Storbyn, Gåsbo, Smedsbo, Åkersbyn, Bengtsbo, Backa, Björk, Djup, Gaddbo, Hovnäs, Born, Tyttbo, Gålsbo, Staksbo, Leknäs",
                                   "fontFamily": "$font-ui",
                                   "fontSize": 13,
                                   "fontWeight": "normal"
@@ -114099,16 +114496,48 @@
                               "gap": 3,
                               "children": [
                                 {
-                                  "type": "text",
-                                  "id": "vlqYD",
-                                  "name": "Område",
-                                  "fill": "$text",
-                                  "textGrowth": "fixed-width",
+                                  "type": "frame",
+                                  "id": "zlImX",
+                                  "name": "Rubrikrad",
                                   "width": "fill_container",
-                                  "content": "Fors, Nordanö, Brogård",
-                                  "fontFamily": "$font-ui",
-                                  "fontSize": 16,
-                                  "fontWeight": "800"
+                                  "gap": 8,
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "vlqYD",
+                                      "name": "Område",
+                                      "fill": "$text",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "Fors, Nordanö, Brogård",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 16,
+                                      "fontWeight": "800"
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "CuUbX",
+                                      "name": "Trakt 3-pill",
+                                      "fill": "$brand-soft",
+                                      "cornerRadius": 999,
+                                      "padding": [
+                                        3,
+                                        10
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "gUhLW",
+                                          "name": "Text",
+                                          "fill": "$brand-text",
+                                          "content": "Trakt 3",
+                                          "fontFamily": "$font-ui",
+                                          "fontSize": 13,
+                                          "fontWeight": "800"
+                                        }
+                                      ]
+                                    }
+                                  ]
                                 },
                                 {
                                   "type": "text",
@@ -114117,10 +114546,23 @@
                                   "fill": "$brand-text",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "Onsdag, udda vecka · Trakt 3",
+                                  "content": "Onsdag, udda vecka",
                                   "fontFamily": "$font-ui",
                                   "fontSize": 14,
                                   "fontWeight": "700"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "ChXpx",
+                                  "name": "Platser",
+                                  "fill": "$text-2",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Fors, Nordanö, Brogård",
+                                  "lineHeight": 1.35,
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
                                 }
                               ]
                             },
@@ -114161,16 +114603,48 @@
                               "gap": 3,
                               "children": [
                                 {
-                                  "type": "text",
-                                  "id": "Ua3nV",
-                                  "name": "Område",
-                                  "fill": "$text",
-                                  "textGrowth": "fixed-width",
+                                  "type": "frame",
+                                  "id": "kSnqt",
+                                  "name": "Rubrikrad",
                                   "width": "fill_container",
-                                  "content": "Krylbo stationssidan, Lejde m.fl.",
-                                  "fontFamily": "$font-ui",
-                                  "fontSize": 16,
-                                  "fontWeight": "800"
+                                  "gap": 8,
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "Ua3nV",
+                                      "name": "Område",
+                                      "fill": "$text",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "Krylbo stationssidan, Lejde m.fl.",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 16,
+                                      "fontWeight": "800"
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "qmRba",
+                                      "name": "Trakt 4-pill",
+                                      "fill": "$brand-soft",
+                                      "cornerRadius": 999,
+                                      "padding": [
+                                        3,
+                                        10
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "z4UaoM",
+                                          "name": "Text",
+                                          "fill": "$brand-text",
+                                          "content": "Trakt 4",
+                                          "fontFamily": "$font-ui",
+                                          "fontSize": 13,
+                                          "fontWeight": "800"
+                                        }
+                                      ]
+                                    }
+                                  ]
                                 },
                                 {
                                   "type": "text",
@@ -114179,7 +114653,7 @@
                                   "fill": "$brand-text",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "Torsdag, udda vecka · Trakt 4",
+                                  "content": "Torsdag, udda vecka",
                                   "fontFamily": "$font-ui",
                                   "fontSize": 14,
                                   "fontWeight": "700"
@@ -114191,7 +114665,7 @@
                                   "fill": "$text-2",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "Backa, Mesta, Strandmora, Djupvik, Näs …",
+                                  "content": "Lejde, Backa, Mesta, Strandmora, Östra Strandmora, Ruduvägen, Djupvik, Bredgrind, Byåsen, Vadsbro, Hildursborg, Skaffarbo, Västanbäck, Norrbyn, Kyrkbyn, Björka, Näs, Svartbro, Karlbo, Tillfället, Krylbo stationssidan",
                                   "fontFamily": "$font-ui",
                                   "fontSize": 13,
                                   "fontWeight": "normal"
@@ -114235,16 +114709,48 @@
                               "gap": 3,
                               "children": [
                                 {
-                                  "type": "text",
-                                  "id": "Ohcsz",
-                                  "name": "Område",
-                                  "fill": "$text",
-                                  "textGrowth": "fixed-width",
+                                  "type": "frame",
+                                  "id": "ah8gk",
+                                  "name": "Rubrikrad",
                                   "width": "fill_container",
-                                  "content": "Krylbo västra sidan, Morshyttan m.fl.",
-                                  "fontFamily": "$font-ui",
-                                  "fontSize": 16,
-                                  "fontWeight": "800"
+                                  "gap": 8,
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "Ohcsz",
+                                      "name": "Område",
+                                      "fill": "$text",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "Krylbo västra sidan, Morshyttan m.fl.",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 16,
+                                      "fontWeight": "800"
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "iNipq",
+                                      "name": "Trakt 5-pill",
+                                      "fill": "$brand-soft",
+                                      "cornerRadius": 999,
+                                      "padding": [
+                                        3,
+                                        10
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "D3Zbhh",
+                                          "name": "Text",
+                                          "fill": "$brand-text",
+                                          "content": "Trakt 5",
+                                          "fontFamily": "$font-ui",
+                                          "fontSize": 13,
+                                          "fontWeight": "800"
+                                        }
+                                      ]
+                                    }
+                                  ]
                                 },
                                 {
                                   "type": "text",
@@ -114253,7 +114759,7 @@
                                   "fill": "$brand-text",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "Fredag, udda vecka · Trakt 5",
+                                  "content": "Fredag, udda vecka",
                                   "fontFamily": "$font-ui",
                                   "fontSize": 14,
                                   "fontWeight": "700"
@@ -114265,7 +114771,7 @@
                                   "fill": "$text-2",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "Rossberga, Fornby, Manhemsvägen, Ingeborgsbo …",
+                                  "content": "Krylbo västra sidan, Morshyttan, Rossberga, Fornby, Manhemsvägen, Ängsbacksvägen, Rällbovägen, Kvarnvägen, Ingeborgsbo",
                                   "fontFamily": "$font-ui",
                                   "fontSize": 13,
                                   "fontWeight": "normal"
@@ -114309,16 +114815,48 @@
                               "gap": 3,
                               "children": [
                                 {
-                                  "type": "text",
-                                  "id": "hrV00",
-                                  "name": "Område",
-                                  "fill": "$text",
-                                  "textGrowth": "fixed-width",
+                                  "type": "frame",
+                                  "id": "C0CcS",
+                                  "name": "Rubrikrad",
                                   "width": "fill_container",
-                                  "content": "Ringänget, Veddarsbo m.fl.",
-                                  "fontFamily": "$font-ui",
-                                  "fontSize": 16,
-                                  "fontWeight": "800"
+                                  "gap": 8,
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "hrV00",
+                                      "name": "Område",
+                                      "fill": "$text",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "Ringänget, Veddarsbo m.fl.",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 16,
+                                      "fontWeight": "800"
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "ZdAuR",
+                                      "name": "Trakt 6-pill",
+                                      "fill": "$brand-soft",
+                                      "cornerRadius": 999,
+                                      "padding": [
+                                        3,
+                                        10
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "TFdCr",
+                                          "name": "Text",
+                                          "fill": "$brand-text",
+                                          "content": "Trakt 6",
+                                          "fontFamily": "$font-ui",
+                                          "fontSize": 13,
+                                          "fontWeight": "800"
+                                        }
+                                      ]
+                                    }
+                                  ]
                                 },
                                 {
                                   "type": "text",
@@ -114327,7 +114865,7 @@
                                   "fill": "$brand-text",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "Måndag, jämn vecka · Trakt 6",
+                                  "content": "Måndag, jämn vecka",
                                   "fontFamily": "$font-ui",
                                   "fontSize": 14,
                                   "fontWeight": "700"
@@ -114339,7 +114877,7 @@
                                   "fill": "$text-2",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "Jäder, Lund, Grytnäs kyrkby, Stigvägen …",
+                                  "content": "Ringänget, Veddarsbo, Jädersholmar, Lund, Jäder, Sjövik, Nor, Brillingsnäs, Björkvik, Haltarsbo, Pellbo, Räfsbo, Kullhyttan, Skräddarbovägen, Ingevallsbo, Axelsbo, Östanbyn, Grytnäs kyrkby, Kårbo, Hyttbäcken, Stora Dicka, Lilla Dicka, Stigvägen, Skogsbovägen, Månsbovägen, Germundsbo, Smedsbo, Fridhem, Habborsbacken, Norr och Sör Nävde, Forsbo, Rembo, Stusshyttan, Knutsbo",
                                   "fontFamily": "$font-ui",
                                   "fontSize": 13,
                                   "fontWeight": "normal"
@@ -114383,16 +114921,48 @@
                               "gap": 3,
                               "children": [
                                 {
-                                  "type": "text",
-                                  "id": "efG3C",
-                                  "name": "Område",
-                                  "fill": "$text",
-                                  "textGrowth": "fixed-width",
+                                  "type": "frame",
+                                  "id": "ZdGJF",
+                                  "name": "Rubrikrad",
                                   "width": "fill_container",
-                                  "content": "Avesta tätort, Östanfors m.fl.",
-                                  "fontFamily": "$font-ui",
-                                  "fontSize": 16,
-                                  "fontWeight": "800"
+                                  "gap": 8,
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "efG3C",
+                                      "name": "Område",
+                                      "fill": "$text",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "Avesta tätort, Östanfors m.fl.",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 16,
+                                      "fontWeight": "800"
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "ggjIV",
+                                      "name": "Trakt 7-pill",
+                                      "fill": "$brand-soft",
+                                      "cornerRadius": 999,
+                                      "padding": [
+                                        3,
+                                        10
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "OjGcQ",
+                                          "name": "Text",
+                                          "fill": "$brand-text",
+                                          "content": "Trakt 7",
+                                          "fontFamily": "$font-ui",
+                                          "fontSize": 13,
+                                          "fontWeight": "800"
+                                        }
+                                      ]
+                                    }
+                                  ]
                                 },
                                 {
                                   "type": "text",
@@ -114401,7 +114971,7 @@
                                   "fill": "$brand-text",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "Tisdag, jämn vecka · Trakt 7",
+                                  "content": "Tisdag, jämn vecka",
                                   "fontFamily": "$font-ui",
                                   "fontSize": 14,
                                   "fontWeight": "700"
@@ -114413,7 +114983,7 @@
                                   "fill": "$text-2",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "Lycka, Kolarbo, Överbo, Åsgarn, Västansjö …",
+                                  "content": "Avesta tätort, Östanfors, Garpenbergsvägen, Lycka, Kolarbo, Bondarvet, Överbo, Nickarvet, Mörtarbo, Krommetsbo, Åsgarn, Västanberg, Västansjö",
                                   "fontFamily": "$font-ui",
                                   "fontSize": 13,
                                   "fontWeight": "normal"
@@ -114457,16 +115027,48 @@
                               "gap": 3,
                               "children": [
                                 {
-                                  "type": "text",
-                                  "id": "wNuhC",
-                                  "name": "Område",
-                                  "fill": "$text",
-                                  "textGrowth": "fixed-width",
+                                  "type": "frame",
+                                  "id": "OZnZW",
+                                  "name": "Rubrikrad",
                                   "width": "fill_container",
-                                  "content": "Kaplansgården, Jularbo m.fl.",
-                                  "fontFamily": "$font-ui",
-                                  "fontSize": 16,
-                                  "fontWeight": "800"
+                                  "gap": 8,
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "wNuhC",
+                                      "name": "Område",
+                                      "fill": "$text",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "Kaplansgården, Jularbo m.fl.",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 16,
+                                      "fontWeight": "800"
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "TfQL4",
+                                      "name": "Trakt 8-pill",
+                                      "fill": "$brand-soft",
+                                      "cornerRadius": 999,
+                                      "padding": [
+                                        3,
+                                        10
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "C8eLq",
+                                          "name": "Text",
+                                          "fill": "$brand-text",
+                                          "content": "Trakt 8",
+                                          "fontFamily": "$font-ui",
+                                          "fontSize": 13,
+                                          "fontWeight": "800"
+                                        }
+                                      ]
+                                    }
+                                  ]
                                 },
                                 {
                                   "type": "text",
@@ -114475,7 +115077,7 @@
                                   "fill": "$brand-text",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "Onsdag, jämn vecka · Trakt 8",
+                                  "content": "Onsdag, jämn vecka",
                                   "fontFamily": "$font-ui",
                                   "fontSize": 14,
                                   "fontWeight": "700"
@@ -114487,7 +115089,7 @@
                                   "fill": "$text-2",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "Sibirien, Bodgatan, Älvbro, Torp, Brovallen …",
+                                  "content": "Kaplansgården, Jularbo, Ovanåker, Kyrkbyvägen, Sibirien, Mästerbo, Isaksbo, Sonnbo, Torp, Korskrogen, Brovallen, Igeltjärna, Betvallen, Slätmossen, Alsbo, Staffansbo, Tjärna, Gräsmossvägen, Bengtsbo, Älvbro, Skillingränd, Bodgatan",
                                   "fontFamily": "$font-ui",
                                   "fontSize": 13,
                                   "fontWeight": "normal"
@@ -114531,16 +115133,48 @@
                               "gap": 3,
                               "children": [
                                 {
-                                  "type": "text",
-                                  "id": "KGjId",
-                                  "name": "Område",
-                                  "fill": "$text",
-                                  "textGrowth": "fixed-width",
+                                  "type": "frame",
+                                  "id": "Flo05",
+                                  "name": "Rubrikrad",
                                   "width": "fill_container",
-                                  "content": "Kvarnbro, Utsund m.fl.",
-                                  "fontFamily": "$font-ui",
-                                  "fontSize": 16,
-                                  "fontWeight": "800"
+                                  "gap": 8,
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "KGjId",
+                                      "name": "Område",
+                                      "fill": "$text",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "Kvarnbro, Utsund m.fl.",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 16,
+                                      "fontWeight": "800"
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "y84I7",
+                                      "name": "Trakt 9-pill",
+                                      "fill": "$brand-soft",
+                                      "cornerRadius": 999,
+                                      "padding": [
+                                        3,
+                                        10
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "UCBF5",
+                                          "name": "Text",
+                                          "fill": "$brand-text",
+                                          "content": "Trakt 9",
+                                          "fontFamily": "$font-ui",
+                                          "fontSize": 13,
+                                          "fontWeight": "800"
+                                        }
+                                      ]
+                                    }
+                                  ]
                                 },
                                 {
                                   "type": "text",
@@ -114549,7 +115183,7 @@
                                   "fill": "$brand-text",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "Torsdag, jämn vecka · Trakt 9",
+                                  "content": "Torsdag, jämn vecka",
                                   "fontFamily": "$font-ui",
                                   "fontSize": 14,
                                   "fontWeight": "700"
@@ -114561,7 +115195,7 @@
                                   "fill": "$text-2",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "Bergshyttan, Råby, Färjan, Hede, Rossberga …",
+                                  "content": "Kvarnbro, Utsund, Sörbäck, Rotfallet, Råby, Knutsbo, Bergshyttan, Bäckeby, Kärrfallet, Bäsinge, Lövsveden, Östanberg, Täktbo, Mestaäng, Ångermansbo, Södra Strandnora, Jugansbo, Södra Spisbo, Södra Rudö, Färjan, Näckenbäck, Digeränget, Hede, Krångede, Vatebo, Byvalla, Konsjövägen, Fallet, Rossberga",
                                   "fontFamily": "$font-ui",
                                   "fontSize": 13,
                                   "fontWeight": "normal"
@@ -114605,16 +115239,48 @@
                               "gap": 3,
                               "children": [
                                 {
-                                  "type": "text",
-                                  "id": "d3eLp3",
-                                  "name": "Område",
-                                  "fill": "$text",
-                                  "textGrowth": "fixed-width",
+                                  "type": "frame",
+                                  "id": "mOqYd",
+                                  "name": "Rubrikrad",
                                   "width": "fill_container",
-                                  "content": "Horndal tätort, Tyskbo m.fl.",
-                                  "fontFamily": "$font-ui",
-                                  "fontSize": 16,
-                                  "fontWeight": "800"
+                                  "gap": 8,
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "d3eLp3",
+                                      "name": "Område",
+                                      "fill": "$text",
+                                      "textGrowth": "fixed-width",
+                                      "width": "fill_container",
+                                      "content": "Horndal tätort, Tyskbo m.fl.",
+                                      "fontFamily": "$font-ui",
+                                      "fontSize": 16,
+                                      "fontWeight": "800"
+                                    },
+                                    {
+                                      "type": "frame",
+                                      "id": "Q1Teyr",
+                                      "name": "Trakt 10-pill",
+                                      "fill": "$brand-soft",
+                                      "cornerRadius": 999,
+                                      "padding": [
+                                        3,
+                                        10
+                                      ],
+                                      "children": [
+                                        {
+                                          "type": "text",
+                                          "id": "zf85c",
+                                          "name": "Text",
+                                          "fill": "$brand-text",
+                                          "content": "Trakt 10",
+                                          "fontFamily": "$font-ui",
+                                          "fontSize": 13,
+                                          "fontWeight": "800"
+                                        }
+                                      ]
+                                    }
+                                  ]
                                 },
                                 {
                                   "type": "text",
@@ -114623,7 +115289,7 @@
                                   "fill": "$brand-text",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "Fredag, jämn vecka · Trakt 10",
+                                  "content": "Fredag, jämn vecka",
                                   "fontFamily": "$font-ui",
                                   "fontSize": 14,
                                   "fontWeight": "700"
@@ -114635,7 +115301,7 @@
                                   "fill": "$text-2",
                                   "textGrowth": "fixed-width",
                                   "width": "fill_container",
-                                  "content": "Tommesbo, Grönsinka, Bjurvalla, Vansjö",
+                                  "content": "Horndal tätort, Tyskbo, Tommesbo, Grönsinka, Bjurvalla, Dalsberga, Skuggbo, Grubbo, Svensbo, Vansjö",
                                   "fontFamily": "$font-ui",
                                   "fontSize": 13,
                                   "fontWeight": "normal"
@@ -115104,17 +115770,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "j20mq",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "ep294",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Askön, Nyhyttan m.fl.",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "j20mq",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Askön, Nyhyttan m.fl.",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "kiTge",
+                              "name": "Trakt 1-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "DwIQ3",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 1",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -115123,7 +115821,7 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Måndag, udda vecka · Trakt 1",
+                          "content": "Måndag, udda vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
@@ -115135,7 +115833,7 @@
                           "fill": "$text-2",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Klintbo, Baggbo, Högbo, Stallgatan, Storbogatan …",
+                          "content": "Askön, Nyhyttan, Klintbo, Snickarbo, Knallasbenning, Baggbo, Uppsjövägen, Ryttargatan, Stallgatan, Storbogatan, Djäknehyttan, Gammelsängsvägen, Skultbacken, Nybydalsvägen, Lagmansgatan, Grytnäsgärde, Högbo, Rutbo",
                           "lineHeight": 1.35,
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
@@ -115180,17 +115878,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "Wz55i",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "b0SRT",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Skogsbo tätort, Rosse m.fl.",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Wz55i",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Skogsbo tätort, Rosse m.fl.",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "R8o4hQ",
+                              "name": "Trakt 2-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "GEI0x",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 2",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -115199,7 +115929,7 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Tisdag, udda vecka · Trakt 2",
+                          "content": "Tisdag, udda vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
@@ -115211,7 +115941,7 @@
                           "fill": "$text-2",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Fullsta, Storbyn, Gåsbo, Smedsbo, Backa …",
+                          "content": "Skogsbo tätort, Rosse, Fullsta, Storbyn, Gåsbo, Smedsbo, Åkersbyn, Bengtsbo, Backa, Björk, Djup, Gaddbo, Hovnäs, Born, Tyttbo, Gålsbo, Staksbo, Leknäs",
                           "lineHeight": 1.35,
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
@@ -115256,17 +115986,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "wMgsx",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "NheyW",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Fors, Nordanö, Brogård",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "wMgsx",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Fors, Nordanö, Brogård",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "hQgCU",
+                              "name": "Trakt 3-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "uUZmA",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 3",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -115275,10 +116037,23 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Onsdag, udda vecka · Trakt 3",
+                          "content": "Onsdag, udda vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "xDf3D",
+                          "name": "Platser",
+                          "fill": "$text-2",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Fors, Nordanö, Brogård",
+                          "lineHeight": 1.35,
+                          "fontFamily": "$font-ui",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -115319,17 +116094,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "DcaLd",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "f0mEOm",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Krylbo stationssidan, Lejde m.fl.",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "DcaLd",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Krylbo stationssidan, Lejde m.fl.",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "Nm1ZX",
+                              "name": "Trakt 4-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "JFW04",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 4",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -115338,7 +116145,7 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Torsdag, udda vecka · Trakt 4",
+                          "content": "Torsdag, udda vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
@@ -115350,7 +116157,7 @@
                           "fill": "$text-2",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Backa, Mesta, Strandmora, Djupvik, Näs …",
+                          "content": "Lejde, Backa, Mesta, Strandmora, Östra Strandmora, Ruduvägen, Djupvik, Bredgrind, Byåsen, Vadsbro, Hildursborg, Skaffarbo, Västanbäck, Norrbyn, Kyrkbyn, Björka, Näs, Svartbro, Karlbo, Tillfället, Krylbo stationssidan",
                           "lineHeight": 1.35,
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
@@ -115395,17 +116202,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "xX0AJ",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "a8KZpz",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Krylbo västra sidan, Morshyttan m.fl.",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "xX0AJ",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Krylbo västra sidan, Morshyttan m.fl.",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "iRMlH",
+                              "name": "Trakt 5-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "tbh0J",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 5",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -115414,7 +116253,7 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Fredag, udda vecka · Trakt 5",
+                          "content": "Fredag, udda vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
@@ -115426,7 +116265,7 @@
                           "fill": "$text-2",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Rossberga, Fornby, Manhemsvägen, Ingeborgsbo …",
+                          "content": "Krylbo västra sidan, Morshyttan, Rossberga, Fornby, Manhemsvägen, Ängsbacksvägen, Rällbovägen, Kvarnvägen, Ingeborgsbo",
                           "lineHeight": 1.35,
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
@@ -115471,17 +116310,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "z17ejR",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "YkJVX",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Ringänget, Veddarsbo m.fl.",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "z17ejR",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Ringänget, Veddarsbo m.fl.",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "qhJDU",
+                              "name": "Trakt 6-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "l9dpCX",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 6",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -115490,7 +116361,7 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Måndag, jämn vecka · Trakt 6",
+                          "content": "Måndag, jämn vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
@@ -115502,7 +116373,7 @@
                           "fill": "$text-2",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Jäder, Lund, Grytnäs kyrkby, Stigvägen …",
+                          "content": "Ringänget, Veddarsbo, Jädersholmar, Lund, Jäder, Sjövik, Nor, Brillingsnäs, Björkvik, Haltarsbo, Pellbo, Räfsbo, Kullhyttan, Skräddarbovägen, Ingevallsbo, Axelsbo, Östanbyn, Grytnäs kyrkby, Kårbo, Hyttbäcken, Stora Dicka, Lilla Dicka, Stigvägen, Skogsbovägen, Månsbovägen, Germundsbo, Smedsbo, Fridhem, Habborsbacken, Norr och Sör Nävde, Forsbo, Rembo, Stusshyttan, Knutsbo",
                           "lineHeight": 1.35,
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
@@ -115547,17 +116418,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "LzimT",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "PVxEz",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Avesta tätort, Östanfors m.fl.",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "LzimT",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Avesta tätort, Östanfors m.fl.",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "Qpofn",
+                              "name": "Trakt 7-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "tsEuD",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 7",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -115566,7 +116469,7 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Tisdag, jämn vecka · Trakt 7",
+                          "content": "Tisdag, jämn vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
@@ -115578,7 +116481,7 @@
                           "fill": "$text-2",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Lycka, Kolarbo, Överbo, Åsgarn, Västansjö …",
+                          "content": "Avesta tätort, Östanfors, Garpenbergsvägen, Lycka, Kolarbo, Bondarvet, Överbo, Nickarvet, Mörtarbo, Krommetsbo, Åsgarn, Västanberg, Västansjö",
                           "lineHeight": 1.35,
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
@@ -115623,17 +116526,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "WGkfr",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "m4ACnI",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Kaplansgården, Jularbo m.fl.",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "WGkfr",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Kaplansgården, Jularbo m.fl.",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "BtVBb",
+                              "name": "Trakt 8-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "ExBu1",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 8",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -115642,7 +116577,7 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Onsdag, jämn vecka · Trakt 8",
+                          "content": "Onsdag, jämn vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
@@ -115654,7 +116589,7 @@
                           "fill": "$text-2",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Sibirien, Bodgatan, Älvbro, Torp, Brovallen …",
+                          "content": "Kaplansgården, Jularbo, Ovanåker, Kyrkbyvägen, Sibirien, Mästerbo, Isaksbo, Sonnbo, Torp, Korskrogen, Brovallen, Igeltjärna, Betvallen, Slätmossen, Alsbo, Staffansbo, Tjärna, Gräsmossvägen, Bengtsbo, Älvbro, Skillingränd, Bodgatan",
                           "lineHeight": 1.35,
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
@@ -115699,17 +116634,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "S4fyI",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "Qawhu",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Kvarnbro, Utsund m.fl.",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "S4fyI",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Kvarnbro, Utsund m.fl.",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "OLbnT",
+                              "name": "Trakt 9-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "TGkji",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 9",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -115718,7 +116685,7 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Torsdag, jämn vecka · Trakt 9",
+                          "content": "Torsdag, jämn vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
@@ -115730,7 +116697,7 @@
                           "fill": "$text-2",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Bergshyttan, Råby, Färjan, Hede, Rossberga …",
+                          "content": "Kvarnbro, Utsund, Sörbäck, Rotfallet, Råby, Knutsbo, Bergshyttan, Bäckeby, Kärrfallet, Bäsinge, Lövsveden, Östanberg, Täktbo, Mestaäng, Ångermansbo, Södra Strandnora, Jugansbo, Södra Spisbo, Södra Rudö, Färjan, Näckenbäck, Digeränget, Hede, Krångede, Vatebo, Byvalla, Konsjövägen, Fallet, Rossberga",
                           "lineHeight": 1.35,
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
@@ -115775,17 +116742,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "Y43P3g",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "vHmO2",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Horndal tätort, Tyskbo m.fl.",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Y43P3g",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Horndal tätort, Tyskbo m.fl.",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "zTG2x",
+                              "name": "Trakt 10-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "uhXeb",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 10",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -115794,7 +116793,7 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Fredag, jämn vecka · Trakt 10",
+                          "content": "Fredag, jämn vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
@@ -115806,7 +116805,7 @@
                           "fill": "$text-2",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Tommesbo, Grönsinka, Bjurvalla, Vansjö",
+                          "content": "Horndal tätort, Tyskbo, Tommesbo, Grönsinka, Bjurvalla, Dalsberga, Skuggbo, Grubbo, Svensbo, Vansjö",
                           "lineHeight": 1.35,
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
@@ -118861,7 +119860,7 @@
       "type": "frame",
       "id": "qzCnw",
       "x": 1360,
-      "y": 24300,
+      "y": 25500,
       "name": "Desktop · Resultat (område)",
       "clip": true,
       "width": 1280,
@@ -123238,17 +124237,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "ob7Om",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "M12wy",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Askön, Nyhyttan m.fl.",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "ob7Om",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Askön, Nyhyttan m.fl.",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "GKwWi",
+                              "name": "Trakt 1-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "yXOyN",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 1",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -123257,7 +124288,7 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Måndag, udda vecka · Trakt 1",
+                          "content": "Måndag, udda vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
@@ -123269,7 +124300,7 @@
                           "fill": "$text-2",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Klintbo, Baggbo, Högbo, Stallgatan, Storbogatan …",
+                          "content": "Askön, Nyhyttan, Klintbo, Snickarbo, Knallasbenning, Baggbo, Uppsjövägen, Ryttargatan, Stallgatan, Storbogatan, Djäknehyttan, Gammelsängsvägen, Skultbacken, Nybydalsvägen, Lagmansgatan, Grytnäsgärde, Högbo, Rutbo",
                           "lineHeight": 1.35,
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
@@ -123314,17 +124345,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "lk8OL",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "YOx6J",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Skogsbo tätort, Rosse m.fl.",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "lk8OL",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Skogsbo tätort, Rosse m.fl.",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "APFGR",
+                              "name": "Trakt 2-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "Toqbf",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 2",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -123333,7 +124396,7 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Tisdag, udda vecka · Trakt 2",
+                          "content": "Tisdag, udda vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
@@ -123345,7 +124408,7 @@
                           "fill": "$text-2",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Fullsta, Storbyn, Gåsbo, Smedsbo, Backa …",
+                          "content": "Skogsbo tätort, Rosse, Fullsta, Storbyn, Gåsbo, Smedsbo, Åkersbyn, Bengtsbo, Backa, Björk, Djup, Gaddbo, Hovnäs, Born, Tyttbo, Gålsbo, Staksbo, Leknäs",
                           "lineHeight": 1.35,
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
@@ -123390,17 +124453,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "FXchE",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "fstDP",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Fors, Nordanö, Brogård",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "FXchE",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Fors, Nordanö, Brogård",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "Rr6ZQ",
+                              "name": "Trakt 3-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "X6Q0KN",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 3",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -123409,10 +124504,23 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Onsdag, udda vecka · Trakt 3",
+                          "content": "Onsdag, udda vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "yg2y7",
+                          "name": "Platser",
+                          "fill": "$text-2",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Fors, Nordanö, Brogård",
+                          "lineHeight": 1.35,
+                          "fontFamily": "$font-ui",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -123453,17 +124561,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "f8jU1",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "m7cgAY",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Krylbo stationssidan, Lejde m.fl.",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "f8jU1",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Krylbo stationssidan, Lejde m.fl.",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "BqmMy",
+                              "name": "Trakt 4-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "ppN9T",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 4",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -123472,7 +124612,7 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Torsdag, udda vecka · Trakt 4",
+                          "content": "Torsdag, udda vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
@@ -123484,7 +124624,7 @@
                           "fill": "$text-2",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Backa, Mesta, Strandmora, Djupvik, Näs …",
+                          "content": "Lejde, Backa, Mesta, Strandmora, Östra Strandmora, Ruduvägen, Djupvik, Bredgrind, Byåsen, Vadsbro, Hildursborg, Skaffarbo, Västanbäck, Norrbyn, Kyrkbyn, Björka, Näs, Svartbro, Karlbo, Tillfället, Krylbo stationssidan",
                           "lineHeight": 1.35,
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
@@ -123529,17 +124669,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "a0gdH",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "AvQVF",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Krylbo västra sidan, Morshyttan m.fl.",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "a0gdH",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Krylbo västra sidan, Morshyttan m.fl.",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "AdmQC",
+                              "name": "Trakt 5-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "t9SKWA",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 5",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -123548,7 +124720,7 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Fredag, udda vecka · Trakt 5",
+                          "content": "Fredag, udda vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
@@ -123560,7 +124732,7 @@
                           "fill": "$text-2",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Rossberga, Fornby, Manhemsvägen, Ingeborgsbo …",
+                          "content": "Krylbo västra sidan, Morshyttan, Rossberga, Fornby, Manhemsvägen, Ängsbacksvägen, Rällbovägen, Kvarnvägen, Ingeborgsbo",
                           "lineHeight": 1.35,
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
@@ -123605,17 +124777,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "CyUhQ",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "uPU20",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Ringänget, Veddarsbo m.fl.",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "CyUhQ",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Ringänget, Veddarsbo m.fl.",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "Ebx5Q",
+                              "name": "Trakt 6-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "U9KMo",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 6",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -123624,7 +124828,7 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Måndag, jämn vecka · Trakt 6",
+                          "content": "Måndag, jämn vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
@@ -123636,7 +124840,7 @@
                           "fill": "$text-2",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Jäder, Lund, Grytnäs kyrkby, Stigvägen …",
+                          "content": "Ringänget, Veddarsbo, Jädersholmar, Lund, Jäder, Sjövik, Nor, Brillingsnäs, Björkvik, Haltarsbo, Pellbo, Räfsbo, Kullhyttan, Skräddarbovägen, Ingevallsbo, Axelsbo, Östanbyn, Grytnäs kyrkby, Kårbo, Hyttbäcken, Stora Dicka, Lilla Dicka, Stigvägen, Skogsbovägen, Månsbovägen, Germundsbo, Smedsbo, Fridhem, Habborsbacken, Norr och Sör Nävde, Forsbo, Rembo, Stusshyttan, Knutsbo",
                           "lineHeight": 1.35,
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
@@ -123681,17 +124885,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "B0drH",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "h5Kls1",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Avesta tätort, Östanfors m.fl.",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "B0drH",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Avesta tätort, Östanfors m.fl.",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "m8Dn2",
+                              "name": "Trakt 7-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "cYVbQ",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 7",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -123700,7 +124936,7 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Tisdag, jämn vecka · Trakt 7",
+                          "content": "Tisdag, jämn vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
@@ -123712,7 +124948,7 @@
                           "fill": "$text-2",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Lycka, Kolarbo, Överbo, Åsgarn, Västansjö …",
+                          "content": "Avesta tätort, Östanfors, Garpenbergsvägen, Lycka, Kolarbo, Bondarvet, Överbo, Nickarvet, Mörtarbo, Krommetsbo, Åsgarn, Västanberg, Västansjö",
                           "lineHeight": 1.35,
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
@@ -123757,17 +124993,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "IMfx9",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "hhDbU",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Kaplansgården, Jularbo m.fl.",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "IMfx9",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Kaplansgården, Jularbo m.fl.",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "vr87U",
+                              "name": "Trakt 8-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "FLUnO",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 8",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -123776,7 +125044,7 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Onsdag, jämn vecka · Trakt 8",
+                          "content": "Onsdag, jämn vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
@@ -123788,7 +125056,7 @@
                           "fill": "$text-2",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Sibirien, Bodgatan, Älvbro, Torp, Brovallen …",
+                          "content": "Kaplansgården, Jularbo, Ovanåker, Kyrkbyvägen, Sibirien, Mästerbo, Isaksbo, Sonnbo, Torp, Korskrogen, Brovallen, Igeltjärna, Betvallen, Slätmossen, Alsbo, Staffansbo, Tjärna, Gräsmossvägen, Bengtsbo, Älvbro, Skillingränd, Bodgatan",
                           "lineHeight": 1.35,
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
@@ -123833,17 +125101,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "E3DcN",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "Y6Yd0",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Kvarnbro, Utsund m.fl.",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "E3DcN",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Kvarnbro, Utsund m.fl.",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "K9BXT",
+                              "name": "Trakt 9-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "pcZhq",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 9",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -123852,7 +125152,7 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Torsdag, jämn vecka · Trakt 9",
+                          "content": "Torsdag, jämn vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
@@ -123864,7 +125164,7 @@
                           "fill": "$text-2",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Bergshyttan, Råby, Färjan, Hede, Rossberga …",
+                          "content": "Kvarnbro, Utsund, Sörbäck, Rotfallet, Råby, Knutsbo, Bergshyttan, Bäckeby, Kärrfallet, Bäsinge, Lövsveden, Östanberg, Täktbo, Mestaäng, Ångermansbo, Södra Strandnora, Jugansbo, Södra Spisbo, Södra Rudö, Färjan, Näckenbäck, Digeränget, Hede, Krångede, Vatebo, Byvalla, Konsjövägen, Fallet, Rossberga",
                           "lineHeight": 1.35,
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
@@ -123909,17 +125209,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "PvHCw",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "m7BSp0",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Horndal tätort, Tyskbo m.fl.",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "PvHCw",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Horndal tätort, Tyskbo m.fl.",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "ZkkdP",
+                              "name": "Trakt 10-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "qflTT",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 10",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -123928,7 +125260,7 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Fredag, jämn vecka · Trakt 10",
+                          "content": "Fredag, jämn vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
@@ -123940,7 +125272,7 @@
                           "fill": "$text-2",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Tommesbo, Grönsinka, Bjurvalla, Vansjö",
+                          "content": "Horndal tätort, Tyskbo, Tommesbo, Grönsinka, Bjurvalla, Dalsberga, Skuggbo, Grubbo, Svensbo, Vansjö",
                           "lineHeight": 1.35,
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
@@ -124314,17 +125646,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "e7cV7u",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "N4vk0j",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Askön, Nyhyttan m.fl.",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "e7cV7u",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Askön, Nyhyttan m.fl.",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "ENmoX",
+                              "name": "Trakt 1-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "uyR9V",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 1",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -124333,7 +125697,7 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Måndag, udda vecka · Trakt 1",
+                          "content": "Måndag, udda vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
@@ -124345,7 +125709,7 @@
                           "fill": "$text-2",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Klintbo, Baggbo, Högbo, Stallgatan, Storbogatan …",
+                          "content": "Askön, Nyhyttan, Klintbo, Snickarbo, Knallasbenning, Baggbo, Uppsjövägen, Ryttargatan, Stallgatan, Storbogatan, Djäknehyttan, Gammelsängsvägen, Skultbacken, Nybydalsvägen, Lagmansgatan, Grytnäsgärde, Högbo, Rutbo",
                           "lineHeight": 1.35,
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
@@ -124390,17 +125754,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "uWI5R",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "UwR3r",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Skogsbo tätort, Rosse m.fl.",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "uWI5R",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Skogsbo tätort, Rosse m.fl.",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "Wp7Xv",
+                              "name": "Trakt 2-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "KTMLQ",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 2",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -124409,7 +125805,7 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Tisdag, udda vecka · Trakt 2",
+                          "content": "Tisdag, udda vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
@@ -124421,7 +125817,7 @@
                           "fill": "$text-2",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Fullsta, Storbyn, Gåsbo, Smedsbo, Backa …",
+                          "content": "Skogsbo tätort, Rosse, Fullsta, Storbyn, Gåsbo, Smedsbo, Åkersbyn, Bengtsbo, Backa, Björk, Djup, Gaddbo, Hovnäs, Born, Tyttbo, Gålsbo, Staksbo, Leknäs",
                           "lineHeight": 1.35,
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
@@ -124466,17 +125862,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "H1Txw",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "Fnuai",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Fors, Nordanö, Brogård",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "H1Txw",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Fors, Nordanö, Brogård",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "a8AsNX",
+                              "name": "Trakt 3-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "WIH4P",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 3",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -124485,10 +125913,23 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Onsdag, udda vecka · Trakt 3",
+                          "content": "Onsdag, udda vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "jXjjy",
+                          "name": "Platser",
+                          "fill": "$text-2",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Fors, Nordanö, Brogård",
+                          "lineHeight": 1.35,
+                          "fontFamily": "$font-ui",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -124529,17 +125970,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "CJrxu",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "B5XzB1",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Krylbo stationssidan, Lejde m.fl.",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "CJrxu",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Krylbo stationssidan, Lejde m.fl.",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "iy8w1",
+                              "name": "Trakt 4-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "fI3Na",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 4",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -124548,7 +126021,7 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Torsdag, udda vecka · Trakt 4",
+                          "content": "Torsdag, udda vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
@@ -124560,7 +126033,7 @@
                           "fill": "$text-2",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Backa, Mesta, Strandmora, Djupvik, Näs …",
+                          "content": "Lejde, Backa, Mesta, Strandmora, Östra Strandmora, Ruduvägen, Djupvik, Bredgrind, Byåsen, Vadsbro, Hildursborg, Skaffarbo, Västanbäck, Norrbyn, Kyrkbyn, Björka, Näs, Svartbro, Karlbo, Tillfället, Krylbo stationssidan",
                           "lineHeight": 1.35,
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
@@ -124605,17 +126078,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "EPhuR",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "R35RW",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Krylbo västra sidan, Morshyttan m.fl.",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "EPhuR",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Krylbo västra sidan, Morshyttan m.fl.",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "KEzI0",
+                              "name": "Trakt 5-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "ZHzc8",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 5",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -124624,7 +126129,7 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Fredag, udda vecka · Trakt 5",
+                          "content": "Fredag, udda vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
@@ -124636,7 +126141,7 @@
                           "fill": "$text-2",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Rossberga, Fornby, Manhemsvägen, Ingeborgsbo …",
+                          "content": "Krylbo västra sidan, Morshyttan, Rossberga, Fornby, Manhemsvägen, Ängsbacksvägen, Rällbovägen, Kvarnvägen, Ingeborgsbo",
                           "lineHeight": 1.35,
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
@@ -124681,17 +126186,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "R5SRP",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "aaDpu",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Ringänget, Veddarsbo m.fl.",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "R5SRP",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Ringänget, Veddarsbo m.fl.",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "e5hgi",
+                              "name": "Trakt 6-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "Kbf89",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 6",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -124700,7 +126237,7 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Måndag, jämn vecka · Trakt 6",
+                          "content": "Måndag, jämn vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
@@ -124712,7 +126249,7 @@
                           "fill": "$text-2",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Jäder, Lund, Grytnäs kyrkby, Stigvägen …",
+                          "content": "Ringänget, Veddarsbo, Jädersholmar, Lund, Jäder, Sjövik, Nor, Brillingsnäs, Björkvik, Haltarsbo, Pellbo, Räfsbo, Kullhyttan, Skräddarbovägen, Ingevallsbo, Axelsbo, Östanbyn, Grytnäs kyrkby, Kårbo, Hyttbäcken, Stora Dicka, Lilla Dicka, Stigvägen, Skogsbovägen, Månsbovägen, Germundsbo, Smedsbo, Fridhem, Habborsbacken, Norr och Sör Nävde, Forsbo, Rembo, Stusshyttan, Knutsbo",
                           "lineHeight": 1.35,
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
@@ -124757,17 +126294,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "RsXe1",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "GIX9K",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Avesta tätort, Östanfors m.fl.",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "RsXe1",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Avesta tätort, Östanfors m.fl.",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "Xg66N",
+                              "name": "Trakt 7-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "jyuuV",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 7",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -124776,7 +126345,7 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Tisdag, jämn vecka · Trakt 7",
+                          "content": "Tisdag, jämn vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
@@ -124788,7 +126357,7 @@
                           "fill": "$text-2",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Lycka, Kolarbo, Överbo, Åsgarn, Västansjö …",
+                          "content": "Avesta tätort, Östanfors, Garpenbergsvägen, Lycka, Kolarbo, Bondarvet, Överbo, Nickarvet, Mörtarbo, Krommetsbo, Åsgarn, Västanberg, Västansjö",
                           "lineHeight": 1.35,
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
@@ -124833,17 +126402,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "dotvf",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "jS5si",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Kaplansgården, Jularbo m.fl.",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "dotvf",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Kaplansgården, Jularbo m.fl.",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "UPKYK",
+                              "name": "Trakt 8-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "M16dwS",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 8",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -124852,7 +126453,7 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Onsdag, jämn vecka · Trakt 8",
+                          "content": "Onsdag, jämn vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
@@ -124864,7 +126465,7 @@
                           "fill": "$text-2",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Sibirien, Bodgatan, Älvbro, Torp, Brovallen …",
+                          "content": "Kaplansgården, Jularbo, Ovanåker, Kyrkbyvägen, Sibirien, Mästerbo, Isaksbo, Sonnbo, Torp, Korskrogen, Brovallen, Igeltjärna, Betvallen, Slätmossen, Alsbo, Staffansbo, Tjärna, Gräsmossvägen, Bengtsbo, Älvbro, Skillingränd, Bodgatan",
                           "lineHeight": 1.35,
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
@@ -124909,17 +126510,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "k0uAi",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "SC65E",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Kvarnbro, Utsund m.fl.",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "k0uAi",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Kvarnbro, Utsund m.fl.",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "vnRmv",
+                              "name": "Trakt 9-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "DnFF4",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 9",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -124928,7 +126561,7 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Torsdag, jämn vecka · Trakt 9",
+                          "content": "Torsdag, jämn vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
@@ -124940,7 +126573,7 @@
                           "fill": "$text-2",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Bergshyttan, Råby, Färjan, Hede, Rossberga …",
+                          "content": "Kvarnbro, Utsund, Sörbäck, Rotfallet, Råby, Knutsbo, Bergshyttan, Bäckeby, Kärrfallet, Bäsinge, Lövsveden, Östanberg, Täktbo, Mestaäng, Ångermansbo, Södra Strandnora, Jugansbo, Södra Spisbo, Södra Rudö, Färjan, Näckenbäck, Digeränget, Hede, Krångede, Vatebo, Byvalla, Konsjövägen, Fallet, Rossberga",
                           "lineHeight": 1.35,
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
@@ -124985,17 +126618,49 @@
                       "gap": 3,
                       "children": [
                         {
-                          "type": "text",
-                          "id": "SkFKA",
-                          "name": "Område",
-                          "fill": "$text",
-                          "textGrowth": "fixed-width",
+                          "type": "frame",
+                          "id": "ACgGw",
+                          "name": "Rubrikrad",
                           "width": "fill_container",
-                          "content": "Horndal tätort, Tyskbo m.fl.",
-                          "lineHeight": 1.25,
-                          "fontFamily": "$font-ui",
-                          "fontSize": 16,
-                          "fontWeight": "800"
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "SkFKA",
+                              "name": "Område",
+                              "fill": "$text",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Horndal tätort, Tyskbo m.fl.",
+                              "lineHeight": 1.25,
+                              "fontFamily": "$font-ui",
+                              "fontSize": 16,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "j09JB",
+                              "name": "Trakt 10-pill",
+                              "fill": "$brand-soft",
+                              "cornerRadius": 999,
+                              "padding": [
+                                3,
+                                10
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "fzGhZ",
+                                  "name": "Text",
+                                  "fill": "$brand-text",
+                                  "content": "Trakt 10",
+                                  "fontFamily": "$font-ui",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
+                                }
+                              ]
+                            }
+                          ]
                         },
                         {
                           "type": "text",
@@ -125004,7 +126669,7 @@
                           "fill": "$brand-text",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Fredag, jämn vecka · Trakt 10",
+                          "content": "Fredag, jämn vecka",
                           "fontFamily": "$font-ui",
                           "fontSize": 14,
                           "fontWeight": "700"
@@ -125016,7 +126681,7 @@
                           "fill": "$text-2",
                           "textGrowth": "fixed-width",
                           "width": "fill_container",
-                          "content": "Tommesbo, Grönsinka, Bjurvalla, Vansjö",
+                          "content": "Horndal tätort, Tyskbo, Tommesbo, Grönsinka, Bjurvalla, Dalsberga, Skuggbo, Grubbo, Svensbo, Vansjö",
                           "lineHeight": 1.35,
                           "fontFamily": "$font-ui",
                           "fontSize": 13,
