@@ -259,8 +259,9 @@ async function searchLive(
 }
 
 /**
- * Källor med områdesval som sökningen ska erbjuda: de som gav områdesträffar, de som har gatan
- * i frågan (hel gata, med eller utan nummer) och de vars kommun frågan nämner ("Okändgatan 3, Avesta").
+ * Källor med områdesval som sökningen ska erbjuda: de som gav områdesträffar och de vars kommun frågan
+ * nämner ("Okändgatan 3, Avesta"). På kommunsidan räcker en känd gata, eftersom sökningen redan gäller kommunen.
+ * Annars ger ett gatunamn ingen rad: vi vet inte att adressen finns hos källan, och samma namn finns i många kommuner.
  */
 async function areaPickersFor(query: string, found: Address[], kommun?: Kommun): Promise<AreaPicker[]> {
   const sources = SOURCES.filter((s) => s.selection === 'area' && coversKommun(s, kommun))
@@ -271,7 +272,7 @@ async function areaPickersFor(query: string, found: Address[], kommun?: Kommun):
   return sources.flatMap((s) => {
     const hasHits = found.some((a) => a.sourceId === s.id)
     // Nämner frågan en annan plats hör gatan inte till källan, hur väl gatan än är känd.
-    const relevant = hasHits || (place ? namesSource(place, placeShard, s) : isKnownStreet(shard, query, s.id))
+    const relevant = hasHits || (place ? namesSource(place, placeShard, s) : !!kommun && isKnownStreet(shard, query, s.id))
     return relevant ? [{ sourceId: s.id, kommun: s.kommuner[0]?.name ?? s.name, hasHits }] : []
   })
 }

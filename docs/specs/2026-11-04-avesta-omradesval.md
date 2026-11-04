@@ -12,7 +12,8 @@ Sopor gissar inte vilken trakt en adress hör till, eftersom en felaktig gissnin
 
 - En Avestabo hittar sin hämtdag utan konto och kan lägga den i kalendern.
 - Det ska gå att söka på det man känner till: "Avesta tätort", "Östanfors", "Stallgatan" eller "trakt 7".
-- En gatuadress utan träff i områdeslistan leder till områdesvalet, aldrig till "hittades inte".
+- En gatuadress som nämner Avesta, eller söks på kommunsidan, leder till områdesvalet och aldrig till "hittades inte".
+- Avesta tar ingen plats i sökningen för den som bor i en annan kommun på en gata med samma namn.
 - Sidan är tydlig med att användaren har valt området själv och varför.
 - Lösningen är generell, så att andra kommuner med schema per område kan använda den.
 
@@ -44,16 +45,18 @@ Reglerna gäller startsidans sökning och kommunsidan för Avesta. De prövas i 
 | Namn som finns i flera områden | "Backa" | En träff per område, med raden "Backa ingår i området" |
 | Gata som står i ett områdes lista, med eller utan nummer och plats | "Stallgatan", "Stallgatan 5", "Stallgatan 5, Avesta" | Områdesträff |
 | Gata i ett områdes lista med en annan plats | "Stallgatan 5, Stockholm" | Ingen rad för Avesta |
-| Annan känd gata i Avesta, hel gata eller med nummer | "Kungsgatan", "Kungsgatan 12" | Raden "Välj område i Avesta". Finns områdesträffar visas i stället raden "Se alla områden i Avesta" under dem. |
-| Okänd gata med Avesta som plats | "Okändgatan 3, Avesta" | Raden "Välj område i Avesta" |
-| Halvskrivet ord på startsidan | "Kungsg", "stor" | Ingen rad för Avesta, tills ordet är helt |
+| Gata med Avesta som plats, känd eller okänd | "Kungsgatan 12, Avesta", "Okändgatan 3, Avesta" | Raden "Välj område i Avesta". Finns områdesträffar visas i stället raden "Se alla områden i Avesta" under dem. |
+| Annan gata utan plats på startsidan | "Kungsgatan", "Kungsgatan 12" | Ingen rad för Avesta, eftersom samma gatunamn finns i många kommuner och vi inte vet att adressen finns i Avesta |
+| Annan känd gata i Avesta på kommunsidan | "Kungsgatan 12" | Raden "Välj område i Avesta" |
+| Halvskrivet ord på startsidan | "Kungsg", "stor" | Ingen rad för Avesta |
 | Början av ord på kommunsidan, i filtret på Välj område och i API:t med `kalla=avesta` | "östan" | Områdesträff |
 | Gata som inte finns i Avesta | "Hornsgatan 1" | Som i dag |
 
 - På startsidan och i `/api/v1/sok` utan `kalla` måste varje ord i frågan vara ett helt ord i områdets namn eller sökord. Början av ett ord räcker bara när sökningen gäller just källan. Vanliga adresser påverkas inte.
 - Småorden "m", "fl" och "och" går inte att söka på i områden: en fråga med bara sådana ord ger inga områden, men "Norr och Sör Nävde" träffar sitt område. Namnet visas oförändrat.
-- "Känd gata" avgörs med det befintliga gatuindexet från OpenStreetMap (`data/osm/2084.json`). `candidateSources` matchar början av namn, så regeln behöver en exakt jämförelse av gatudelen från `splitPlace`.
-- Gatuindexet är inte komplett. Saknas gatan blir resultatet som för en gata utanför Avesta, om inte frågan nämner Avesta. "Hittades inte"-rutan får därför alltid en länk till områdesvalet när sökningen är avgränsad till Avesta.
+- "Känd gata" på kommunsidan avgörs med det befintliga gatuindexet från OpenStreetMap (`data/osm/2084.json`). `candidateSources` matchar början av namn, så regeln behöver en exakt jämförelse av gatudelen från `splitPlace`.
+- Gatuindexet är inte komplett. "Hittades inte"-rutan får därför alltid en länk till områdesvalet när sökningen är avgränsad till Avesta.
+- Den som bor i Avesta och söker en gata utan ort på startsidan får ingen rad för Avesta. Det är priset för att andra kommuner inte ska störas, och det gäller så länge kopplingen från adress till område saknas. Vägarna in är att skriva "Avesta", söka på ett område eller gå via kommunsidan.
 - Andra kommuners träffar visas under sina egna rubriker som vanligt.
 - Enter öppnar den enda träffen. Är "Välj område i Avesta" enda raden öppnas områdesvalet.
 - Husnummer och bokstav påverkar inte vilket område som visas. Områdeslistan innehåller inga nummer.

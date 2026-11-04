@@ -692,7 +692,7 @@ describe('AddressSearch', () => {
     })
 
     it('visar Välj område med förklaring, och andra kommuners träffar under sina rubriker', async () => {
-      await renderResult('Kungsgatan 12', { addresses: [hedemora], areaPickers: [picker(false)] })
+      await renderResult('Kungsgatan 12 Avesta', { addresses: [hedemora], areaPickers: [picker(false)] })
       const options = await screen.findAllByRole('option')
       expect(within(screen.getByRole('group', { name: 'Avesta kommun' })).getByRole('option')).toHaveTextContent(
         'Välj område i AvestaHär finns schemat per område, inte per adress.',
@@ -708,7 +708,7 @@ describe('AddressSearch', () => {
     })
 
     it('går till områdesvalet vid klick på raden', async () => {
-      await renderResult('Kungsgatan 12', { addresses: [hedemora], areaPickers: [picker(false)] })
+      await renderResult('Kungsgatan 12 Avesta', { addresses: [hedemora], areaPickers: [picker(false)] })
       await userEvent.click(await screen.findByRole('option', { name: /Välj område i Avesta/ }))
       expect(await screen.findByText('Områdesvalet')).toBeInTheDocument()
     })
@@ -726,7 +726,7 @@ describe('AddressSearch', () => {
     })
 
     it('öppnar inte något med Enter när en träff och Välj område finns', async () => {
-      await renderResult('Kungsgatan 12{Enter}', { addresses: [hedemora], areaPickers: [picker(false)] })
+      await renderResult('Kungsgatan 12 Avesta{Enter}', { addresses: [hedemora], areaPickers: [picker(false)] })
       await screen.findAllByRole('option')
       expect(screen.queryByText('Områdesvalet')).toBeNull()
       expect(screen.queryByText(/^Resultat/)).toBeNull()

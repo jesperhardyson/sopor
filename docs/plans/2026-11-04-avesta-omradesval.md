@@ -31,7 +31,7 @@ PDF:en färgmärker rest, papper och plast först från hösten 2026, och omärk
 1. **Datum i framtiden i arket:** ett datum efter i dag ska ge "Datumet har inte varit än" och aldrig föreslå ett område (test i uppgift 7).
 2. **Tomt datumfält:** när fältet töms försvinner resultatet utan fel (test i uppgift 7).
 3. **`omraden.json` går inte att hämta:** sidan visar `ErrorState` med "Försök igen" i stället för en tom lista (test i uppgift 7).
-4. **Enter med flera möjligheter:** "Kungsgatan 12" med en träff i Hedemora och raden för Avesta öppnar ingenting automatiskt (test i uppgift 6).
+4. **Enter med flera möjligheter:** "Kungsgatan 12 Avesta" med en träff i Hedemora och raden för Avesta öppnar ingenting automatiskt (test i uppgift 6).
 5. **Versaler och plats efter numret:** "AVESTA TÄTORT" ger området, och "Kungsgatan 12 Avesta" ger raden för Avesta (tester i uppgift 1 och 4).
 
 ---
@@ -251,7 +251,7 @@ export interface AreaPicker { sourceId: string; kommun: string; hasHits: boolean
 - `listAreas` hämtar `/data/avesta/omraden.json`
 
 `registry.test.ts`, med en mockad delfil där `kungsgatan` har `avesta` och Avesta som `selection: 'area'`:
-- "Kungsgatan" och "Kungsgatan 12" ger en picker med `hasHits: false`
+- "Kungsgatan" och "Kungsgatan 12" ger en picker med `hasHits: false` på kommunsidan och ingen på startsidan (regeln skärptes efter genomförandet, se specen)
 - "Kungsgatan 12 Avesta" och "Okändgatan 3, Avesta" ger en picker
 - "Kungsg" och "Hornsgatan 1" ger ingen picker
 - "Avesta tätort" med en områdesträff ger `hasHits: true`
@@ -332,7 +332,7 @@ Design: "Mobil · Områdessök (träff)", "(flera träffar)" och "Mobil · Adres
 - `hasHits: false` visar raden "Välj område i Avesta" med texten "Här finns schemat per område, inte per adress." och träffar i andra kommuner under sina rubriker
 - Klick och piltangenter+Enter på raden går till `/avesta/omraden`
 - Enter med "Välj område i Avesta" som enda rad öppnar `/avesta/omraden`
-- Enter med "Kungsgatan 12" och både en Hedemora-träff och raden för Avesta navigerar inte
+- Enter med "Kungsgatan 12 Avesta" och både en Hedemora-träff och raden för Avesta navigerar inte
 - Inga träffar och ingen picker på Avestas kommunsida: "hittades inte"-rutan har länken "Välj område i Avesta"
 - Avestas kommunsida visar en länk till `/avesta/omraden`
 
@@ -445,7 +445,7 @@ Kör: samma som steg 2. Förväntat: PASS.
 
 - [ ] **Steg 5: Kontrollera hela flödet i webbläsaren**
 
-Med tillfälligt synlig Avesta: sök "Kungsgatan 12", välj område, ange 27 oktober 2026, öppna resultatet, spara och ladda ned kalendern. Kontrollera ljust och mörkt läge samt mobil och desktop. Återställ `hidden` före commit.
+Med tillfälligt synlig Avesta: sök "Kungsgatan 12, Avesta", välj område, ange 27 oktober 2026, öppna resultatet, spara och ladda ned kalendern. Kontrollera ljust och mörkt läge samt mobil och desktop. Återställ `hidden` före commit.
 
 - [ ] **Steg 6: Commit**
 
