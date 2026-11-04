@@ -164,7 +164,7 @@ export interface AreaChoice {
   sourceId: string
   street: string
   areaId: string
-  label: string
+  label?: string
   day: string
 }
 
@@ -191,7 +191,7 @@ function writeChoices(all: Record<string, AreaChoice>) {
 
 export function loadChoice(sourceId: string, street: string): AreaChoice | undefined {
   const choice = readChoices()[choiceKey(sourceId, street)]
-  return typeof choice?.areaId === 'string' && typeof choice.label === 'string' && typeof choice.day === 'string' ? choice : undefined
+  return typeof choice?.areaId === 'string' && (choice.label === undefined || typeof choice.label === 'string') && typeof choice.day === 'string' ? choice : undefined
 }
 
 export function rememberChoice(choice: AreaChoice) {
@@ -204,7 +204,7 @@ export function forgetChoice(sourceId: string, street: string) {
 }
 
 /** Användaren har bytt område, så gator som pekade på det gamla området följer med till det nya. */
-export function moveChoices(sourceId: string, fromAreaId: string, area: { id: string; label: string; day: string }) {
+export function moveChoices(sourceId: string, fromAreaId: string, area: { id: string; label?: string; day: string }) {
   const moved = Object.entries(readChoices()).map(([key, c]) =>
     [key, c.sourceId === sourceId && c.areaId === fromAreaId ? { ...c, areaId: area.id, label: area.label, day: area.day } : c] as const,
   )

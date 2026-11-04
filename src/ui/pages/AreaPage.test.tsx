@@ -142,10 +142,13 @@ describe('AreaPage', () => {
     expect(screen.getByText('Avesta tätort, Östanfors m.fl.')).toBeInTheDocument()
   })
 
-  it('filtret hittar på etiketten, som i Säter är veckan', async () => {
-    fake = makeProvider({ listAreas: async () => ({ ...index, areas: [{ ...index.areas[0], day: 'Måndag', label: 'Ojämn vecka' }, { ...index.areas[1], day: 'Tisdag', label: 'Jämn vecka' }] }) })
+  it('visar inget märke för ett område utan etikett, och filtret skiljer jämn från ojämn', async () => {
+    const { label: _label, ...askon } = index.areas[0]
+    fake = makeProvider({ listAreas: async () => ({ ...index, areas: [{ ...askon, day: 'Måndag, ojämn vecka' }, { ...index.areas[1], day: 'Tisdag, jämn vecka' }] }) })
     show()
-    await userEvent.type(await screen.findByRole('searchbox', { name: 'Sök område, ort eller gata' }), 'ojämn')
+    expect(await screen.findByText('Måndag, ojämn vecka')).toBeInTheDocument()
+    expect(screen.queryByText('Trakt 1')).toBeNull()
+    await userEvent.type(screen.getByRole('searchbox', { name: 'Sök område, ort eller gata' }), 'ojämn')
     expect(screen.getByText('Askön, Nyhyttan m.fl.')).toBeInTheDocument()
     expect(screen.queryByText('Avesta tätort, Östanfors m.fl.')).toBeNull()
   })

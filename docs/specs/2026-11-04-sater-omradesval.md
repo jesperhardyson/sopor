@@ -21,7 +21,8 @@ Säters kommun ansvarar för sophämtningen och Borlänge Energi utför den. Kom
 | Områden | Tio trakter | Tio kombinationer av veckodag och vecka, utan namn hos kommunen |
 | `id` | `trakt-7` | `ojamn-mandag` |
 | `name` | Från PDF:en | De två första namnen i kommunens lista utan förbehåll, plus "m.fl." |
-| `day` och `label` | "Tisdag, jämn vecka" och "Trakt 7" | "Måndag" och "Ojämn vecka". Säter har inga nummer, och vi hittar inte på några. |
+| `day` | "Tisdag, jämn vecka" | "Måndag, ojämn vecka", skrivet på samma sätt |
+| `label` | "Trakt 7" | Ingen. Säter har inga nummer, och vi hittar inte på några. `label` är därför valfri, och utan den visas inget märke. |
 
 ## Data
 
@@ -37,7 +38,6 @@ Säters kommun ansvarar för sophämtningen och Borlänge Energi utför den. Kom
 - **Undantag får inte bli sökord.** "Åsen (förutom Falkgränd och Dahlanders väg)" skulle göra Falkgränd sökbar till just det område den inte ingår i. Platsen är därför "Åsen", och undantaget står i `otherDays`.
 - **Inkluderade gator är sökord.** "Mora by (inklusive Postvägen)" står kvar, och Postvägen ligger också i `streets`, så att "Postvägen 5" fungerar.
 - **Småord går inte att söka på.** Listan i `src/domain/search.ts` utökas med "del", "av", "om" och "by", eftersom de finns i Säters namn.
-- **Filtret på Välj område söker också i `label`,** så att "jämn" och "ojämn" fungerar.
 
 ## Generella ändringar
 

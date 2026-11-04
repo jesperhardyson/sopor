@@ -1,6 +1,7 @@
 // Filformatet för den statiska providern: källfilerna i data/<kommun>/<år>/
 // och de genererade filerna i public/. Används av build-skriptet och providern.
 
+import { areaDetail } from '@/domain/areas'
 import { isValidDate } from '@/domain/dates'
 import { isFractionId } from '@/domain/fractions'
 import { buildIcs } from '@/domain/ics'
@@ -34,7 +35,7 @@ export interface AreaRow {
   id: string
   name: string
   day: string
-  label: string
+  label?: string
   schedule: string
   places: string[]
   streets: string[]
@@ -177,9 +178,10 @@ export function parseAreasFile(json: unknown, file: string): AreasFile {
     if (area.id === 'omraden') fail(file, `${who}: "omraden" är reserverat`)
     if (seen.has(area.id)) fail(file, `dubblett av område-id "${area.id}"`)
     seen.add(area.id)
-    for (const key of ['name', 'day', 'label', 'schedule'] as const) {
+    for (const key of ['name', 'day', 'schedule'] as const) {
       if (typeof area[key] !== 'string' || area[key].trim() === '') fail(file, `${who}: "${key}" saknas eller är tom`)
     }
+    if (area.label !== undefined && (typeof area.label !== 'string' || area.label.trim() === '')) fail(file, `${who}: "label" är tom`)
     for (const key of AREA_LISTS) {
       if (!Array.isArray(area[key]) || area[key].some((v) => typeof v !== 'string')) {
         fail(file, `${who}: "${key}" ska vara en lista med text`)
@@ -270,7 +272,7 @@ export function buildMunicipality(
           street: row.name,
           locality: '',
           refs: [...(prev?.refs ?? []), `${year}-${row.schedule}`],
-          area: { detail: `${row.day} · ${row.label}`, searchTerms },
+          area: { detail: areaDetail(row), searchTerms },
         })
       }
     }

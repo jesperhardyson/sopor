@@ -40,7 +40,7 @@ function asAddresses(areas: Area[], source: Source): Address[] {
     locality: '',
     sourceId: source.id,
     kommun: source.kommuner[0].name,
-    searchTerms: [...a.searchTerms, a.day, a.label],
+    searchTerms: [...a.searchTerms, a.day],
   }))
 }
 
@@ -161,7 +161,7 @@ export function AreaPage({ today = todayInStockholm() }: { today?: string }) {
                   <span className="flex min-w-0 flex-1 flex-col gap-1">
                     <span className="flex items-start justify-between gap-2">
                       <span className="text-base font-extrabold text-text">{a.name}</span>
-                      <span className="shrink-0 rounded-full bg-brand-soft px-2.5 py-0.5 text-[13px] font-extrabold text-brand-text">{a.label}</span>
+                      {a.label && <span className="shrink-0 rounded-full bg-brand-soft px-2.5 py-0.5 text-[13px] font-extrabold text-brand-text">{a.label}</span>}
                     </span>
                     <span className="text-[15px] font-bold text-brand-text">{a.day}</span>
                     {a.places.length > 0 && <span className="text-sm text-text-2">{a.places.join(', ')}</span>}

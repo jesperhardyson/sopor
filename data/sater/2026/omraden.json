@@ -5,8 +5,7 @@
     {
       "id": "ojamn-mandag",
       "name": "Dalsbyn, Finnbo m.fl.",
-      "day": "Måndag",
-      "label": "Ojämn vecka",
+      "day": "Måndag, ojämn vecka",
       "schedule": "ojamn-mandag",
       "places": [
         "Dalsbyn",
@@ -29,8 +28,7 @@
     {
       "id": "ojamn-tisdag",
       "name": "Ansta, Anstahyttan m.fl.",
-      "day": "Tisdag",
-      "label": "Ojämn vecka",
+      "day": "Tisdag, ojämn vecka",
       "schedule": "ojamn-tisdag",
       "places": [
         "Ansta",
@@ -57,8 +55,7 @@
     {
       "id": "ojamn-onsdag",
       "name": "Bispberg, Bispbergshyttan m.fl.",
-      "day": "Onsdag",
-      "label": "Ojämn vecka",
+      "day": "Onsdag, ojämn vecka",
       "schedule": "ojamn-onsdag",
       "places": [
         "Bispberg",
@@ -79,8 +76,7 @@
     {
       "id": "ojamn-torsdag",
       "name": "Aspnäs, Dalkarlsbo m.fl.",
-      "day": "Torsdag",
-      "label": "Ojämn vecka",
+      "day": "Torsdag, ojämn vecka",
       "schedule": "ojamn-torsdag",
       "places": [
         "Aspnäs",
@@ -105,8 +101,7 @@
     {
       "id": "ojamn-fredag",
       "name": "Dammhusviken, Fiskarbo m.fl.",
-      "day": "Fredag",
-      "label": "Ojämn vecka",
+      "day": "Fredag, ojämn vecka",
       "schedule": "ojamn-fredag",
       "places": [
         "Arkhyttan – del av",
@@ -130,8 +125,7 @@
     {
       "id": "jamn-mandag",
       "name": "Burhagen, Gärdet m.fl.",
-      "day": "Måndag",
-      "label": "Jämn vecka",
+      "day": "Måndag, jämn vecka",
       "schedule": "jamn-mandag",
       "places": [
         "Burhagen",
@@ -146,8 +140,7 @@
     {
       "id": "jamn-tisdag",
       "name": "Björänget, Gussarvshyttan m.fl.",
-      "day": "Tisdag",
-      "label": "Jämn vecka",
+      "day": "Tisdag, jämn vecka",
       "schedule": "jamn-tisdag",
       "places": [
         "Björänget",
@@ -173,8 +166,7 @@
     {
       "id": "jamn-onsdag",
       "name": "Bobygden, Bodarne m.fl.",
-      "day": "Onsdag",
-      "label": "Jämn vecka",
+      "day": "Onsdag, jämn vecka",
       "schedule": "jamn-onsdag",
       "places": [
         "Bobygden",
@@ -208,8 +200,7 @@
     {
       "id": "jamn-torsdag",
       "name": "Dalkarlsnäs, Daniels hage m.fl.",
-      "day": "Torsdag",
-      "label": "Jämn vecka",
+      "day": "Torsdag, jämn vecka",
       "schedule": "jamn-torsdag",
       "places": [
         "Dalkarlsnäs",
@@ -237,8 +228,7 @@
     {
       "id": "jamn-fredag",
       "name": "Backa, Bondhyttan m.fl.",
-      "day": "Fredag",
-      "label": "Jämn vecka",
+      "day": "Fredag, jämn vecka",
       "schedule": "jamn-fredag",
       "places": [
         "Backa",

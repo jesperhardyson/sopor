@@ -70,8 +70,10 @@ describe('Säters områden', () => {
   })
 
   it('visar hämtdagen utan påhittade nummer', () => {
-    expect(area('ojamn-mandag')).toMatchObject({ name: 'Dalsbyn, Finnbo m.fl.', day: 'Måndag', label: 'Ojämn vecka' })
-    expect(area('jamn-fredag')).toMatchObject({ name: 'Backa, Bondhyttan m.fl.', day: 'Fredag', label: 'Jämn vecka' })
+    expect(area('ojamn-mandag')).toMatchObject({ name: 'Dalsbyn, Finnbo m.fl.', day: 'Måndag, ojämn vecka' })
+    expect(area('jamn-fredag')).toMatchObject({ name: 'Backa, Bondhyttan m.fl.', day: 'Fredag, jämn vecka' })
+    expect(area('ojamn-mandag').label).toBeUndefined()
+    expect(built.index.addresses.find(([id]) => id === 'ojamn-mandag')?.[4]?.detail).toBe('Måndag, ojämn vecka')
     expect(area('ojamn-fredag').name).toBe('Dammhusviken, Fiskarbo m.fl.')
   })
 

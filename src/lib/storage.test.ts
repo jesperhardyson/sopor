@@ -154,6 +154,11 @@ describe('eget val av område', () => {
     expect(loadChoice('avesta', 'Kungsgatan 12')).toBeUndefined()
   })
 
+  it('sparar också ett val från ett område utan etikett', () => {
+    rememberChoice({ sourceId: 'sater', street: 'Kungsgatan 12', areaId: 'ojamn-mandag', day: 'Måndag, ojämn vecka' })
+    expect(loadChoice('sater', 'Kungsgatan 12')).toMatchObject({ areaId: 'ojamn-mandag', day: 'Måndag, ojämn vecka' })
+  })
+
   it('flyttar val från det gamla området vid ett byte', () => {
     rememberChoice(choice)
     moveChoices('avesta', 'trakt-7', { id: 'trakt-1', label: 'Trakt 1', day: 'Måndag, udda vecka' })

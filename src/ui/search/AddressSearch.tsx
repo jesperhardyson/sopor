@@ -334,9 +334,7 @@ export function AddressSearch({
         </span>
         <span className="flex min-w-0 flex-1 flex-col items-start gap-1">
           <span className="text-base font-extrabold text-text">{picker.street}</span>
-          <span className="text-sm text-text-2">
-            {choice.label} · {choice.day}
-          </span>
+          <span className="text-sm text-text-2">{choice.label ? `${choice.label} · ${choice.day}` : choice.day}</span>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-warn-bg px-2.5 py-0.5 text-[13px] font-extrabold text-warn">
             <UserCheck className="size-3.5" aria-hidden />
             Ditt val, inte från {getSource(picker.sourceId)?.name ?? picker.kommun}
