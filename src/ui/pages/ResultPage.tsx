@@ -93,7 +93,7 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
   if (fetched === null || state.status === 'missing') {
     return (
       <div className={page}>
-        <BackLink />
+        <BackLink area={byArea} sourceId={sourceId} />
         <NotFound suggestions={[]} />
         <AddressSearch />
       </div>

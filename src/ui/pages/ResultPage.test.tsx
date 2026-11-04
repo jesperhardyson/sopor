@@ -357,6 +357,13 @@ describe('ResultPage för ett område', () => {
     })
   }
 
+  it('länkar ett okänt id till områdeslistan', async () => {
+    fake = areaProvider({ getAddress: async () => null, getSchedule: async () => null })
+    renderAt('/avesta/trakt-99')
+    expect(await screen.findByRole('link', { name: 'Byt område' })).toHaveAttribute('href', '/avesta/omraden')
+    expect(screen.queryByRole('link', { name: 'Byt adress' })).not.toBeInTheDocument()
+  })
+
   it('visar Byt område med länk till områdeslistan', async () => {
     fake = areaProvider()
     renderAt('/avesta/trakt-7')
