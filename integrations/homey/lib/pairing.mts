@@ -35,6 +35,9 @@ export function searchOutcome(search: SoporSearch, place: string): { result: Sea
   return { result: search.failed.length ? 'failed' : 'none', hits }
 }
 
+/** Källornas varningar om områdesval, varje text en gång. */
+export const notices = (hits: SoporSearchHit[]): string[] => [...new Set(hits.flatMap((hit) => hit.notice ?? []))]
+
 export const placeKey = (hit: SoporSearchHit) => `${hit.locality}|${hit.kommun}`
 
 /** Orterna bland träffarna, flest träffar först. */

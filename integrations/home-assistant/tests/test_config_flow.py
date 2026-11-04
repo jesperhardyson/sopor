@@ -154,3 +154,59 @@ async def test_ingen_traff_utan_kommunlista_ger_not_found(hass, aioclient_mock):
     # /kallor hämtas bara en gång under flödets sökning, även vid misslyckande
     kallor = [c for c in aioclient_mock.mock_calls if str(c[1]).endswith("/kallor")]
     assert len(kallor) == 1
+
+
+def _omrade(notice: str = "Kontrollera att området stämmer."):
+    return {
+        "id": "trakt-7",
+        "street": "Avesta tätort",
+        "locality": "",
+        "kommun": "Avesta kommun",
+        "source": "avesta",
+        "detail": "Tisdag, jämn vecka · Trakt 7",
+        "url": f"{BASE_URL}/adress/avesta/trakt-7",
+        "selection": "area",
+        "notice": notice,
+    }
+
+
+async def test_adresser_utan_notice_far_steget_adress(hass, aioclient_mock):
+    _mocka(aioclient_mock, "Storgatan 2")
+    result = await _sok(hass, "Storgatan 2, Uppsala")
+    assert result["step_id"] == "adress"
+    assert "notice" not in (result["description_placeholders"] or {})
+
+
+async def test_omrade_visar_notice_en_gang_i_blandad_lista(hass, aioclient_mock):
+    adress = SOK["addresses"][0]
+    search = {"addresses": [adress, _omrade(), {**_omrade(), "id": "trakt-8"}], "failed": []}
+    _mocka(aioclient_mock, "Stallgatan", search)
+    result = await _sok(hass, "Stallgatan")
+    assert result["step_id"] == "adress_omrade"
+    assert result["description_placeholders"]["notice"] == "Kontrollera att området stämmer."
+    assert len(_val(result)) == 3
+
+
+async def test_val_efter_notice_skapar_post_utan_notice(hass, aioclient_mock):
+    _mocka(aioclient_mock, "Avesta", {"addresses": [_omrade()], "failed": []})
+    result = await _sok(hass, "Avesta tätort")
+    result = await hass.config_entries.flow.async_configure(result["flow_id"], {"adress": "avesta/trakt-7"})
+    assert result["type"] is FlowResultType.CREATE_ENTRY
+    assert "notice" not in result["data"]
+
+
+async def test_notice_efter_val_av_ort_galler_bara_den_ortens_traffar(hass, aioclient_mock):
+    gator = [{**_omrade(), "id": f"trakt-{i}", "kommun": "Avesta kommun"} for i in range(13)]
+    adress = {**SOK["addresses"][0], "notice": None}
+    _mocka(aioclient_mock, "Storgatan", {"addresses": [*gator, adress], "failed": []})
+    result = await _sok(hass, "Storgatan")
+    assert result["step_id"] == "ort"
+    result = await hass.config_entries.flow.async_configure(result["flow_id"], {"ort": "Uppsala|Uppsala kommun"})
+    assert result["step_id"] == "adress"
+
+
+def test_stegets_oversattningar_visar_notice():
+    for lang in ("sv", "en"):
+        path = Path(__file__).parents[3] / "custom_components/sopor/translations" / f"{lang}.json"
+        step = json.loads(path.read_text(encoding="utf-8"))["config"]["step"]["adress_omrade"]
+        assert "{notice}" in step["description"]

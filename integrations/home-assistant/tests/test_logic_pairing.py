@@ -6,6 +6,7 @@ from custom_components.sopor.logic import (
     hit_title,
     kommun_names,
     not_found_error,
+    notice_text,
     parse_query,
     place_covered,
     place_key,
@@ -154,3 +155,19 @@ def test_not_found_error():
     assert not_found_error("", names) == "not_found"
     assert not_found_error("Uppsala", names) == "not_found_covered"
     assert not_found_error("Kiruna", names) == "not_found_elsewhere"
+
+
+def _traff(notice):
+    return {"source": "x", "id": "y", "street": "Trakt 1", "locality": "", "kommun": "Avesta kommun", "notice": notice}
+
+
+def test_notice_text_tom_utan_notice():
+    assert notice_text([_traff(None)]) == ""
+
+
+def test_notice_text_samma_text_en_gang_ocksa_i_blandad_lista():
+    assert notice_text([_traff(None), _traff("Avesta"), _traff("Avesta")]) == "Avesta"
+
+
+def test_notice_text_varje_kallas_egen_text_i_listans_ordning():
+    assert notice_text([_traff("Avesta"), _traff("Säter")]) == "Avesta\n\nSäter"

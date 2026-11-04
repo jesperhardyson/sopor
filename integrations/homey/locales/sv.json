@@ -13,7 +13,9 @@
     "notFoundCovered": "Ingen adress hittades i __place__. Kontrollera stavningen och husnumret. I Avesta söker du på område, till exempel Avesta tätort.",
     "notFoundElsewhere": "Ingen adress hittades i __place__. Kontrollera att kommunen finns med.",
     "coverage": "Sopor finns i __count__ kommuner.",
-    "coverageLink": "Se vilka"
+    "coverageLink": "Se vilka",
+    "noticeIntro": "Läs det här innan du väljer",
+    "continue": "Fortsätt"
   },
   "device": {
     "gone": "Adressen finns inte längre hos källan. Reparera eller ta bort enheten.",

@@ -26,6 +26,13 @@
           "adress": "Adress"
         }
       },
+      "adress_omrade": {
+        "title": "Välj område eller adress",
+        "description": "Välj området eller adressen där sopor hämtas.\n\n{notice}",
+        "data": {
+          "adress": "Område eller adress"
+        }
+      },
       "user_utan_antal": {
         "title": "Lägg till adress",
         "description": "Sök adressen där sopor hämtas.\n\nSkriv gata och husnummer. Lägg till orten efter ett kommatecken för färre träffar, till exempel Storgatan 2, Uppsala.\n\nSopor täcker flera svenska kommuner. [Se vilka]({kommuner_url})",

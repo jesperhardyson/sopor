@@ -13,6 +13,8 @@ export interface SoporAddress {
 
 export interface SoporSearchHit extends SoporAddress {
   url: string
+  /** Vad vi inte vet om träffen, att visa före valet. Bara på svenska. null för en vanlig adress. */
+  notice: string | null
 }
 
 export interface SoporSearch {
