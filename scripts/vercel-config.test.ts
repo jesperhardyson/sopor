@@ -122,12 +122,12 @@ describe('vercel.json', () => {
       for (const p of ['/api/v1/docs/', '/api/v1/kallor', '/ics/uppsala/x.ics', '/data/orter.json']) expect(re.test(p)).toBe(false)
     })
 
-    it('tillåter temaskriptet i index.html, och bara det, med dess hash', () => {
+    it('tillåter tema- och textskriptet i index.html, och bara dem, med deras hashar', () => {
       const html = readFileSync(path.resolve(import.meta.dirname, '../index.html'), 'utf8')
       const inline = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => m[1])
-      expect(inline).toHaveLength(1)
-      const hash = createHash('sha256').update(inline[0]).digest('base64')
-      expect(csp).toContain(`script-src 'self' 'sha256-${hash}'`)
+      expect(inline).toHaveLength(2)
+      const hashes = inline.map((code) => `'sha256-${createHash('sha256').update(code).digest('base64')}'`)
+      expect(csp).toContain(`script-src 'self' ${hashes.join(' ')};`)
       expect(csp).not.toContain("script-src 'self' 'unsafe-inline'")
     })
 
