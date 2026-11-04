@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import { readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
@@ -80,6 +81,38 @@ describe('vercel.json', () => {
 
   it('tillåter alla ursprung för API-beskrivningen', () => {
     expect(header('/api/v1/openapi.json', 'Access-Control-Allow-Origin')).toBe('*')
+  })
+
+  it('skickar säkerhetsheaders för alla svar', () => {
+    expect(header('/(.*)', 'X-Content-Type-Options')).toBe('nosniff')
+    expect(header('/(.*)', 'Referrer-Policy')).toBe('strict-origin-when-cross-origin')
+    expect(header('/(.*)', 'Permissions-Policy')).toBe('camera=(), microphone=(), geolocation=()')
+  })
+
+  describe('Content-Security-Policy', () => {
+    const rule = config.headers.find((h) => h.headers?.some((x) => x.key === 'Content-Security-Policy'))!
+    const csp = rule.headers!.find((h) => h.key === 'Content-Security-Policy')!.value
+
+    it('gäller appens sidor men inte API-dokumentationen, som hämtar Scalar från ett CDN', () => {
+      const re = new RegExp(`^${rule.source}$`)
+      for (const p of ['/', '/om', '/uppsala/storgatan-2_uppsala-4004688']) expect(re.test(p)).toBe(true)
+      for (const p of ['/api/v1/docs/', '/api/v1/kallor', '/ics/uppsala/x.ics', '/data/orter.json']) expect(re.test(p)).toBe(false)
+    })
+
+    it('tillåter temaskriptet i index.html, och bara det, med dess hash', () => {
+      const html = readFileSync(path.resolve(import.meta.dirname, '../index.html'), 'utf8')
+      const inline = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => m[1])
+      expect(inline).toHaveLength(1)
+      const hash = createHash('sha256').update(inline[0]).digest('base64')
+      expect(csp).toContain(`script-src 'self' 'sha256-${hash}'`)
+      expect(csp).not.toContain("script-src 'self' 'unsafe-inline'")
+    })
+
+    it('låser sidan till egna filer och kan inte bäddas in', () => {
+      for (const part of ["default-src 'self'", "connect-src 'self'", "object-src 'none'", "base-uri 'self'", "frame-ancestors 'none'"]) {
+        expect(csp).toContain(part)
+      }
+    })
   })
 })
 
