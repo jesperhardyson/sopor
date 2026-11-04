@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes, useParams } from 'react-router'
 import { describe, expect, it, vi } from 'vitest'
@@ -292,7 +292,8 @@ describe('AddressSearch', () => {
     await userEvent.clear(input)
     await userEvent.type(input, 'Storgatan 12, Hedemora{Enter}')
     await screen.findByRole('heading', { name: 'Vi finns inte i Hedemora kommun än' })
-    expect(reportMissingKommun).toHaveBeenCalledWith(['Hedemora kommun'])
+    // Rapporten körs i en effekt, som kan komma först efter att rubriken syns
+    await waitFor(() => expect(reportMissingKommun).toHaveBeenCalledWith(['Hedemora kommun']))
   })
 
   it('räknar upp kommunerna när orten ligger i flera', async () => {
