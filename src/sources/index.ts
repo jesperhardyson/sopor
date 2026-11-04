@@ -7,7 +7,7 @@ export interface Kommun {
 }
 
 /** Hur källans data hämtas. Ny leverantör = ny variant här + ny provider. */
-export type SourceConfig = { system: 'static' } | { system: 'edp'; baseUrl: string } | { system: 'svoa' } | { system: 'vasyd' } | { system: 'nsr' } | { system: 'srv' } | { system: 'appbolaget'; unit: string }
+export type SourceConfig = { system: 'static' } | { system: 'edp'; baseUrl: string } | { system: 'svoa' } | { system: 'vasyd' } | { system: 'nsr' } | { system: 'srv' } | { system: 'appbolaget'; unit: string } | { system: 'uddevalla' }
 
 /**
  * En datakälla för hämtschema, oftast ett avfallsbolag eller en kommun. En källa kan täcka
@@ -314,6 +314,14 @@ export const ALL_SOURCES: Source[] = [
     url: 'https://hassleholmmiljo.se',
     kommuner: [{ code: '1293', name: 'Hässleholms kommun' }],
     config: { system: 'appbolaget', unit: 'e34d7050-1b2a-4917-a921-0ea7742d0a6e' },
+  },
+  {
+    // Ingen EDP: den publika sökningen på uddevallaenergi.se (src/server/uddevalla.ts). Bara nästa tömning per kärl.
+    id: 'uddevalla',
+    name: 'Uddevalla Energi',
+    url: 'https://www.uddevallaenergi.se',
+    kommuner: [{ code: '1485', name: 'Uddevalla kommun' }],
+    config: { system: 'uddevalla' },
   },
 ]
 
