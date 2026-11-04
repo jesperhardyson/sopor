@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -61,6 +62,15 @@ describe('renderKommunHtml', () => {
     const out = renderKommunHtml(template, page)
     expect(out).toContain('$&amp; Ort')
     expect(out).not.toContain('</script><b>')
+  })
+})
+
+describe('CSP', () => {
+  it('tillåter temaskriptet i en färdig kommunsida', () => {
+    const config = JSON.parse(readFileSync(path.join(root, 'vercel.json'), 'utf8')) as { headers: { headers: { key: string; value: string }[] }[] }
+    const csp = config.headers.flatMap((h) => h.headers).find((h) => h.key === 'Content-Security-Policy')!.value
+    const inline = renderKommunHtml(template, uppsala).match(/<script>([\s\S]*?)<\/script>/)![1]
+    expect(csp).toContain(`'sha256-${createHash('sha256').update(inline).digest('base64')}'`)
   })
 })
 

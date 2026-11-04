@@ -32,7 +32,9 @@ self.addEventListener('fetch', (event) => {
 async function page(request) {
   const cache = await caches.open(SHELL)
   const network = fetch(request).then((res) => {
-    if (res.ok && res.headers.get('Content-Type')?.startsWith('text/html')) void cache.put('/', res.clone())
+    // Kommunsidorna har eget innehåll i HTML:en och duger inte som appens skal
+    const shell = !new URL(request.url).pathname.startsWith('/kommuner')
+    if (shell && res.ok && res.headers.get('Content-Type')?.startsWith('text/html')) void cache.put('/', res.clone())
     return res
   })
   const timeout = new Promise((resolve) => setTimeout(resolve, NETWORK_TIMEOUT_MS))
