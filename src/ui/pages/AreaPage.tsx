@@ -1,20 +1,17 @@
 import { ArrowLeft, ArrowRight, CalendarSearch, ChevronRight, Search } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router'
-import type { AreasIndexFile } from '@/data/static-format'
 import { searchAddresses } from '@/domain/search'
 import { todayInStockholm } from '@/domain/dates'
 import type { Address, Area } from '@/domain/types'
-import { providerFor } from '@/providers/registry'
 import { getSource, type Source } from '@/sources'
+import { useAreas } from '../hooks/useAreas'
 import { usePageTitle } from '../hooks/usePageTitle'
 import { ErrorState, UnsupportedState } from '../result/ResultStates'
 import { AreaFinderSheet } from '../sheets/AreaFinderSheet'
 
 const page = 'mx-auto flex w-full max-w-[920px] flex-col gap-5 px-5 pt-1 pb-8 md:px-8 md:pt-4 lg:gap-7 lg:px-0 lg:pb-20'
 const MAX_PLACES = 5
-
-type State = { status: 'loading' } | { status: 'error' } | { status: 'ready'; index: AreasIndexFile }
 
 function BackLink() {
   return (
@@ -23,25 +20,6 @@ function BackLink() {
       Tillbaka
     </Link>
   )
-}
-
-export function useAreas(source: Source | undefined): [State, () => void] {
-  const [state, setState] = useState<State>({ status: 'loading' })
-  const [attempt, setAttempt] = useState(0)
-  useEffect(() => {
-    const list = source && providerFor(source).listAreas
-    if (!source || !list) return
-    let active = true
-    setState({ status: 'loading' })
-    list.call(providerFor(source)).then(
-      (index) => active && setState({ status: 'ready', index }),
-      () => active && setState({ status: 'error' }),
-    )
-    return () => {
-      active = false
-    }
-  }, [source, attempt])
-  return [state, () => setAttempt((a) => a + 1)]
 }
 
 /** Områdena som adresser, så att filtret kan använda samma sökning som adressfälten. */
