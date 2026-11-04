@@ -4,8 +4,10 @@ import {
   buildMunicipality,
   DataError,
   parseAddressesCsv,
+  parseAreasFile,
   parseSchedulesFile,
   type AddressRow,
+  type AreasFile,
   type SchedulesFile,
 } from './static-format'
 
@@ -139,3 +141,146 @@ describe('buildMunicipality', () => {
     expect(ics).toContain('DTSTART;VALUE=DATE:20270113')
   })
 })
+
+const areaJson = (over: Record<string, unknown> = {}) => ({
+  explanation: 'Förklaring',
+  help: 'Hjälp',
+  areas: [
+    {
+      id: 'trakt-7',
+      name: 'Avesta tätort, Östanfors m.fl.',
+      day: 'Tisdag, jämn vecka',
+      label: 'Trakt 7',
+      schedule: 'trakt-7',
+      places: ['Avesta tätort', 'Östanfors'],
+      streets: ['Garpenbergsvägen', 'Östanfors'],
+      searchTerms: ['trakt 7'],
+      otherDays: ['Till exempel Stallgatan (måndag, udda vecka).'],
+      ...over,
+    },
+  ],
+})
+
+describe('parseAreasFile', () => {
+  it('godkänner en giltig fil', () => {
+    const file = parseAreasFile(areaJson(), 'o.json')
+    expect(file.areas[0].id).toBe('trakt-7')
+    expect(file.help).toBe('Hjälp')
+  })
+
+  it('stoppar vid tomt name', () => {
+    expect(() => parseAreasFile(areaJson({ name: ' ' }), 'o.json')).toThrow(DataError)
+    expect(() => parseAreasFile(areaJson({ name: '' }), 'o.json')).toThrow(/o\.json.*trakt-7.*name/)
+  })
+
+  it('stoppar när schedule saknas', () => {
+    expect(() => parseAreasFile(areaJson({ schedule: undefined }), 'o.json')).toThrow(/schedule/)
+  })
+
+  it('stoppar vid dubbla id', () => {
+    const json = areaJson()
+    json.areas.push({ ...json.areas[0] })
+    expect(() => parseAreasFile(json, 'o.json')).toThrow(/dubblett.*trakt-7/i)
+  })
+
+  it('stoppar när id är "omraden"', () => {
+    expect(() => parseAreasFile(areaJson({ id: 'omraden' }), 'o.json')).toThrow(/omraden/)
+  })
+
+  it('stoppar när listorna saknas', () => {
+    expect(() => parseAreasFile(areaJson({ places: 'Avesta' }), 'o.json')).toThrow(/places/)
+  })
+})
+
+describe('buildMunicipality med områden', () => {
+  const schedules = (year: number, over: Record<string, string[]> = {}): SchedulesFile =>
+    parseSchedulesFile(
+      schedulesJson({
+        year,
+        validFrom: `${year}-01-01`,
+        validTo: `${year + 1}-01-10`,
+        schedules: {
+          'trakt-7': { name: 'Trakt 7', events: (over['trakt-7'] ?? [`${year}-11-10`, `${year}-11-24`]).map((date) => ({ date, fractions: ['mat'] })) },
+          'trakt-8': { name: 'Trakt 8', events: (over['trakt-8'] ?? [`${year}-11-11`]).map((date) => ({ date, fractions: ['mat'] })) },
+        },
+      }),
+      `${year}.json`,
+    )
+  const areas = (parseAreasFile(areaJson(), 'o.json') as AreasFile)
+
+  it('gör ett område till en indexrad med detail och sökord utan dubbletter', () => {
+    const out = buildMunicipality([{ year: 2026, schedules: schedules(2026), addresses: [], areas }], avesta)
+    expect(out.index.addresses).toEqual([
+      [
+        'trakt-7',
+        'Avesta tätort, Östanfors m.fl.',
+        '',
+        ['2026-trakt-7'],
+        {
+          detail: 'Tisdag, jämn vecka · Trakt 7',
+          searchTerms: ['Avesta tätort', 'Östanfors', 'Garpenbergsvägen', 'trakt 7'],
+        },
+      ],
+    ])
+  })
+
+  it('ger områdesfilen med sökord och sammanslagna, sorterade datum från båda åren', () => {
+    const out = buildMunicipality(
+      [
+        { year: 2027, schedules: schedules(2027), addresses: [], areas },
+        { year: 2026, schedules: schedules(2026), addresses: [], areas },
+      ],
+      avesta,
+    )
+    expect(out.areas).toEqual({
+      explanation: 'Förklaring',
+      help: 'Hjälp',
+      areas: [
+        {
+          id: 'trakt-7',
+          name: 'Avesta tätort, Östanfors m.fl.',
+          day: 'Tisdag, jämn vecka',
+          label: 'Trakt 7',
+          places: ['Avesta tätort', 'Östanfors'],
+          otherDays: ['Till exempel Stallgatan (måndag, udda vecka).'],
+          searchTerms: ['Avesta tätort', 'Östanfors', 'Garpenbergsvägen', 'trakt 7'],
+          dates: ['2026-11-10', '2026-11-24', '2027-11-10', '2027-11-24'],
+        },
+      ],
+    })
+    expect(out.index.addresses[0][3]).toEqual(['2026-trakt-7', '2027-trakt-7'])
+  })
+
+  it('stoppar när ett datum finns i två områdens scheman', () => {
+    const two: AreasFile = parseAreasFile(
+      { ...areaJson(), areas: [areaJson().areas[0], { ...areaJson().areas[0], id: 'trakt-8', schedule: 'trakt-8' }] },
+      'o.json',
+    )
+    const s = schedules(2026, { 'trakt-8': ['2026-11-24'] })
+    expect(() => buildMunicipality([{ year: 2026, schedules: s, addresses: [], areas: two }], avesta)).toThrow(
+      /2026-11-24/,
+    )
+  })
+
+  it('stoppar när ett område pekar på ett schema som saknas', () => {
+    const bad = parseAreasFile(areaJson({ schedule: 'finns-inte' }), 'o.json')
+    expect(() => buildMunicipality([{ year: 2026, schedules: schedules(2026), addresses: [], areas: bad }], avesta)).toThrow(
+      /finns-inte/,
+    )
+  })
+
+  it('bygger .ics med område-id i UID', () => {
+    const out = buildMunicipality([{ year: 2026, schedules: schedules(2026), addresses: [], areas }], avesta)
+    expect(out.ics.map((i) => i.addressId)).toEqual(['trakt-7'])
+    expect(out.ics[0].content).toContain('UID:trakt-7-2026-11-10@sopor.hardyson.se')
+  })
+
+  it('ger ingen areas-fil utan områden', () => {
+    const out = buildMunicipality([{ year: 2026, schedules: y(), addresses: [] }], avesta)
+    expect(out.areas).toBeUndefined()
+  })
+})
+
+function y(): SchedulesFile {
+  return parseSchedulesFile(schedulesJson(), 'y.json')
+}

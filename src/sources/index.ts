@@ -29,6 +29,11 @@ export interface Source {
    */
   postorter?: Record<string, string>
   config: SourceConfig
+  /**
+   * Hur användaren väljer i källans data: `address` (standard) eller `area`, när källan bara
+   * publicerar scheman per område och ingen tabell från adress till område finns.
+   */
+  selection?: 'address' | 'area'
   /** Påhittad data (seed). Ta bort när riktig data finns. */
   testData?: boolean
   /** Visas inte på sajten: inte i sökning, på Om-sidan, i API:t eller i byggd data. Datan valideras ändå vid build. */

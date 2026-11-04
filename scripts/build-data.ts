@@ -5,7 +5,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { buildKommunPages } from '../src/data/kommun-pages'
-import { buildMunicipality, DataError, parseAddressesCsv, parseSchedulesFile } from '../src/data/static-format'
+import { buildMunicipality, DataError, parseAddressesCsv, parseAreasFile, parseSchedulesFile } from '../src/data/static-format'
 import { buildStreetIndex, type OsmKommun } from '../src/data/street-index'
 import { buildPlaceLookup, type SwedenPlacesFile } from '../src/data/sweden-places'
 import { ALL_SOURCES, SOURCES } from '../src/sources/index.js'
@@ -23,6 +23,11 @@ export function readYears(municipalityDir: string) {
         JSON.parse(fs.readFileSync(path.join(dir, 'schedules.json'), 'utf8')),
         rel('schedules.json'),
       )
+      // omraden.json ersätter addresses.csv för källor där användaren väljer område.
+      if (fs.existsSync(path.join(dir, 'omraden.json'))) {
+        const areas = parseAreasFile(JSON.parse(fs.readFileSync(path.join(dir, 'omraden.json'), 'utf8')), rel('omraden.json'))
+        return { year: Number(name), schedules, addresses: [], areas }
+      }
       const addresses = parseAddressesCsv(fs.readFileSync(path.join(dir, 'addresses.csv'), 'utf8'), rel('addresses.csv'))
       return { year: Number(name), schedules, addresses }
     })
@@ -74,7 +79,7 @@ function main() {
     const dataOut = path.join(root, 'public', 'data', municipality.id)
     const icsOut = path.join(root, 'public', 'ics', municipality.id)
 
-    const { index, scheduleFiles, ics } = buildMunicipality(readYears(dataDir), municipality)
+    const { index, areas, scheduleFiles, ics } = buildMunicipality(readYears(dataDir), municipality)
 
     fs.rmSync(dataOut, { recursive: true, force: true })
     fs.rmSync(icsOut, { recursive: true, force: true })
@@ -84,6 +89,7 @@ function main() {
       continue
     }
     writeFile(path.join(dataOut, 'addresses.json'), JSON.stringify(index))
+    if (areas) writeFile(path.join(dataOut, 'omraden.json'), JSON.stringify(areas))
     for (const s of scheduleFiles) writeFile(path.join(dataOut, 'schedules', `${s.id}.json`), JSON.stringify(s))
     for (const i of ics) writeFile(path.join(icsOut, `${i.addressId}.ics`), i.content)
 
