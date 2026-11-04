@@ -43,7 +43,7 @@ Reglerna gäller startsidans sökning och kommunsidan för Avesta. De prövas i 
 | Områdets namn, ort eller "trakt N" | "Avesta tätort", "Östanfors", "trakt 7" | Områdesträff |
 | Namn som finns i flera områden | "Backa" | En träff per område, med raden "Backa ingår i området" |
 | Gata som står i ett områdes lista, med eller utan nummer | "Stallgatan", "Stallgatan 5" | Områdesträff |
-| Annan känd gata i Avesta, hel gata eller med nummer | "Kungsgatan", "Kungsgatan 12" | Raden "Välj område i Avesta" |
+| Annan känd gata i Avesta, hel gata eller med nummer | "Kungsgatan", "Kungsgatan 12" | Raden "Välj område i Avesta". Finns områdesträffar visas i stället raden "Se alla områden i Avesta" under dem. |
 | Okänd gata med Avesta som plats | "Okändgatan 3, Avesta" | Raden "Välj område i Avesta" |
 | Halvskrivet gatunamn | "Kungsg" | Ingen rad för Avesta, tills gatan är hel eller har nummer |
 | Gata som inte finns i Avesta | "Hornsgatan 1" | Som i dag |
@@ -89,11 +89,13 @@ Regel 1 i `AGENTS.md` gäller: UI:t vet bara att det finns områden, inte att de
       "otherDays": ["Till exempel Stallgatan och Storbogatan (måndag, udda vecka) och Bodgatan (onsdag, jämn vecka)."]
     }
   ],
-  "explanation": "Avesta Vatten publicerar sophämtningen per område, men inte vilka adresser som hör till vilket område."
+  "explanation": "Avesta Vatten publicerar sophämtningen per område, men inte vilka adresser som hör till vilket område.",
+  "help": "Osäker? Fråga Avesta Vatten på 0226-64 55 00."
 }
 ```
 
-- `data/avesta/2026/schedules.json` ersätts med PDF:ens riktiga datum och fraktioner, och `source` anger PDF:en och dess version.
+- `data/avesta/2026/schedules.json` ersätts med PDF:ens riktiga datum och fraktioner från 2026-09-01, och `source` anger PDF:en och dess version. Omärkta datum blir bara matavfall, enligt PDF:ens text. Tidigare datum läggs inte in, eftersom PDF:en inte visar vilka fraktioner som hämtades då.
+- `omraden.json` ersätter `addresses.csv` för källor med område.
 - PDF:ens förkortningar skrivs ut ("Stallg." blir "Stallgatan"). De som inte går att bekräfta i OpenStreetMap kontrolleras mot kartan för hand och behåller annars PDF:ens stavning. Vid kontrollen 2026-11-04 saknades bland annat Ryttargatan, Gammelsängsvägen, Skultbacken, Skillingränd och Konsjövägen i OSM-datan.
 - `Source` får `selection?: 'address' | 'area'`, med `address` som standard.
 - Byggskriptet gör ett område till en rad i `addresses.json`: `id`, `street` = områdets namn, `locality` = tom, plus de nya valfria fälten `detail` och `searchTerms`. `detail` blir "Tisdag, jämn vecka · Trakt 7".
@@ -135,7 +137,7 @@ En adress i Avesta som inte står i områdeslistan ger inga träffar i `/sok`. H
 - **Sidor:** Välj område, arket Hitta område och resultatsidan, med tangentbord och skärmläsare för arket.
 - **API:** kontraktstest mot `openapi.json`, `/sok` med område och `/adress` och ICS för `trakt-7`.
 - **Integrationer:** Homey och Home Assistant med ett område som träff, och hjälptexten vid tom sökning.
-- **Testdata:** tester som använder Avestas påhittade adresser via `src/test/show-hidden-sources.ts` flyttas till en egen testkälla.
+- **Testdata:** tester som läser Avestas datafiler uppdateras till riktiga data. Tester som mockar `fetch` får behålla sina påhittade id:n.
 
 ## Lansering
 
