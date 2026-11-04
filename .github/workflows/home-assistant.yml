@@ -8,6 +8,7 @@ on:
       - 'integrations/home-assistant/**'
       - 'hacs.json'
       - '.github/workflows/home-assistant.yml'
+      - '.github/workflows/homey-release.yml'
   pull_request:
     paths: *paths
   # Rökprov mot produktions-API:t varje natt, så att en API-ändring som bryter integrationen märks direkt

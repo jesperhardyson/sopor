@@ -3,6 +3,8 @@ name: Homey-appen, release
 # Startas av en tagg från `npm run release` i integrations/homey, till exempel homey-v0.4.2.
 # Laddar upp ett utkast till Athom. Testversion och publicering görs sedan för hand
 # på tools.developer.homey.app, så att inget når användarna utan ett aktivt beslut.
+# Skapar också en GitHub-release med ändringsloggen. Den måste vara en förhandsversion: HACS tar den
+# första releasen som inte är utkast eller förhandsversion, och läser inte flaggan Latest.
 
 on:
   push:
@@ -44,3 +46,18 @@ jobs:
             exit 1
           fi
           npx homey app publish
+
+  github-release:
+    needs: upload
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+      - name: Skapa GitHub-releasen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION=$(jq -r .version .homeycompose/app.json)
+          jq -e -r --arg v "$VERSION" '.[$v] | "\(.sv)\n\n\(.en)"' .homeychangelog.json > "$RUNNER_TEMP/notes.md"
+          gh release create "$GITHUB_REF_NAME" --verify-tag --prerelease --title "Homey $VERSION" --notes-file "$RUNNER_TEMP/notes.md"
