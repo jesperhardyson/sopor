@@ -73,6 +73,7 @@ Ordnade efter invånare. Varje rad är en egen spec och plan som `stockholm` och
 | 4 | **Appbolaget** (klar, `docs/specs/2026-11-03-appbolaget.md`) | Kristianstad, Hässleholm | 138 000 | 1,3 % | JSON, `api-universal.appbolaget.se/waste/…` |
 | 5 | **Uddevalla Energi** (klar, `docs/specs/2026-11-04-uddevalla.md`). ~~Rambo~~ hoppas över, beslut 6 | Uddevalla (Lysekil, Sotenäs, Munkedal och Tanum går till fas 5) | 56 000 | 0,5 % | JSON, `app.uddevallaenergi.se/wp-json/app/`. Bara nästa tömning per kärl |
 | 6 | **Roslagsvatten** (klar, `docs/specs/2026-11-04-roslagsvatten.md`) | Österåker, Ekerö, Vaxholm | 91 000 | 0,9 % | HTML i JSON, `POST roslagsvatten.se/schedule/search` och `/schedule/fetch` |
+| 7 | **Borlänge Energi** (klar, `docs/specs/2026-11-04-borlange.md`). Hittades när Säter undersöktes, och stod tidigare felaktigt under skrapning i fas 4 | Borlänge | 51 000 | 0,5 % | JSON, `borlange-energi.se/appresource/…/getAdresses` och `/getcontainerdata`. Bara nästa tömning per kärl, utan årtal |
 
 **Insats:** en källtyp i taget, som VA Syd. **Vinst:** cirka 1,1 miljoner invånare, **täckningen går från 33 % till cirka 44 %.** Utan Avfallsapp/Nova blir det cirka 950 000 och 42 %.
 
@@ -99,7 +100,6 @@ Beslut 2026-11-03: Sopor skrapar inte webbsidor. Sidorna ändras utan förvarnin
 |---|---|---|
 | Självservice (`sjalvservice.kungsbacka.se`, `sjalvservice.nvaa.se`) | Kungsbacka, Norrtälje | 152 000 |
 | Falu Energi & Vatten | Falun | 60 000 |
-| Borlänge Energi (Sitevision) | Borlänge | 51 000 |
 | Hudiksvall, Västervik (VMEAB), Ronneby, Hedemora, Älvsbyn | | cirka 130 000 |
 | Indecta- och "kalender"-PHP (Nårab, SÅM, VMAB) | flera små | – |
 

@@ -7,6 +7,8 @@ describe('mapWasteType', () => {
     ['RESTAVFALL', 'rest'],
     ['Matavfall', 'mat'],
     ['Pappersförp.', 'papper'],
+    // Borlänge Energi har ett eget kärl för wellpapp.
+    ['Wellpapp', 'papper'],
     ['Plastförp.', 'plast'],
     ['Glasförp.färg', 'glas'],
     ['Glasförp.ofärg', 'glas'],

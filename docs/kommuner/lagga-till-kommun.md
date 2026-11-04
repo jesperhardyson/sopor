@@ -75,6 +75,8 @@ Uddevalla Energi (`src/server/uddevalla.ts`, spec `docs/specs/2026-11-04-uddeval
 
 Roslagsvatten (`src/server/roslagsvatten.ts`, spec `docs/specs/2026-11-04-roslagsvatten.md`) är exemplet på en källa vars svar är HTML i JSON, med kommunen i varje anrop och därför en källa per kommun. Frekvenstexten går genom `edpRule`, men bara för kärl som har ett datum hos källan. Kontrollera vad ett tomt datum betyder: på Ekerö är det fyrfackskärl som inte har börjat tömmas.
 
+Borlänge Energi (`src/server/borlange.ts`, spec `docs/specs/2026-11-04-borlange.md`) är exemplet på en källa vars datum saknar årtal, och vars schema kräver adresstexten exakt. Årtalet går att läsa ut ur veckodagen, eftersom samma dag aldrig har samma veckodag tre år i rad. Kontrollera vad fel text ger: här blir det en tom lista, inte ett fel, så texten måste komma oförändrad från sökningen.
+
 - [ ] En klient i `src/server/<system>.ts` med sökning, schema och adress-id, testad mot sparade svar i `src/server/__fixtures__/`. Okänd form på svaret kastar `SourceError`, aldrig en tom lista.
 - [ ] En ny variant i `SourceConfig` och en gren i `searchLiveSource` (`src/server/handlers.ts`) och `lookupAddress` (`src/server/lookup.ts`). Ett id som inte längre ger träff ska ge 502, inte 404, så att kalenderprenumerationer inte töms.
 - [ ] En kontroll i bevakningen (`scripts/source-checks.ts`) och en kontrolladress i `PROBES`.

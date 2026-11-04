@@ -1,0 +1,9 @@
+[
+ {"PickupCity":"Borlänge","PickupAddress":"Borganäsvägen 31","disposalDay":"Tömning torsdag 5 november","containerId":"694624001","contentType":"Plastförpackningar","hasMultipleCustomers":false},
+ {"PickupCity":"Borlänge","PickupAddress":"Borganäsvägen 31","disposalDay":"Tömning fredag 6 november","containerId":"553823001","contentType":"Matavfall","hasMultipleCustomers":false},
+ {"PickupCity":"Borlänge","PickupAddress":"Borganäsvägen 31","disposalDay":"Tömning fredag 6 november","containerId":"553822001","contentType":"Restavfall","hasMultipleCustomers":false},
+ {"PickupCity":"Borlänge","PickupAddress":"Borganäsvägen 31","disposalDay":"Tömning måndag 9 november","containerId":"694623001","contentType":"Pappersförpackningar","hasMultipleCustomers":false},
+ {"PickupCity":"Borlänge","PickupAddress":"Borganäsvägen 31","disposalDay":"Tömning måndag 9 november","containerId":"694627001","contentType":"Metallförpackningar","hasMultipleCustomers":false},
+ {"PickupCity":"Borlänge","PickupAddress":"Borganäsvägen 31","disposalDay":"Tömning fredag 27 november","containerId":"694625001","contentType":"Ofärgat glas","hasMultipleCustomers":false},
+ {"PickupCity":"Borlänge","PickupAddress":"Borganäsvägen 31","disposalDay":"Tömning fredag 27 november","containerId":"694626001","contentType":"Färgat glas","hasMultipleCustomers":false}
+]

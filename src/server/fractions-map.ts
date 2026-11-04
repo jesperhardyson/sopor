@@ -9,6 +9,8 @@ const PATTERNS: [RegExp, FractionId][] = [
   [/^brä(?:nnbart|$)/, 'rest'],
   [/^mat/, 'mat'],
   [/^papp/, 'papper'],
+  // Borlänge Energi har ett eget kärl för wellpapp, som är pappersförpackningar.
+  [/^wellpapp/, 'papper'],
   [/^plast/, 'plast'],
   [/^glas/, 'glas'],
   // NSR: "Färgat glas", "Ofärgat glas", "Blandglas"
