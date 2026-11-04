@@ -43,6 +43,7 @@ const files: Record<string, unknown> = {
     updatedAt: '2026-01-01',
     addresses: [
       ['trakt-7', 'Avesta tätort', '', ['2026-trakt-7'], { detail: 'Tisdag, jämn vecka · Trakt 7', searchTerms: ['Trakt 7', 'Stallgatan'] }],
+      ['trakt-3', 'Fors, Nordanö m.fl.', '', ['2026-trakt-3'], { detail: 'Onsdag, udda vecka · Trakt 3', searchTerms: ['Fors', 'Norr', 'Norr och Sör Nävde'] }],
     ],
   },
   '/data/avesta/schedules/2026-trakt-7.json': {
@@ -427,6 +428,18 @@ describe('områden som träffar', () => {
   it('kräver hela ord utan kalla och tillåter början av ord med kalla', async () => {
     expect((await (await search('q=stallg')).json()).addresses).toEqual([])
     expect((await (await search('q=stallg&kalla=avesta')).json()).addresses).toEqual([hit])
+  })
+
+  it('småord i områdens termer ger inga träffar, men övriga ord gör det', async () => {
+    for (const q of ['m%20fl', 'och']) {
+      expect((await (await search(`q=${q}`)).json()).addresses).toEqual([])
+      expect((await (await search(`q=${q}&kalla=avesta`)).json()).addresses).toEqual([])
+    }
+    const ids = async (q: string) => (await (await search(`q=${q}`)).json()).addresses.map((a: { id: string }) => a.id)
+    expect(await ids('Norr')).toEqual(['trakt-3'])
+    expect(await ids('Fors')).toEqual(['trakt-3'])
+    expect(await ids('Norr%20och%20S%C3%B6r%20N%C3%A4vde')).toEqual(['trakt-3'])
+    expect(await ids('Avesta%20t%C3%A4tort')).toEqual(['trakt-7'])
   })
 
   it('hittar gatan när frågan nämner Avesta, med och utan kalla', async () => {

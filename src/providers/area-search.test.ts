@@ -81,6 +81,22 @@ describe('halvskrivna frågor', () => {
   })
 })
 
+describe('småord i områdens termer', () => {
+  it.each(['fl', 'm fl', 'och'])('%s ger inga områden', async (query) => {
+    expect(await areas(query)).toEqual([])
+    expect(await areas(query, { kommun: { code: '2084', name: 'Avesta kommun' } })).toEqual([])
+  })
+
+  it.each([
+    ['Avesta tätort', 'trakt-7'],
+    ['Norr', 'trakt-6'],
+    ['Fors', 'trakt-3'],
+    ['Norr och Sör Nävde', 'trakt-6'],
+  ])('%s träffar som förut', async (query, id) => {
+    expect(await areas(query)).toContain(id)
+  })
+})
+
 describe('områden när frågan nämner en plats', () => {
   it.each(['Näs 12, Gotland', 'Torp 5, Ljusdal', 'Stallgatan 5, Stockholm'])('%s ger inga områden', async (query) => {
     expect(await areas(query)).toEqual([])

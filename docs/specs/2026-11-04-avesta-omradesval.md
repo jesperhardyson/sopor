@@ -51,6 +51,7 @@ Reglerna gäller startsidans sökning och kommunsidan för Avesta. De prövas i 
 | Gata som inte finns i Avesta | "Hornsgatan 1" | Som i dag |
 
 - På startsidan och i `/api/v1/sok` utan `kalla` måste varje ord i frågan vara ett helt ord i områdets namn eller sökord. Början av ett ord räcker bara när sökningen gäller just källan. Vanliga adresser påverkas inte.
+- Småorden "m", "fl" och "och" går inte att söka på i områden: en fråga med bara sådana ord ger inga områden, men "Norr och Sör Nävde" träffar sitt område. Namnet visas oförändrat.
 - "Känd gata" avgörs med det befintliga gatuindexet från OpenStreetMap (`data/osm/2084.json`). `candidateSources` matchar början av namn, så regeln behöver en exakt jämförelse av gatudelen från `splitPlace`.
 - Gatuindexet är inte komplett. Saknas gatan blir resultatet som för en gata utanför Avesta, om inte frågan nämner Avesta. "Hittades inte"-rutan får därför alltid en länk till områdesvalet när sökningen är avgränsad till Avesta.
 - Andra kommuners träffar visas under sina egna rubriker som vanligt.

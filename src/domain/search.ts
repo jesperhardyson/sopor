@@ -61,11 +61,23 @@ function streetPart(q: string): string | undefined {
   return q.match(/^(.+) \d+\p{L}?$/u)?.[1]
 }
 
-/** Alla ord i frågan finns i samma term (med `areaPrefix` räcker början), eller gatudelen är exakt lika med termen. */
+/** Småord i områdens namn ("m.fl.", "Norr och Sör Nävde"). De går inte att söka på, annars ger "fl" nästan alla områden. */
+const FILLER_WORDS = new Set(['m', 'fl', 'och'])
+
+/**
+ * Alla ord i frågan finns i samma term (med `areaPrefix` räcker början), eller gatudelen är exakt
+ * lika med termen. Ett småord i frågan måste stå i termen men räcker aldrig ensamt för en träff.
+ */
 function termMatches(q: string, t: { norm: string }, { areaPrefix }: SearchMode): boolean {
-  const words = t.norm.split(' ')
-  const found = (tok: string) => (areaPrefix ? words.some((w) => w.startsWith(tok)) : words.includes(tok))
-  return q.split(' ').every(found) || streetPart(q) === t.norm
+  const tokens = q.split(' ')
+  if (tokens.every((tok) => FILLER_WORDS.has(tok))) return false
+  const all = t.norm.split(' ')
+  const words = all.filter((w) => !FILLER_WORDS.has(w))
+  const found = (tok: string) => {
+    if (FILLER_WORDS.has(tok)) return all.includes(tok)
+    return areaPrefix ? words.some((w) => w.startsWith(tok)) : words.includes(tok)
+  }
+  return tokens.every(found) || streetPart(q) === t.norm
 }
 
 function match(q: string, addresses: Address[], limit: number, mode: SearchMode): Address[] {

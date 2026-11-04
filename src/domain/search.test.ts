@@ -223,6 +223,41 @@ describe('områdessökning', () => {
     expect(ids(searchAddresses('Östanfors', AREAS))).toEqual(['trakt-7'])
   })
 
+  describe('småord i områdens termer', () => {
+    const LIST = [
+      area('trakt-3', 'Fors, Nordanö, Brogård', ['Fors', 'Norr', 'Norr och Sör Nävde']),
+      area('trakt-7', 'Avesta tätort, Östanfors m.fl.', ['trakt 7']),
+    ]
+
+    it.each(['fl', 'm fl', 'm.fl.', 'och'])('%s ger inga områden, inte heller med prefix', (query) => {
+      expect(searchAddresses(query, LIST)).toEqual([])
+      expect(searchAddresses(query, LIST, 8, { areaPrefix: true })).toEqual([])
+    })
+
+    it('ett småord hjälper inte ett annat ord att träffa en term utan det', () => {
+      expect(searchAddresses('m 7', LIST)).toEqual([])
+      expect(searchAddresses('och 7', LIST)).toEqual([])
+    })
+
+    it('övriga ord träffar som förut, med småordet kvar i frågan', () => {
+      expect(ids(searchAddresses('Norr', LIST))).toEqual(['trakt-3'])
+      expect(ids(searchAddresses('Fors', LIST))).toEqual(['trakt-3'])
+      expect(ids(searchAddresses('Norr och Sör Nävde', LIST))).toEqual(['trakt-3'])
+      expect(ids(searchAddresses('Avesta tätort', LIST))).toEqual(['trakt-7'])
+      expect(ids(searchAddresses('Östanfors m.fl.', LIST))).toEqual(['trakt-7'])
+    })
+
+    it('namnet visas oförändrat', () => {
+      expect(searchAddresses('Östanfors', LIST)[0].street).toBe('Avesta tätort, Östanfors m.fl.')
+    })
+
+    it('vanliga adresser påverkas inte', () => {
+      const street = a('och-1', 'Och 1', 'Fl')
+      expect(ids(searchAddresses('och', [street]))).toEqual(['och-1'])
+      expect(ids(searchAddresses('fl', [street]))).toEqual(['och-1'])
+    })
+  })
+
   it('prefix gäller när sökningen är avgränsad till källan', () => {
     const prefix = { areaPrefix: true }
     expect(ids(searchAddresses('östan', AREAS, 8, prefix))).toEqual(['trakt-7'])
