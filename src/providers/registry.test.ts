@@ -682,6 +682,33 @@ describe('searchAll: val av område', () => {
     expect(await pickers('Kungsgatan 12', { kommun: uppsala })).toEqual([])
   })
 
+  it('hämtar en delfil igen efter ett nätfel', async () => {
+    const stub = vi.mocked(fetch)
+    const working = stub.getMockImplementation()!
+    let down = true
+    stub.mockImplementation(async (url) => {
+      if (down && url === '/data/gator/ku.json') throw new TypeError('Nätverksfel')
+      return working(url)
+    })
+    expect(await pickers('Kungsgatan')).toEqual([])
+    down = false
+    expect(await pickers('Kungsgatan')).toEqual([{ ...avesta, hasHits: false }])
+  })
+
+  it('hämtar en delfil igen efter ett serverfel, men inte en som inte finns', async () => {
+    const stub = vi.mocked(fetch)
+    const working = stub.getMockImplementation()!
+    let down = true
+    stub.mockImplementation(async (url) => (down && url === '/data/gator/ku.json' ? new Response('', { status: 500 }) : working(url)))
+    expect(await pickers('Kungsgatan')).toEqual([])
+    down = false
+    expect(await pickers('Kungsgatan')).toEqual([{ ...avesta, hasHits: false }])
+
+    await pickers('Zzzgatan')
+    await pickers('Zzzgatan')
+    expect(stub.mock.calls.filter(([url]) => url === '/data/gator/zz.json')).toHaveLength(1)
+  })
+
   it('ger aldrig en väljare för en källa utan selection', async () => {
     const { getSource } = await import('@/sources')
     delete getSource('avesta')!.selection

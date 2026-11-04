@@ -54,12 +54,20 @@ export interface SearchResult {
 
 const shards = new Map<string, Promise<StreetShard | null>>()
 
+/** Delfiler sparas under sidans livstid, också de som inte finns. Misslyckade hämtningar får ett nytt försök. */
 function loadShard(key: string): Promise<StreetShard | null> {
   let shard = shards.get(key)
   if (!shard) {
     shard = fetch(`/data/gator/${encodeURIComponent(key)}.json`)
-      .then((r) => (r.ok ? (r.json() as Promise<StreetShard>) : null))
-      .catch(() => null)
+      .then((r) => {
+        if (r.ok) return r.json() as Promise<StreetShard>
+        if (r.status === 404) return null
+        throw new Error(`Delfilen ${key} svarade ${r.status}`)
+      })
+      .catch(() => {
+        shards.delete(key)
+        return null
+      })
     shards.set(key, shard)
   }
   return shard
