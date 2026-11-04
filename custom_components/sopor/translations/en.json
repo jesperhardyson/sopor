@@ -50,8 +50,8 @@
     "error": {
       "too_short": "Type at least three characters.",
       "sources_failed": "Some sources did not respond. Try again in a while.",
-      "not_found": "No address found. Check the spelling and house number, and that your municipality is included.",
-      "not_found_covered": "No address found in {place}. Check the spelling and house number.",
+      "not_found": "No address found. Check the spelling and house number, and that your municipality is included. In Avesta, search by area, for example Avesta tätort.",
+      "not_found_covered": "No address found in {place}. Check the spelling and house number. In Avesta, search by area, for example Avesta tätort.",
       "not_found_elsewhere": "No address found in {place}. Check that the municipality is included.",
       "cannot_connect": "Sopor is not responding. Try again in a while."
     },

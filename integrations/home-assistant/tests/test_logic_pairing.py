@@ -107,6 +107,16 @@ def test_hit_title_och_label():
     assert hit_label(hit()) == "Storgatan 2, Uppsala"
 
 
+def test_omradestraff_ger_label_med_trakt():
+    omrade = hit(
+        street="Avesta tätort, Östanfors m.fl.",
+        locality="",
+        kommun="Avesta kommun",
+        detail="Tisdag, jämn vecka · Trakt 7",
+    )
+    assert hit_label(omrade) == "Avesta tätort, Östanfors m.fl., Avesta kommun, Tisdag, jämn vecka · Trakt 7"
+
+
 def test_hit_label_med_detail():
     assert hit_label(hit(detail="Lgh 1101")) == "Storgatan 2, Uppsala, Lgh 1101"
 
