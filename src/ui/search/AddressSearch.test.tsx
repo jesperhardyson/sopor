@@ -350,6 +350,70 @@ describe('AddressSearch', () => {
     expect(await screen.findByText('Resultat avesta/krylbo-storgatan-12b')).toBeInTheDocument()
   })
 
+  describe('Enter när svaret inte är entydigt', () => {
+    const horn = (nr: string, locality: string): Address => ({ id: `${locality}-${nr}`, street: `Hornsgatan ${nr}`, locality, sourceId: locality, kommun: `${locality} kommun` })
+
+    it('öppnar inte en annan adress när bara andra husnummer finns', async () => {
+      const input = setup([horn('10', 'Boden'), horn('12', 'Boden')])
+      await userEvent.type(input, 'Hornsgatan 1')
+      await screen.findAllByRole('option')
+      await userEvent.keyboard('{Enter}')
+      expect(screen.queryByText(/^Resultat/)).not.toBeInTheDocument()
+      expect(screen.getAllByRole('option')[0]).toHaveAttribute('aria-selected', 'true')
+    })
+
+    it('låter ett andra Enter öppna den markerade raden', async () => {
+      const input = setup([horn('1', 'Borås'), horn('1', 'Kalmar')])
+      await userEvent.type(input, 'Hornsgatan 1')
+      await screen.findAllByRole('option')
+      await userEvent.keyboard('{Enter}{Enter}')
+      expect(await screen.findByText('Resultat Borås/Borås-1')).toBeInTheDocument()
+    })
+
+    it('öppnar den enda raden med rätt husnummer, även om den inte står först', async () => {
+      const input = setup([horn('10', 'Boden'), horn('1', 'Kalmar')])
+      await userEvent.type(input, 'Hornsgatan 1')
+      await screen.findAllByRole('option')
+      await userEvent.keyboard('{Enter}')
+      expect(await screen.findByText('Resultat Kalmar/Kalmar-1')).toBeInTheDocument()
+    })
+
+    it('öppnar en rad man har valt med piltangenterna', async () => {
+      const input = setup([horn('10', 'Boden'), horn('12', 'Boden')])
+      await userEvent.type(input, 'Hornsgatan 1')
+      await screen.findAllByRole('option')
+      await userEvent.keyboard('{ArrowDown}{ArrowDown}{Enter}')
+      expect(await screen.findByText('Resultat Boden/Boden-12')).toBeInTheDocument()
+    })
+
+    it('visar listan när Enter kommer innan sökningen hunnit svara', async () => {
+      await userEvent.type(setup([horn('1', 'Borås'), horn('1', 'Kalmar')]), 'Hornsgatan 1{Enter}')
+      expect((await screen.findAllByRole('option'))[0]).toHaveAttribute('aria-selected', 'true')
+      expect(screen.queryByText(/^Resultat/)).not.toBeInTheDocument()
+    })
+
+    it('väntar på alla källor i stället för att gissa från de som redan svarat', async () => {
+      const search = vi.fn(async (_q: string, _signal?: AbortSignal, onPartial?: (p: { addresses: Address[]; failed: string[] }) => void, options?: { submitted?: boolean }) => {
+        if (options?.submitted) return { addresses: [horn('1', 'Borås'), horn('1', 'Kalmar')], failed: [] }
+        onPartial?.({ addresses: [horn('1', 'Borås')], failed: [] })
+        return new Promise<never>(() => {})
+      })
+      render(
+        <MemoryRouter>
+          <Routes>
+            <Route index element={<AddressSearch search={search} suggest={async () => []} missing={async () => []} />} />
+            <Route path=":sourceId/:addressId" element={<Result />} />
+          </Routes>
+        </MemoryRouter>,
+      )
+      await userEvent.type(screen.getByRole('combobox'), 'Hornsgatan 1')
+      await screen.findAllByRole('option')
+      await userEvent.keyboard('{Enter}')
+      await waitFor(() => expect(screen.getAllByRole('option')).toHaveLength(2))
+      expect(screen.queryByText(/^Resultat/)).not.toBeInTheDocument()
+    })
+  })
+
   it('lägger träfflistan ovanpå innehållet så att inget under hoppar', async () => {
     await userEvent.type(setup(), 'storg')
     const listbox = await screen.findByRole('listbox')

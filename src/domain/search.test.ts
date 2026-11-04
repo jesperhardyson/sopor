@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { fairShare, groupByKommun, normalize, searchAddresses, stableMerge, suggest } from './search'
+import { enterTarget, fairShare, groupByKommun, normalize, searchAddresses, stableMerge, suggest } from './search'
 import type { Address } from './types'
 
 const a = (id: string, street: string, locality: string): Address => ({ id, street, locality, sourceId: 'avesta', kommun: 'Avesta kommun' })
@@ -148,5 +148,38 @@ describe('stableMerge', () => {
 
   it('ger det nya svaret som det är när inget syns', () => {
     expect(ids(stableMerge([], [x('b'), x('a')]))).toEqual(['uppsala/b', 'uppsala/a'])
+  })
+})
+
+describe('enterTarget', () => {
+  const horn = (nr: string, locality: string) => a(`${locality}-${nr}`, `Hornsgatan ${nr}`, locality)
+
+  it('väljer den enda raden', () => {
+    expect(enterTarget('hornsg', [horn('10', 'Boden')])?.id).toBe('Boden-10')
+  })
+
+  it('väljer den enda raden med rätt husnummer, även om den inte står först', () => {
+    expect(enterTarget('Hornsgatan 1', [horn('10', 'Boden'), horn('1', 'Kalmar')])?.id).toBe('Kalmar-1')
+  })
+
+  it('väljer inget när bara andra husnummer finns', () => {
+    expect(enterTarget('Hornsgatan 1', [horn('10', 'Boden'), horn('12', 'Boden')])).toBeUndefined()
+  })
+
+  it('väljer inget när adressen finns på flera orter', () => {
+    expect(enterTarget('Hornsgatan 1', [horn('1', 'Borås'), horn('1', 'Kalmar')])).toBeUndefined()
+  })
+
+  it('skiljer dem åt när orten står med', () => {
+    expect(enterTarget('Hornsgatan 1, Kalmar', [horn('1', 'Borås'), horn('1', 'Kalmar')])?.id).toBe('Kalmar-1')
+  })
+
+  it('väljer inget när flera byggnader har samma adress', () => {
+    const twins = [horn('1', 'Kalmar'), { ...horn('1', 'Kalmar'), id: 'annan', detail: 'Byggnad 2' }]
+    expect(enterTarget('Hornsgatan 1', twins)).toBeUndefined()
+  })
+
+  it('räknar husbokstaven som en del av adressen', () => {
+    expect(enterTarget('storgatan 12 b', [a('x', 'Storgatan 12 B', 'Krylbo'), a('y', 'Storgatan 12', 'Avesta')])?.id).toBe('x')
   })
 })
