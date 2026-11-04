@@ -76,7 +76,9 @@ Inget utanför `src/providers/`, `src/server/`, `src/data/` och `scripts/` får 
 
 Prenumererade kalendrar (webcal, Google, Apple) hämtar nya filer själva. Apple gör det enligt användarens inställning. Google bestämmer själv, oftast inom ett dygn men ibland längre. Nedladdade `.ics`-filer uppdateras aldrig.
 
-Påminnelsen kvällen innan (`VALARM`) följer med i filen, men Google ignorerar den för prenumerationer och Apple stänger av notiser som standard. Därför finns ett tips om det i kalenderarket.
+Påminnelsen (`VALARM`) följer med i filen, men Google ignorerar den för prenumerationer och Apple stänger av notiser som standard. Därför finns ett tips om det i kalenderarket.
+
+Användaren väljer tid i kalenderarket, och valen definieras i `src/domain/reminders.ts`. Förvalet, kl. 18 kvällen innan, ligger på `/ics/<källa>/<adress-id>.ics`. Övriga val ligger på `/ics/<källa>/<val>/<adress-id>.ics` och går via funktionen även för statiska källor, eftersom det bara finns färdigbyggda filer för förvalet. Se `docs/specs/2026-11-04-kalender-paminnelsetid.md`.
 
 ## Versioner
 
