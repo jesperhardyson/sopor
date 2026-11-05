@@ -27,6 +27,8 @@ Status: utkast, 2026-11-04. Bygger på `docs/specs/2026-11-04-avesta-omradesval.
 
 Utan ort frågas inte `/omraden`, eftersom samma gatunamn finns i många kommuner. Hjälptexten säger därför att man ska skriva orten efter gatan.
 
+**Home Assistant:** listan med områden har inget förval, eftersom fel område kan ge fel hämtdag. Frontenden förväljer annars det första alternativet i ett obligatoriskt fält. Ett tomt `suggested_value` stoppar det, och frontenden kräver då ett val innan man går vidare.
+
 **Homey:** knappen "Fortsätt" tas bort från sökskärmen, eftersom den syntes utan något att välja. Sökningen går vidare av sig själv, och varningen har en egen knapp.
 
 ## Utanför

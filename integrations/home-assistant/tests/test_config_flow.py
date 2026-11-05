@@ -1,11 +1,13 @@
 import json
 from pathlib import Path
 
+import probatio
+import pytest
 from custom_components.sopor.api import Search
 from custom_components.sopor.const import BASE_URL, DOMAIN
 from custom_components.sopor.logic import hit_label, hit_title, kommun_names, parse_query, search_outcome
 from homeassistant.config_entries import SOURCE_USER
-from homeassistant.data_entry_flow import FlowResultType
+from homeassistant.data_entry_flow import FlowResultType, InvalidData
 
 FIXTURES = Path(__file__).parent / "fixtures"
 SOK = json.loads((FIXTURES / "sok.json").read_text(encoding="utf-8"))
@@ -188,6 +190,22 @@ async def test_omrade_visar_notice_en_gang_i_blandad_lista(hass, aioclient_mock)
     assert result["step_id"] == "adress_omrade"
     assert result["description_placeholders"]["notice"] == "Kontrollera att området stämmer."
     assert len(_val(result)) == 3
+
+
+async def test_omrade_ar_inte_forvalt(hass, aioclient_mock):
+    _mocka(aioclient_mock, "Avesta", {"addresses": [_omrade()], "failed": []})
+    result = await _sok(hass, "Avesta tätort")
+    # Frontenden förväljer annars första alternativet i ett obligatoriskt fält
+    falt = next(iter(result["data_schema"].schema))
+    assert falt.description == {"suggested_value": ""}
+    assert isinstance(falt, probatio.Required)
+
+
+async def test_tomt_omrade_godtas_inte(hass, aioclient_mock):
+    _mocka(aioclient_mock, "Avesta", {"addresses": [_omrade()], "failed": []})
+    result = await _sok(hass, "Avesta tätort")
+    with pytest.raises(InvalidData):
+        await hass.config_entries.flow.async_configure(result["flow_id"], {"adress": ""})
 
 
 async def test_val_efter_notice_skapar_post_utan_notice(hass, aioclient_mock):

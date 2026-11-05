@@ -162,12 +162,14 @@ class SoporConfigFlow(ConfigFlow, domain=DOMAIN):
         options = [SelectOptionDict(value=_hit_value(hit), label=hit_label(hit)) for hit in self._hits]
         # Texten före källans varning finns bara i det egna stegets översättningar
         notice = notice_text(self._hits)
+        # Frontenden förväljer annars det första alternativet. Fel område kan ge fel hämtdag.
+        description = {"suggested_value": ""} if notice else None
         return self.async_show_form(
             step_id="adress_omrade" if notice else "adress",
             description_placeholders={"notice": notice, "area_links": area_links(self._hits)} if notice else None,
             data_schema=probatio.Schema(
                 {
-                    probatio.Required("adress"): SelectSelector(
+                    probatio.Required("adress", description=description): SelectSelector(
                         SelectSelectorConfig(options=options, mode=SelectSelectorMode.LIST)
                     )
                 }
