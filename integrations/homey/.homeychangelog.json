@@ -22,5 +22,9 @@
   "1.2.0": {
     "en": "Avesta and Säter: search by area, for example Avesta tätort or Bispberg. The app asks you to check the area before you add it, since a wrong choice can make you miss a collection.",
     "sv": "Avesta och Säter: sök på område, till exempel Avesta tätort eller Bispberg. Appen ber dig kontrollera området innan du lägger till det, eftersom fel val kan göra att du missar en tömning."
+  },
+  "1.3.0": {
+    "en": "Avesta and Säter: search for your address with the town after it, for example Kungsgatan 12, Avesta, and choose your area from the list. A link shows which places the areas cover.",
+    "sv": "Avesta och Säter: sök din adress med orten efter, till exempel Kungsgatan 12, Avesta, och välj ditt område i listan. En länk visar vilka platser områdena omfattar."
   }
 }
