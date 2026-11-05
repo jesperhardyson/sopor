@@ -28,7 +28,7 @@
       },
       "adress_omrade": {
         "title": "Choose area or address",
-        "description": "Choose the area or address where your waste is collected.\n\nYou choose this area yourself, so check that it is right. The wrong area can make you miss a collection. From Sopor, in Swedish only:\n\n{notice}",
+        "description": "Choose the area or address where your waste is collected.\n\nYou choose this area yourself, so check that it is right. The wrong area can make you miss a collection. From Sopor, in Swedish only:\n\n{notice}\n\nSee which places belong to the areas (in Swedish): {area_links}",
         "data": {
           "adress": "Area or address"
         }
@@ -57,8 +57,8 @@
     "error": {
       "too_short": "Type at least three characters.",
       "sources_failed": "Some sources did not respond. Try again in a while.",
-      "not_found": "No address found. Check the spelling and house number, and that your municipality is included. In Avesta and Säter, search by area, for example Avesta tätort or Bispberg.",
-      "not_found_covered": "No address found in {place}. Check the spelling and house number. In Avesta and Säter, search by area, for example Avesta tätort or Bispberg.",
+      "not_found": "No address found. Check the spelling and house number, and that your municipality is included. In Avesta and Säter you choose an area: add the town after the street, for example Kungsgatan 12, Avesta, or search for a place such as Bispberg.",
+      "not_found_covered": "No address found in {place}. Check the spelling and house number. In Avesta and Säter you choose an area: add the town after the street, for example Kungsgatan 12, Avesta, or search for a place such as Bispberg.",
       "not_found_elsewhere": "No address found in {place}. Check that the municipality is included.",
       "cannot_connect": "Sopor is not responding. Try again in a while."
     },

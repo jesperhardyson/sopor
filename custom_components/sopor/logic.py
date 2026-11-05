@@ -268,6 +268,12 @@ def notice_text(hits: list[SearchHit]) -> str:
     return "\n\n".join(dict.fromkeys(hit["notice"] for hit in hits if hit.get("notice")))
 
 
+def area_links(hits: list[SearchHit]) -> str:
+    """Länkar till områdessidorna, en per kommun. Tom när ingen träff är ett område."""
+    links = {hit["areasUrl"]: hit["kommun"] for hit in hits if hit.get("areasUrl")}
+    return ", ".join(f"[{kommun}]({url})" for url, kommun in links.items())
+
+
 def hit_label(hit: SearchHit) -> str:
     return f"{hit_title(hit)}, {hit['detail']}" if hit["detail"] else hit_title(hit)
 

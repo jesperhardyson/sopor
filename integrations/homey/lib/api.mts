@@ -15,6 +15,8 @@ export interface SoporSearchHit extends SoporAddress {
   url: string
   /** Vad vi inte vet om träffen, att visa före valet. Bara på svenska. null för en vanlig adress. */
   notice: string | null
+  /** Webbsidan som hjälper till att välja område. Bara på svenska. null för en vanlig adress. */
+  areasUrl: string | null
 }
 
 export interface SoporSearch {
@@ -85,6 +87,7 @@ export function createClient({ fetch, userAgent, timeoutMs = 15_000 }: ClientOpt
   return {
     search: (q: string, source?: string) =>
       get<SoporSearch>(`${BASE_URL}/sok?${new URLSearchParams(source ? { q, kalla: source } : { q })}`),
+    areas: (place: string) => get<SoporSearch>(`${BASE_URL}/omraden?${new URLSearchParams({ plats: place })}`),
     schedule: (url: string) => get<SoporSchedule>(url),
     sources: () => get<SoporSources>(`${BASE_URL}/kallor`),
   }

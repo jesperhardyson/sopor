@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 
 from custom_components.sopor.logic import (
+    area_links,
     hit_label,
     hit_title,
     kommun_names,
@@ -171,3 +172,15 @@ def test_notice_text_samma_text_en_gang_ocksa_i_blandad_lista():
 
 def test_notice_text_varje_kallas_egen_text_i_listans_ordning():
     assert notice_text([_traff("Avesta"), _traff("Säter")]) == "Avesta\n\nSäter"
+
+
+def test_area_links_tom_for_vanliga_adresser():
+    assert area_links([{**_traff(None), "areasUrl": None}]) == ""
+
+
+def test_area_links_en_lank_per_kommun():
+    avesta = {**_traff("A"), "areasUrl": "https://sopor.hardyson.se/avesta/omraden"}
+    sater = {**_traff("S"), "kommun": "Säters kommun", "areasUrl": "https://sopor.hardyson.se/sater/omraden"}
+    assert area_links([avesta, avesta, sater]) == (
+        "[Avesta kommun](https://sopor.hardyson.se/avesta/omraden), [Säters kommun](https://sopor.hardyson.se/sater/omraden)"
+    )

@@ -1,14 +1,15 @@
 // Det publika, versionerade API:t (/api/v1/…). Formaterar svaren; källogiken ligger i lookup.ts.
 // Kontraktet: fält tas aldrig bort eller byter namn, och fält utan värde skickas som null.
 
+import { areaDetail } from '../domain/areas.js'
 import { secondsToStockholmMidnight, todayInStockholm } from '../domain/dates.js'
 import { FRACTIONS, sortFractions } from '../domain/fractions.js'
 import { nextPerFraction, pickupSummary } from '../domain/next.js'
 import { upcoming } from '../domain/schedule.js'
 import { mergeHits, normalize, searchAddresses } from '../domain/search.js'
 import type { Address, FractionId, Schedule } from '../domain/types.js'
-import { pickLiveSources, shardKey, splitPlace, streetAtSourcePlace, type StreetShard } from '../data/street-index.js'
-import type { AddressIndexFile } from '../data/static-format.js'
+import { namesSource, pickLiveSources, shardKey, splitPlace, streetAtSourcePlace, type StreetShard } from '../data/street-index.js'
+import type { AddressIndexFile, AreasIndexFile } from '../data/static-format.js'
 import { areaNoticeText, isLive, needsPlaces, SOURCES, type Source } from '../sources/index.js'
 import { CACHE_PARTIAL, CACHE_SEARCH, decodeId, searchLiveSource, type HandlerOptions } from './handlers.js'
 import { lookupAddress } from './lookup.js'
@@ -142,16 +143,21 @@ const selectionFields = (source: Source | undefined) => ({
   notice: areaNoticeText(source) ?? null,
 })
 
-const v1Address = (a: Address, origin: string, sources: Source[]) => ({
-  id: a.id,
-  street: a.street,
-  locality: a.locality,
-  kommun: a.kommun,
-  source: a.sourceId,
-  detail: a.detail ?? null,
-  ...selectionFields(sources.find((s) => s.id === a.sourceId)),
-  url: `${origin}/api/v1/adress/${a.sourceId}/${encodeURIComponent(a.id)}`,
-})
+const v1Address = (a: Address, origin: string, sources: Source[]) => {
+  const source = sources.find((s) => s.id === a.sourceId)
+  return {
+    id: a.id,
+    street: a.street,
+    locality: a.locality,
+    kommun: a.kommun,
+    source: a.sourceId,
+    detail: a.detail ?? null,
+    ...selectionFields(source),
+    // Sajtens sida med alla platser i områdena och vem man kan fråga
+    areasUrl: source?.selection === 'area' ? `${origin}/${a.sourceId}/omraden` : null,
+    url: `${origin}/api/v1/adress/${a.sourceId}/${encodeURIComponent(a.id)}`,
+  }
+}
 
 /** Statiska källor söks lokalt i sin adressfil. */
 async function searchStatic(source: Source, query: string, origin: string, opts: HandlerOptions, areaPrefix: boolean): Promise<Address[]> {
@@ -213,6 +219,29 @@ export const handleV1Search: V1Handler = async (request, opts = {}) => {
     sources.map(async (s) =>
       isLive(s) ? (await searchLiveSource(s, street, place, { ...opts, places })).slice(0, SEARCH_LIMIT) : await searchStatic(s, q, url.origin, opts, !!kalla),
     ),
+  )
+  const failed = sources.filter((_, i) => results[i].status === 'rejected').map((s) => s.id)
+  const addresses = results.flatMap((r) => (r.status === 'fulfilled' ? r.value : [])).map((a) => v1Address(a, url.origin, sources))
+  return v1Json({ addresses, failed }, 200, failed.length > 0 ? CACHE_PARTIAL : CACHE_SEARCH)
+}
+
+/** GET /api/v1/omraden?plats=avesta: områdena hos källor med områdesval som täcker platsen. Ingen gissning om adressen. */
+export const handleV1Areas: V1Handler = async (request, opts = {}) => {
+  const url = new URL(request.url)
+  const place = (url.searchParams.get('plats') ?? '').trim().replace(/\s+kommun$/i, '')
+  if (normalize(place).length < 2) return v1Error(400, 'bad_request', 'Minst två tecken')
+
+  const shard = await streetShard(place, url.origin, opts)
+  const sources = visibleSources(opts).filter((s) => s.selection === 'area' && namesSource(place, shard, s))
+  const results = await Promise.allSettled(
+    sources.map(async (source) => {
+      const index = await siteJson<AreasIndexFile>(url.origin, `/data/${source.id}/omraden.json`, opts.fetchFn, opts.timeoutMs)
+      if (!index) throw new Error(`${source.id} saknar områdesfil`)
+      const kommun = source.kommuner[0]?.name ?? source.name
+      return index.areas.map(
+        (area): Address => ({ id: area.id, street: area.name, locality: '', sourceId: source.id, kommun, detail: areaDetail(area) }),
+      )
+    }),
   )
   const failed = sources.filter((_, i) => results[i].status === 'rejected').map((s) => s.id)
   const addresses = results.flatMap((r) => (r.status === 'fulfilled' ? r.value : [])).map((a) => v1Address(a, url.origin, sources))

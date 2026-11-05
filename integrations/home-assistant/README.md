@@ -16,6 +16,7 @@ Eller för hand:
 2. Gå till *Inställningar → Enheter och tjänster → Lägg till integration*, välj *Sophämtning* och sök upp adressen.
    - Skriv gata och husnummer, gärna med ort efter ett komma, till exempel `Storgatan 2, Uppsala`.
    - Är det många träffar får du först välja ort, sedan adress.
+   - I Avesta och Säter väljer du område. Skriv orten efter gatan, så får du välja bland kommunens områden om adressen inte finns. Länken i steget visar vilka platser som ingår i områdena.
 
 HACS läser versionen från senaste GitHub-releasen i `jesperhardyson/sopor-home-assistant`, en spegling av integrationen som uppdateras vid varje release.
 

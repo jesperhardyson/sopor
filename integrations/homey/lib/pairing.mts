@@ -1,12 +1,12 @@
 // Adressökningen i parningen: ett fält, "gata husnummer" och gärna ", ort".
 // Orten filtreras här och inte i API:t, eftersom källorna tolkar ort i frågan olika.
 
-import type { SoporSearch, SoporSearchHit, SoporSources } from './api.mjs'
+import type { SoporClient, SoporSearch, SoporSearchHit, SoporSources } from './api.mjs'
 
 /** Fler träffar än så visas som en lista med orter att välja bland först. */
 export const MAX_LIST = 12
 
-export type SearchResult = 'found' | 'places' | 'failed' | 'none'
+export type SearchResult = 'found' | 'places' | 'areas' | 'failed' | 'none'
 
 export interface Place {
   /** "<ort>|<kommun>" */
@@ -35,8 +35,25 @@ export function searchOutcome(search: SoporSearch, place: string): { result: Sea
   return { result: search.failed.length ? 'failed' : 'none', hits }
 }
 
+/**
+ * Sökningen, och utan träff på en namngiven ort kommunens områden. Användaren väljer område själv.
+ * Utan ort frågas inte: samma gatunamn finns i många kommuner.
+ */
+export async function findHits(client: Pick<SoporClient, 'search' | 'areas'>, q: string, place: string) {
+  const outcome = searchOutcome(await client.search(q), place)
+  if (outcome.hits.length || !place) return outcome
+  const areas = await client.areas(place).catch(() => null)
+  return areas?.addresses.length ? { result: 'areas' as const, hits: areas.addresses } : outcome
+}
+
 /** Källornas varningar om områdesval, varje text en gång. */
 export const notices = (hits: SoporSearchHit[]): string[] => [...new Set(hits.flatMap((hit) => hit.notice ?? []))]
+
+/** Länkarna till områdessidorna, en per kommun. */
+export function areaLinks(hits: SoporSearchHit[]): { kommun: string; url: string }[] {
+  const byUrl = new Map(hits.flatMap((hit) => (hit.areasUrl ? [[hit.areasUrl, hit.kommun] as const] : [])))
+  return [...byUrl].map(([url, kommun]) => ({ kommun, url }))
+}
 
 export const placeKey = (hit: SoporSearchHit) => `${hit.locality}|${hit.kommun}`
 
