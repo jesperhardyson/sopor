@@ -12,6 +12,7 @@
     "choosePlace": "Many matches. Where is the address?",
     "notFoundCovered": "No address found in __place__. Check the spelling and house number. In Avesta and Säter you choose an area: add the town after the street, for example Kungsgatan 12, Avesta, or search for a place such as Bispberg.",
     "areaChoice": "The schedule does not show which area __street__ belongs to, so you choose the area yourself in the next step.",
+    "areaLink": "See which places belong to the areas in __kommun__ (in Swedish)",
     "notFoundElsewhere": "No address found in __place__. Check that the municipality is included.",
     "coverage": "Sopor covers __count__ Swedish municipalities.",
     "coverageLink": "See which",

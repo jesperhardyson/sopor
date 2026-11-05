@@ -12,6 +12,7 @@
     "choosePlace": "Många träffar. Var ligger adressen?",
     "notFoundCovered": "Ingen adress hittades i __place__. Kontrollera stavningen och husnumret. I Avesta och Säter väljer du område: skriv orten efter gatan, till exempel Kungsgatan 12, Avesta, eller sök på en plats som Bispberg.",
     "areaChoice": "Schemat visar inte vilket område __street__ hör till, så du väljer området själv i nästa steg.",
+    "areaLink": "Se vilka platser som ingår i områdena i __kommun__",
     "notFoundElsewhere": "Ingen adress hittades i __place__. Kontrollera att kommunen finns med.",
     "coverage": "Sopor finns i __count__ kommuner.",
     "coverageLink": "Se vilka",

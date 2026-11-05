@@ -318,6 +318,7 @@ describe('handleV1Areas', () => {
       source: 'avesta',
       detail: 'Onsdag, udda vecka · Trakt 3',
       selection: 'area',
+      areasUrl: 'https://preview.test/avesta/omraden',
       url: 'https://preview.test/api/v1/adress/avesta/trakt-3',
     })
     expect(body.addresses[0].notice).toBeTruthy()
@@ -362,7 +363,8 @@ describe('handleV1Search', () => {
     expect(body.failed).toEqual([])
     expect(body.addresses.length).toBeGreaterThan(0)
     for (const a of body.addresses) {
-      expect(Object.keys(a).sort()).toEqual(['detail', 'id', 'kommun', 'locality', 'notice', 'selection', 'source', 'street', 'url'])
+      expect(Object.keys(a).sort()).toEqual(['areasUrl', 'detail', 'id', 'kommun', 'locality', 'notice', 'selection', 'source', 'street', 'url'])
+      expect(a.areasUrl).toBeNull()
       expect(a.url).toBe(`https://preview.test/api/v1/adress/uppsala/${encodeURIComponent(a.id)}`)
     }
     expect(hosts()).toContain('uppsala.test')
@@ -439,6 +441,7 @@ describe('handleV1Search', () => {
         detail: null,
         selection: 'address',
         notice: null,
+        areasUrl: null,
         url: `https://preview.test/api/v1/adress/statisk/${encodeURIComponent('storgatan-1_örebro')}`,
       },
     ])
@@ -471,6 +474,7 @@ describe('områden som träffar', () => {
     detail: 'Tisdag, jämn vecka · Trakt 7',
     selection: 'area',
     notice: 'Kontrollera området. Du har valt det själv.',
+    areasUrl: 'https://preview.test/avesta/omraden',
     url: 'https://preview.test/api/v1/adress/avesta/trakt-7',
   }
 

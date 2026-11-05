@@ -112,7 +112,7 @@ curl 'https://sopor.hardyson.se/api/v1/omraden?plats=Avesta'
 ```
 
 - `plats` är kommunens namn, med eller utan "kommun", eller en ort i kommunen. Minst två tecken.
-- Svaret har samma form som `/sok`, och varje område har `selection: "area"` och `notice`, som ska visas innan användaren väljer.
+- Svaret har samma form som `/sok`, och varje område har `selection: "area"` och `notice`, som ska visas innan användaren väljer. `areasUrl` är webbsidan som visar vilka platser som ingår i områdena och vem man kan fråga. Länka gärna dit, för Sopor vet inte vilket område en adress hör till. Fältet finns också på träffarna från `/sok` och är `null` för en vanlig adress.
 - En plats utan områdesval ger en tom lista.
 
 ### `GET /api/v1/kallor`

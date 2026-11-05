@@ -16,12 +16,14 @@ Status: utkast, 2026-11-04. Bygger på `docs/specs/2026-11-04-avesta-omradesval.
 - Svaret har samma form som `/sok`: `addresses` och `failed`. Varje område är en träff med `selection: "area"`, `notice` och `url`.
 - Områdena kommer i källans ordning. En plats utan områdesval ger en tom lista, inte ett fel.
 - `plats` kortare än två tecken ger 400.
+- Varje område har `areasUrl`, sajtens sida med alla platser i områdena och vem man kan fråga. Fältet finns också på områdesträffar från `/sok` och är `null` för en vanlig adress.
 
 ## Apparna
 
 1. Apparna söker som förut med `/sok` och filtrerar på orten.
 2. Ger det inga träffar, och frågan har en ort, frågar de `/omraden`. Fel där behandlas som "inga områden", så att användaren får vanlig text.
 3. Finns områden blir de träffar. Varningen visas före valet, som för andra områdesträffar.
+4. Tillsammans med varningen visas en länk per kommun till `areasUrl`, eftersom områdets korta namn sällan räcker för att veta vilket som är ens eget. Länken ger inget säkert svar om adressen, men visar platserna och vem man kan fråga.
 
 Utan ort frågas inte `/omraden`, eftersom samma gatunamn finns i många kommuner. Hjälptexten säger därför att man ska skriva orten efter gatan.
 

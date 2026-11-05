@@ -29,6 +29,7 @@ from .api import SearchHit, SoporClient, SoporError
 from .const import CONF_HIDDEN, DOMAIN, KOMMUNER_URL
 from .coordinator import SoporConfigEntry, store_for
 from .logic import (
+    area_links,
     fraction_ids,
     fraction_name,
     hit_label,
@@ -163,7 +164,7 @@ class SoporConfigFlow(ConfigFlow, domain=DOMAIN):
         notice = notice_text(self._hits)
         return self.async_show_form(
             step_id="adress_omrade" if notice else "adress",
-            description_placeholders={"notice": notice} if notice else None,
+            description_placeholders={"notice": notice, "area_links": area_links(self._hits)} if notice else None,
             data_schema=probatio.Schema(
                 {
                     probatio.Required("adress"): SelectSelector(

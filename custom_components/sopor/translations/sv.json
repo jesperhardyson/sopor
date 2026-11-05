@@ -28,7 +28,7 @@
       },
       "adress_omrade": {
         "title": "Välj område eller adress",
-        "description": "Välj området eller adressen där sopor hämtas.\n\n{notice}",
+        "description": "Välj området eller adressen där sopor hämtas.\n\n{notice}\n\nVilka platser som ingår i områdena ser du här: {area_links}",
         "data": {
           "adress": "Område eller adress"
         }

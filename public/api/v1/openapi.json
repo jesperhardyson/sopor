@@ -272,6 +272,7 @@
                       "detail": null,
                       "selection": "address",
                       "notice": null,
+                      "areasUrl": null,
                       "url": "https://sopor.hardyson.se/api/v1/adress/uppsala/storgatan-2_uppsala-4004688"
                     }
                   ],
@@ -414,6 +415,7 @@
                       "detail": "Tisdag, jämn vecka · Trakt 7",
                       "selection": "area",
                       "notice": "Kontrollera att området stämmer. Väljer du fel område kan du missa din tömning.",
+                      "areasUrl": "https://sopor.hardyson.se/avesta/omraden",
                       "url": "https://sopor.hardyson.se/api/v1/adress/avesta/trakt-7"
                     }
                   ],
@@ -751,6 +753,7 @@
           "detail",
           "selection",
           "notice",
+          "areasUrl",
           "url"
         ],
         "properties": {
@@ -795,6 +798,14 @@
               "null"
             ],
             "description": "Det vi inte vet om schemat, att visa för användaren. Datumen kommer från källan, men för ett område vet vi inte att det gäller en viss adress. null för en adress."
+          },
+          "areasUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Webbsida som hjälper användaren att välja område: vilka platser som ingår och vem man kan fråga. Sidan är på svenska. null för en adress.",
+            "format": "uri"
           },
           "url": {
             "type": "string",

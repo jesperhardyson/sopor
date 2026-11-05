@@ -49,6 +49,12 @@ export async function findHits(client: Pick<SoporClient, 'search' | 'areas'>, q:
 /** Källornas varningar om områdesval, varje text en gång. */
 export const notices = (hits: SoporSearchHit[]): string[] => [...new Set(hits.flatMap((hit) => hit.notice ?? []))]
 
+/** Länkarna till områdessidorna, en per kommun. */
+export function areaLinks(hits: SoporSearchHit[]): { kommun: string; url: string }[] {
+  const byUrl = new Map(hits.flatMap((hit) => (hit.areasUrl ? [[hit.areasUrl, hit.kommun] as const] : [])))
+  return [...byUrl].map(([url, kommun]) => ({ kommun, url }))
+}
+
 export const placeKey = (hit: SoporSearchHit) => `${hit.locality}|${hit.kommun}`
 
 /** Orterna bland träffarna, flest träffar först. */

@@ -169,6 +169,7 @@ def _omrade(notice: str = "Kontrollera att området stämmer."):
         "url": f"{BASE_URL}/adress/avesta/trakt-7",
         "selection": "area",
         "notice": notice,
+        "areasUrl": "https://sopor.hardyson.se/avesta/omraden",
     }
 
 
@@ -212,6 +213,7 @@ def test_stegets_oversattningar_visar_notice():
         path = Path(__file__).parents[3] / "custom_components/sopor/translations" / f"{lang}.json"
         step = json.loads(path.read_text(encoding="utf-8"))["config"]["step"]["adress_omrade"]
         assert "{notice}" in step["description"]
+        assert "{area_links}" in step["description"]
 
 
 async def test_adress_som_saknas_ger_kommunens_omraden(hass, aioclient_mock):
@@ -219,6 +221,9 @@ async def test_adress_som_saknas_ger_kommunens_omraden(hass, aioclient_mock):
     result = await _sok(hass, "Kungsgatan 12, Avesta")
     assert result["step_id"] == "adress_omrade"
     assert result["description_placeholders"]["notice"] == "Kontrollera att området stämmer."
+    assert (
+        result["description_placeholders"]["area_links"] == "[Avesta kommun](https://sopor.hardyson.se/avesta/omraden)"
+    )
     assert [v["value"] for v in _val(result)] == ["avesta/trakt-7"]
     assert str(aioclient_mock.mock_calls[-1][1]).endswith("/omraden?plats=Avesta")
 

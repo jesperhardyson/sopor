@@ -16,14 +16,15 @@
 <div id="notices" role="alert" hidden>
   <p class="homey-form-label" data-i18n="pair.noticeIntro"></p>
   <div id="noticeList"></div>
+  <div id="areaLinks"></div>
   <button class="homey-button-primary-full" id="noticeContinue" type="button" data-i18n="pair.continue"></button>
 </div>
 
 <style>
   #status:empty { display: none; }
-  #coverageLink { text-decoration: underline; }
+  #coverageLink, #areaLinks a { text-decoration: underline; }
   #placeList { display: flex; flex-direction: column; gap: 8px; }
-  #noticeList p { margin-bottom: 12px; }
+  #noticeList p, #areaLinks p { margin-bottom: 12px; }
 </style>
 
 <script type="text/javascript">
@@ -55,13 +56,28 @@
   }
 
   // Den färdiga listan har ingen plats för text, så källans varning visas före den
-  function showHits(notices, intro) {
+  function showHits(notices, links, intro) {
     if (!notices.length) return Homey.showView('list_devices')
     placesBox.hidden = true
     document.getElementById('noticeList').replaceChildren(
       ...[...(intro ? [intro] : []), ...notices].map((notice) => {
         const paragraph = document.createElement('p')
         paragraph.textContent = notice
+        return paragraph
+      }),
+    )
+    // Områdessidan visar vilka platser som ingår och vem man kan fråga
+    document.getElementById('areaLinks').replaceChildren(
+      ...links.map(({ kommun, url }) => {
+        const link = document.createElement('a')
+        link.href = '#'
+        link.textContent = Homey.__('pair.areaLink', { kommun })
+        link.addEventListener('click', (event) => {
+          event.preventDefault()
+          Homey.popup(url)
+        })
+        const paragraph = document.createElement('p')
+        paragraph.append(link)
         return paragraph
       }),
     )
@@ -77,8 +93,8 @@
         choice.className = 'homey-button-secondary-full'
         choice.textContent = `${place.label} (${place.count})`
         choice.addEventListener('click', async () => {
-          const { notices } = await Homey.emit('place', place.key)
-          showHits(notices)
+          const { notices, areaLinks } = await Homey.emit('place', place.key)
+          showHits(notices, areaLinks)
         })
         return choice
       }),
@@ -100,10 +116,10 @@
     try {
       // Drivrutinen sparar träffarna åt list_devices
       const answer = await Homey.emit('search', q)
-      const { result, places, notices, street } = answer
+      const { result, places, notices, areaLinks, street } = answer
       status.textContent = ''
-      if (result === 'found') return showHits(notices)
-      if (result === 'areas') return showHits(notices, Homey.__('pair.areaChoice', { street }))
+      if (result === 'found') return showHits(notices, areaLinks)
+      if (result === 'areas') return showHits(notices, areaLinks, Homey.__('pair.areaChoice', { street }))
       if (result === 'places') return showPlaces(places)
       status.textContent = result === 'failed' ? Homey.__('pair.failed') : notFound(answer)
     } catch (error) {

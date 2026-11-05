@@ -143,16 +143,21 @@ const selectionFields = (source: Source | undefined) => ({
   notice: areaNoticeText(source) ?? null,
 })
 
-const v1Address = (a: Address, origin: string, sources: Source[]) => ({
-  id: a.id,
-  street: a.street,
-  locality: a.locality,
-  kommun: a.kommun,
-  source: a.sourceId,
-  detail: a.detail ?? null,
-  ...selectionFields(sources.find((s) => s.id === a.sourceId)),
-  url: `${origin}/api/v1/adress/${a.sourceId}/${encodeURIComponent(a.id)}`,
-})
+const v1Address = (a: Address, origin: string, sources: Source[]) => {
+  const source = sources.find((s) => s.id === a.sourceId)
+  return {
+    id: a.id,
+    street: a.street,
+    locality: a.locality,
+    kommun: a.kommun,
+    source: a.sourceId,
+    detail: a.detail ?? null,
+    ...selectionFields(source),
+    // Sajtens sida med alla platser i områdena och vem man kan fråga
+    areasUrl: source?.selection === 'area' ? `${origin}/${a.sourceId}/omraden` : null,
+    url: `${origin}/api/v1/adress/${a.sourceId}/${encodeURIComponent(a.id)}`,
+  }
+}
 
 /** Statiska källor söks lokalt i sin adressfil. */
 async function searchStatic(source: Source, query: string, origin: string, opts: HandlerOptions, areaPrefix: boolean): Promise<Address[]> {

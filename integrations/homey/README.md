@@ -37,7 +37,7 @@ npx homey app install  # installera på vald Homey (kolla först med homey selec
 
 ## Områden
 
-I kommuner utan koppling från adress till område, som Avesta och Säter, väljer användaren område. Hittas ingen adress på orten hämtar parningen områdena från `/api/v1/omraden` och visar källans varning före valet. Spec: `docs/specs/2026-11-04-appar-adress-till-omrade.md`.
+I kommuner utan koppling från adress till område, som Avesta och Säter, väljer användaren område. Hittas ingen adress på orten hämtar parningen områdena från `/api/v1/omraden` och visar källans varning före valet, med en länk till sajtens områdessida (`areasUrl`). Spec: `docs/specs/2026-11-04-appar-adress-till-omrade.md`.
 
 ## Släppa en version
 

@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from 'vitest'
 import type { SoporSearchHit } from './api.mjs'
-import { MAX_LIST, findHits, kommunNames, notices, parseQuery, placeCovered, places, searchOutcome } from './pairing.mjs'
+import { MAX_LIST, areaLinks, findHits, kommunNames, notices, parseQuery, placeCovered, places, searchOutcome } from './pairing.mjs'
 
 const hit = (street: string, locality: string, kommun = `${locality} kommun`): SoporSearchHit => ({
-  id: `${street}-${locality}`, street, locality, kommun, source: 'x', detail: null, notice: null, url: `https://sopor.hardyson.se/${street}`,
+  id: `${street}-${locality}`, street, locality, kommun, source: 'x', detail: null, notice: null, areasUrl: null, url: `https://sopor.hardyson.se/${street}`,
 })
 
 const many = (locality: string, n: number) => Array.from({ length: n }, (_, i) => hit(`Storgatan ${i + 1}`, locality))
@@ -132,5 +132,22 @@ describe('från adress till områdesval', () => {
     const c = client([])
     c.areas.mockRejectedValue(new Error('nere'))
     expect((await findHits(c, 'Storgatan 2', 'Säter')).result).toBe('none')
+  })
+})
+
+describe('areaLinks', () => {
+  const omrade = (kommun: string, areasUrl: string) => ({ ...hit('Område', '', kommun), areasUrl })
+
+  it('ger inga länkar för vanliga adresser', () => {
+    expect(areaLinks([hit('Storgatan 2', 'Uppsala')])).toEqual([])
+  })
+
+  it('ger en länk per kommun', () => {
+    const avesta = 'https://sopor.hardyson.se/avesta/omraden'
+    const sater = 'https://sopor.hardyson.se/sater/omraden'
+    expect(areaLinks([omrade('Avesta kommun', avesta), omrade('Avesta kommun', avesta), omrade('Säters kommun', sater)])).toEqual([
+      { kommun: 'Avesta kommun', url: avesta },
+      { kommun: 'Säters kommun', url: sater },
+    ])
   })
 })

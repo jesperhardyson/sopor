@@ -28,7 +28,7 @@
       },
       "adress_omrade": {
         "title": "Choose area or address",
-        "description": "Choose the area or address where your waste is collected.\n\nYou choose this area yourself, so check that it is right. The wrong area can make you miss a collection. From Sopor, in Swedish only:\n\n{notice}",
+        "description": "Choose the area or address where your waste is collected.\n\nYou choose this area yourself, so check that it is right. The wrong area can make you miss a collection. From Sopor, in Swedish only:\n\n{notice}\n\nSee which places belong to the areas (in Swedish): {area_links}",
         "data": {
           "adress": "Area or address"
         }
