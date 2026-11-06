@@ -1,0 +1,25 @@
+[ {
+  "additionalInformation" : "",
+  "address" : {
+    "city" : "Sundsvall",
+    "houseNumber" : "18",
+    "postalCode" : "85461",
+    "street" : "Västra Radiogatan"
+  },
+  "facilityCategory" : "VILLA",
+  "garbageScheduledDay" : "WEDNESDAY",
+  "garbageScheduledWeek" : "ODD",
+  "schedules" : [ {
+    "nextPickupDate" : "2026-11-18",
+    "wasteType" : "WASTE"
+  }, {
+    "nextPickupDate" : "2026-11-18",
+    "wasteType" : "FOOD"
+  }, {
+    "nextPickupDate" : "2026-12-02",
+    "wasteType" : "PAPER"
+  }, {
+    "nextPickupDate" : "2026-12-16",
+    "wasteType" : "PLASTIC"
+  } ]
+} ]

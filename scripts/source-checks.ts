@@ -10,6 +10,8 @@ import { NSR_URL, nsrSchedule, nsrSearch } from '../src/server/nsr.js'
 import { APPBOLAGET_URL, appbolagetFind, appbolagetSearch, appbolagetServices, isFee, scheduleFromServices, serviceType } from '../src/server/appbolaget.js'
 import { ROSLAGSVATTEN_URL, roslagsvattenFind, roslagsvattenPickups, roslagsvattenSchedule, roslagsvattenSearch } from '../src/server/roslagsvatten.js'
 import { BORLANGE_URL, borlangeFind, borlangePickups, borlangeSchedule, borlangeSearch } from '../src/server/borlange.js'
+import { MSVA_URL, msvaFind, msvaSchedule, msvaSearch, msvaWasteType } from '../src/server/msva.js'
+import { TELGE_URL, telgeFind, telgePickups, telgeSchedule, telgeSearch } from '../src/server/telge.js'
 import { UDDEVALLA_URL, uddevallaFind, uddevallaPickups, uddevallaSchedule, uddevallaSearch, uddevallaWasteType } from '../src/server/uddevalla.js'
 import { isKnownSrvJob, SRV_URL, srvFind, srvSchedule, srvSearch, srvWasteType } from '../src/server/srv.js'
 import { parseSvoaAddress, sameSvoaAddress, svoaAddressId, SVOA_URL, svoaFractions, svoaSchedule, svoaSearch, svoaStep } from '../src/server/svoa.js'
@@ -257,6 +259,65 @@ export async function checkBorlangeSource(source: Source, probe: string, today: 
     ]
     const end = addDays(today, HORIZON_DAYS)
     const upcoming = borlangeSchedule(pickups, today).events.some((e) => e.date <= end)
+    return { ...base, state: upcoming ? 'fungerar' : 'inga-tomningar', unknownWasteTypes }
+  } catch (error) {
+    return { ...base, state: stateForError(error), error: (error as Error).message }
+  }
+}
+
+/** MSVA: kontrolladressen är ett adress-id. Tomma svar blir "inga tömningar", eftersom källan bara har nästa tömning. */
+export async function checkMsvaSource(source: Source, probe: string, today: string, fetchFn: typeof fetch = fetch): Promise<SourceResult> {
+  const base = { sourceId: source.id, name: source.name, baseUrl: MSVA_URL, probe }
+  try {
+    const found = await msvaFind(probe, fetchFn, TIMEOUT_MS)
+    if (!found) {
+      const street = (queryFromAddressId(probe)?.query ?? probe).split(',')[0]
+      const hits = await msvaSearch(street, fetchFn, TIMEOUT_MS)
+      if (hits.length === 0) return { ...base, state: 'tom' }
+      return { ...base, state: 'nytt-format', error: `Kontrolladressen ${probe} hittades inte (nytt format hos MSVA?), bara t.ex. ${edpAddressId(hits[0].building)}` }
+    }
+    const unknownWasteTypes = [
+      ...new Set(
+        found.pickups
+          .filter((p) => {
+            const mapped = msvaWasteType(p.type)
+            return mapped?.fractions.includes('karl') && !isKnownBin(mapped.label ?? '')
+          })
+          .map((p) => p.type),
+      ),
+    ]
+    const end = addDays(today, HORIZON_DAYS)
+    const upcoming = msvaSchedule(found.pickups, today).events.some((e) => e.date <= end)
+    return { ...base, state: upcoming ? 'fungerar' : 'inga-tomningar', unknownWasteTypes }
+  } catch (error) {
+    return { ...base, state: stateForError(error), error: (error as Error).message }
+  }
+}
+
+/** Telge: kontrolladressen är ett adress-id. Fyrfackskärlen är kända, trots att de visas som kärl. */
+export async function checkTelgeSource(source: Source, probe: string, today: string, fetchFn: typeof fetch = fetch): Promise<SourceResult> {
+  const base = { sourceId: source.id, name: source.name, baseUrl: TELGE_URL, probe }
+  try {
+    const found = await telgeFind(probe, fetchFn, TIMEOUT_MS)
+    if (!found) {
+      const street = (queryFromAddressId(probe)?.query ?? probe).split(',')[0]
+      const hits = await telgeSearch(street, fetchFn, TIMEOUT_MS)
+      if (hits.length === 0) return { ...base, state: 'tom' }
+      return { ...base, state: 'nytt-format', error: `Kontrolladressen ${probe} hittades inte (ny text hos Telge?), bara t.ex. ${edpAddressId(hits[0])}` }
+    }
+    const pickups = await telgePickups(found.raw, fetchFn, TIMEOUT_MS)
+    const unknownWasteTypes = [
+      ...new Set(
+        pickups
+          .filter((p) => {
+            const mapped = mapWasteType(p.type, '', p.description)
+            return !p.description && mapped?.fractions.includes('karl') && !isKnownBin(mapped.label ?? '')
+          })
+          .map((p) => p.type),
+      ),
+    ]
+    const end = addDays(today, HORIZON_DAYS)
+    const upcoming = telgeSchedule(pickups, today).events.some((e) => e.date <= end)
     return { ...base, state: upcoming ? 'fungerar' : 'inga-tomningar', unknownWasteTypes }
   } catch (error) {
     return { ...base, state: stateForError(error), error: (error as Error).message }

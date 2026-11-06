@@ -83,14 +83,14 @@ Appbolaget är en plattform med flera kunder. Den byggs med kunden som inställn
 
 | Ordning | Källa | Kommuner | Invånare | Format (*overifierat*) |
 |---|---|---|---|---|
-| 1 | **Telge** | Södertälje, Nykvarn | 115 000 | JSON, `telge.se/api/thorweb/garbagecollection` |
-| 2 | **MSVA** | Sundsvall | 99 000 | JSON, `api.sundsvall.se/Garbage/2281/schedules` (kommunens öppna API, bäst dokumenterat av alla) |
+| 1 | **Telge** (klar, `docs/specs/2026-11-06-sundsvall-sodertalje.md`). Täcker inte Nykvarn, som går till fas 5 | Södertälje | 103 000 | JSON, `telge.se/api/thorweb/garbagecollection`. Riktiga datum ett år framåt |
+| 2 | **MSVA** (klar, samma spec) | Sundsvall | 99 000 | JSON, `api.sundsvall.se/Garbage/2281/schedules`. Bara småhus och nästa tömning per kärl |
 | 3 | **Lumire** | Luleå | 80 000 | JSON, `lumire.se/api/waste-pickup` |
 | 4 | **Affärsverken** | Karlskrona | 66 000 | JSON, `kundapi.affarsverken.se/api/v1/open-api/`. Hämtar en anonym token först, utan inloggning. Räknas som publik källa (beslut 2026-11-03) |
 | 5 | **LSR** | Landskrona, Svalöv | 62 000 | JSON, `minasidor.lsr.nu/api/api/external/schedule/` |
 | 6 | **Pireva** | Piteå | 42 000 | Sökning i JSON, schemat i HTML |
 
-**Vinst:** cirka 460 000 invånare, **till cirka 48 %**. Sysav och Ökrab har också JSON men oklart vilka kommuner de hämtar i. Kartlägg dem innan de rangordnas.
+**Paus efter Telge och MSVA (beslut 7).** **Vinst om allt byggs:** cirka 450 000 invånare, **till cirka 48 %**. Sysav och Ökrab har också JSON men oklart vilka kommuner de hämtar i. Kartlägg dem innan de rangordnas.
 
 ## Fas 4: Skrapning av HTML (görs inte)
 
@@ -132,3 +132,4 @@ Göteborg, Linköping, Umeå, Karlstad, Halmstad, Eskilstuna, Gävle och Norrkö
 4. **Förfrågningarna i fas 5 blir GitHub-ärenden**, ett per kommun, med ett utkast.
 5. **Avfallsapp/Nova hoppas över** (Sigtuna, Motala, Upplands-Bro, Söderköping och Vallentuna). Sökningen svarar utan token men alltid tomt. Den kräver att en låtsad mobil enhet registreras (`POST /register`) och att adressen kopplas till enheten på leverantörens server (`next-pickup/set-status`), och schemat är bara nästa tömning per kärl. Kommunerna går till fas 5.
 6. **Rambo hoppas över, bara Uddevalla byggs av WordPress-appen** (2026-11-04). Tjänsten ger nästa tömning per kärl utan frekvens. Hos Rambo hade 51 av 114 kärl (45 %) ett datum som redan passerat, som äldst en vecka, och utan frekvens går rätt datum inte att räkna fram. Lysekil, Sotenäs, Munkedal och Tanum går till fas 5, med en fråga om schemat eller frekvensen. Hos Uddevalla Energi hade inget av 94 kärl ett passerat datum, så där byggs källan trots att kalendern bara visar nästa tömning.
+7. **Fas 3 pausas efter Telge och MSVA** (2026-11-06). De återstående källorna täcker mindre kommuner och var och en ger mer underhåll. Sajten hade 55 besökare den första veckan och två sökningar på saknade kommuner, så efterfrågan säger inget än. Fortsätt när `/saknas/<kommun>` i statistiken visar vilka kommuner som efterfrågas. Fas 5 kan gå parallellt, eftersom den mest är väntan på svar.
