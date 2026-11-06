@@ -115,6 +115,24 @@ curl 'https://sopor.hardyson.se/api/v1/omraden?plats=Avesta'
 - Svaret har samma form som `/sok`, och varje område har `selection: "area"` och `notice`, som ska visas innan användaren väljer. `areasUrl` är webbsidan som visar vilka platser som ingår i områdena och vem man kan fråga. Länka gärna dit, för Sopor vet inte vilket område en adress hör till. Fältet finns också på träffarna från `/sok` och är `null` för en vanlig adress.
 - En plats utan områdesval ger en tom lista.
 
+Vet användaren inte sitt område kan du fråga när kärlet senast tömdes och skicka datumet som `tomning`:
+
+```bash
+curl 'https://sopor.hardyson.se/api/v1/omraden?plats=Avesta&tomning=2026-10-27'
+```
+
+Svaret innehåller då bara områden med hämtning det datumet. Utan `tomning` är svaret oförändrat.
+
+- `tomning` har formen `YYYY-MM-DD`. Ett ogiltigt datum eller ett datum efter dagens datum i `Europe/Stockholm` ger `400 bad_request`.
+- Varje träff får `pickups`, till exempel `{ "previous": ["2026-10-13", "2026-10-27"], "next": "2026-11-10" }`. Datumen räknas från `tomning`, inte från i dag: `previous` är högst två tömningar med det angivna datumet sist, och `next` är tömningen efter det. `next` kan alltså redan ha passerat, och den är `null` om schemat inte har fler datum.
+- Svaret får `dateCovered`, som säger vad en tom lista betyder:
+  - `true`: datumet ligger inom schemats period, så inget område har hämtning den dagen.
+  - `false`: alla källor svarade, och datumet ligger utanför schemat.
+  - `null`: datumet gick inte att bedöma, eftersom platsen saknar områdesval eller en källa inte svarade (se `failed`).
+- Flera områden kan ha hämtning samma dag, och då kommer alla med. Låt användaren välja.
+
+Sopor bygger svaret på datumet användaren anger och vet fortfarande inte vilket område en adress hör till. En försenad tömning kan ge fel område, så visa det, visa `notice` och låt användaren bekräfta valet. `pickups` går bra att visa som kontroll: "Tömningar 13 okt och 27 okt. Nästa är 10 nov. Stämmer det?"
+
 ### `GET /api/v1/kallor`
 
 Alla synliga källor (id, namn, vilka kommuner de täcker) och alla kända fraktioner med namn, färg och ikon. Cachas i ett dygn. Bra för att bygga en källväljare.

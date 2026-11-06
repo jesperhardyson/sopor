@@ -366,7 +366,7 @@
       "get": {
         "operationId": "listAreas",
         "summary": "Områden på en plats",
-        "description": "Områdena hos källor med områdesval, till exempel Avesta och Säter, som täcker platsen. Använd den när en adress inte hittas: användaren väljer själv område, och Sopor gissar aldrig vilket område en adress hör till. En plats utan områdesval ger en tom lista. Källor som inte svarade står i failed.",
+        "description": "Områdena hos källor med områdesval, till exempel Avesta och Säter, som täcker platsen. Använd den när en adress inte hittas: användaren väljer själv område, och Sopor gissar aldrig vilket område en adress hör till. En plats utan områdesval ger en tom lista. Källor som inte svarade står i failed. Med tomning ger den bara områden med hämtning det datumet. Svaret bygger på datumet användaren anger, och en försenad tömning kan ge fel område, så visa det och låt användaren bekräfta valet.",
         "parameters": [
           {
             "name": "plats",
@@ -378,11 +378,22 @@
               "minLength": 2
             },
             "example": "Avesta"
+          },
+          {
+            "name": "tomning",
+            "in": "query",
+            "required": false,
+            "description": "Datumet då kärlet senast tömdes, YYYY-MM-DD. Får inte ligga efter dagens datum i Europe/Stockholm. Utan parametern är svaret oförändrat.",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "example": "2026-10-27"
           }
         ],
         "responses": {
           "200": {
-            "description": "Områden.",
+            "description": "Områden. Med tomning är svaret DatedAreasResponse, annars SearchResponse.",
             "headers": {
               "Access-Control-Allow-Origin": {
                 "description": "Alltid *.",
@@ -401,31 +412,72 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SearchResponse"
-                },
-                "example": {
-                  "apiVersion": "1",
-                  "addresses": [
+                  "oneOf": [
                     {
-                      "id": "trakt-7",
-                      "street": "Avesta tätort, Östanfors m.fl.",
-                      "locality": "",
-                      "kommun": "Avesta kommun",
-                      "source": "avesta",
-                      "detail": "Tisdag, jämn vecka · Trakt 7",
-                      "selection": "area",
-                      "notice": "Kontrollera att området stämmer. Väljer du fel område kan du missa din tömning.",
-                      "areasUrl": "https://sopor.hardyson.se/avesta/omraden",
-                      "url": "https://sopor.hardyson.se/api/v1/adress/avesta/trakt-7"
+                      "$ref": "#/components/schemas/SearchResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/DatedAreasResponse"
                     }
-                  ],
-                  "failed": []
+                  ]
+                },
+                "examples": {
+                  "SearchResponse": {
+                    "summary": "Utan tomning",
+                    "value": {
+                      "apiVersion": "1",
+                      "addresses": [
+                        {
+                          "id": "trakt-7",
+                          "street": "Avesta tätort, Östanfors m.fl.",
+                          "locality": "",
+                          "kommun": "Avesta kommun",
+                          "source": "avesta",
+                          "detail": "Tisdag, jämn vecka · Trakt 7",
+                          "selection": "area",
+                          "notice": "Kontrollera att området stämmer. Väljer du fel område kan du missa din tömning.",
+                          "areasUrl": "https://sopor.hardyson.se/avesta/omraden",
+                          "url": "https://sopor.hardyson.se/api/v1/adress/avesta/trakt-7"
+                        }
+                      ],
+                      "failed": []
+                    }
+                  },
+                  "DatedAreasResponse": {
+                    "summary": "Med tomning=2026-10-27",
+                    "value": {
+                      "apiVersion": "1",
+                      "addresses": [
+                        {
+                          "id": "trakt-7",
+                          "street": "Avesta tätort, Östanfors m.fl.",
+                          "locality": "",
+                          "kommun": "Avesta kommun",
+                          "source": "avesta",
+                          "detail": "Tisdag, jämn vecka · Trakt 7",
+                          "selection": "area",
+                          "notice": "Kontrollera att området stämmer. Väljer du fel område kan du missa din tömning.",
+                          "areasUrl": "https://sopor.hardyson.se/avesta/omraden",
+                          "url": "https://sopor.hardyson.se/api/v1/adress/avesta/trakt-7",
+                          "pickups": {
+                            "previous": [
+                              "2026-10-13",
+                              "2026-10-27"
+                            ],
+                            "next": "2026-11-10"
+                          }
+                        }
+                      ],
+                      "failed": [],
+                      "dateCovered": true
+                    }
+                  }
                 }
               }
             }
           },
           "400": {
-            "description": "Parametern q saknas eller har färre än tre tecken.",
+            "description": "Parametern plats saknas eller har färre än två tecken, eller så är tomning ogiltigt eller ligger i framtiden.",
             "headers": {
               "Access-Control-Allow-Origin": {
                 "description": "Alltid *.",
@@ -814,6 +866,110 @@
           }
         }
       },
+      "DatedAreaHit": {
+        "type": "object",
+        "description": "Ett område med hämtning det angivna datumet.",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "street",
+          "locality",
+          "kommun",
+          "source",
+          "detail",
+          "selection",
+          "notice",
+          "areasUrl",
+          "url",
+          "pickups"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Adressens id."
+          },
+          "street": {
+            "type": "string",
+            "description": "Gatuadress, t.ex. \"Storgatan 2\". En träff kan också vara ett område (en källa som delar in kommunen i områden i stället för adresser); då är det områdets namn, t.ex. \"Avesta tätort\"."
+          },
+          "locality": {
+            "type": "string",
+            "description": "Ort. Tom för ett område."
+          },
+          "kommun": {
+            "type": "string",
+            "description": "Kommunens namn."
+          },
+          "source": {
+            "type": "string",
+            "description": "Källans id."
+          },
+          "detail": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Skiljer träffar med samma gata och ort åt, t.ex. \"Byggnad 78838\". För ett område är det hämtdagen, t.ex. \"Tisdag, jämn vecka · Trakt 7\". null när det saknas."
+          },
+          "selection": {
+            "type": "string",
+            "enum": [
+              "address",
+              "area"
+            ],
+            "description": "Hur träffen väljs. \"area\" betyder att källan bara publicerar scheman per område, så att användaren väljer området själv. Nya värden kan tillkomma."
+          },
+          "notice": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Det vi inte vet om schemat, att visa för användaren. Datumen kommer från källan, men för ett område vet vi inte att det gäller en viss adress. null för en adress."
+          },
+          "areasUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Webbsida som hjälper användaren att välja område: vilka platser som ingår och vem man kan fråga. Sidan är på svenska. null för en adress.",
+            "format": "uri"
+          },
+          "url": {
+            "type": "string",
+            "description": "Adressens schema i API:t (absolut URL, id:t är procentkodat).",
+            "format": "uri"
+          },
+          "pickups": {
+            "type": "object",
+            "description": "Räknas från det angivna datumet, inte från i dag.",
+            "additionalProperties": false,
+            "required": [
+              "previous",
+              "next"
+            ],
+            "properties": {
+              "previous": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "minItems": 1,
+                "maxItems": 2,
+                "description": "Områdets högst två senaste tömningar till och med det angivna datumet, som står sist."
+              },
+              "next": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date",
+                "description": "Områdets tömning efter det angivna datumet. Kan redan ha passerat. null när schemat inte har fler datum."
+              }
+            }
+          }
+        }
+      },
       "NextPickup": {
         "type": "object",
         "description": "Nästa hämtning för en fraktion.",
@@ -1176,6 +1332,46 @@
               "description": "Källans id."
             },
             "description": "Källor som inte svarade. Resultatet kan då vara ofullständigt; försök igen om en stund. Tom när alla svarade."
+          }
+        }
+      },
+      "DatedAreasResponse": {
+        "type": "object",
+        "description": "Områden med hämtning det angivna datumet.",
+        "additionalProperties": false,
+        "required": [
+          "apiVersion",
+          "addresses",
+          "failed",
+          "dateCovered"
+        ],
+        "properties": {
+          "apiVersion": {
+            "type": "string",
+            "const": "1",
+            "description": "API-versionen. Alltid \"1\"."
+          },
+          "addresses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DatedAreaHit"
+            },
+            "description": "Områden med hämtning datumet. Flera kan ha hämtning samma dag."
+          },
+          "failed": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "Källans id."
+            },
+            "description": "Källor som inte svarade. Resultatet kan då vara ofullständigt; försök igen om en stund. Tom när alla svarade."
+          },
+          "dateCovered": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "true: datumet ligger inom perioden för minst en källa, så en tom lista betyder att inget område har hämtning den dagen. false: alla källor svarade och datumet ligger utanför allas schema. null: ingen källa kunde bedöma datumet, eftersom platsen saknar områdesval eller en källa inte svarade (se failed)."
           }
         }
       },

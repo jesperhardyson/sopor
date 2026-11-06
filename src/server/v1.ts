@@ -1,13 +1,13 @@
 // Det publika, versionerade API:t (/api/v1/…). Formaterar svaren; källogiken ligger i lookup.ts.
 // Kontraktet: fält tas aldrig bort eller byter namn, och fält utan värde skickas som null.
 
-import { areaDetail } from '../domain/areas.js'
-import { secondsToStockholmMidnight, todayInStockholm } from '../domain/dates.js'
+import { areaDetail, areasForDate } from '../domain/areas.js'
+import { isValidDate, secondsToStockholmMidnight, todayInStockholm } from '../domain/dates.js'
 import { FRACTIONS, sortFractions } from '../domain/fractions.js'
 import { nextPerFraction, pickupSummary } from '../domain/next.js'
 import { upcoming } from '../domain/schedule.js'
 import { mergeHits, normalize, searchAddresses } from '../domain/search.js'
-import type { Address, FractionId, Schedule } from '../domain/types.js'
+import type { Address, Area, FractionId, Schedule } from '../domain/types.js'
 import { namesSource, pickLiveSources, shardKey, splitPlace, streetAtSourcePlace, type StreetShard } from '../data/street-index.js'
 import type { AddressIndexFile, AreasIndexFile } from '../data/static-format.js'
 import { areaNoticeText, isLive, needsPlaces, SOURCES, type Source } from '../sources/index.js'
@@ -225,11 +225,19 @@ export const handleV1Search: V1Handler = async (request, opts = {}) => {
   return v1Json({ addresses, failed }, 200, failed.length > 0 ? CACHE_PARTIAL : CACHE_SEARCH)
 }
 
-/** GET /api/v1/omraden?plats=avesta: områdena hos källor med områdesval som täcker platsen. Ingen gissning om adressen. */
+/**
+ * GET /api/v1/omraden?plats=avesta[&tomning=2026-10-27]: områdena hos källor med områdesval som täcker platsen.
+ * Med tomning bara områden med hämtning det datumet. Ingen gissning om adressen: datumet kommer från användaren.
+ */
 export const handleV1Areas: V1Handler = async (request, opts = {}) => {
   const url = new URL(request.url)
   const place = (url.searchParams.get('plats') ?? '').trim().replace(/\s+kommun$/i, '')
   if (normalize(place).length < 2) return v1Error(400, 'bad_request', 'Minst två tecken')
+
+  const now = opts.now ?? new Date()
+  const tomning = url.searchParams.get('tomning')
+  if (tomning !== null && !isValidDate(tomning)) return v1Error(400, 'bad_request', 'Ogiltigt datum, använd formen ÅÅÅÅ-MM-DD')
+  if (tomning !== null && tomning > todayInStockholm(now)) return v1Error(400, 'bad_request', 'Datumet har inte varit än')
 
   const shard = await streetShard(place, url.origin, opts)
   const sources = visibleSources(opts).filter((s) => s.selection === 'area' && namesSource(place, shard, s))
@@ -238,14 +246,24 @@ export const handleV1Areas: V1Handler = async (request, opts = {}) => {
       const index = await siteJson<AreasIndexFile>(url.origin, `/data/${source.id}/omraden.json`, opts.fetchFn, opts.timeoutMs)
       if (!index) throw new Error(`${source.id} saknar områdesfil`)
       const kommun = source.kommuner[0]?.name ?? source.name
-      return index.areas.map(
-        (area): Address => ({ id: area.id, street: area.name, locality: '', sourceId: source.id, kommun, detail: areaDetail(area) }),
-      )
+      const toAddress = (area: Area): Address => ({ id: area.id, street: area.name, locality: '', sourceId: source.id, kommun, detail: areaDetail(area) })
+      if (tomning === null) return { hits: index.areas.map((area) => ({ address: toAddress(area) })), covered: null }
+      const result = areasForDate(tomning, index.areas)
+      const matches = result.kind === 'found' ? result.matches : []
+      return {
+        hits: matches.map(({ area, previous, next }) => ({ address: toAddress(area), pickups: { previous, next } })),
+        covered: result.kind !== 'outside',
+      }
     }),
   )
   const failed = sources.filter((_, i) => results[i].status === 'rejected').map((s) => s.id)
-  const addresses = results.flatMap((r) => (r.status === 'fulfilled' ? r.value : [])).map((a) => v1Address(a, url.origin, sources))
-  return v1Json({ addresses, failed }, 200, failed.length > 0 ? CACHE_PARTIAL : CACHE_SEARCH)
+  const answered = results.flatMap((r) => (r.status === 'fulfilled' ? [r.value] : []))
+  const addresses = answered.flatMap((r) => r.hits).map(({ address, ...rest }) => ({ ...v1Address(address, url.origin, sources), ...rest }))
+  if (tomning === null) return v1Json({ addresses, failed }, 200, failed.length > 0 ? CACHE_PARTIAL : CACHE_SEARCH)
+
+  // true räcker med en källa. Annars vet vi bara att datumet ligger utanför om alla källor svarade, och minst en fanns.
+  const dateCovered = answered.some((r) => r.covered) ? true : failed.length > 0 || answered.length === 0 ? null : false
+  return v1Json({ addresses, failed, dateCovered }, 200, failed.length > 0 ? CACHE_PARTIAL : addressCacheControl(now))
 }
 
 /** GET /api/v1/kallor */
