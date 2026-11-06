@@ -11,7 +11,9 @@ import { ROSLAGSVATTEN_URL } from '../src/server/roslagsvatten.js'
 import { BORLANGE_URL } from '../src/server/borlange.js'
 import { UDDEVALLA_URL } from '../src/server/uddevalla.js'
 import type { Source } from '../src/sources/index.js'
-import { checkAppbolagetSource, checkBorlangeSource, checkEdpSource, checkNsrSource, checkRoslagsvattenSource, checkSrvSource, checkUddevallaSource, checkSvoaSource, checkVasydSource, checkStaticSource, checkViaSite, unreachableFromHere } from './source-checks'
+import { MSVA_URL } from '../src/server/msva.js'
+import { TELGE_URL } from '../src/server/telge.js'
+import { checkAppbolagetSource, checkBorlangeSource, checkEdpSource, checkMsvaSource, checkNsrSource, checkRoslagsvattenSource, checkTelgeSource, checkSrvSource, checkUddevallaSource, checkSvoaSource, checkVasydSource, checkStaticSource, checkViaSite, unreachableFromHere } from './source-checks'
 
 const json = (body: unknown) =>
   new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json; charset=utf-8' } })
@@ -542,6 +544,101 @@ describe('checkBorlangeSource', () => {
   it('rapporterar okända typer', async () => {
     const svar = [karl('Grovsopor'), karl('Matavfall')]
     expect((await check(respond([row('1')], svar))).unknownWasteTypes).toEqual(['Grovsopor'])
+  })
+})
+
+describe('checkMsvaSource', () => {
+  const msva: Source = { ...source, id: 'msva', name: 'Mittsverige Vatten & Avfall', config: { system: 'msva' } }
+  const probe = 'västra-radiogatan-18_sundsvall-85461'
+  const row = (schedules: unknown[] = [{ nextPickupDate: '2026-11-18', wasteType: 'WASTE' }], street = 'Västra Radiogatan') => ({
+    additionalInformation: '',
+    address: { city: 'Sundsvall', houseNumber: '18', postalCode: '85461', street },
+    schedules,
+  })
+  const respond = (body: unknown) =>
+    vi.fn(async () => {
+      if (body instanceof Error) throw body
+      return new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json' } })
+    }) as unknown as typeof fetch
+  const check = (fetchFn: typeof fetch) => checkMsvaSource(msva, probe, '2026-11-06', fetchFn)
+
+  it('fungerar med en tömning inom 60 dagar', async () => {
+    expect(await check(respond([row()]))).toMatchObject({ state: 'fungerar', baseUrl: MSVA_URL, probe, unknownWasteTypes: [] })
+  })
+
+  it('svarar inte vid timeout', async () => {
+    expect((await check(respond(new TypeError('fetch failed')))).state).toBe('svarar-inte')
+  })
+
+  it('har nytt format vid okänd form', async () => {
+    expect((await check(respond({ x: 1 }))).state).toBe('nytt-format')
+  })
+
+  it('är tom när inget hittas', async () => {
+    expect((await check(respond([]))).state).toBe('tom')
+  })
+
+  it('har nytt format när bara andra adresser hittas', async () => {
+    const r = await check(respond([row(undefined, 'Östermovägen')]))
+    expect(r.state).toBe('nytt-format')
+    expect(r.error).toContain('hittades inte')
+  })
+
+  it('märker om tjänsten slutar ge kommande tömningar', async () => {
+    expect((await check(respond([row([])]))).state).toBe('inga-tomningar')
+    expect((await check(respond([row([{ nextPickupDate: '2026-11-02', wasteType: 'WASTE' }])]))).state).toBe('inga-tomningar')
+  })
+
+  it('rapporterar okända typer', async () => {
+    const rows = [row([{ nextPickupDate: '2026-11-18', wasteType: 'BULKY' }, { nextPickupDate: '2026-11-18', wasteType: 'FOOD' }])]
+    expect((await check(respond(rows))).unknownWasteTypes).toEqual(['BULKY'])
+  })
+})
+
+describe('checkTelgeSource', () => {
+  const telge: Source = { ...source, id: 'telge', name: 'Telge Återvinning', config: { system: 'telge' } }
+  const probe = `bergsgatan-22_södertälje-${idHash('BERGSGATAN 22, SÖDERTÄLJE')}`
+  const row = (typeOfWasteDescription = 'Restavfall', date = '2026-11-10T00:00:00', extra = {}) => ({ date, typeOfWasteDescription, typeOfWaste: 'X', title: 'Hämtning', vehicleDescription: '', ...extra })
+  const respond = (forslag: unknown, schema: unknown = [row()]) =>
+    vi.fn(async (input: string | URL | Request) => {
+      const body = String(input).includes('/autocomplete/') ? forslag : schema
+      if (body instanceof Error) throw body
+      return new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json' } })
+    }) as unknown as typeof fetch
+  const check = (fetchFn: typeof fetch) => checkTelgeSource(telge, probe, '2026-11-06', fetchFn)
+  const adress = ['BERGSGATAN 22, SÖDERTÄLJE']
+
+  it('fungerar med en tömning inom 60 dagar', async () => {
+    expect(await check(respond(adress))).toMatchObject({ state: 'fungerar', baseUrl: TELGE_URL, probe, unknownWasteTypes: [] })
+  })
+
+  it('svarar inte vid timeout', async () => {
+    expect((await check(respond(new TypeError('fetch failed')))).state).toBe('svarar-inte')
+  })
+
+  it('har nytt format vid okänd form och okända datum', async () => {
+    expect((await check(respond({ x: 1 }))).state).toBe('nytt-format')
+    expect((await check(respond(adress, [row('Restavfall', 'snart')]))).state).toBe('nytt-format')
+  })
+
+  it('är tom när sökningen inte hittar något', async () => {
+    expect((await check(respond([]))).state).toBe('tom')
+  })
+
+  it('har nytt format när bara andra adresser hittas', async () => {
+    const r = await check(respond(['BERGSGATAN 22 A, SÖDERTÄLJE']))
+    expect(r.state).toBe('nytt-format')
+    expect(r.error).toContain('ny text hos Telge')
+  })
+
+  it('märker om tjänsten slutar ge kommande tömningar', async () => {
+    expect((await check(respond(adress, []))).state).toBe('inga-tomningar')
+    expect((await check(respond(adress, [row('Restavfall', '2026-11-02T00:00:00')]))).state).toBe('inga-tomningar')
+  })
+
+  it('rapporterar okända typer men inte fyrfackskärl eller trädgårdsavfall', async () => {
+    const schema = [row('Grovsopor'), row('Trädgårdsavfall'), row('Hemsortering', undefined, { typeOfWaste: 'HEMSORT', vehicleDescription: 'Hemsortering 4-fack', title: 'Kärl 1' })]
+    expect((await check(respond(adress, schema))).unknownWasteTypes).toEqual(['Grovsopor'])
   })
 })
 

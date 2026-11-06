@@ -17,6 +17,8 @@ import { SRV_CUSTOMER_TIMEOUT_MS, srvDetails, srvSearch } from './srv.js'
 import { roslagsvattenDetails, roslagsvattenSearch } from './roslagsvatten.js'
 import { uddevallaDetails, uddevallaSearch } from './uddevalla.js'
 import { borlangeSearch } from './borlange.js'
+import { msvaSearch } from './msva.js'
+import { telgeSearch } from './telge.js'
 import { lookupAddress } from './lookup.js'
 
 export interface HandlerOptions {
@@ -61,8 +63,8 @@ export async function searchLiveSource(source: LiveSource, street: string, place
       .map((a): Address => ({ id: svoaAddressId(a), street: a.street, locality: a.locality, sourceId: source.id, kommun }))
       .filter((a) => matchesPlace(a, place))
   }
-  if (source.config.system === 'nsr' || source.config.system === 'srv' || source.config.system === 'appbolaget' || source.config.system === 'uddevalla' || source.config.system === 'roslagsvatten' || source.config.system === 'borlange') {
-    // NSR, SRV, Appbolaget, Uddevalla, Roslagsvatten och Borlänge hittar inget med orten i sökningen, så den filtreras fram här.
+  if (source.config.system === 'nsr' || source.config.system === 'srv' || source.config.system === 'appbolaget' || source.config.system === 'uddevalla' || source.config.system === 'roslagsvatten' || source.config.system === 'borlange' || source.config.system === 'msva' || source.config.system === 'telge') {
+    // NSR, SRV, Appbolaget, Uddevalla, Roslagsvatten, Borlänge, MSVA och Telge hittar inget med orten i sökningen, så den filtreras fram här.
     const [streetOnly, typedPlace = ''] = street.split(',').map((p) => p.trim())
     const timeoutMs = opts.timeoutMs ?? 3000
     const inPlace = (b: EdpBuilding) => matchesPlace(toAddress(source, b, opts.places), place || typedPlace)
@@ -78,6 +80,16 @@ export async function searchLiveSource(source: LiveSource, street: string, place
     }
     if (source.config.system === 'borlange') {
       return withDetails(await borlangeSearch(streetOnly, opts.fetchFn, timeoutMs))
+        .filter(([b]) => inPlace(b))
+        .map(([b, detail]) => toAddress(source, b, opts.places, detail))
+    }
+    if (source.config.system === 'msva') {
+      return withDetails((await msvaSearch(streetOnly, opts.fetchFn, timeoutMs)).map((f) => f.building))
+        .filter(([b]) => inPlace(b))
+        .map(([b, detail]) => toAddress(source, b, opts.places, detail))
+    }
+    if (source.config.system === 'telge') {
+      return withDetails(await telgeSearch(streetOnly, opts.fetchFn, opts.timeoutMs))
         .filter(([b]) => inPlace(b))
         .map(([b, detail]) => toAddress(source, b, opts.places, detail))
     }

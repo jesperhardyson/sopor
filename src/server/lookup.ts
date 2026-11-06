@@ -12,6 +12,8 @@ import { SRV_CUSTOMER_TIMEOUT_MS, srvFind, srvSchedule } from './srv.js'
 import { roslagsvattenFind, roslagsvattenPickups, roslagsvattenSchedule } from './roslagsvatten.js'
 import { uddevallaFind, uddevallaPickups, uddevallaSchedule } from './uddevalla.js'
 import { borlangeFind, borlangePickups, borlangeSchedule } from './borlange.js'
+import { msvaFind, msvaSchedule } from './msva.js'
+import { telgeFind, telgePickups, telgeSchedule } from './telge.js'
 import { vasydSchedule, vasydSearch } from './vasyd.js'
 import { queryFromSvoaId, sameSvoaAddress, SVOA_LIMIT, svoaSchedule, svoaSearch, type SvoaAddress } from './svoa.js'
 import { searchCandidates, toAddress, withDetails, type HandlerOptions } from './handlers.js'
@@ -39,6 +41,8 @@ export async function lookupAddress(
     if (source.config.system === 'appbolaget') return await lookupAppbolaget(source, source.config.unit, id, opts)
     if (source.config.system === 'uddevalla') return await lookupUddevalla(source, id, opts)
     if (source.config.system === 'borlange') return await lookupBorlange(source, id, opts)
+    if (source.config.system === 'msva') return await lookupMsva(source, id, opts)
+    if (source.config.system === 'telge') return await lookupTelge(source, id, opts)
     if (source.config.system === 'roslagsvatten') return await lookupRoslagsvatten(source, source.config.municipality, id, opts)
     return await lookupStatic(source, id, origin, opts)
   } catch (e) {
@@ -155,6 +159,20 @@ async function lookupBorlange(source: Source, id: string, opts: HandlerOptions):
   if (!found) return { status: 502 }
   const today = todayInStockholm(opts.now)
   return { status: 200, address: toAddress(source, found, opts.places), schedule: borlangeSchedule(await borlangePickups(found.raw, today, opts.fetchFn, timeoutMs), today) }
+}
+
+/** MSVA: postnummer och husnummer i id:t ger adressen, och svaret har redan kärlen. Ett id utan träff ger 502 (se lookupSvoa). */
+async function lookupMsva(source: Source, id: string, opts: HandlerOptions): Promise<Lookup> {
+  const found = await msvaFind(id, opts.fetchFn, opts.timeoutMs ?? 5000)
+  if (!found) return { status: 502 }
+  return { status: 200, address: toAddress(source, found.building, opts.places), schedule: msvaSchedule(found.pickups, todayInStockholm(opts.now)) }
+}
+
+/** Telge: som Borlänge. Riktiga datum ett år framåt, och en adress utan kärl är ett tomt schema. */
+async function lookupTelge(source: Source, id: string, opts: HandlerOptions): Promise<Lookup> {
+  const found = await telgeFind(id, opts.fetchFn, opts.timeoutMs)
+  if (!found) return { status: 502 }
+  return { status: 200, address: toAddress(source, found, opts.places), schedule: telgeSchedule(await telgePickups(found.raw, opts.fetchFn, opts.timeoutMs), todayInStockholm(opts.now)) }
 }
 
 /** Roslagsvatten: som Uddevalla, men kommunen krävs i varje anrop. */

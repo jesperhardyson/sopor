@@ -7,7 +7,7 @@ export interface Kommun {
 }
 
 /** Hur källans data hämtas. Ny leverantör = ny variant här + ny provider. */
-export type SourceConfig = { system: 'static' } | { system: 'edp'; baseUrl: string } | { system: 'svoa' } | { system: 'vasyd' } | { system: 'nsr' } | { system: 'srv' } | { system: 'appbolaget'; unit: string } | { system: 'uddevalla' } | { system: 'borlange' } | { system: 'roslagsvatten'; municipality: string }
+export type SourceConfig = { system: 'static' } | { system: 'edp'; baseUrl: string } | { system: 'svoa' } | { system: 'vasyd' } | { system: 'nsr' } | { system: 'srv' } | { system: 'appbolaget'; unit: string } | { system: 'uddevalla' } | { system: 'borlange' } | { system: 'roslagsvatten'; municipality: string } | { system: 'msva' } | { system: 'telge' }
 
 /**
  * En datakälla för hämtschema, oftast ett avfallsbolag eller en kommun. En källa kan täcka
@@ -354,6 +354,22 @@ export const ALL_SOURCES: Source[] = [
     url: 'https://www.uddevallaenergi.se',
     kommuner: [{ code: '1485', name: 'Uddevalla kommun' }],
     config: { system: 'uddevalla' },
+  },
+  {
+    // Ingen EDP: Sundsvalls öppna API (src/server/msva.ts). Bara småhus och nästa tömning per kärl. Täcker inte Timrå och Nordanstig.
+    id: 'msva',
+    name: 'Mittsverige Vatten & Avfall',
+    url: 'https://www.msva.se',
+    kommuner: [{ code: '2281', name: 'Sundsvalls kommun' }],
+    config: { system: 'msva' },
+  },
+  {
+    // Ingen EDP: sopbilsschemat på telge.se (src/server/telge.ts), med riktiga datum ett år framåt. Täcker inte Nykvarn.
+    id: 'telge',
+    name: 'Telge Återvinning',
+    url: 'https://www.telge.se',
+    kommuner: [{ code: '0181', name: 'Södertälje kommun' }],
+    config: { system: 'telge' },
   },
   {
     // Ingen EDP: den publika sökningen på borlange-energi.se (src/server/borlange.ts). Bara nästa tömning per kärl. Täcker inte Säter.

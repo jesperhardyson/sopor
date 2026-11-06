@@ -51,6 +51,7 @@ describe('mapWasteType', () => {
     expect(mapWasteType('Ofärgat glas')).toEqual({ fractions: ['glas'] })
     expect(mapWasteType('Blandglas')).toEqual({ fractions: ['glas'] })
     expect(mapWasteType('Mat + Rest')).toEqual({ fractions: ['mat', 'rest'] })
+    expect(mapWasteType('Mat & Restavfall')).toEqual({ fractions: ['mat', 'rest'] })
     expect(mapWasteType('Tidn./glas/metall')).toEqual({ fractions: ['tidningar', 'glas', 'metall'] })
     expect(mapWasteType('Miljöfarligt avfall')).toEqual({ fractions: ['karl'], label: 'Miljöfarligt avfall' })
     expect(isKnownBin('Miljöfarligt avfall')).toBe(true)

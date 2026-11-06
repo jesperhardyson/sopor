@@ -71,6 +71,7 @@ Kommunerna som redan är live på sajten listas på [Om-sidan](https://sopor.har
 
 | Kommun | Sköts av | Schema publikt | Söktjänst per adress | Adress → område | Läge |
 |---|---|---|---|---|---|
+| Nykvarn | – | – | Telge Återvinnings söktjänst har inga adresser här: ingen av kommunens 204 gator gav en träff i Nykvarn (2026-11-06) | – | Inte med |
 | Mölndal | – | – | EDP Future svarar men är tom (`future.molndal.se/FutureWeb`, 2026-11-03) | – | Inte med |
 | Östersund | – | – | EDP Future svarar men är tom (`edp.ostersund.se/FutureWeb`, 2026-11-03) | – | Inte med |
 | Upplands Väsby | Kommunen | – | EDP Future svarar men är tom (`edpfuture.upplandsvasby.se/FutureWeb`). Kommunen hänvisar till inloggning på Mina sidor | – | Inte med |

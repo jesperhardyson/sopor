@@ -78,6 +78,10 @@ Roslagsvatten (`src/server/roslagsvatten.ts`, spec `docs/specs/2026-11-04-roslag
 
 Borlänge Energi (`src/server/borlange.ts`, spec `docs/specs/2026-11-04-borlange.md`) är exemplet på en källa vars datum saknar årtal, och vars schema kräver adresstexten exakt. Årtalet går att läsa ut ur veckodagen, eftersom samma dag aldrig har samma veckodag tre år i rad. Kontrollera vad fel text ger: här blir det en tom lista, inte ett fel, så texten måste komma oförändrad från sökningen.
 
+MSVA (`src/server/msva.ts`, spec `docs/specs/2026-11-06-sundsvall-sodertalje.md`) är exemplet på en källa utan id, där postnummer och husnummer pekar ut adressen. Då spelar det ingen roll att id:t tappar skiljetecken i gatunamnet. Kontrollera vilka fastigheter källan har: här är det bara småhus.
+
+Telge (`src/server/telge.ts`, samma spec) är exemplet på en källa där skiljetecken ger 500 eller 404, så sökningen tvättar texten. Kontrollera också att källan verkligen täcker kommunerna den verkar täcka: Telge har inga adresser i Nykvarn, och det syns först när man provar kommunens egna gator.
+
 - [ ] En klient i `src/server/<system>.ts` med sökning, schema och adress-id, testad mot sparade svar i `src/server/__fixtures__/`. Okänd form på svaret kastar `SourceError`, aldrig en tom lista.
 - [ ] En ny variant i `SourceConfig` och en gren i `searchLiveSource` (`src/server/handlers.ts`) och `lookupAddress` (`src/server/lookup.ts`). Ett id som inte längre ger träff ska ge 502, inte 404, så att kalenderprenumerationer inte töms.
 - [ ] En kontroll i bevakningen (`scripts/source-checks.ts`) och en kontrolladress i `PROBES`.
