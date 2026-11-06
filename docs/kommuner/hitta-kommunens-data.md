@@ -71,6 +71,13 @@ Kommunerna som redan är live på sajten listas på [Om-sidan](https://sopor.har
 
 | Kommun | Sköts av | Schema publikt | Söktjänst per adress | Adress → område | Läge |
 |---|---|---|---|---|---|
+| Göteborg | Kretslopp och vatten | Bara frekvenser, inga dagar | Nej, hämtdagarna finns på Mina sidor med e-legitimation (2026-11-06) | – | Inte med, fråga kommunen |
+| Linköping | Tekniska verken | – | Nej, hämtningsdagarna finns på Mina sidor och i appen Mitt Tekniska verken (2026-11-06) | – | Inte med, fråga bolaget |
+| Karlstad | Karlstads Energi | – | Nej, "logga in på Mina sidor". Ingen EDP-tjänst på `minasidor.karlstadsenergi.se` (2026-11-06) | – | Inte med, fråga bolaget |
+| Halmstad | HEM | – | Nej, hämtdagarna finns i appen Mitt HEM, i chatten och per telefon. Ingen EDP-tjänst på `minasidor.hem.se` (2026-11-06) | – | Inte med, fråga bolaget |
+| Eskilstuna | Eskilstuna Energi och Miljö | – | Nej, hämtningsdagen finns på Mina sidor. Ingen EDP-tjänst på `minasidor.eem.se` (2026-11-06) | – | Inte med, fråga bolaget |
+| Gävle | Gästrike Återvinnare | – | Nej, sökfunktionen är uttryckligen borttagen och hänvisar till Mina sidor (2026-11-06) | – | Inte med, fråga bolaget |
+| Norrköping | Nodra | – | Adressökning bara i Nodras app, och nästa tömning och schema på Mina sidor. Appen kräver apptoken, som regel 4 utesluter (2026-11-06) | – | Inte med, fråga bolaget |
 | Nykvarn | – | – | Telge Återvinnings söktjänst har inga adresser här: ingen av kommunens 204 gator gav en träff i Nykvarn (2026-11-06) | – | Inte med |
 | Mölndal | – | – | EDP Future svarar men är tom (`future.molndal.se/FutureWeb`, 2026-11-03) | – | Inte med |
 | Östersund | – | – | EDP Future svarar men är tom (`edp.ostersund.se/FutureWeb`, 2026-11-03) | – | Inte med |
@@ -108,6 +115,8 @@ Lärdomar så här långt:
 - **Säter är live med områdesval.** Kommunen ansvarar och Borlänge Energi hämtar, men Borlänge Energis sökning har inte Säters adresser (20 gator, 2026-11-04). Schemat kommer från [kommunens sida](https://sater.se/bygga-bo-miljo/avfall-och-atervinning/hamtningsdagar-sophamtning/). Mina sidor (`minasidorva.sater.se`) kräver BankID, och OpenStreetMap har inga gränser för områdena.
 - **Områdesval är ett alternativ när kopplingen saknas.** Är schemat publikt per område men kopplingen adress → område uteblir, kan besökaren välja område i stället (`selection: 'area'`, se [checklistan](lagga-till-kommun.md#områdesval-utan-adresser)). Det kräver att källan listar orter och gator per område.
 - **Ett namn kan finnas i flera områden.** I Säter finns både "Forsbo" och "Forsbo – del av". Söks namnet utan förbehåll måste båda områdena visas, annars kan man få fel hämtdag. Undantag ("Åsen, förutom Falkgränd") får inte bli sökord till området de inte ingår i.
+- **Waste Collection Schedule räcker inte som underlag.** Undersökningen i oktober hittade ingen källa för Umeå, men Vakin har sidan "När kommer sopbilen?" med öppen adressökning, och källan är nu live. Leta efter hämtsidan på bolagets egen sajt, till exempel via `sitemap.xml`, innan en kommun räknas som utan källa.
+- **`se.soleil.garbageTruckFetcher` finns hos flera bolag.** Borlänge Energi och Vakin kör appen, och Täby enligt tidigare undersökning. Versionerna skiljer sig: Vakin (1.0.5) har `getAddresses` och `getcontainerdata` med `addressParams`, `startDate` och `endDate`, medan Borlänge har `getAdresses` och `getcontainerdata` med `pickupAddress`. Sök efter appens namn i sidans källkod.
 - **Lantmäteriets adressregister** säger vilka adresser som finns, men inte vilket område de tillhör. Licensen är dessutom oklar för återpublicering. Det ersätter alltså inte kommunens tabell.
 
 En större genomgång av adresskällor och vilka kommuner som har publika källor för hämtschema finns i [undersökningen från oktober 2026](undersokning-2026-10-adresser-och-hamtschema.md).

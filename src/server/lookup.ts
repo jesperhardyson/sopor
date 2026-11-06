@@ -14,6 +14,7 @@ import { uddevallaFind, uddevallaPickups, uddevallaSchedule } from './uddevalla.
 import { borlangeFind, borlangePickups, borlangeSchedule } from './borlange.js'
 import { msvaFind, msvaSchedule } from './msva.js'
 import { telgeFind, telgePickups, telgeSchedule } from './telge.js'
+import { vakinFind, vakinPickups, vakinSchedule } from './vakin.js'
 import { vasydSchedule, vasydSearch } from './vasyd.js'
 import { queryFromSvoaId, sameSvoaAddress, SVOA_LIMIT, svoaSchedule, svoaSearch, type SvoaAddress } from './svoa.js'
 import { searchCandidates, toAddress, withDetails, type HandlerOptions } from './handlers.js'
@@ -43,6 +44,7 @@ export async function lookupAddress(
     if (source.config.system === 'borlange') return await lookupBorlange(source, id, opts)
     if (source.config.system === 'msva') return await lookupMsva(source, id, opts)
     if (source.config.system === 'telge') return await lookupTelge(source, id, opts)
+    if (source.config.system === 'vakin') return await lookupVakin(source, id, origin, opts)
     if (source.config.system === 'roslagsvatten') return await lookupRoslagsvatten(source, source.config.municipality, id, opts)
     return await lookupStatic(source, id, origin, opts)
   } catch (e) {
@@ -173,6 +175,17 @@ async function lookupTelge(source: Source, id: string, opts: HandlerOptions): Pr
   const found = await telgeFind(id, opts.fetchFn, opts.timeoutMs)
   if (!found) return { status: 502 }
   return { status: 200, address: toAddress(source, found, opts.places), schedule: telgeSchedule(await telgePickups(found.raw, opts.fetchFn, opts.timeoutMs), todayInStockholm(opts.now)) }
+}
+
+/** Vakin: sökningen ger källans värden, som schemat kräver oförändrade. Flera kommuner, så orten ger kommunen. Ett id utan träff ger 502 (se lookupSvoa). */
+async function lookupVakin(source: Source, id: string, origin: string, opts: HandlerOptions): Promise<Lookup> {
+  const timeoutMs = opts.timeoutMs ?? 5000
+  const found = await vakinFind(id, opts.fetchFn, timeoutMs)
+  if (!found) return { status: 502 }
+  const today = todayInStockholm(opts.now)
+  const schedule = vakinSchedule(await vakinPickups(found.params, today, opts.fetchFn, timeoutMs), today)
+  const places = opts.places ?? (needsPlaces(source) ? await loadServerPlaces(origin, opts.fetchFn) : undefined)
+  return { status: 200, address: toAddress(source, found.building, places), schedule }
 }
 
 /** Roslagsvatten: som Uddevalla, men kommunen krävs i varje anrop. */
