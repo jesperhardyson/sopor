@@ -6,7 +6,7 @@ import { formatLong, todayInStockholm } from '@/domain/dates'
 import { nextPickup, upcoming } from '@/domain/schedule'
 import type { Address } from '@/domain/types'
 import { findSaved, storeSchedule } from '@/lib/storage'
-import { getSource, type Source } from '@/sources'
+import { getSource, hasCalendarFile, type Source } from '@/sources'
 import { providerFor } from '@/providers/registry'
 import { useAreas } from '../hooks/useAreas'
 import { useSchedule } from '../hooks/useSchedule'
@@ -198,15 +198,17 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
         <div className="flex min-w-0 flex-col gap-5">
           {area && areas.status === 'ready' && <AreaInfo area={area} explanation={areas.index.explanation} />}
           {next ? <NextPickup event={next} today={today} note={schedule.note} /> : <EmptyState note={source.emptyScheduleNote} />}
-          <button
-            type="button"
-            disabled={!address}
-            onClick={() => setSheet('calendar')}
-            className="tryck inline-flex h-14 items-center justify-center gap-2 rounded-[14px] bg-primary px-5 text-base font-extrabold text-on-primary"
-          >
-            <CalendarPlus className="size-5" aria-hidden />
-            Lägg till i kalender
-          </button>
+          {hasCalendarFile(source, schedule.events.length) && (
+            <button
+              type="button"
+              disabled={!address}
+              onClick={() => setSheet('calendar')}
+              className="tryck inline-flex h-14 items-center justify-center gap-2 rounded-[14px] bg-primary px-5 text-base font-extrabold text-on-primary"
+            >
+              <CalendarPlus className="size-5" aria-hidden />
+              Lägg till i kalender
+            </button>
+          )}
           {coming.length > 0 && <UpcomingList events={coming} today={today} />}
         </div>
         <div className="flex flex-col gap-5 lg:row-span-2">

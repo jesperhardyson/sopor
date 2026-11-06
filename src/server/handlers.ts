@@ -7,7 +7,7 @@ import { todayInStockholm } from '../domain/dates.js'
 import { normalize } from '../domain/search.js'
 import type { Address } from '../domain/types.js'
 import { matchesPlace } from '../data/street-index.js'
-import { areaNoticeText, isLive, kommunForLocality, SOURCES, type LiveSource, type Source } from '../sources/index.js'
+import { areaNoticeText, hasCalendarFile, isLive, kommunForLocality, SOURCES, type LiveSource, type Source } from '../sources/index.js'
 import { edpAddressId, edpSearch, type EdpBuilding } from './edp.js'
 import { svoaAddressId, svoaSearch } from './svoa.js'
 import { vasydSearch } from './vasyd.js'
@@ -191,10 +191,10 @@ export async function handleIcs(url: URL, opts: HandlerOptions = {}): Promise<Re
   if (!reminder) return new Response('Hittades inte', { status: 404, headers: { 'Cache-Control': CACHE_PARTIAL } })
   const id = decodeId((url.searchParams.get('file') ?? '').replace(/\.ics$/, ''))
   const r = await lookup(url, opts, id)
-  // Källan nere, eller ett tomt schema från en live-källa (kan vara ett nytt format hos källan):
+  // Källan nere, eller ett tomt schema från en live-källa (se hasCalendarFile):
   // svara med fel så att kalenderappen behåller det den har i stället för att tömmas.
   const live = (opts.sources ?? SOURCES).find((s) => s.id === url.searchParams.get('source'))
-  if (r.status === 502 || (r.status === 200 && r.schedule.events.length === 0 && live && isLive(live))) {
+  if (r.status === 502 || (r.status === 200 && live && !hasCalendarFile(live, r.schedule.events.length))) {
     return new Response('Källan svarar inte just nu', { status: 502, headers: { 'Cache-Control': 'no-store' } })
   }
   if (r.status === 404) {

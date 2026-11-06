@@ -260,6 +260,29 @@ describe('ResultPage', () => {
       screen.getByText('Bor du i lägenhet sköter fastighetsägaren sophämtningen. Fråga din hyresvärd eller bostadsrättsförening.'),
     ).toBeInTheDocument()
     expect(screen.queryByText('Inga kommande tömningar i schemat än')).toBeNull()
+    // Kalenderfilen svarar 502 för ett tomt schema från en live-källa, så det finns inget att lägga till.
+    expect(screen.queryByRole('button', { name: 'Lägg till i kalender' })).toBeNull()
+    expect(screen.getByRole('button', { name: 'Spara' })).toBeInTheDocument()
+  })
+
+  it('behåller kalenderknappen för en statisk källa med tomt schema, vars kalenderfil fungerar', async () => {
+    fake = makeProvider({
+      getAddress: async (id) => ({ ...villa, id, sourceId: 'avesta' }),
+      getSchedule: async () => ({ bins: [], events: [], updatedAt: '2026-11-02' }),
+    })
+    renderAt('/avesta/krylbo-storgatan-12b')
+    expect(await screen.findByRole('heading', { name: 'Schemat för nästa år är inte publicerat än' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Lägg till i kalender' })).toBeInTheDocument()
+  })
+
+  it('behåller kalenderknappen när tömningarna har passerat, eftersom kalenderfilen har dem', async () => {
+    fake = makeProvider({
+      getAddress: async (id) => ({ ...villa, id, sourceId: 'uppsala', kommun: 'Uppsala kommun' }),
+      getSchedule: async () => schedule,
+    })
+    renderAt('/uppsala/storgatan-12_uppsala', '2027-03-01')
+    expect(await screen.findByText('Inga kommande tömningar i schemat än')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Lägg till i kalender' })).toBeInTheDocument()
   })
 
   it('visar ett tomt läge när alla tömningar har passerat', async () => {
