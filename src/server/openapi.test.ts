@@ -6,7 +6,7 @@ import path from 'node:path'
 import Ajv2020 from 'ajv/dist/2020'
 import { beforeAll, describe, expect, it, vi } from 'vitest'
 import type { Source } from '../sources/index.js'
-import { handleV1Address, handleV1NotFound, handleV1Search, handleV1Sources, v1 } from './v1.js'
+import { handleV1Address, handleV1Areas, handleV1NotFound, handleV1Search, handleV1Sources, v1 } from './v1.js'
 
 const spec = JSON.parse(readFileSync(path.resolve(import.meta.dirname, '../../public/api/v1/openapi.json'), 'utf8'))
 const fixture = (name: string) => readFileSync(path.resolve(import.meta.dirname, '__fixtures__', name), 'utf8')
@@ -47,6 +47,13 @@ const files: Record<string, unknown> = {
     sourceId: 'avesta',
     updatedAt: '2026-01-01',
     addresses: [['trakt-7', 'Avesta tätort', '', ['tom'], { detail: 'Tisdag, jämn vecka · Trakt 7', searchTerms: ['Trakt 7'] }]],
+  },
+  '/data/avesta/omraden.json': {
+    explanation: 'Förklaring.',
+    help: 'Hjälp.',
+    areas: [
+      { id: 'trakt-7', name: 'Avesta tätort', day: 'Tisdag, jämn vecka', label: 'Trakt 7', places: [], otherDays: [], searchTerms: [], dates: ['2026-10-13', '2026-10-27', '2026-11-10'] },
+    ],
   },
   '/data/avesta/schedules/tom.json': {
     id: 'tom', validFrom: '2026-01-01', validTo: '2026-12-31', updatedAt: '2026-01-01',
@@ -121,7 +128,8 @@ describe('openapi.json', () => {
 
   it('har exempel och svar för 400, 404 och 502 på varje endpoint', () => {
     for (const [p, item] of Object.entries<any>(spec.paths)) {
-      expect(item.get.responses['200'].content['application/json'].example, p).toBeDefined()
+      const media = item.get.responses['200'].content['application/json']
+      expect(media.example ?? media.examples, p).toBeDefined()
       for (const code of ['400', '404', '502']) expect(item.get.responses[code], `${p} ${code}`).toBeDefined()
     }
   })
@@ -179,6 +187,18 @@ describe('kontrakt: riktiga svar följer schemana', () => {
     validate('AddressResponse', await (await call(handleV1Address, '/api/v1/adress?source=avesta&id=trakt-7')).json())
   })
 
+  it('områden, med och utan tömning', async () => {
+    validate('SearchResponse', await (await call(handleV1Areas, '/api/v1/omraden?plats=Avesta')).json())
+    const hit = await (await call(handleV1Areas, '/api/v1/omraden?plats=Avesta&tomning=2026-10-27')).json()
+    expect(hit.addresses[0].pickups).toEqual({ previous: ['2026-10-13', '2026-10-27'], next: '2026-11-10' })
+    validate('DatedAreasResponse', hit)
+    validate('DatedAreasResponse', await (await call(handleV1Areas, '/api/v1/omraden?plats=Avesta&tomning=2026-10-01')).json())
+    validate('DatedAreasResponse', await (await call(handleV1Areas, '/api/v1/omraden?plats=Uppsala&tomning=2026-10-27')).json())
+    const bad = await call(handleV1Areas, '/api/v1/omraden?plats=Avesta&tomning=2026-12-01')
+    expect(bad.status).toBe(400)
+    validate('ErrorResponse', await bad.json())
+  })
+
   it('källor', async () => {
     validate('SourcesResponse', await (await call(handleV1Sources, '/api/v1/kallor')).json())
   })
@@ -201,6 +221,12 @@ describe('exemplen i beskrivningen följer schemana', () => {
       for (const res of Object.values<any>(item.get.responses)) {
         const media = res.content?.['application/json']
         if (media?.example) validate(schemaName(media.schema.$ref), media.example)
+        // Ett svar med flera möjliga scheman har ett exempel per schema, namngivet efter schemat.
+        if (media?.schema.oneOf) {
+          const names = media.schema.oneOf.map((s: { $ref: string }) => schemaName(s.$ref))
+          expect(Object.keys(media.examples)).toEqual(names)
+          for (const name of names) validate(name, media.examples[name].value)
+        }
       }
     }
   })

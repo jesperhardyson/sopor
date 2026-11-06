@@ -50,8 +50,8 @@ const files: Record<string, unknown> = {
     explanation: 'Förklaring.',
     help: 'Hjälp.',
     areas: [
-      { id: 'trakt-3', name: 'Fors, Nordanö m.fl.', day: 'Onsdag, udda vecka', label: 'Trakt 3', places: [], otherDays: [], searchTerms: [], dates: [] },
-      { id: 'utan-etikett', name: 'Dalsbyn m.fl.', day: 'Måndag, ojämn vecka', places: [], otherDays: [], searchTerms: [], dates: [] },
+      { id: 'trakt-3', name: 'Fors, Nordanö m.fl.', day: 'Onsdag, udda vecka', label: 'Trakt 3', places: [], otherDays: [], searchTerms: [], dates: ['2026-10-13', '2026-10-20', '2026-10-27', '2026-11-10'] },
+      { id: 'utan-etikett', name: 'Dalsbyn m.fl.', day: 'Måndag, ojämn vecka', places: [], otherDays: [], searchTerms: [], dates: ['2026-10-14', '2026-10-27'] },
     ],
   },
   '/data/gator/kr.json': { krylbo: ['avesta'], kristinehamn: ['uppsala'] },
@@ -344,6 +344,90 @@ describe('handleV1Areas', () => {
       String(input).includes('omraden.json') ? new Response('', { status: 500 }) : fetchFn(input, init)) as typeof fetch
     const body = await (await areas('Avesta', { ...opts, fetchFn: down })).json()
     expect(body).toMatchObject({ addresses: [], failed: ['avesta'] })
+  })
+
+  describe('med tomning', () => {
+    const found = (tomning: string, o = opts, plats = 'Avesta') =>
+      v1(handleV1Areas)(get(`/api/v1/omraden?plats=${encodeURIComponent(plats)}&tomning=${tomning}`), o)
+
+    it('ger området med hämtning datumet, dess datum och samma fält som annars', async () => {
+      const res = await found('2026-10-20')
+      expect(res.status).toBe(200)
+      const body = await res.json()
+      expect(body.dateCovered).toBe(true)
+      expect(body.failed).toEqual([])
+      expect(body.addresses).toHaveLength(1)
+      expect(body.addresses[0]).toMatchObject({
+        id: 'trakt-3',
+        detail: 'Onsdag, udda vecka · Trakt 3',
+        selection: 'area',
+        url: 'https://preview.test/api/v1/adress/avesta/trakt-3',
+        pickups: { previous: ['2026-10-13', '2026-10-20'], next: '2026-10-27' },
+      })
+      expect(body.addresses[0].notice).toBeTruthy()
+    })
+
+    it('ger bara det angivna datumet när det är områdets första', async () => {
+      const body = await (await found('2026-10-13')).json()
+      expect(body.addresses[0].pickups.previous).toEqual(['2026-10-13'])
+    })
+
+    it('ger alla områden med hämtning samma dag', async () => {
+      const body = await (await found('2026-10-27')).json()
+      expect(body.addresses.map((a: { id: string; pickups: unknown }) => [a.id, a.pickups])).toEqual([
+        ['trakt-3', { previous: ['2026-10-20', '2026-10-27'], next: '2026-11-10' }],
+        ['utan-etikett', { previous: ['2026-10-14', '2026-10-27'], next: null }],
+      ])
+    })
+
+    it('skiljer ingen hämtning från datum utanför schemat', async () => {
+      expect(await (await found('2026-10-24')).json()).toMatchObject({ addresses: [], dateCovered: true })
+      expect(await (await found('2026-10-12')).json()).toMatchObject({ addresses: [], dateCovered: false })
+      const later = { ...opts, now: new Date('2026-11-20T10:00:00Z') }
+      expect(await (await found('2026-11-11', later)).json()).toMatchObject({ addresses: [], dateCovered: false })
+    })
+
+    it('tar i dag men inte framtiden, räknat i Stockholm', async () => {
+      expect((await found('2026-10-30')).status).toBe(200)
+      const res = await found('2026-10-31')
+      expect(res.status).toBe(400)
+      expect(res.headers.get('Cache-Control')).toBe('no-store')
+      expect((await res.json()).error.code).toBe('bad_request')
+      const lateEvening = { ...opts, now: new Date('2026-10-30T23:30:00Z') }
+      expect((await found('2026-10-31', lateEvening)).status).toBe(200)
+    })
+
+    it.each(['', 'igår', '2026-13-01', '2026-02-30', '20261027'])('ger 400 för ogiltigt datum: "%s"', async (tomning) => {
+      const res = await found(tomning)
+      expect(res.status).toBe(400)
+      expect((await res.json()).error.code).toBe('bad_request')
+    })
+
+    it('ger en tom lista och null för en plats utan områdesval', async () => {
+      const body = await (await found('2026-10-20', opts, 'Uppsala')).json()
+      expect(body).toMatchObject({ addresses: [], failed: [], dateCovered: null })
+    })
+
+    it('ger null och kort cache när källan inte svarar', async () => {
+      const down = (async (input: string | URL | Request, init?: RequestInit) =>
+        String(input).includes('omraden.json') ? new Response('', { status: 500 }) : fetchFn(input, init)) as typeof fetch
+      const res = await found('2026-10-20', { ...opts, fetchFn: down })
+      expect(res.headers.get('Cache-Control')).toBe('public, s-maxage=60')
+      expect(await res.json()).toMatchObject({ addresses: [], failed: ['avesta'], dateCovered: null })
+    })
+
+    it('slutar cachas senast vid midnatt i Stockholm', async () => {
+      const res = await found('2026-10-20')
+      expect(res.headers.get('Cache-Control')).toBe(addressCacheControl(opts.now))
+    })
+
+    it('ändrar inget i svaret utan tomning', async () => {
+      const res = await areas('Avesta')
+      expect(res.headers.get('Cache-Control')).toBe('public, s-maxage=86400, stale-while-revalidate=604800')
+      const body = await res.json()
+      expect(Object.keys(body).sort()).toEqual(['addresses', 'apiVersion', 'failed'])
+      expect(Object.keys(body.addresses[0]).sort()).toEqual(['areasUrl', 'detail', 'id', 'kommun', 'locality', 'notice', 'selection', 'source', 'street', 'url'])
+    })
   })
 })
 
