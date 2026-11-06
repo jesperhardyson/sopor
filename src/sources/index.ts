@@ -442,6 +442,13 @@ export function supportedKommuner(): Kommun[] {
 export type LiveSource = Source & { config: Exclude<SourceConfig, { system: 'static' }> }
 export const isLive = (s: Source): s is LiveSource => s.config.system !== 'static'
 
+/**
+ * Kalenderfilen svarar med fel för ett tomt schema från en live-källa, eftersom det kan vara ett nytt
+ * format hos källan: prenumerationer ska behålla det de har i stället för att tömmas. Statiska källor
+ * har alltid en fil, som fylls på när nästa års schema läggs in.
+ */
+export const hasCalendarFile = (source: Source, eventCount: number) => eventCount > 0 || !isLive(source)
+
 /** Kommunerna som källan täcker: "Avesta kommun", "Herrljunga kommun och Vårgårda kommun". */
 export function sourceLabel(source: Source): string {
   const names = source.kommuner.map((k) => k.name)
