@@ -12,6 +12,7 @@ import { ROSLAGSVATTEN_URL, roslagsvattenFind, roslagsvattenPickups, roslagsvatt
 import { BORLANGE_URL, borlangeFind, borlangePickups, borlangeSchedule, borlangeSearch } from '../src/server/borlange.js'
 import { MSVA_URL, msvaFind, msvaSchedule, msvaSearch, msvaWasteType } from '../src/server/msva.js'
 import { TELGE_URL, telgeFind, telgePickups, telgeSchedule, telgeSearch } from '../src/server/telge.js'
+import { VAKIN_URL, vakinFind, vakinPickups, vakinSchedule, vakinSearch } from '../src/server/vakin.js'
 import { UDDEVALLA_URL, uddevallaFind, uddevallaPickups, uddevallaSchedule, uddevallaSearch, uddevallaWasteType } from '../src/server/uddevalla.js'
 import { isKnownSrvJob, SRV_URL, srvFind, srvSchedule, srvSearch, srvWasteType } from '../src/server/srv.js'
 import { parseSvoaAddress, sameSvoaAddress, svoaAddressId, SVOA_URL, svoaFractions, svoaSchedule, svoaSearch, svoaStep } from '../src/server/svoa.js'
@@ -288,6 +289,36 @@ export async function checkMsvaSource(source: Source, probe: string, today: stri
     ]
     const end = addDays(today, HORIZON_DAYS)
     const upcoming = msvaSchedule(found.pickups, today).events.some((e) => e.date <= end)
+    return { ...base, state: upcoming ? 'fungerar' : 'inga-tomningar', unknownWasteTypes }
+  } catch (error) {
+    return { ...base, state: stateForError(error), error: (error as Error).message }
+  }
+}
+
+/** Vakin: kontrolladressen är ett adress-id. Ändrade Sitevision-id:n ger 404 från sökningen. */
+export async function checkVakinSource(source: Source, probe: string, today: string, fetchFn: typeof fetch = fetch): Promise<SourceResult> {
+  const base = { sourceId: source.id, name: source.name, baseUrl: VAKIN_URL, probe }
+  try {
+    const found = await vakinFind(probe, fetchFn, TIMEOUT_MS)
+    if (!found) {
+      const street = queryFromAddressId(probe)?.query ?? probe
+      const hits = await vakinSearch(street, fetchFn, TIMEOUT_MS)
+      if (hits.length === 0) return { ...base, state: 'tom' }
+      return { ...base, state: 'nytt-format', error: `Kontrolladressen ${probe} hittades inte (nytt postnummer hos Vakin?), bara t.ex. ${edpAddressId(hits[0].building)}` }
+    }
+    const pickups = await vakinPickups(found.params, today, fetchFn, TIMEOUT_MS)
+    const unknownWasteTypes = [
+      ...new Set(
+        pickups
+          .flatMap((p) => p.types)
+          .filter((type) => {
+            const mapped = mapWasteType(type)
+            return mapped?.fractions.includes('karl') && !isKnownBin(mapped.label ?? '')
+          }),
+      ),
+    ]
+    const end = addDays(today, HORIZON_DAYS)
+    const upcoming = vakinSchedule(pickups, today).events.some((e) => e.date <= end)
     return { ...base, state: upcoming ? 'fungerar' : 'inga-tomningar', unknownWasteTypes }
   } catch (error) {
     return { ...base, state: stateForError(error), error: (error as Error).message }

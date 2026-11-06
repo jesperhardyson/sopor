@@ -105,9 +105,9 @@ Beslut 2026-11-03: Sopor skrapar inte webbsidor. Sidorna ändras utan förvarnin
 
 ## Fas 5: Stora kommuner utan publik källa
 
-Göteborg, Linköping, Umeå, Karlstad, Halmstad, Eskilstuna, Gävle och Norrköping: 1,5 miljoner invånare. Göteborg ensam är 5,8 %.
+Göteborg, Linköping, Karlstad, Halmstad, Eskilstuna, Gävle och Norrköping: cirka 1,3 miljoner invånare. Göteborg ensam är 5,8 %. Umeå stod också här, men visade sig ha en publik källa.
 
-- [ ] **Djupkoll** av varje kommuns webbplats i webbläsaren (nätverksfliken vid "sök tömningsdag"). Undersökningen byggde på Waste Collection Schedule, som bara har det någon har bidragit med. Något kan ha missats.
+- [x] **Djupkoll** av varje kommuns webbplats (2026-11-06). **Umeå har en publik källa,** Vakins "När kommer sopbilen?", som också täcker Vindeln och Nordmaling (klar, `docs/specs/2026-11-06-umea-vakin.md`). Göteborg, Linköping, Karlstad, Halmstad, Eskilstuna, Gävle och Norrköping visar hämtdagarna bara efter inloggning, i en app eller via kundtjänst. Resultatet per kommun står i [tabellen](../kommuner/hitta-kommunens-data.md#vad-vi-vet-om-kommunerna-hittills).
 - [ ] **Ett GitHub-ärende per kommun** ([mallen för ny kommun](https://github.com/jesperhardyson/sopor/issues/new?template=ny-kommun.md)) med ett färdigt utkast till förfrågan, så att den som bor där kan skicka den eller hjälpa till. Gäller även kommunerna i fas 4.
 - [ ] **Fråga kommunen**, med mallen i [steg 4](../kommuner/hitta-kommunens-data.md#steg-4-begär-kopplingen-från-kommunen): om de har EDP, be dem fylla SimpleWastePickup; annars begär ut kopplingen adress → område som allmän handling och lägg den som statisk data (som Avesta).
 - [ ] Gävle och Norrköping hade publika källor förut. Fråga om de kan öppnas igen. Använd inte apptoken eller inloggning.

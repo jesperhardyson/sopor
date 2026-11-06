@@ -13,7 +13,8 @@ import { UDDEVALLA_URL } from '../src/server/uddevalla.js'
 import type { Source } from '../src/sources/index.js'
 import { MSVA_URL } from '../src/server/msva.js'
 import { TELGE_URL } from '../src/server/telge.js'
-import { checkAppbolagetSource, checkBorlangeSource, checkEdpSource, checkMsvaSource, checkNsrSource, checkRoslagsvattenSource, checkTelgeSource, checkSrvSource, checkUddevallaSource, checkSvoaSource, checkVasydSource, checkStaticSource, checkViaSite, unreachableFromHere } from './source-checks'
+import { VAKIN_URL } from '../src/server/vakin.js'
+import { checkAppbolagetSource, checkBorlangeSource, checkEdpSource, checkMsvaSource, checkNsrSource, checkRoslagsvattenSource, checkTelgeSource, checkVakinSource, checkSrvSource, checkUddevallaSource, checkSvoaSource, checkVasydSource, checkStaticSource, checkViaSite, unreachableFromHere } from './source-checks'
 
 const json = (body: unknown) =>
   new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json; charset=utf-8' } })
@@ -592,6 +593,60 @@ describe('checkMsvaSource', () => {
   it('rapporterar okända typer', async () => {
     const rows = [row([{ nextPickupDate: '2026-11-18', wasteType: 'BULKY' }, { nextPickupDate: '2026-11-18', wasteType: 'FOOD' }])]
     expect((await check(respond(rows))).unknownWasteTypes).toEqual(['BULKY'])
+  })
+})
+
+describe('checkVakinSource', () => {
+  const vakin: Source = { ...source, id: 'vakin', name: 'Vakin', config: { system: 'vakin' } }
+  const probe = 'berghemsskolan_umeå-90339'
+  const row = (zipCode = '90339') => ({ id: 1, label: 'Berghemsskolan, Umeå', value: { zipCode, address: 'Berghemsskolan, Umeå', city: 'UMEÅ' } })
+  const pickup = (contentTypes = ['Restavfall'], executionDate = '2026-11-12') => ({ executionDate, contentTypes })
+  const respond = (adresser: unknown, schema: unknown = [pickup()]) =>
+    vi.fn(async (input: string | URL | Request) => {
+      const body = String(input).includes('/getAddresses') ? adresser : schema
+      if (body instanceof Error) throw body
+      return new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json' } })
+    }) as unknown as typeof fetch
+  const check = (fetchFn: typeof fetch) => checkVakinSource(vakin, probe, '2026-11-06', fetchFn)
+  const hittad = { data: [row()] }
+
+  it('fungerar med en tömning inom 60 dagar', async () => {
+    expect(await check(respond(hittad))).toMatchObject({ state: 'fungerar', baseUrl: VAKIN_URL, probe, unknownWasteTypes: [] })
+  })
+
+  it('svarar inte vid timeout', async () => {
+    expect((await check(respond(new TypeError('fetch failed')))).state).toBe('svarar-inte')
+  })
+
+  it('har nytt format när Sitevision-adressen har ändrats (404)', async () => {
+    const fetchFn = vi.fn(async () => new Response('', { status: 404 })) as unknown as typeof fetch
+    const r = await check(fetchFn)
+    expect(r.state).toBe('nytt-format')
+    expect(r.error).toContain('404')
+  })
+
+  it('har nytt format vid okänd form och okända datum', async () => {
+    expect((await check(respond({ x: 1 }))).state).toBe('nytt-format')
+    expect((await check(respond(hittad, [pickup(['Restavfall'], 'snart')]))).state).toBe('nytt-format')
+  })
+
+  it('är tom när sökningen inte hittar något', async () => {
+    expect((await check(respond({ data: [] }))).state).toBe('tom')
+  })
+
+  it('har nytt format när postnumret har ändrats', async () => {
+    const r = await check(respond({ data: [row('90340')] }))
+    expect(r.state).toBe('nytt-format')
+    expect(r.error).toContain('nytt postnummer hos Vakin')
+  })
+
+  it('märker om tjänsten slutar ge kommande tömningar', async () => {
+    expect((await check(respond(hittad, []))).state).toBe('inga-tomningar')
+    expect((await check(respond(hittad, [pickup(['Restavfall'], '2026-11-02')]))).state).toBe('inga-tomningar')
+  })
+
+  it('rapporterar okända typer men inte fett', async () => {
+    expect((await check(respond(hittad, [pickup(['Grovsopor', 'Fett', 'Matavfall'])]))).unknownWasteTypes).toEqual(['Grovsopor'])
   })
 })
 

@@ -7,7 +7,7 @@ export interface Kommun {
 }
 
 /** Hur källans data hämtas. Ny leverantör = ny variant här + ny provider. */
-export type SourceConfig = { system: 'static' } | { system: 'edp'; baseUrl: string } | { system: 'svoa' } | { system: 'vasyd' } | { system: 'nsr' } | { system: 'srv' } | { system: 'appbolaget'; unit: string } | { system: 'uddevalla' } | { system: 'borlange' } | { system: 'roslagsvatten'; municipality: string } | { system: 'msva' } | { system: 'telge' }
+export type SourceConfig = { system: 'static' } | { system: 'edp'; baseUrl: string } | { system: 'svoa' } | { system: 'vasyd' } | { system: 'nsr' } | { system: 'srv' } | { system: 'appbolaget'; unit: string } | { system: 'uddevalla' } | { system: 'borlange' } | { system: 'roslagsvatten'; municipality: string } | { system: 'msva' } | { system: 'telge' } | { system: 'vakin' }
 
 /**
  * En datakälla för hämtschema, oftast ett avfallsbolag eller en kommun. En källa kan täcka
@@ -354,6 +354,24 @@ export const ALL_SOURCES: Source[] = [
     url: 'https://www.uddevallaenergi.se',
     kommuner: [{ code: '1485', name: 'Uddevalla kommun' }],
     config: { system: 'uddevalla' },
+  },
+  {
+    // Ingen EDP: "När kommer sopbilen?" på vakin.se (src/server/vakin.ts), med riktiga datum.
+    id: 'vakin',
+    name: 'Vakin',
+    url: 'https://www.vakin.se',
+    kommuner: [
+      { code: '2480', name: 'Umeå kommun' },
+      { code: '2404', name: 'Vindelns kommun' },
+      { code: '2401', name: 'Nordmalings kommun' },
+    ],
+    // OpenStreetMap har de här orterna i flera av källans kommuner.
+    postorter: { Holmsund: '2480', Röbäck: '2480', Nyåker: '2401', Olofsfors: '2401' },
+    config: { system: 'vakin' },
+    emptyScheduleNote: {
+      title: 'Vakin visar ingen tömning just nu',
+      text: 'Källan har inga planerade tömningar för den här adressen. I flerbostadshus kan soprummet finnas på en annan adress. Väntar du en tömning, kontakta Vakin.',
+    },
   },
   {
     // Ingen EDP: Sundsvalls öppna API (src/server/msva.ts). Bara småhus och nästa tömning per kärl. Täcker inte Timrå och Nordanstig.

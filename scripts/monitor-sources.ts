@@ -9,7 +9,7 @@ import { todayInStockholm } from '../src/domain/dates.js'
 import { queryFromAddressId } from '../src/server/edp.js'
 import { SOURCES, type Source } from '../src/sources/index.js'
 import { readYears } from './build-data.js'
-import { checkAppbolagetSource, checkBorlangeSource, checkEdpSource, checkMsvaSource, checkNsrSource, checkRoslagsvattenSource, checkTelgeSource, checkSrvSource, checkUddevallaSource, checkSvoaSource, checkVasydSource, checkStaticSource, checkViaSite, unreachableFromHere, type SourceResult } from './source-checks.js'
+import { checkAppbolagetSource, checkBorlangeSource, checkEdpSource, checkMsvaSource, checkNsrSource, checkRoslagsvattenSource, checkTelgeSource, checkVakinSource, checkSrvSource, checkUddevallaSource, checkSvoaSource, checkVasydSource, checkStaticSource, checkViaSite, unreachableFromHere, type SourceResult } from './source-checks.js'
 import { applyIssues, ensureLabels, listOpenIssues, planIssues } from './source-issues.js'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
@@ -62,6 +62,8 @@ export const PROBES: Record<string, string> = {
   // MSVA har bara småhus och Telge saknar id: adress-id (docs/specs/2026-11-06-sundsvall-sodertalje.md).
   msva: 'västra-radiogatan-18_sundsvall-85461',
   telge: 'bergsgatan-22_södertälje-4xhjqo',
+  // Vakin: Berghemsskolan i Umeå, som adress-id (docs/specs/2026-11-06-umea-vakin.md). Sitevision-id:n i adressen kan ändras, och då larmar sökningen.
+  vakin: 'berghemsskolan_umeå-90339',
   // Roslagsvatten: kommunernas egna hus, som adress-id (docs/specs/2026-11-04-roslagsvatten.md).
   osteraker: 'hackstavägen-22_åkersberga-1bqsdr9',
   ekero: 'tappströmsvägen-2_ekerö-ouhkuq',
@@ -82,13 +84,13 @@ async function checkOne(
   readValidTo: (id: string) => string[],
 ): Promise<SourceResult> {
   if (source.config.system === 'static') return checkStaticSource(source, readValidTo(source.id), today)
-  const checks = { svoa: checkSvoaSource, vasyd: checkVasydSource, nsr: checkNsrSource, srv: checkSrvSource, appbolaget: checkAppbolagetSource, uddevalla: checkUddevallaSource, borlange: checkBorlangeSource, roslagsvatten: checkRoslagsvattenSource, msva: checkMsvaSource, telge: checkTelgeSource, edp: checkEdpSource }
+  const checks = { svoa: checkSvoaSource, vasyd: checkVasydSource, nsr: checkNsrSource, srv: checkSrvSource, appbolaget: checkAppbolagetSource, uddevalla: checkUddevallaSource, borlange: checkBorlangeSource, roslagsvatten: checkRoslagsvattenSource, msva: checkMsvaSource, telge: checkTelgeSource, vakin: checkVakinSource, edp: checkEdpSource }
   const check = checks[source.config.system]
   const direct = await check(source, probes[source.id], today, fetchFn)
   if (!unreachableFromHere(direct)) return direct
   // Fungerar källan från sajten är det bara GitHub som stängs ute, och det är inget att larma om.
-  // NSR:s, SRV:s, Appbolagets, Uddevallas, Borlänges, Roslagsvattens, MSVA:s och Telges kontrolladresser är adress-id; sajten söker på gatan och orten i dem.
-  const siteProbe = ['nsr', 'srv', 'appbolaget', 'uddevalla', 'borlange', 'roslagsvatten', 'msva', 'telge'].includes(source.config.system) ? (queryFromAddressId(probes[source.id])?.query ?? probes[source.id]) : probes[source.id]
+  // NSR:s, SRV:s, Appbolagets, Uddevallas, Borlänges, Roslagsvattens, MSVA:s, Telges och Vakins kontrolladresser är adress-id; sajten söker på gatan och orten i dem.
+  const siteProbe = ['nsr', 'srv', 'appbolaget', 'uddevalla', 'borlange', 'roslagsvatten', 'msva', 'telge', 'vakin'].includes(source.config.system) ? (queryFromAddressId(probes[source.id])?.query ?? probes[source.id]) : probes[source.id]
   const site = await checkViaSite(source, siteProbe, today, fetchFn)
   if (site.state === 'fungerar') return { ...direct, ...site, error: direct.error }
   return { ...direct, error: `${direct.error}. Via sajten: ${site.error ?? site.state}` }
