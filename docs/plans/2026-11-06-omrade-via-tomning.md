@@ -6,4 +6,4 @@ Spec: `docs/specs/2026-11-06-omrade-via-tomning.md`. Tester först i varje steg,
 - [x] `tomning` i `handleV1Areas`: träffar med `pickups`, `dateCovered`, fel och cachning.
 - [x] Tester för träff, flera områden samma dag, ingen hämtning, datum utanför schemat, framtida och ogiltigt datum, och oförändrat svar utan `tomning`.
 - [x] `docs/api.md`, `public/api/v1/openapi.json` och kontraktstestet.
-- [ ] Prova på förhandsversionen på Vercel med riktig data från Avesta och Säter.
+- [x] Prova på förhandsversionen på Vercel med riktig data från Avesta och Säter.
