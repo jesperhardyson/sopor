@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
+import { useSwipeToClose } from './useSwipeToClose'
 
 /** Bottenark på mobil, centrerad dialog från md och uppåt (som i designen). */
 export function ResponsiveSheet({
@@ -15,9 +16,11 @@ export function ResponsiveSheet({
   description: ReactNode
   children: ReactNode
 }) {
+  const swipeRef = useSwipeToClose(() => onOpenChange(false))
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
+        ref={swipeRef}
         showCloseButton={false}
         // Arket får fokus i stället för första fältet, annars öppnas tangentbordet på mobil och täcker knapparna.
         onOpenAutoFocus={(e) => {

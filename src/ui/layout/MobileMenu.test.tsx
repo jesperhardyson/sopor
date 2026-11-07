@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router'
 import { describe, expect, it } from 'vitest'
@@ -44,5 +44,14 @@ describe('MobileMenu', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Öppna menyn' }))
     await userEvent.click(screen.getByRole('button', { name: 'Stäng' }))
     expect(screen.queryByRole('dialog')).toBeNull()
+  })
+  it('stängs av ett svep nedåt', async () => {
+    renderMenu()
+    fireEvent.click(screen.getByRole('button', { name: 'Öppna menyn' }))
+    const sheet = await screen.findByRole('dialog')
+    fireEvent.touchStart(sheet, { touches: [{ clientX: 50, clientY: 100 }], changedTouches: [{ clientX: 50, clientY: 100 }] })
+    fireEvent.touchMove(sheet, { touches: [{ clientX: 50, clientY: 400 }], changedTouches: [{ clientX: 50, clientY: 400 }] })
+    fireEvent.touchEnd(sheet, { touches: [], changedTouches: [{ clientX: 50, clientY: 400 }] })
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
   })
 })
