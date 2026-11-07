@@ -103,6 +103,8 @@ Id:t får skickas procentkodat. Okänd källa eller adress ger `404 not_found`.
 
 Adresssökning, se [Kom igång](#alternativ-2-sök-med-api). Högst tio träffar per källa. Ort eller kommun får stå efter gatan (`storgatan 2 uppsala` eller `storgatan 2, uppsala`): källorna söker då på gatan och träffarna filtreras på början av orten eller kommunen.
 
+Den bästa träffen står först: exakt gata och husnummer före nummer som bara börjar likadant, och exakt ort före ort som börjar likadant. Nämner frågan en plats frågas bara källorna som täcker den, och svarar de utan träffar frågas övriga källor. Utan plats och utan `kalla` väntar sökningen högst cirka 2 sekunder: källor som inte hunnit svara står i `failed`, och du kan fråga dem igen med `kalla`.
+
 ### `GET /api/v1/omraden`
 
 Områdena hos källor med områdesval, till exempel Avesta och Säter. Använd den när en adress inte hittas och användaren har angett en ort: användaren väljer då själv område. Sopor gissar aldrig vilket område en adress hör till.

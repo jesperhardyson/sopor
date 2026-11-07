@@ -6,9 +6,10 @@ import { isValidDate, secondsToStockholmMidnight, todayInStockholm } from '../do
 import { FRACTIONS, sortFractions } from '../domain/fractions.js'
 import { nextPerFraction, pickupSummary } from '../domain/next.js'
 import { upcoming } from '../domain/schedule.js'
-import { mergeHits, normalize, searchAddresses } from '../domain/search.js'
+import { mergeHits, normalize, rankHits, searchAddresses } from '../domain/search.js'
 import type { Address, Area, FractionId, Schedule } from '../domain/types.js'
-import { namesSource, pickLiveSources, shardKey, splitPlace, streetAtSourcePlace, type StreetShard } from '../data/street-index.js'
+import { namesSource, pickLiveSources, shardKey, sourcesAtPlace, splitPlace, streetAtSourcePlace, type StreetShard } from '../data/street-index.js'
+import type { PlaceLookup } from '../data/sweden-places.js'
 import type { AddressIndexFile, AreasIndexFile } from '../data/static-format.js'
 import { areaNoticeText, isLive, needsPlaces, SOURCES, type Source } from '../sources/index.js'
 import { CACHE_PARTIAL, CACHE_SEARCH, decodeId, searchLiveSource, type HandlerOptions } from './handlers.js'
@@ -189,6 +190,28 @@ async function streetShard(q: string, origin: string, opts: HandlerOptions): Pro
   }
 }
 
+/** Källorna som täcker platsen i frågan, null när platsen är okänd. Saknas filerna frågas som vanligt. */
+async function sourcesForPlace(place: string, live: Source[], origin: string, opts: HandlerOptions): Promise<string[] | null> {
+  const [lookup, placeShard, orter] = await Promise.all([
+    siteJson<PlaceLookup>(origin, '/data/sverige.json', opts.fetchFn, opts.timeoutMs).catch(() => null),
+    streetShard(place, origin, opts),
+    opts.places ?? loadServerPlaces(origin, opts.fetchFn),
+  ])
+  return sourcesAtPlace(place, placeShard, lookup, orter, live)
+}
+
+/** En långsam källa får inte hålla tillbaka svaret. Den hamnar i `failed`. */
+const SEARCH_DEADLINE_MS = 2000
+
+function withDeadline<T>(work: Promise<T>, ms: number | undefined): Promise<T> {
+  if (ms === undefined) return work
+  let timer: ReturnType<typeof setTimeout>
+  const deadline = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new Error('Källan hann inte svara')), ms)
+  })
+  return Promise.race([work, deadline]).finally(() => clearTimeout(timer))
+}
+
 /** GET /api/v1/sok?q=storgatan 2[&kalla=uppsala] */
 export const handleV1Search: V1Handler = async (request, opts = {}) => {
   const url = new URL(request.url)
@@ -198,6 +221,9 @@ export const handleV1Search: V1Handler = async (request, opts = {}) => {
   const visible = visibleSources(opts)
   const kalla = url.searchParams.get('kalla')
   let sources: Source[]
+  /** Källor som frågas först när de utpekade saknar adressen: postorter kan korsa kommungränser. */
+  let others: Source[] = []
+  let pointedOut = !!kalla
   // Källorna söker bara på gatan; orten eller kommunen efter den filtreras här.
   let parts = splitPlace(null, q)
   if (kalla) {
@@ -209,20 +235,40 @@ export const handleV1Search: V1Handler = async (request, opts = {}) => {
     const shard = await streetShard(q, url.origin, opts)
     parts = splitPlace(shard, q)
     const picked = pickLiveSources(shard, q, live.map((s) => s.id), false)
-    sources = [...live.filter((s) => picked.includes(s.id)), ...visible.filter((s) => !isLive(s))]
+    const atPlace = parts.place ? await sourcesForPlace(parts.place, live, url.origin, opts) : null
+    const first = atPlace ?? picked
+    pointedOut = atPlace !== null
+    sources = [...live.filter((s) => first.includes(s.id)), ...visible.filter((s) => !isLive(s))]
+    others = live.filter((s) => picked.includes(s.id) && !first.includes(s.id))
   }
   const { street, place } = parts
 
   const places =
-    opts.places ?? (sources.some((s) => isLive(s) && needsPlaces(s)) ? await loadServerPlaces(url.origin, opts.fetchFn) : undefined)
-  const results = await Promise.allSettled(
-    sources.map(async (s) =>
-      isLive(s) ? (await searchLiveSource(s, street, place, { ...opts, places })).slice(0, SEARCH_LIMIT) : await searchStatic(s, q, url.origin, opts, !!kalla),
-    ),
-  )
+    opts.places ?? ([...sources, ...others].some((s) => isLive(s) && needsPlaces(s)) ? await loadServerPlaces(url.origin, opts.fetchFn) : undefined)
+  const deadlineMs = opts.searchDeadlineMs ?? SEARCH_DEADLINE_MS
+  const ask = (list: Source[], ms?: number) =>
+    Promise.allSettled(
+      list.map((s) =>
+        withDeadline(
+          (async () => (isLive(s) ? (await searchLiveSource(s, street, place, { ...opts, places })).slice(0, SEARCH_LIMIT) : await searchStatic(s, q, url.origin, opts, !!kalla)))(),
+          ms,
+        ),
+      ),
+    )
+  const hits = (settled: PromiseSettledResult<Address[]>[]) => settled.flatMap((r) => (r.status === 'fulfilled' ? r.value : []))
+
+  const results = await ask(sources, pointedOut ? undefined : deadlineMs)
   const failed = sources.filter((_, i) => results[i].status === 'rejected').map((s) => s.id)
-  const addresses = results.flatMap((r) => (r.status === 'fulfilled' ? r.value : [])).map((a) => v1Address(a, url.origin, sources))
-  return v1Json({ addresses, failed }, 200, failed.length > 0 ? CACHE_PARTIAL : CACHE_SEARCH)
+  let found = hits(results)
+  let complete = failed.length === 0
+  if (found.length === 0 && complete && others.length > 0) {
+    // Det ovanliga fallet, och här väntar nästan alltid en fråga som saknar träff: kortare tid.
+    const more = await ask(others, deadlineMs / 2)
+    found = hits(more)
+    complete = more.every((r) => r.status === 'fulfilled')
+  }
+  const addresses = rankHits(street, place, found).map((a) => v1Address(a, url.origin, visible))
+  return v1Json({ addresses, failed }, 200, complete ? CACHE_SEARCH : CACHE_PARTIAL)
 }
 
 /**

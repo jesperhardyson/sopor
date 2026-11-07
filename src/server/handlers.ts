@@ -29,6 +29,8 @@ export interface HandlerOptions {
   now?: Date
   /** Ort → kommun per källa (från gatuindexet) */
   places?: Record<string, Record<string, string>>
+  /** Så länge sökningen i API:t väntar på källor som frågan inte pekar ut */
+  searchDeadlineMs?: number
 }
 
 export const CACHE_SEARCH = 'public, s-maxage=86400, stale-while-revalidate=604800'

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Source } from '@/sources'
-import { buildStreetIndex, candidateSources, isKnownStreet, matchesPlace, pickLiveSources, shardKey, splitPlace, type OsmKommun } from './street-index'
+import { buildStreetIndex, candidateSources, isKnownStreet, matchesPlace, pickLiveSources, shardKey, sourcesAtPlace, splitPlace, type OsmKommun } from './street-index'
 
 const src = (id: string, kommuner: [string, string][]): Source => ({
   id,
@@ -187,5 +187,47 @@ describe('isKnownStreet', () => {
 
   it('ger false utan delfil', () => {
     expect(isKnownStreet(null, 'Kungsgatan', 'avesta')).toBe(false)
+  })
+})
+
+describe('sourcesAtPlace', () => {
+  const src = (id: string, code: string, name: string) => ({ id, name: id, url: 'https://x', kommuner: [{ code, name }], config: { system: 'edp', baseUrl: 'https://x' } }) as Source
+  const sources = [src('falkenberg', '1382', 'Falkenbergs kommun'), src('falun', '2080', 'Falu kommun'), src('uppsala', '0380', 'Uppsala kommun'), src('vasyd', '1280', 'Malmö kommun')]
+  const lookup = {
+    kommuner: { '1382': 'Falkenbergs kommun', '2080': 'Falu kommun', '0380': 'Uppsala kommun', '1280': 'Malmö kommun' },
+    orter: { falkenberg: ['1382'], falun: ['2080'], uppsala: ['0380'], grums: ['1764'] },
+  }
+
+  it('ger källorna som täcker orten', () => {
+    expect(sourcesAtPlace('Falkenberg', null, lookup, {}, sources)).toEqual(['falkenberg'])
+  })
+
+  it('tar med alla kommuner orten ligger i', () => {
+    const twoKommuner = { ...lookup, orter: { ...lookup.orter, bro: ['1382', '0380'] } }
+    expect(sourcesAtPlace('bro', null, twoKommuner, {}, sources)).toEqual(['falkenberg', 'uppsala'])
+  })
+
+  it('känner igen källornas egna orter och platser i gatuindexet', () => {
+    expect(sourcesAtPlace('limhamn', null, lookup, { vasyd: { limhamn: 'Malmö kommun' } }, sources)).toEqual(['vasyd'])
+    expect(sourcesAtPlace('limhamn', { limhamn: ['vasyd'] }, lookup, {}, sources)).toEqual(['vasyd'])
+  })
+
+  it('låter ett kommunnamn betyda kommunen, även om en by på annat håll heter likadant', () => {
+    expect(sourcesAtPlace('falkenberg', { falkenberg: ['uppsala'] }, lookup, { vasyd: { falkenberg: 'Malmö kommun' } }, sources)).toEqual(['falkenberg'])
+  })
+
+  it('använder början av namnet när orten är halvskriven, men inte gatunamn', () => {
+    expect(sourcesAtPlace('fal', { falkgatan: ['uppsala'] }, lookup, {}, sources)).toEqual(['falkenberg', 'falun'])
+  })
+
+  it('ger null för en okänd plats, som då inte får begränsa sökningen', () => {
+    expect(sourcesAtPlace('lgh 1002', null, lookup, {}, sources)).toBeNull()
+    expect(sourcesAtPlace('', null, lookup, {}, sources)).toBeNull()
+    expect(sourcesAtPlace('f', null, lookup, {}, sources)).toBeNull()
+    expect(sourcesAtPlace('falkenberg', null, null, {}, sources)).toBeNull()
+  })
+
+  it('ger en tom lista när orten är känd men ingen av källorna täcker den', () => {
+    expect(sourcesAtPlace('grums', null, lookup, {}, sources)).toEqual([])
   })
 })

@@ -3,6 +3,7 @@ import path from 'node:path'
 import { describe, expect, it, vi, type Mock } from 'vitest'
 import { FRACTIONS } from '../domain/fractions.js'
 import type { Source } from '../sources/index.js'
+import type { HandlerOptions } from './handlers.js'
 import { addressCacheControl, handleV1Address, handleV1Areas, handleV1NotFound, handleV1Search, handleV1Sources, v1, v1Error } from './v1.js'
 
 const fixture = (name: string) => readFileSync(path.resolve(import.meta.dirname, '__fixtures__', name), 'utf8')
@@ -433,7 +434,7 @@ describe('handleV1Areas', () => {
 
 describe('handleV1Search', () => {
   const calls = fetchFn as unknown as Mock<(input: string | URL | Request) => Promise<Response>>
-  const search = (query: string, o = opts) => v1(handleV1Search)(get(`/api/v1/sok?${query}`), o)
+  const search = (query: string, o: HandlerOptions = opts) => v1(handleV1Search)(get(`/api/v1/sok?${query}`), o)
   const q = (text: string, extra = '') => `q=${encodeURIComponent(text)}${extra}`
   const hosts = () => calls.mock.calls.map(([input]) => new URL(String(input)).host)
 
@@ -534,6 +535,64 @@ describe('handleV1Search', () => {
   it('en statisk källa som inte går att läsa hamnar i failed', async () => {
     const res = await search(q('Storgatan 1', '&kalla=statisk'), { ...opts, fetchFn: (async () => new Response('', { status: 404 })) as typeof fetch })
     expect(await res.json()).toMatchObject({ addresses: [], failed: ['statisk'] })
+  })
+
+  describe('källor efter ort och tidsgräns', () => {
+    const at = (id: string, code: string, name: string): Source => ({ ...edp(id, `${id}.test`, name), kommuner: [{ code, name }] })
+    const local = [at('uppsala', '0380', 'Uppsala kommun'), at('trog', '0381', 'Trög kommun'), at('tom', '0382', 'Tomma kommun')]
+    const sverige = { kommuner: {}, orter: { uppsala: ['0380'], tomma: ['0382'] } }
+    /** Tom svarar utan träffar, och gatuindexet pekar ut alla tre. */
+    const placeFetch = (extra: (url: URL) => Response | undefined = () => undefined, lookup: object = sverige) =>
+      vi.fn(async (input: string | URL | Request, init?: RequestInit) => {
+        const url = new URL(String(input))
+        if (url.pathname === '/data/sverige.json') return json(lookup)
+        if (url.pathname === '/data/gator/st.json') return json({ storgatan: ['uppsala', 'trog', 'tom'] })
+        if (url.host === 'tom.test') return json({ Succeeded: true, Buildings: [] })
+        return extra(url) ?? fetchFn(input, init)
+      }) as unknown as typeof fetch
+    const hostsOf = (f: typeof fetch) => vi.mocked(f).mock.calls.map(([i]) => new URL(String(i)).host)
+
+    it('frågar bara källan som täcker orten i frågan', async () => {
+      const f = placeFetch()
+      const body = await (await search(q('Storgatan 2, Uppsala'), { ...opts, sources: local, fetchFn: f })).json()
+      expect(body.addresses.length).toBeGreaterThan(0)
+      expect(body.failed).toEqual([])
+      expect(hostsOf(f)).not.toContain('trog.test')
+    })
+
+    it('frågar övriga källor när ortens källa saknar adressen, utan att rapportera dem som fel', async () => {
+      const f = placeFetch()
+      const res = await search(q('Storgatan 2, Tomma'), { ...opts, sources: local, fetchFn: f, timeoutMs: 20, searchDeadlineMs: 40 })
+      const body = await res.json()
+      expect(hostsOf(f)).toEqual(expect.arrayContaining(['tom.test', 'uppsala.test', 'trog.test']))
+      expect(body.failed).toEqual([])
+      expect(res.headers.get('Cache-Control')).toBe('public, s-maxage=60')
+    })
+
+    it('frågar inte övriga källor när ortens källa inte svarade', async () => {
+      const f = placeFetch(undefined, { ...sverige, orter: { trog: ['0381'] } })
+      const body = await (await search(q('Storgatan 2, Trog'), { ...opts, sources: local, fetchFn: f, timeoutMs: 20 })).json()
+      expect(body.failed).toEqual(['trog'])
+      expect(hostsOf(f)).not.toContain('uppsala.test')
+    })
+
+    it('väntar inte på en långsam källa när frågan inte nämner någon plats', async () => {
+      const f = placeFetch()
+      const started = Date.now()
+      const res = await search(q('Storgatan 2'), { ...opts, sources: local, fetchFn: f, timeoutMs: 5000, searchDeadlineMs: 30 })
+      const body = await res.json()
+      expect(Date.now() - started).toBeLessThan(1000)
+      expect(body.addresses.length).toBeGreaterThan(0)
+      expect(body.failed).toEqual(['trog'])
+      expect(res.headers.get('Cache-Control')).toBe('public, s-maxage=60')
+    })
+
+    it('sätter exakt adress först oavsett källornas ordning', async () => {
+      const f = placeFetch((url) =>
+        url.host === 'uppsala.test' ? json({ Succeeded: true, Buildings: ['STORGATAN 20, UPPSALA (1)', 'STORGATAN 2, UPPSALA (2)'] }) : undefined)
+      const body = await (await search(q('Storgatan 2, Uppsala'), { ...opts, sources: local, fetchFn: f })).json()
+      expect(body.addresses.map((a: { street: string }) => a.street)).toEqual(['Storgatan 2', 'Storgatan 20'])
+    })
   })
 
   it('begränsar till tio träffar per källa', async () => {

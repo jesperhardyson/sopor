@@ -2,13 +2,25 @@
 
 import { SourceError, USER_AGENT } from './http.js'
 
+/** Filerna ändras bara vid driftsättning, så de sparas under funktionens livstid. Fel sparas inte. */
+const saved = new Map<string, Promise<unknown>>()
+const MAX_SAVED = 2000
+
 /** 404 ger null. Nätverksfel, andra felstatus och ogiltig JSON ger SourceError. */
-export async function siteJson<T>(
-  origin: string,
-  path: string,
-  fetchFn: typeof fetch = fetch,
-  timeoutMs = 3000,
-): Promise<T | null> {
+export function siteJson<T>(origin: string, path: string, fetchFn?: typeof fetch, timeoutMs?: number): Promise<T | null> {
+  if (fetchFn) return readSiteJson<T>(origin, path, fetchFn, timeoutMs)
+  const key = `${origin}${path}`
+  let file = saved.get(key) as Promise<T | null> | undefined
+  if (!file) {
+    if (saved.size >= MAX_SAVED) saved.clear()
+    file = readSiteJson<T>(origin, path, fetch, timeoutMs)
+    file.catch(() => saved.delete(key))
+    saved.set(key, file)
+  }
+  return file
+}
+
+async function readSiteJson<T>(origin: string, path: string, fetchFn: typeof fetch, timeoutMs = 3000): Promise<T | null> {
   const url = `${origin}${path}`
   let res: Response
   try {

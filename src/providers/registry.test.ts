@@ -392,6 +392,113 @@ describe('searchAll', () => {
     expect(result.addresses.map((x) => x.sourceId)).toEqual(expect.arrayContaining(['uppsala', 'boras']))
   })
 
+  describe('källor efter ort och sena svar', () => {
+    const inUppsala = (street: string, sourceId = 'uppsala'): Address => ({ id: `${street}-${sourceId}`, street, locality: 'Uppsala', sourceId, kommun: 'Uppsala kommun' })
+    const stub = (answer: (source: string) => Promise<Address[]> | Address[]) => {
+      const f = vi.fn(async (url: string) => {
+        if (url === '/data/gator/st.json') return Response.json({ storgatan: ['boras', 'uppsala'] })
+        if (url === '/data/orter.json') return Response.json({})
+        if (url === '/data/sverige.json') return Response.json({ kommuner: {}, orter: { uppsala: ['0380'] } })
+        if (url.startsWith('/api/sok')) {
+          const source = new URLSearchParams(url.split('?')[1]).get('sources')!
+          return Response.json({ addresses: await answer(source), failed: [] })
+        }
+        return new Response('', { status: 404 })
+      })
+      vi.stubGlobal('fetch', f)
+      return f
+    }
+
+    it('frågar bara källan som täcker orten i frågan', async () => {
+      const f = stub((source) => (source === 'uppsala' ? [inUppsala('Storgatan 2')] : []))
+      const { searchAll } = await import('./registry')
+      const result = await searchAll('Storgatan 2, Uppsala')
+      expect(result.addresses.map((x) => x.street)).toEqual(['Storgatan 2'])
+      expect(sokCalls(f).every((u) => u.includes('sources=uppsala'))).toBe(true)
+    })
+
+    it('svarar direkt när ortens källa saknar adressen, och lägger till träffar från övriga källor sedan', async () => {
+      stub((source) => (source === 'boras' ? [inUppsala('Storgatan 2', 'boras')] : []))
+      const { searchAll } = await import('./registry')
+      const partials: SearchResult[] = []
+      const result = await searchAll('Storgatan 2, Uppsala', undefined, (p) => partials.push(p))
+      expect(result.addresses).toEqual([])
+      await vi.waitFor(() => expect(partials.at(-1)?.addresses.map((x) => x.sourceId)).toEqual(['boras']), { timeout: 1500 })
+      expect(partials.at(-1)?.pending).toBe(false)
+    })
+
+    it('ger svaret utan att vänta på en långsam källa, och lägger till den när den svarar', async () => {
+      stub(async (source) => {
+        if (source === 'boras') await new Promise((r) => setTimeout(r, 1700))
+        return source === 'boras' ? [inUppsala('Storgatan 2', 'boras')] : []
+      })
+      const { searchAll } = await import('./registry')
+      const partials: SearchResult[] = []
+      const started = Date.now()
+      const result = await searchAll('Storgatan', undefined, (p) => partials.push(p))
+      expect(Date.now() - started).toBeLessThan(1650)
+      expect(result.failed).toEqual([])
+      expect(result.pending).toBe(true)
+      await vi.waitFor(() => expect(partials.at(-1)).toMatchObject({ failed: [], pending: false }), { timeout: 1000 })
+      expect(partials.at(-1)?.addresses.map((x) => x.sourceId)).toEqual(['boras'])
+    })
+
+    it('kallar bara en källa misslyckad när den inte svarat, inte när den är långsam', async () => {
+      const f = vi.fn(async (url: string) => {
+        if (url === '/data/gator/st.json') return Response.json({ storgatan: ['uppsala'] })
+        if (url === '/data/orter.json') return Response.json({})
+        if (url.startsWith('/api/sok')) {
+          await new Promise((r) => setTimeout(r, 900))
+          return new Response('', { status: 500 })
+        }
+        return new Response('', { status: 404 })
+      })
+      vi.stubGlobal('fetch', f)
+      const { searchAll } = await import('./registry')
+      const partials: SearchResult[] = []
+      const result = await searchAll('Storgatan', undefined, (p) => partials.push(p))
+      expect(result).toMatchObject({ failed: [], pending: true })
+      await vi.waitFor(() => expect(partials.at(-1)).toMatchObject({ failed: ['uppsala'], pending: false }), { timeout: 1000 })
+    })
+
+    it('visar ett avkortat svar direkt, innan frågan med orten har svarat', async () => {
+      const many = Array.from({ length: 10 }, (_, i) => inUppsala(`Storgatan ${i + 20}`))
+      stub(async (_source) => many)
+      const slowExtra = vi.mocked(fetch)
+      const plain = slowExtra.getMockImplementation()!
+      slowExtra.mockImplementation(async (input: RequestInfo | URL) => {
+        const url = String(input)
+        if (url.includes('uppsala&sources') || url.includes('%2C')) {
+          await new Promise((r) => setTimeout(r, 500))
+          return Response.json({ addresses: [inUppsala('Storgatan 2')], failed: [] })
+        }
+        return (plain as (u: string) => Promise<Response>)(url)
+      })
+      const { searchAll } = await import('./registry')
+      const partials: number[] = []
+      const result = await searchAll('Storgatan 2, Uppsala', undefined, (p) => partials.push(p.addresses.length))
+      expect(partials.some((n) => n === 10)).toBe(true)
+      expect(result.addresses[0].street).toBe('Storgatan 2')
+      expect(result.addresses).toHaveLength(11)
+    })
+
+    it('sätter exakt adress först oavsett vilken källa som svarar först', async () => {
+      stub((source) => (source === 'uppsala' ? [inUppsala('Storgatan 50')] : [inUppsala('Storgatan 5', 'boras')]))
+      const { searchAll } = await import('./registry')
+      const result = await searchAll('Storgatan 5')
+      expect(result.addresses.map((x) => x.street)).toEqual(['Storgatan 5', 'Storgatan 50'])
+    })
+
+    it('sätter källor med sparade adresser först bland lika bra träffar', async () => {
+      localStorage.setItem('sopor.saved.v1', JSON.stringify([{ sourceId: 'uppsala', addressId: 'x', name: 'Hem', street: 'Y', locality: 'Z', savedAt: '2026-01-01' }]))
+      stub((source) => (source === 'uppsala' ? [inUppsala('Storgatan 2')] : [inUppsala('Storgatan 2', 'boras')]))
+      const { searchAll } = await import('./registry')
+      const result = await searchAll('Storgatan 2')
+      localStorage.removeItem('sopor.saved.v1')
+      expect(result.addresses.map((x) => x.sourceId)).toEqual(['uppsala', 'boras'])
+    })
+  })
+
   it('söker på gatan och filtrerar på orten när man skriver den efter', async () => {
     const lund: Address = { id: 'storgatan-2_lund-1', street: 'Storgatan 2', locality: 'Lund', sourceId: 'uppsala', kommun: 'Lunds kommun' }
     const f = stubFetch({ addresses: [up('Storgatan 2'), lund], failed: [] })

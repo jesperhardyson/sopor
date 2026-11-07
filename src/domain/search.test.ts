@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { enterTarget, fairShare, groupByKommun, matchedTerm, normalize, searchAddresses, stableMerge, suggest } from './search'
+import { enterTarget, fairShare, groupByKommun, isExactStreet, matchedTerm, normalize, rankHits, searchAddresses, stableMerge, suggest } from './search'
 import type { Address } from './types'
 
 const a = (id: string, street: string, locality: string): Address => ({ id, street, locality, sourceId: 'avesta', kommun: 'Avesta kommun' })
@@ -312,5 +312,45 @@ describe('områdessökning', () => {
     it('ger null för en adress utan sökord', () => {
       expect(matchedTerm('Storgatan', ADDRESSES[0])).toBeNull()
     })
+  })
+})
+
+describe('rankHits', () => {
+  const at = (street: string, locality = 'Uppsala', sourceId = 'uppsala'): Address => ({ id: `${street}_${locality}`, street, locality, sourceId, kommun: `${locality} kommun` })
+  const streets = (list: Address[]) => list.map((a) => `${a.street}, ${a.locality}`)
+
+  it('sätter exakt husnummer före samma nummer med bokstav och nummer som börjar likadant', () => {
+    const hits = [at('Storgatan 50'), at('Storgatan 5 B'), at('Storgatan 5')]
+    expect(rankHits('storgatan 5', '', hits).map((a) => a.street)).toEqual(['Storgatan 5', 'Storgatan 5 B', 'Storgatan 50'])
+  })
+
+  it('sätter hela gatan före gator som bara börjar likadant', () => {
+    const hits = [at('Storgatsvägen 1'), at('Storgatan 2')]
+    expect(rankHits('storgatan', '', hits).map((a) => a.street)).toEqual(['Storgatan 2', 'Storgatsvägen 1'])
+  })
+
+  it('sätter exakt ort före ort som bara börjar likadant', () => {
+    const hits = [at('Storgatan 2', 'Sävsjö Strand'), at('Storgatan 2', 'Sävsjö')]
+    expect(streets(rankHits('storgatan 2', 'sävsjö', hits))).toEqual(['Storgatan 2, Sävsjö', 'Storgatan 2, Sävsjö Strand'])
+  })
+
+  it('sätter källor användaren har adresser hos först bland lika bra träffar, men aldrig före en bättre träff', () => {
+    const hits = [at('Storgatan 5', 'Habo', 'june'), at('Storgatan 50', 'Uppsala'), at('Storgatan 5', 'Uppsala')]
+    expect(streets(rankHits('storgatan 5', '', hits, ['uppsala']))).toEqual(['Storgatan 5, Uppsala', 'Storgatan 5, Habo', 'Storgatan 50, Uppsala'])
+  })
+
+  it('behåller ordningen mellan lika bra träffar', () => {
+    const hits = [at('Storgatan 2'), at('Storgatan 7 A'), at('Storgatan 3')]
+    expect(rankHits('storgatan', '', hits)).toEqual(hits)
+  })
+})
+
+describe('isExactStreet', () => {
+  const at = (street: string) => ({ street })
+  it('känner igen adressen med eller utan ort efter', () => {
+    expect(isExactStreet('storgatan 5', at('Storgatan 5'))).toBe(true)
+    expect(isExactStreet('Storgatan 5, Uppsala', at('Storgatan 5'))).toBe(true)
+    expect(isExactStreet('storgatan 5', at('Storgatan 50'))).toBe(false)
+    expect(isExactStreet('storgatan', at('Storgatan 5'))).toBe(false)
   })
 })

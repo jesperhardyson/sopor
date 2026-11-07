@@ -2,6 +2,7 @@
 // ligger i. Byggs av scripts/build-data.ts från data/osm/<kommunkod>.json.
 
 import { normalize } from '../domain/search.js'
+import { kommunerNamed, type PlaceLookup } from './sweden-places.js'
 import { needsPlaces, placeKommuner, type Kommun, type Source } from '../sources/index.js'
 
 /** Gatunamn och ortnamn för en kommun, hämtade från OpenStreetMap. */
@@ -117,6 +118,42 @@ export function pickLiveSources(shard: StreetShard | null, query: string, live: 
   const candidates = shard ? candidateSources(shard, query).filter((id) => live.includes(id)) : []
   if (candidates.length > 0) return candidates
   return submitted || /\d/.test(query) ? live : []
+}
+
+/**
+ * Källorna som täcker en plats, så att frågan slipper gå till resten av landet. Ett kommunnamn
+ * betyder kommunen, även om en by på annat håll heter likadant. Annars söks platsen exakt i Sveriges
+ * orter, källornas orter och gatuindexet (`placeShard`, platsens delfil). Finns den inte används
+ * början av ortnamnen, men inte gatorna i indexet. Null när platsen är okänd: då får den inte
+ * begränsa något. En tom lista betyder att platsen är känd men att ingen av källorna täcker den.
+ */
+export function sourcesAtPlace(
+  place: string,
+  placeShard: StreetShard | null,
+  lookup: PlaceLookup | null,
+  orter: Record<string, Record<string, string>>,
+  sources: Source[],
+): string[] | null {
+  const key = normalize(place, false)
+  if (key.length < 2 || !lookup) return null
+  const covering = (codes: string[]) => sources.filter((s) => placeKommuner(s).some((k) => codes.includes(k.code))).map((s) => s.id)
+  const inOrter = (match: (name: string) => boolean) =>
+    sources.filter((s) => Object.keys(orter[s.id] ?? {}).some(match)).map((s) => s.id)
+  const known = (ids: string[]) => ids.filter((id) => sources.some((s) => s.id === id))
+
+  const atKommun = covering(kommunerNamed(lookup, key))
+  if (atKommun.length > 0) return atKommun.sort()
+
+  const exactCodes = lookup.orter[key]
+  const exactOrter = inOrter((name) => name === key)
+  const exactShard = placeShard?.[key]
+  if (exactCodes || exactOrter.length > 0 || exactShard) {
+    return [...new Set([...covering(exactCodes ?? []), ...exactOrter, ...known(exactShard ?? [])])].sort()
+  }
+  const prefixCodes = Object.keys(lookup.orter).filter((name) => name.startsWith(key)).flatMap((name) => lookup.orter[name])
+  const prefixOrter = inOrter((name) => name.startsWith(key))
+  if (prefixCodes.length === 0 && prefixOrter.length === 0) return null
+  return [...new Set([...covering(prefixCodes), ...prefixOrter])].sort()
 }
 
 /** Frågan uppdelad: gatan som källorna söker på och platsen (ort eller kommun) som träffarna filtreras på. */

@@ -1,9 +1,10 @@
 import type { KommunPage } from '@/data/kommun-pages'
 import type { Address } from '@/domain/types'
 import { getSource, placeKommuner, SOURCES, supportedKommuner, type Kommun, type Source } from '@/sources'
-import { isKnownStreet, matchesPlace, namesSource, pickLiveSources, shardKey, splitPlace, streetAtSourcePlace, type QueryParts, type StreetShard } from '@/data/street-index'
+import { isKnownStreet, matchesPlace, namesSource, pickLiveSources, shardKey, sourcesAtPlace, splitPlace, streetAtSourcePlace, type QueryParts, type StreetShard } from '@/data/street-index'
 import { kommunerForPlace } from '@/data/sweden-places'
-import { mergeHits, normalize } from '@/domain/search'
+import { mergeHits, normalize, rankHits } from '@/domain/search'
+import { loadSaved } from '@/lib/storage'
 import { kommunForLocality } from '@/sources'
 import { createApiProvider } from './api'
 import { loadKommunPages, loadPlaces, loadSwedenPlaces } from './places'
@@ -52,6 +53,8 @@ export interface SearchResult {
   failed: string[]
   /** Källor med områdesval som sökningen ska erbjuda, t.ex. [{ sourceId: "avesta", … }] */
   areaPickers: AreaPicker[]
+  /** Källor har inte svarat än, och deras träffar kan läggas till. Det betyder inte att de är nere: se `failed`. */
+  pending?: boolean
 }
 
 const shards = new Map<string, Promise<StreetShard | null>>()
@@ -94,18 +97,37 @@ function mayBeInKommun(address: Address, kommun?: Kommun): boolean {
 /** "Köpings kommun" → "köping". Källorna matchar början av orten, så "västerå" hittar Västerås. */
 const mainPlace = (kommun: Kommun) => liveKey(kommun.name.replace(/ kommun$/, '').replace(/^Region /, '').replace(/s$/, ''))
 
-/** Live-källor att fråga (valda av `pickLiveSources`), och frågan uppdelad i gata och plats. */
-async function liveSourcesFor(query: string, { submitted = false, kommun }: SearchOptions): Promise<{ sources: string[] } & QueryParts> {
-  const live = SOURCES.filter((s) => s.config.system !== 'static' && coversKommun(s, kommun)).map((s) => s.id)
-  const none = { sources: [], street: query, place: '' }
-  if (live.length === 0 || normalize(query).length < 2) return none
+interface LiveChoice extends QueryParts {
+  /** Källorna att fråga först */
+  sources: string[]
+  /** Källor som frågas när de första saknar adressen: postorter kan korsa kommungränser. */
+  others: string[]
+  /** Om frågan pekar ut källorna genom att nämna en plats */
+  atPlace: boolean
+}
+
+/** Källorna som täcker platsen, null när platsen är okänd. */
+async function sourcesForPlace(place: string, live: Source[]): Promise<string[] | null> {
+  const [placeShard, lookup, orter] = await Promise.all([loadShard(shardKey(place)), loadSwedenPlaces(), loadPlaces()])
+  return sourcesAtPlace(place, placeShard, lookup, orter, live)
+}
+
+/** Live-källor att fråga (valda av platsen i frågan eller `pickLiveSources`), och frågan uppdelad i gata och plats. */
+async function liveSourcesFor(query: string, { submitted = false, kommun }: SearchOptions): Promise<LiveChoice> {
+  const live = SOURCES.filter((s) => s.config.system !== 'static' && coversKommun(s, kommun))
+  const ids = live.map((s) => s.id)
+  const none = { sources: [], others: [], atPlace: false }
+  if (live.length === 0 || normalize(query).length < 2) return { ...none, street: query, place: '' }
   // Delfilen hämtas redan vid två tecken, så att den finns när frågan blir lång nog att skickas.
   const shard = await loadShard(shardKey(query))
   const parts = splitPlace(shard, query)
-  if (normalize(parts.street).length < 3) return none
+  if (normalize(parts.street).length < 3) return { ...none, street: query, place: '' }
   // Ingen källa har adresser i en kommun som Sopor saknar: svara direkt i stället för att fråga alla.
-  if (parts.place && (await missingForPlace(parts.place)).length > 0) return { ...parts, sources: [] }
-  return { sources: pickLiveSources(shard, query, live, submitted), ...parts }
+  if (parts.place && (await missingForPlace(parts.place)).length > 0) return { ...none, ...parts }
+  const picked = pickLiveSources(shard, query, ids, submitted)
+  const atPlace = parts.place ? await sourcesForPlace(parts.place, live) : null
+  const sources = atPlace ?? picked
+  return { sources, others: picked.filter((id) => !sources.includes(id)), atPlace: atPlace !== null, ...parts }
 }
 
 /** EDP svarar med högst så här många adresser per källa. Färre betyder att svaret är komplett. */
@@ -114,7 +136,11 @@ const SOURCE_LIMIT = 10
 const NETWORK_DELAY_MS = 150
 const CACHE_SIZE = 300
 /** Så länge svaren samlas innan de visas. De flesta källor hinner svara; sena läggs till efteråt. */
-const HOLD_MS = 400
+const HOLD_MS = 250
+/** Sökningen ger sitt svar senast så här långt efter starten. Sena källor läggs till efteråt. */
+const ANSWER_MS = 1500
+/** Väntan innan övriga källor frågas, så att de inte får ett anrop för varje bokstav i orten. */
+const OTHERS_DELAY_MS = 400
 
 /** Som källorna jämför: gemener och enkla mellanslag. Källorna matchar början av adressen. */
 const liveKey = (query: string) => query.toLowerCase().replace(/\s+/g, ' ').trim()
@@ -182,15 +208,12 @@ async function fetchSource(id: string, q: string, signal?: AbortSignal): Promise
   return addresses
 }
 
-async function searchLive(
-  query: string,
-  signal: AbortSignal | undefined,
-  options: SearchOptions,
-  onPartial: (partial: Omit<SearchResult, 'areaPickers'>) => void,
-): Promise<Omit<SearchResult, 'areaPickers'>> {
+type LiveResult = Omit<SearchResult, 'areaPickers'>
+
+async function searchLive(query: string, signal: AbortSignal | undefined, options: SearchOptions, onPartial: (partial: LiveResult) => void): Promise<LiveResult> {
   const started = Date.now()
   const placesPromise = loadPlaces() // parallellt med sökningen
-  const { sources, street, place } = await liveSourcesFor(liveKey(query), options)
+  const { sources, others, atPlace, street, place } = await liveSourcesFor(liveKey(query), options)
   // Källorna söker på gatan, och orten eller kommunen efter den filtreras här. Är svaret avkortat
   // kan rätt ort saknas; då frågas källan också med "gata, ort", som den matchar på början.
   // Utan ort i en avgränsad sökning är det kommunens huvudort som frågas.
@@ -204,13 +227,12 @@ async function searchLive(
     const extra = fromCache(id, withPlace)
     return extra && merge(base, extra)
   }
-  const fetchFor = async (id: string) => {
+  /** Svaret för gatan visas direkt. Är det avkortat läggs svaret med orten till när det kommer. */
+  const fetchFor = async (id: string, show: (found: Address[]) => Promise<void>) => {
     const base = fromCache(id, q) ?? (await fetchSource(id, q, signal))
-    if (!narrowTo || base.length < SOURCE_LIMIT) return base
-    return merge(base, fromCache(id, withPlace) ?? (await fetchSource(id, withPlace, signal)))
+    await show(base)
+    if (narrowTo && base.length >= SOURCE_LIMIT) await show(fromCache(id, withPlace) ?? (await fetchSource(id, withPlace, signal)))
   }
-  const hits = sources.map((id) => ({ id, cached: cachedFor(id) }))
-  const missing = hits.filter((h) => !h.cached).map((h) => h.id)
   // Ort-tabellen behövs först när svaren ska visas, så den får inte hålla tillbaka anropen.
   const withKommun = async (list: Address[]) => {
     const places = await placesPromise
@@ -222,42 +244,75 @@ async function searchLive(
       .filter((a) => matchesPlace(a, place) && mayBeInKommun(a, options.kommun))
   }
 
+  const preferred = loadSaved().map((saved) => saved.sourceId)
   let addresses: Address[] = []
-  const failed: string[] = []
+  const failed = new Set<string>()
+  /** Källor bland de första som inte svarat än */
+  const waiting = new Set<string>()
+  let answered = false
   // Svaren från nätet samlas en kort stund, så att listan inte byggs om för varje källa.
   let holding = false
   const report = () => {
-    if (!holding && !signal?.aborted && addresses.length > 0) onPartial({ addresses, failed: [...failed] })
+    if (holding || signal?.aborted) return
+    if (addresses.length > 0 || answered) onPartial({ addresses, failed: [...failed], pending: !answered || waiting.size > 0 })
   }
   const add = (found: Address[]) => {
-    addresses = [...addresses, ...found]
-    if (found.length > 0) report()
+    const fresh = found.filter((a) => !addresses.some((b) => b.sourceId === a.sourceId && b.id === a.id))
+    addresses = rankHits(street, place, [...addresses, ...fresh], preferred)
+    if (fresh.length > 0) report()
   }
-  const fetched = async () => {
-    // Väntan räknas från sökningens början: den löper medan gatuindexet laddas.
-    await wait(Math.max(0, NETWORK_DELAY_MS - (Date.now() - started)), signal)
-    holding = true
-    const timer = setTimeout(() => {
+  /** Frågar källorna. Bara de första räknas som fel: övriga är källor som frågan inte gäller. */
+  const ask = async (ids: string[], first: boolean, delayMs: number) => {
+    const hits = ids.map((id) => ({ id, cached: cachedFor(id) }))
+    const missing = hits.filter((h) => !h.cached).map((h) => h.id)
+    if (first) for (const id of missing) waiting.add(id)
+    const fetched = async () => {
+      // Väntan räknas från sökningens början: den löper medan gatuindexet laddas.
+      await wait(Math.max(0, delayMs - (Date.now() - started)), signal)
+      holding = !answered
+      const timer = setTimeout(() => {
+        holding = false
+        report()
+      }, HOLD_MS)
+      await Promise.all(
+        missing.map(async (id) => {
+          try {
+            await fetchFor(id, async (list) => add(await withKommun(list)))
+            failed.delete(id)
+            waiting.delete(id)
+            if (answered) report()
+          } catch {
+            waiting.delete(id)
+            if (first) failed.add(id)
+            if (answered) report()
+          }
+        }),
+      )
+      clearTimeout(timer)
       holding = false
-      report()
-    }, HOLD_MS)
-    await Promise.all(
-      missing.map(async (id) => {
-        try {
-          add(await withKommun(await fetchFor(id)))
-        } catch {
-          failed.push(id)
-        }
-      }),
-    )
-    clearTimeout(timer)
-    if (signal?.aborted) throw new DOMException('Avbruten', 'AbortError')
+      if (signal?.aborted) throw new DOMException('Avbruten', 'AbortError')
+      if (answered) report()
+    }
+    await Promise.all([withKommun(hits.flatMap((h) => h.cached ?? [])).then(add), missing.length > 0 ? fetched() : undefined])
   }
-  await Promise.all([
-    withKommun(hits.flatMap((h) => h.cached ?? [])).then(add),
-    missing.length > 0 ? fetched() : undefined,
-  ])
-  return { addresses, failed }
+
+  const all = ask(sources, true, atPlace ? 0 : NETWORK_DELAY_MS).then(() => {
+    if (addresses.length > 0 || failed.size > 0 || others.length === 0) return
+    // Svaret väntar inte på det här: träffar som ändå finns läggs till när de kommer.
+    void wait(OTHERS_DELAY_MS, signal)
+      .then(() => ask(others, false, 0))
+      .catch(() => {})
+  })
+  let deadline: ReturnType<typeof setTimeout> | undefined
+  await Promise.race([
+    all,
+    new Promise<void>((resolve) => {
+      deadline = setTimeout(resolve, Math.max(0, ANSWER_MS - (Date.now() - started)))
+    }),
+  ]).finally(() => clearTimeout(deadline))
+  answered = true
+  holding = false
+  return { addresses, failed: [...failed], pending: waiting.size > 0 }
 }
 
 /**
@@ -314,6 +369,7 @@ async function searchStaticSource(source: Source, query: string, signal: AbortSi
 /** Väcker sökfunktionen och laddar ort-tabellen i förväg, t.ex. när sökfältet får fokus. */
 export function warmUpSearch(): void {
   void loadPlaces()
+  void loadSwedenPlaces()
   if (SOURCES.some((s) => s.config.system !== 'static')) void fetch('/api/sok?q=').catch(() => {})
 }
 
@@ -330,10 +386,10 @@ export async function searchAll(
   let localAddresses: Address[] = []
   let localDone = false
   let areaPickers: AreaPicker[] = []
-  const report = (live: Omit<SearchResult, 'areaPickers'>) => {
-    if (localDone && !signal?.aborted) onPartial?.({ addresses: [...localAddresses, ...live.addresses], failed: [], areaPickers })
+  const report = (live: LiveResult) => {
+    if (localDone && !signal?.aborted) onPartial?.({ addresses: [...localAddresses, ...live.addresses], failed: live.failed, pending: live.pending, areaPickers })
   }
-  let latest: Omit<SearchResult, 'areaPickers'> = { addresses: [], failed: [] }
+  let latest: LiveResult = { addresses: [], failed: [], pending: true }
   const live = searchLive(query, signal, options, (partial) => report((latest = partial)))
   const local = SOURCES.filter((m) => m.config.system === 'static' && coversKommun(m, options.kommun))
   const localResults = await Promise.allSettled(local.map((m) => searchStaticSource(m, query, signal, options.kommun)))
@@ -341,8 +397,8 @@ export async function searchAll(
   areaPickers = await areaPickersFor(query, localAddresses, options.kommun)
   localDone = true
   report(latest)
-  const { addresses, failed } = await live
-  return { addresses: [...localAddresses, ...addresses], failed, areaPickers }
+  const { addresses, failed, pending } = await live
+  return { addresses: [...localAddresses, ...addresses], failed, areaPickers, ...(pending && { pending }) }
 }
 
 /**

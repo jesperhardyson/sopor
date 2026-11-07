@@ -117,6 +117,41 @@ export function matchedTerm(query: string, address: Address): string | null {
   return hit?.text ?? null
 }
 
+/** Hur väl gatan stämmer med frågan: 0 exakt, 1 samma nummer med bokstav eller hela gatan, 2 början, 3 övrigt. */
+function streetTier(street: string, query: string): number {
+  const s = normalize(street)
+  if (s === query) return 0
+  if (!s.startsWith(query)) return 3
+  const next = s[query.length]
+  // "storgatan 5" → "storgatan 5a" är samma hus, men "storgatan 50" är ett annat. "storgatan" → "storgatan 2" är hela gatan.
+  return /\d$/.test(query) ? (/\d/.test(next) ? 2 : 1) : next === ' ' ? 1 : 2
+}
+
+/**
+ * Bästa träffen först: gatan och numret, sedan orten, sedan källor som användaren har adresser hos.
+ * Lika bra träffar behåller sin ordning.
+ */
+export function rankHits(street: string, place: string, addresses: Address[], preferredSources: string[] = []): Address[] {
+  const q = normalize(street)
+  const p = normalize(place, false)
+  const rank = (a: Address) => [
+    streetTier(a.street, q),
+    p && normalize(a.locality, false) !== p ? 1 : 0,
+    preferredSources.includes(a.sourceId) ? 0 : 1,
+  ]
+  return addresses
+    .map((a) => ({ a, r: rank(a) }))
+    .sort((x, y) => x.r[0] - y.r[0] || x.r[1] - y.r[1] || x.r[2] - y.r[2])
+    .map((x) => x.a)
+}
+
+/** Om adressen är just det man skrev, med eller utan ort efter. "storgatan 5" stämmer inte med Storgatan 50. */
+export function isExactStreet(query: string, address: Pick<Address, 'street'>): boolean {
+  const q = normalize(query)
+  const s = normalize(address.street)
+  return /\d/.test(s) && (q === s || q.startsWith(`${s} `))
+}
+
 /** Träffarna från två sökningar, utan dubbletter. */
 export function mergeHits(first: Address[], second: Address[]): Address[] {
   return [...first, ...second.filter((a) => !first.some((b) => b.id === a.id))]

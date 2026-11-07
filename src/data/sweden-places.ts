@@ -53,8 +53,12 @@ export function buildPlaceLookup(file: SwedenPlacesFile): PlaceLookup {
  * (tätorten Stockholm ligger i tolv) ger bara kommunen med samma namn, om det finns en.
  */
 export function kommunerForPlace(lookup: PlaceLookup, place: string): string[] {
+  const named = kommunerNamed(lookup, place)
+  return named.length > 0 ? named : (lookup.orter[normalize(place, false)] ?? [])
+}
+
+/** Kommunkoderna när platsen är namnet på en kommun, annars en tom lista. */
+export function kommunerNamed(lookup: PlaceLookup, place: string): string[] {
   const key = normalize(place, false)
-  const codes = lookup.orter[key] ?? []
-  const named = codes.filter((code) => kommunKeys(lookup.kommuner[code] ?? '').includes(key))
-  return named.length > 0 ? named : codes
+  return (lookup.orter[key] ?? []).filter((code) => kommunKeys(lookup.kommuner[code] ?? '').includes(key))
 }
