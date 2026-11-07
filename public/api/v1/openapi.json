@@ -414,7 +414,7 @@
                 "schema": {
                   "oneOf": [
                     {
-                      "$ref": "#/components/schemas/SearchResponse"
+                      "$ref": "#/components/schemas/AreasResponse"
                     },
                     {
                       "$ref": "#/components/schemas/DatedAreasResponse"
@@ -422,7 +422,7 @@
                   ]
                 },
                 "examples": {
-                  "SearchResponse": {
+                  "AreasResponse": {
                     "summary": "Utan tomning",
                     "value": {
                       "apiVersion": "1",
@@ -437,10 +437,56 @@
                           "selection": "area",
                           "notice": "Kontrollera att området stämmer. Väljer du fel område kan du missa din tömning.",
                           "areasUrl": "https://sopor.hardyson.se/avesta/omraden",
-                          "url": "https://sopor.hardyson.se/api/v1/adress/avesta/trakt-7"
+                          "url": "https://sopor.hardyson.se/api/v1/adress/avesta/trakt-7",
+                          "area": {
+                            "day": "Tisdag, jämn vecka",
+                            "label": "Trakt 7",
+                            "places": [
+                              "Avesta tätort",
+                              "Östanfors",
+                              "Garpenbergsvägen",
+                              "Lycka",
+                              "Kolarbo",
+                              "Bondarvet",
+                              "Överbo",
+                              "Nickarvet",
+                              "Mörtarbo",
+                              "Krommetsbo",
+                              "Åsgarn",
+                              "Västanberg",
+                              "Västansjö"
+                            ],
+                            "otherDays": [
+                              "Till exempel Stallgatan och Storbogatan (måndag, udda vecka) och Bodgatan (onsdag, jämn vecka)."
+                            ],
+                            "searchTerms": [
+                              "Avesta tätort",
+                              "Östanfors",
+                              "Garpenbergsvägen",
+                              "Lycka",
+                              "Kolarbo",
+                              "Bondarvet",
+                              "Överbo",
+                              "Nickarvet",
+                              "Mörtarbo",
+                              "Krommetsbo",
+                              "Åsgarn",
+                              "Västanberg",
+                              "Västansjö",
+                              "trakt 7"
+                            ]
+                          }
                         }
                       ],
-                      "failed": []
+                      "failed": [],
+                      "sources": [
+                        {
+                          "id": "avesta",
+                          "name": "Avesta Vatten och Avfall",
+                          "explanation": "Avesta Vatten publicerar sophämtningen per område, men inte vilka adresser som hör till vilket område.",
+                          "help": "Osäker? Fråga Avesta Vatten på 0226-64 55 00."
+                        }
+                      ]
                     }
                   },
                   "DatedAreasResponse": {
@@ -465,11 +511,57 @@
                               "2026-10-27"
                             ],
                             "next": "2026-11-10"
+                          },
+                          "area": {
+                            "day": "Tisdag, jämn vecka",
+                            "label": "Trakt 7",
+                            "places": [
+                              "Avesta tätort",
+                              "Östanfors",
+                              "Garpenbergsvägen",
+                              "Lycka",
+                              "Kolarbo",
+                              "Bondarvet",
+                              "Överbo",
+                              "Nickarvet",
+                              "Mörtarbo",
+                              "Krommetsbo",
+                              "Åsgarn",
+                              "Västanberg",
+                              "Västansjö"
+                            ],
+                            "otherDays": [
+                              "Till exempel Stallgatan och Storbogatan (måndag, udda vecka) och Bodgatan (onsdag, jämn vecka)."
+                            ],
+                            "searchTerms": [
+                              "Avesta tätort",
+                              "Östanfors",
+                              "Garpenbergsvägen",
+                              "Lycka",
+                              "Kolarbo",
+                              "Bondarvet",
+                              "Överbo",
+                              "Nickarvet",
+                              "Mörtarbo",
+                              "Krommetsbo",
+                              "Åsgarn",
+                              "Västanberg",
+                              "Västansjö",
+                              "trakt 7"
+                            ]
                           }
                         }
                       ],
                       "failed": [],
-                      "dateCovered": true
+                      "dateCovered": true,
+                      "sources": [
+                        {
+                          "id": "avesta",
+                          "name": "Avesta Vatten och Avfall",
+                          "explanation": "Avesta Vatten publicerar sophämtningen per område, men inte vilka adresser som hör till vilket område.",
+                          "help": "Osäker? Fråga Avesta Vatten på 0226-64 55 00."
+                        }
+                      ]
                     }
                   }
                 }
@@ -876,6 +968,131 @@
           }
         }
       },
+      "AreaHit": {
+        "type": "object",
+        "description": "Ett område hos en källa med områdesval.",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "street",
+          "locality",
+          "kommun",
+          "source",
+          "detail",
+          "selection",
+          "notice",
+          "areasUrl",
+          "url",
+          "area"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Adressens id."
+          },
+          "street": {
+            "type": "string",
+            "description": "Gatuadress, t.ex. \"Storgatan 2\". En träff kan också vara ett område (en källa som delar in kommunen i områden i stället för adresser); då är det områdets namn, t.ex. \"Avesta tätort\"."
+          },
+          "locality": {
+            "type": "string",
+            "description": "Ort. Tom för ett område."
+          },
+          "kommun": {
+            "type": "string",
+            "description": "Kommunens namn."
+          },
+          "source": {
+            "type": "string",
+            "description": "Källans id."
+          },
+          "detail": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Skiljer träffar med samma gata och ort åt, t.ex. \"Byggnad 78838\". För ett område är det hämtdagen, t.ex. \"Tisdag, jämn vecka · Trakt 7\". null när det saknas."
+          },
+          "selection": {
+            "type": "string",
+            "enum": [
+              "address",
+              "area"
+            ],
+            "description": "Hur träffen väljs. \"area\" betyder att källan bara publicerar scheman per område, så att användaren väljer området själv. Nya värden kan tillkomma."
+          },
+          "notice": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Det vi inte vet om schemat, att visa för användaren. Datumen kommer från källan, men för ett område vet vi inte att det gäller en viss adress. null för en adress."
+          },
+          "areasUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Webbsida som hjälper användaren att välja område: vilka platser som ingår och vem man kan fråga. Sidan är på svenska. null för en adress.",
+            "format": "uri"
+          },
+          "url": {
+            "type": "string",
+            "description": "Adressens schema i API:t (absolut URL, id:t är procentkodat).",
+            "format": "uri"
+          },
+          "area": {
+            "$ref": "#/components/schemas/AreaDetails",
+            "description": "Dag, etikett, platser och sökord för området."
+          }
+        }
+      },
+      "AreaDetails": {
+        "type": "object",
+        "description": "Det webbens områdessida visar om ett område. Kommer från samma data som webben.",
+        "additionalProperties": false,
+        "required": [
+          "day",
+          "label",
+          "places",
+          "otherDays",
+          "searchTerms"
+        ],
+        "properties": {
+          "day": {
+            "type": "string",
+            "description": "Hämtdagen, t.ex. \"Måndag, udda vecka\"."
+          },
+          "label": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Källans eget namn på området, t.ex. \"Trakt 1\". null när källan inte har något."
+          },
+          "places": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Platserna och gatorna i området, som webbens områdessida visar dem. Kan vara tom."
+          },
+          "otherDays": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Rader om gator i området som har en annan hämtdag, att visa som de är. Oftast tom."
+          },
+          "searchTerms": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Det webbens sökning matchar på utöver namnet: platserna, sökord som gator och etiketten. Använd för att filtrera listan."
+          }
+        }
+      },
       "DatedAreaHit": {
         "type": "object",
         "description": "Ett område med hämtning det angivna datumet.",
@@ -891,7 +1108,8 @@
           "notice",
           "areasUrl",
           "url",
-          "pickups"
+          "pickups",
+          "area"
         ],
         "properties": {
           "id": {
@@ -977,6 +1195,10 @@
                 "description": "Områdets tömning efter det angivna datumet. Kan redan ha passerat. null när schemat inte har fler datum."
               }
             }
+          },
+          "area": {
+            "$ref": "#/components/schemas/AreaDetails",
+            "description": "Dag, etikett, platser och sökord för området."
           }
         }
       },
@@ -1423,6 +1645,75 @@
           }
         }
       },
+      "AreasResponse": {
+        "type": "object",
+        "description": "Områdena som täcker platsen.",
+        "additionalProperties": false,
+        "required": [
+          "apiVersion",
+          "addresses",
+          "failed",
+          "sources"
+        ],
+        "properties": {
+          "apiVersion": {
+            "type": "string",
+            "const": "1",
+            "description": "API-versionen. Alltid \"1\"."
+          },
+          "addresses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AreaHit"
+            },
+            "description": "Områdena, i källans ordning."
+          },
+          "failed": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "Källans id."
+            },
+            "description": "Källor som inte svarade. Resultatet kan då vara ofullständigt; försök igen om en stund. Tom när alla svarade."
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AreaSource"
+            },
+            "description": "Förklaring och hjälp för varje källa som svarade. Tom när platsen saknar områdesval."
+          }
+        }
+      },
+      "AreaSource": {
+        "type": "object",
+        "description": "Förklaring och hjälp för en källa med områdesval, samma text som på webbens områdessida.",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "explanation",
+          "help"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Källans id."
+          },
+          "name": {
+            "type": "string",
+            "description": "Källans namn."
+          },
+          "explanation": {
+            "type": "string",
+            "description": "Varför användaren väljer område själv. Visa överst."
+          },
+          "help": {
+            "type": "string",
+            "description": "Vart man vänder sig när man är osäker på området. Visa nederst."
+          }
+        }
+      },
       "DatedAreasResponse": {
         "type": "object",
         "description": "Områden med hämtning det angivna datumet.",
@@ -1431,7 +1722,8 @@
           "apiVersion",
           "addresses",
           "failed",
-          "dateCovered"
+          "dateCovered",
+          "sources"
         ],
         "properties": {
           "apiVersion": {
@@ -1460,6 +1752,13 @@
               "null"
             ],
             "description": "true: datumet ligger inom perioden för minst en källa, så en tom lista betyder att inget område har hämtning den dagen. false: alla källor svarade och datumet ligger utanför allas schema. null: ingen källa kunde bedöma datumet, eftersom platsen saknar områdesval eller en källa inte svarade (se failed)."
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AreaSource"
+            },
+            "description": "Förklaring och hjälp för varje källa som svarade. Tom när platsen saknar områdesval."
           }
         }
       },

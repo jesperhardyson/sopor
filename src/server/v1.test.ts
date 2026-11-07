@@ -59,7 +59,16 @@ const files: Record<string, unknown> = {
     explanation: 'Förklaring.',
     help: 'Hjälp.',
     areas: [
-      { id: 'trakt-3', name: 'Fors, Nordanö m.fl.', day: 'Onsdag, udda vecka', label: 'Trakt 3', places: [], otherDays: [], searchTerms: [], dates: ['2026-10-13', '2026-10-20', '2026-10-27', '2026-11-10'] },
+      {
+        id: 'trakt-3',
+        name: 'Fors, Nordanö m.fl.',
+        day: 'Onsdag, udda vecka',
+        label: 'Trakt 3',
+        places: ['Fors', 'Nordanö'],
+        otherDays: ['Norrgatan har hämtning på tisdagar.'],
+        searchTerms: ['Fors', 'Nordanö', 'Norrgatan', 'trakt 3'],
+        dates: ['2026-10-13', '2026-10-20', '2026-10-27', '2026-11-10'],
+      },
       { id: 'utan-etikett', name: 'Dalsbyn m.fl.', day: 'Måndag, ojämn vecka', places: [], otherDays: [], searchTerms: [], dates: ['2026-10-14', '2026-10-27'] },
     ],
   },
@@ -342,6 +351,24 @@ describe('handleV1Areas', () => {
     expect(body.addresses[1].detail).toBe('Måndag, ojämn vecka')
   })
 
+  it('ger dag, etikett, platser och sökord per område', async () => {
+    const body = await (await areas('Avesta')).json()
+    expect(body.addresses[0].area).toEqual({
+      day: 'Onsdag, udda vecka',
+      label: 'Trakt 3',
+      places: ['Fors', 'Nordanö'],
+      otherDays: ['Norrgatan har hämtning på tisdagar.'],
+      searchTerms: ['Fors', 'Nordanö', 'Norrgatan', 'trakt 3'],
+    })
+    expect(body.addresses[1].area).toMatchObject({ day: 'Måndag, ojämn vecka', label: null, places: [] })
+  })
+
+  it('ger förklaring och hjälp för varje källa som svarade', async () => {
+    const body = await (await areas('Avesta')).json()
+    expect(body.sources).toEqual([{ id: 'avesta', name: 'avesta AB', explanation: 'Förklaring.', help: 'Hjälp.' }])
+    expect((await (await areas('Uppsala')).json()).sources).toEqual([])
+  })
+
   it('känner igen kommunen med ordet kommun och en ort i kommunen', async () => {
     expect(await ids('avesta kommun')).toHaveLength(2)
     expect(await ids('Krylbo')).toHaveLength(2)
@@ -360,7 +387,7 @@ describe('handleV1Areas', () => {
     const down = (async (input: string | URL | Request, init?: RequestInit) =>
       String(input).includes('omraden.json') ? new Response('', { status: 500 }) : fetchFn(input, init)) as typeof fetch
     const body = await (await areas('Avesta', { ...opts, fetchFn: down })).json()
-    expect(body).toMatchObject({ addresses: [], failed: ['avesta'] })
+    expect(body).toMatchObject({ addresses: [], failed: ['avesta'], sources: [] })
   })
 
   describe('med tomning', () => {
@@ -382,6 +409,8 @@ describe('handleV1Areas', () => {
         pickups: { previous: ['2026-10-13', '2026-10-20'], next: '2026-10-27' },
       })
       expect(body.addresses[0].notice).toBeTruthy()
+      expect(body.addresses[0].area.label).toBe('Trakt 3')
+      expect(body.sources.map((x: { id: string }) => x.id)).toEqual(['avesta'])
     })
 
     it('ger bara det angivna datumet när det är områdets första', async () => {
@@ -442,8 +471,8 @@ describe('handleV1Areas', () => {
       const res = await areas('Avesta')
       expect(res.headers.get('Cache-Control')).toBe('public, s-maxage=86400, stale-while-revalidate=604800')
       const body = await res.json()
-      expect(Object.keys(body).sort()).toEqual(['addresses', 'apiVersion', 'failed'])
-      expect(Object.keys(body.addresses[0]).sort()).toEqual(['areasUrl', 'detail', 'id', 'kommun', 'locality', 'notice', 'selection', 'source', 'street', 'url'])
+      expect(Object.keys(body).sort()).toEqual(['addresses', 'apiVersion', 'failed', 'sources'])
+      expect(Object.keys(body.addresses[0]).sort()).toEqual(['area', 'areasUrl', 'detail', 'id', 'kommun', 'locality', 'notice', 'selection', 'source', 'street', 'url'])
     })
   })
 })
