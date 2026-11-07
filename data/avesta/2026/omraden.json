@@ -6,7 +6,7 @@
       "id": "trakt-1",
       "name": "Askön, Nyhyttan m.fl.",
       "day": "Måndag, udda vecka",
-      "label": "Trakt 1",
+      "label": "Område 1",
       "schedule": "trakt-1",
       "places": [
         "Askön",
@@ -39,6 +39,7 @@
         "Lagmansgatan"
       ],
       "searchTerms": [
+        "område 1",
         "trakt 1"
       ],
       "otherDays": []
@@ -47,7 +48,7 @@
       "id": "trakt-2",
       "name": "Skogsbo tätort, Rosse m.fl.",
       "day": "Tisdag, udda vecka",
-      "label": "Trakt 2",
+      "label": "Område 2",
       "schedule": "trakt-2",
       "places": [
         "Skogsbo tätort",
@@ -71,6 +72,7 @@
       ],
       "streets": [],
       "searchTerms": [
+        "område 2",
         "trakt 2"
       ],
       "otherDays": []
@@ -79,7 +81,7 @@
       "id": "trakt-3",
       "name": "Fors, Nordanö, Brogård",
       "day": "Onsdag, udda vecka",
-      "label": "Trakt 3",
+      "label": "Område 3",
       "schedule": "trakt-3",
       "places": [
         "Fors",
@@ -88,6 +90,7 @@
       ],
       "streets": [],
       "searchTerms": [
+        "område 3",
         "trakt 3"
       ],
       "otherDays": []
@@ -96,7 +99,7 @@
       "id": "trakt-4",
       "name": "Krylbo stationssidan, Lejde m.fl.",
       "day": "Torsdag, udda vecka",
-      "label": "Trakt 4",
+      "label": "Område 4",
       "schedule": "trakt-4",
       "places": [
         "Lejde",
@@ -125,6 +128,7 @@
         "Ruduvägen"
       ],
       "searchTerms": [
+        "område 4",
         "trakt 4"
       ],
       "otherDays": []
@@ -133,7 +137,7 @@
       "id": "trakt-5",
       "name": "Krylbo västra sidan, Morshyttan m.fl.",
       "day": "Fredag, udda vecka",
-      "label": "Trakt 5",
+      "label": "Område 5",
       "schedule": "trakt-5",
       "places": [
         "Krylbo västra sidan",
@@ -153,6 +157,7 @@
         "Kvarnvägen"
       ],
       "searchTerms": [
+        "område 5",
         "trakt 5"
       ],
       "otherDays": []
@@ -161,7 +166,7 @@
       "id": "trakt-6",
       "name": "Ringänget, Veddarsbo m.fl.",
       "day": "Måndag, jämn vecka",
-      "label": "Trakt 6",
+      "label": "Område 6",
       "schedule": "trakt-6",
       "places": [
         "Ringänget",
@@ -207,6 +212,7 @@
         "Habborsbacken"
       ],
       "searchTerms": [
+        "område 6",
         "trakt 6"
       ],
       "otherDays": []
@@ -215,7 +221,7 @@
       "id": "trakt-7",
       "name": "Avesta tätort, Östanfors m.fl.",
       "day": "Tisdag, jämn vecka",
-      "label": "Trakt 7",
+      "label": "Område 7",
       "schedule": "trakt-7",
       "places": [
         "Avesta tätort",
@@ -236,6 +242,7 @@
         "Garpenbergsvägen"
       ],
       "searchTerms": [
+        "område 7",
         "trakt 7"
       ],
       "otherDays": [
@@ -246,7 +253,7 @@
       "id": "trakt-8",
       "name": "Kaplansgården, Jularbo m.fl.",
       "day": "Onsdag, jämn vecka",
-      "label": "Trakt 8",
+      "label": "Område 8",
       "schedule": "trakt-8",
       "places": [
         "Kaplansgården",
@@ -279,6 +286,7 @@
         "Bodgatan"
       ],
       "searchTerms": [
+        "område 8",
         "trakt 8"
       ],
       "otherDays": []
@@ -287,7 +295,7 @@
       "id": "trakt-9",
       "name": "Kvarnbro, Utsund m.fl.",
       "day": "Torsdag, jämn vecka",
-      "label": "Trakt 9",
+      "label": "Område 9",
       "schedule": "trakt-9",
       "places": [
         "Kvarnbro",
@@ -324,6 +332,7 @@
         "Konsjövägen"
       ],
       "searchTerms": [
+        "område 9",
         "trakt 9"
       ],
       "otherDays": []
@@ -332,7 +341,7 @@
       "id": "trakt-10",
       "name": "Horndal tätort, Tyskbo m.fl.",
       "day": "Fredag, jämn vecka",
-      "label": "Trakt 10",
+      "label": "Område 10",
       "schedule": "trakt-10",
       "places": [
         "Horndal tätort",
@@ -348,6 +357,7 @@
       ],
       "streets": [],
       "searchTerms": [
+        "område 10",
         "trakt 10"
       ],
       "otherDays": []

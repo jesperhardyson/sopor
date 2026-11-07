@@ -106,7 +106,7 @@ Gäller bara statiska källor (B). Källor med områdesval har `omraden.json` i 
   "note": "Påminnelse: ställ ut kärlen senast 06.00 på tömningsdagen.",
   "schedules": {
     "onsdag-jamn": {
-      "name": "Trakt 4 – onsdag, varannan vecka",
+      "name": "Område 4 – onsdag, varannan vecka",
       "bins": [{ "fraction": "rest", "sizeLiters": 190, "frequencyText": "Var 6:e vecka · onsdagar" }],
       "events": [
         { "date": "2026-11-11", "fractions": ["rest", "mat"] },
@@ -147,11 +147,11 @@ För källor med `selection: 'area'` i `src/sources/index.ts`. Filen ersätter `
       "id": "trakt-7",
       "name": "Exempelby, Exempelgatan m.fl.",
       "day": "Tisdag, jämn vecka",
-      "label": "Trakt 7",
+      "label": "Område 7",
       "schedule": "trakt-7",
       "places": ["Exempelby", "Exempelsjön"],
       "streets": ["Exempelgatan"],
-      "searchTerms": ["trakt 7"],
+      "searchTerms": ["område 7", "trakt 7"],
       "otherDays": []
     }
   ]
@@ -160,7 +160,7 @@ För källor med `selection: 'area'` i `src/sources/index.ts`. Filen ersätter `
 
 - `explanation` visas överst på sidan där man väljer område, och `help` under områdena. Båda är obligatoriska.
 - `id` är områdets stabila id och används i URL:en (`/avesta/trakt-7`). `omraden` är reserverat, och ett id får inte förekomma två gånger.
-- `name` är det som visas i listan, `day` är tömningsdag och vecka, och `label` är källans eget namn eller nummer ("Trakt 7"). `label` är valfri, och utan den visas inget märke.
+- `name` är det som visas i listan, `day` är tömningsdag och vecka, och `label` är områdets nummer eller namn ("Område 7"). `label` är valfri, och utan den visas inget märke. Skriv alltid "Område" i `label`, eftersom webben och API:t kallar det område, även när källan säger något annat ("Trakt", "Tur"). Lägg källans eget ord i `searchTerms` ("trakt 7"), så att den som söker på det hittar området. Ett test vakar över ordet i `label`.
 - `schedule` pekar på en nyckel i samma års `schedules.json`.
 - `places` (orter och byar) och `streets` (gator) räknas upp som källan gör det. Skriv ut förkortningar. En stavning som skiljer sig från OpenStreetMap behåller källans stavning tills den är bekräftad.
 - `searchTerms` är extra söktermer som inte syns, och `otherDays` är andra dagar som området hämtas på. Båda är listor och får vara tomma.

@@ -12,12 +12,12 @@ const index: AreasIndexFile = {
   help: 'Osäker? Fråga Avesta Vatten på 0226-64 55 00.',
   areas: [
     {
-      id: 'trakt-1', name: 'Askön, Nyhyttan m.fl.', day: 'Måndag, udda vecka', label: 'Trakt 1',
+      id: 'trakt-1', name: 'Askön, Nyhyttan m.fl.', day: 'Måndag, udda vecka', label: 'Område 1',
       places: ['Klintbo', 'Baggbo', 'Högbo', 'Stallgatan', 'Storbogatan', 'Hedbo', 'Vallby'],
       otherDays: [], searchTerms: ['trakt 1'], dates: ['2026-10-19'],
     },
     {
-      id: 'trakt-7', name: 'Avesta tätort, Östanfors m.fl.', day: 'Tisdag, jämn vecka', label: 'Trakt 7',
+      id: 'trakt-7', name: 'Avesta tätort, Östanfors m.fl.', day: 'Tisdag, jämn vecka', label: 'Område 7',
       places: ['Lycka', 'Kolarbo'], otherDays: [], searchTerms: ['trakt 7'], dates: ['2026-10-27'],
     },
   ],
@@ -75,9 +75,9 @@ describe('AreaPage', () => {
     expect(screen.getByText(index.help)).toBeInTheDocument()
     expect(screen.getByText('Askön, Nyhyttan m.fl.')).toBeInTheDocument()
     expect(screen.getByText('Måndag, udda vecka')).toBeInTheDocument()
-    expect(screen.getByText('Trakt 1')).toBeInTheDocument()
+    expect(screen.getByText('Område 1')).toBeInTheDocument()
     expect(screen.getByText('Tisdag, jämn vecka')).toBeInTheDocument()
-    expect(screen.getByText('Trakt 7')).toBeInTheDocument()
+    expect(screen.getByText('Område 7')).toBeInTheDocument()
     expect(document.title).toBe('Välj område – Sopor')
   })
 
@@ -147,7 +147,7 @@ describe('AreaPage', () => {
     fake = makeProvider({ listAreas: async () => ({ ...index, areas: [{ ...askon, day: 'Måndag, ojämn vecka' }, { ...index.areas[1], day: 'Tisdag, jämn vecka' }] }) })
     show()
     expect(await screen.findByText('Måndag, ojämn vecka')).toBeInTheDocument()
-    expect(screen.queryByText('Trakt 1')).toBeNull()
+    expect(screen.queryByText('Område 1')).toBeNull()
     await userEvent.type(screen.getByRole('searchbox', { name: 'Sök område, ort eller gata' }), 'ojämn')
     expect(screen.getByText('Askön, Nyhyttan m.fl.')).toBeInTheDocument()
     expect(screen.queryByText('Avesta tätort, Östanfors m.fl.')).toBeNull()
@@ -180,7 +180,7 @@ describe('AreaPage', () => {
     expect(await screen.findByRole('heading', { name: 'Du sökte Kungsgatan 12' })).toBeInTheDocument()
     expect(loadChoice('avesta', 'Kungsgatan 12')).toBeUndefined()
     await userEvent.click(screen.getByRole('link', { name: /Avesta tätort/ }))
-    expect(loadChoice('avesta', 'Kungsgatan 12')).toMatchObject({ areaId: 'trakt-7', label: 'Trakt 7' })
+    expect(loadChoice('avesta', 'Kungsgatan 12')).toMatchObject({ areaId: 'trakt-7', label: 'Område 7' })
   })
 
   it('byter ett sparat område och säger till resultatsidan att området är bytt', async () => {

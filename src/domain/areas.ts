@@ -1,6 +1,6 @@
 import type { Area } from './types.js'
 
-/** Hämtdagen och, om källan har en, etiketten: "Tisdag, jämn vecka · Trakt 7". */
+/** Hämtdagen och, om källan har en, etiketten: "Tisdag, jämn vecka · Område 7". */
 export function areaDetail({ day, label }: { day: string; label?: string }): string {
   return label ? `${day} · ${label}` : day
 }
