@@ -7,6 +7,7 @@ import { AboutPage } from './pages/AboutPage'
 import { BidraPage } from './pages/BidraPage'
 import { KommunerRoute } from './pages/KommunerPage'
 import { KommunRoute } from './pages/KommunPage'
+import { PrivacyPage } from './pages/PrivacyPage'
 import { ResultRoute } from './pages/ResultPage'
 import { StartPage } from './pages/StartPage'
 
@@ -17,6 +18,7 @@ export function App() {
         <Route element={<Layout />}>
           <Route index element={<StartPage />} />
           <Route path="om" element={<AboutPage />} />
+          <Route path="integritet" element={<PrivacyPage />} />
           <Route path="bidra" element={<BidraPage />} />
           <Route path="kommuner" element={<KommunerRoute />} />
           <Route path="kommuner/:slug" element={<KommunRoute />} />

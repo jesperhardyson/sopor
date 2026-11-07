@@ -74,6 +74,12 @@ describe('vercel.json', () => {
     expect(index('/kommuner/:slug', '/kommuner/:slug/index.html')).toBeLessThan(app)
   })
 
+  it('skickar integritetspolicyn till sin statiska fil, före regeln till index.html', () => {
+    const index = config.rewrites.findIndex((r) => r.source === '/integritet' && r.destination === '/integritet/index.html')
+    expect(index).toBeGreaterThanOrEqual(0)
+    expect(index).toBeLessThan(config.rewrites.findIndex((r) => r.destination === '/index.html'))
+  })
+
   it('låter en okänd kommun ge 404, genom att inte fånga den i regeln till index.html', () => {
     const app = config.rewrites.find((r) => r.destination === '/index.html')!
     expect(new RegExp(`^${app.source}$`).test('/kommuner/finns-inte')).toBe(false)
@@ -83,7 +89,7 @@ describe('vercel.json', () => {
     const rule = config.headers.find((h) => h.headers?.some((x) => x.key === 'X-Robots-Tag' && x.value === 'noindex'))!
     const re = new RegExp(`^${rule.source}$`)
     expect(re.test('/uppsala/storgatan-2_uppsala-4004688')).toBe(true)
-    for (const p of ['/kommuner/uppsala-kommun', '/kommuner', '/om', '/', '/api/v1/kallor', '/ics/uppsala/x.ics', '/data/gator/st.json', '/assets/x.js']) {
+    for (const p of ['/kommuner/uppsala-kommun', '/kommuner', '/om', '/integritet', '/', '/api/v1/kallor', '/ics/uppsala/x.ics', '/data/gator/st.json', '/assets/x.js']) {
       expect(re.test(p), p).toBe(false)
     }
   })

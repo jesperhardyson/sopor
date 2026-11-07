@@ -147,10 +147,13 @@ export function AboutPage() {
       <section className="flex flex-col gap-3">
         <h2 className={h2}>Integritet</h2>
         <p className={body}>
-          Sparade adresser och namn som ”Hemma” lagras bara i din webbläsare. Vi har inga konton och samlar inte in
-          personuppgifter. Rensar du webbläsaren försvinner de. Vi räknar besök anonymt med Vercel Web Analytics, utan
-          cookies. Adresser du söker på skickas inte med.
+          Sparade adresser och namn som ”Hemma” lagras bara i din webbläsare. Vi har inga konton. Rensar du webbläsaren
+          försvinner de. Vi räknar besök anonymt med Vercel Web Analytics, utan cookies. Adresser du söker på skickas
+          inte med.
         </p>
+        <Link to="/integritet" className="self-start text-sm font-extrabold text-primary hover:underline">
+          Läs hela integritetspolicyn
+        </Link>
         {savedCount > 0 ? (
           <ForgetAll
             label={`Glöm sparade adresser (${savedCount})`}

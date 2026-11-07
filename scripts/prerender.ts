@@ -1,4 +1,4 @@
-// Skapar statiska kommunsidor, sitemap och 404-sida i dist/ från den byggda index.html.
+// Skapar statiska kommunsidor, integritetspolicyn, sitemap och 404-sida i dist/ från den byggda index.html.
 // Körs sist i `npm run build`. Appen tar över sidorna när JavaScript har laddats.
 
 import fs from 'node:fs'
@@ -12,6 +12,7 @@ import type { KommunPage, KommunSummary } from '../src/data/kommun-pages'
 import { embeddedScript } from '../src/ui/kommun/embedded'
 import { KommunContent } from '../src/ui/kommun/KommunContent'
 import { KommunerContent } from '../src/ui/kommun/KommunerContent'
+import { PrivacyContent } from '../src/ui/privacy/PrivacyContent'
 import { StaticSearch } from '../src/ui/kommun/StaticSearch'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
@@ -74,8 +75,21 @@ export function renderKommunerHtml(template: string, pages: KommunPage[]): strin
   )
 }
 
+export function renderPrivacyHtml(template: string): string {
+  return renderPage(
+    template,
+    {
+      path: '/integritet',
+      title: 'Integritetspolicy – Sopor',
+      description: 'Vilka uppgifter webbplatsen Sopor, Sopors API och appen Sophämtning hanterar, och vilka rättigheter du har.',
+    },
+    createElement(PrivacyContent),
+    null,
+  )
+}
+
 export function sitemapXml(origin: string, pages: KommunPage[]): string {
-  const paths = ['/', '/om', '/bidra', '/kommuner', ...pages.map((p) => `/kommuner/${p.slug}`)]
+  const paths = ['/', '/om', '/integritet', '/bidra', '/kommuner', ...pages.map((p) => `/kommuner/${p.slug}`)]
   const urls = paths.map((p) => `  <url><loc>${origin}${p}</loc></url>`).join('\n')
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`
 }
@@ -91,6 +105,7 @@ function main() {
 
   write('kommuner/index.html', renderKommunerHtml(template, pages))
   for (const page of pages) write(`kommuner/${page.slug}/index.html`, renderKommunHtml(template, page))
+  write('integritet/index.html', renderPrivacyHtml(template))
   write('sitemap.xml', sitemapXml(SITE.origin, pages))
   write('404.html', template)
   console.log(`prerender: ${pages.length} kommunsidor`)
