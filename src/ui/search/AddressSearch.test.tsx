@@ -904,11 +904,35 @@ describe('sena svar från källor', () => {
       expect(screen.getAllByRole('option')[0]).toHaveAttribute('aria-selected', 'true')
     })
 
+    it('ignorerar klicket också när flytten knuffar rader bakom "Visa N till"', async () => {
+      const many = Array.from({ length: 15 }, (_, i) => a(`s-${i}`, `Storgatan 12${i}`, 'Avesta'))
+      const { late } = lateSearch({ addresses: many, failed: [], areaPickers: [] })
+      await userEvent.type(screen.getByRole('combobox'), 'Storgatan 12')
+      await screen.findByRole('option', { name: /Storgatan 120/ })
+      await late({ addresses: [...many, a('exakt', 'Storgatan 12', 'Avesta')], failed: [], areaPickers: [], pending: false })
+      await waitFor(() => expect(rows()[0]).toBe('Storgatan 12'))
+      fireEvent.click(screen.getAllByRole('option')[0])
+      // Navigeringen sker inte i samma ögonblick som klicket.
+      await act(() => new Promise((r) => setTimeout(r, 100)))
+      expect(screen.queryByText(/^Resultat/)).not.toBeInTheDocument()
+    })
+
+    it('spärrar inte klick efter att användaren själv fällt ut listan', async () => {
+      const many = Array.from({ length: 17 }, (_, i) => a(`s-${i}`, `Storgatan 12${i}`, 'Avesta'))
+      lateSearch({ addresses: many, failed: [], areaPickers: [] })
+      await userEvent.type(screen.getByRole('combobox'), 'Storgatan 12')
+      fireEvent.click(await screen.findByRole('option', { name: /Visa 2 till/ }))
+      fireEvent.click(await screen.findByRole('option', { name: /Storgatan 120/ }))
+      expect(await screen.findByText('Resultat avesta/s-0')).toBeInTheDocument()
+    })
+
     it('ignorerar ett klick precis efter att raderna flyttat sig, men inte ett senare', async () => {
       const late = await start()
       await late(withExact)
       await waitFor(() => expect(rows()[0]).toBe('Storgatan 12'))
       fireEvent.click(screen.getAllByRole('option')[0])
+      // Navigeringen sker inte i samma ögonblick som klicket.
+      await act(() => new Promise((r) => setTimeout(r, 100)))
       expect(screen.queryByText(/^Resultat/)).not.toBeInTheDocument()
       await new Promise((r) => setTimeout(r, 650))
       fireEvent.click(screen.getAllByRole('option')[0])

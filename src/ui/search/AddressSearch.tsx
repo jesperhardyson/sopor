@@ -185,6 +185,7 @@ export function AddressSearch({
   const activeNow = useRef(active)
   const movedAt = useRef(Number.NEGATIVE_INFINITY)
   const shownKeys = useRef<string[]>([])
+  const shownFor = useRef('')
   useEffect(() => {
     activeNow.current = active
   }, [active])
@@ -278,16 +279,19 @@ export function AddressSearch({
   const list = sections(results, pickers, expanded)
   const items = list.flatMap((s) => s.items)
   const keysNow = items.map(itemKey).join('\n')
-  // Nya rader kan knuffa de som syns. Då följer markeringen med sin rad, och ett klick i samma
-  // ögonblick var menat för raden som stod där. Försvinner rader har användaren själv ändrat listan.
+  // Svar från källorna kan flytta raderna som syns. Då följer markeringen med sin rad, och ett klick
+  // i samma ögonblick var menat för raden som stod där. Listor som användaren själv ändrat räknas inte.
+  const listOwner = `${query}|${expanded.size}`
   useEffect(() => {
     const before = shownKeys.current
     const now = keysNow ? keysNow.split('\n') : []
+    const sameList = shownFor.current === listOwner
     shownKeys.current = now
-    if (!before.every((key) => now.includes(key)) || before.every((key, n) => now[n] === key)) return
+    shownFor.current = listOwner
+    if (!sameList || before.every((key, n) => n >= now.length || now[n] === key)) return
     movedAt.current = performance.now()
     if (activeNow.current >= 0) setActive(now.indexOf(before[activeNow.current]))
-  }, [keysNow])
+  }, [keysNow, listOwner])
   const open = results.length > 0 || pickers.length > 0
   // Svaret gäller frågan det kom för: en kortare fråga utan träffar får inte synas när man skrivit vidare.
   const showNotFound =
