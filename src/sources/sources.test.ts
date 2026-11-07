@@ -37,6 +37,25 @@ describe('källregistret', () => {
     expect(names).toContain('Uppsala kommun')
   })
 
+  it('har kontaktuppgifter från källans egen webbplats', () => {
+    const host = (u: string) => new URL(u).hostname.replace(/^www\./, '')
+    const onSite = (s: Source, u: string) => host(u) === host(s.url) || host(u).endsWith(`.${host(s.url)}`)
+    for (const s of ALL_SOURCES.filter((x) => x.contact)) {
+      const c = s.contact!
+      expect(c.phone ?? c.email ?? c.page, s.id).toBeDefined()
+      if (c.phone) {
+        expect(c.phone.number, s.id).toMatch(/^\+46[1-9]\d{6,9}$/)
+        expect(c.phone.display.replace(/\D/g, '').replace(/^0/, '46'), s.id).toBe(c.phone.number.slice(1))
+      }
+      if (c.email) expect(c.email, s.id).toMatch(/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/)
+      for (const u of [c.page, c.checked.url].filter((x) => x !== undefined)) {
+        expect(u, s.id).toMatch(/^https:\/\//)
+        expect(onSite(s, u), `${s.id}: ${u}`).toBe(true)
+      }
+      expect(c.checked.date, s.id).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+    }
+  })
+
   it('namnger en källa efter kommunerna, inte efter bolaget', () => {
     expect(sourceLabel(getSource('uppsala')!)).toBe('Uppsala kommun')
     expect(sourceLabel(getSource('herrljunga-vargarda')!)).toBe('Herrljunga kommun och Vårgårda kommun')

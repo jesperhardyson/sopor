@@ -143,6 +143,22 @@ Alla synliga källor (id, namn, vilka kommuner de täcker) och alla kända frakt
 curl 'https://sopor.hardyson.se/api/v1/kallor'
 ```
 
+Varje källa har `contact`: hur man når källans kundtjänst, eller `null` när inget är känt. Visa det gärna där användaren undrar vem som ansvarar för hämtningen.
+
+```json
+"contact": {
+  "phone": { "number": "+46187279400", "display": "018-727 94 00" },
+  "email": "kundservice@uppsalavatten.se",
+  "page": "https://www.uppsalavatten.se/kontakt",
+  "checkedAt": "2026-11-07",
+  "checkedUrl": "https://www.uppsalavatten.se/kontakt"
+}
+```
+
+- `phone.number` är i E.164 och passar i en `tel:`-länk. `phone.display` är till för att visa.
+- `phone`, `email` och `page` kan var och en vara `null`, men minst en har ett värde. `email` går till kundtjänst, aldrig till en person.
+- Uppgifterna kommer från källans egen webbplats: `checkedUrl` är sidan där de står, och `checkedAt` är dagen de senast kontrollerades.
+
 ### Fel
 
 Alla fel har samma form:

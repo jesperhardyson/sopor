@@ -11,7 +11,7 @@ import type { Address, Area, FractionId, Schedule } from '../domain/types.js'
 import { namesSource, pickLiveSources, shardKey, sourcesAtPlace, splitPlace, streetAtSourcePlace, type StreetShard } from '../data/street-index.js'
 import type { PlaceLookup } from '../data/sweden-places.js'
 import type { AddressIndexFile, AreasIndexFile } from '../data/static-format.js'
-import { areaNoticeText, isLive, needsPlaces, SOURCES, type Source } from '../sources/index.js'
+import { areaNoticeText, isLive, needsPlaces, SOURCES, type Source, type SourceContact } from '../sources/index.js'
 import { CACHE_PARTIAL, CACHE_SEARCH, decodeId, searchLiveSource, type HandlerOptions } from './handlers.js'
 import { lookupAddress } from './lookup.js'
 import { loadServerPlaces, siteJson } from './site.js'
@@ -312,6 +312,14 @@ export const handleV1Areas: V1Handler = async (request, opts = {}) => {
   return v1Json({ addresses, failed, dateCovered }, 200, failed.length > 0 ? CACHE_PARTIAL : addressCacheControl(now))
 }
 
+const v1Contact = (c: SourceContact) => ({
+  phone: c.phone ?? null,
+  email: c.email ?? null,
+  page: c.page ?? null,
+  checkedAt: c.checked.date,
+  checkedUrl: c.checked.url,
+})
+
 /** GET /api/v1/kallor */
 export const handleV1Sources: V1Handler = async (_request, opts = {}) =>
   v1Json(
@@ -322,6 +330,7 @@ export const handleV1Sources: V1Handler = async (_request, opts = {}) =>
         url: s.url,
         kommuner: s.kommuner.map((k) => ({ code: k.code, name: k.name })),
         testData: s.testData ?? false,
+        contact: s.contact ? v1Contact(s.contact) : null,
       })),
       fractions: fractionRegistry(Object.keys(FRACTIONS) as FractionId[]),
     },
