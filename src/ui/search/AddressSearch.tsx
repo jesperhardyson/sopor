@@ -2,7 +2,7 @@ import { ArrowRight, ChevronDown, LoaderCircle, Map, MapPin, Search, UserCheck, 
 import { Fragment, useEffect, useId, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { kommunInText } from '@/domain/kommun'
-import { enterTarget, groupByKommun, matchedTerm, normalize, stableMerge } from '@/domain/search'
+import { enterTarget, groupByKommun, isExactStreet, matchedTerm, normalize, stableMerge } from '@/domain/search'
 import type { Address } from '@/domain/types'
 import { missingKommuner, prefetchAddress, searchAll, suggestAll, warmUpSearch, type AreaPicker, type SearchOptions, type SearchResult } from '@/providers/registry'
 import { getSource } from '@/sources'
@@ -122,8 +122,11 @@ function byKommun(results: Address[], expanded: Set<string>, grouped: boolean): 
   })
 }
 
-/** Raderna som redan syns behåller sin plats när nya träffar kommer in. */
-const keep = (prev: State, incoming: Address[]) => stableMerge(prev.kind === 'results' ? prev.results : [], incoming)
+/** Raderna som redan syns behåller sin plats när nya träffar kommer in, utom att just det man skrev går först. */
+function keep(prev: State, incoming: Address[], query: string): Address[] {
+  const rows = stableMerge(prev.kind === 'results' ? prev.results : [], incoming)
+  return [...rows.filter((a) => isExactStreet(query, a)), ...rows.filter((a) => !isExactStreet(query, a))]
+}
 
 export function AddressSearch({
   search = searchAll,
@@ -203,24 +206,29 @@ export function AddressSearch({
         setLoading(true)
         skeleton = setTimeout(() => setSlow(true), SKELETON_MS)
         const { addresses: results, failed, areaPickers } = await search(query, controller.signal, (partial) => {
-          if (!controller.signal.aborted && (partial.addresses.length > 0 || partial.areaPickers.length > 0)) {
+          if (controller.signal.aborted) return
+          if (partial.addresses.length > 0 || partial.areaPickers.length > 0) {
             setState((prev) => ({
               kind: 'results',
               query,
-              results: keep(prev, partial.addresses),
+              results: keep(prev, partial.addresses, query),
               pickers: partial.areaPickers,
-              failed: [],
-              pending: true,
+              failed: partial.failed,
+              pending: partial.pending ?? true,
             }))
+          } else {
+            // En sen källa svarade utan träffar: den ska inte längre stå som att den inte svarar.
+            setState((prev) => (prev.kind === 'notFound' && prev.query === query ? { ...prev, failed: partial.failed } : prev))
           }
         })
         if (controller.signal.aborted) return
         // Bara raden för områdesval är också ett resultat, inte "hittades inte".
         if (results.length > 0 || areaPickers.length > 0) {
-          setState((prev) => ({ kind: 'results', query, results: keep(prev, results), pickers: areaPickers, failed }))
+          setState((prev) => ({ kind: 'results', query, results: keep(prev, results, query), pickers: areaPickers, failed }))
         } else {
           const [suggestions, kommuner] = await Promise.all([suggest(query, controller.signal), missing(query, controller.signal)])
-          if (!controller.signal.aborted) setState({ kind: 'notFound', query, suggestions, failed, missing: kommuner })
+          // En sen källa kan ha hunnit ge träffar medan förslagen hämtades.
+          if (!controller.signal.aborted) setState((prev) => (prev.kind === 'results' && prev.query === query ? prev : { kind: 'notFound', query, suggestions, failed, missing: kommuner }))
         }
         setActive(-1)
       } catch {

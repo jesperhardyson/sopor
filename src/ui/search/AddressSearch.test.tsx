@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes, useParams, useLocation } from 'react-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -814,5 +814,59 @@ describe('AddressSearch', () => {
       await userEvent.type(screen.getByRole('combobox'), 'Okändgatan 3{Enter}')
       expect(await screen.findByRole('link', { name: 'Välj område i Avesta' })).toHaveAttribute('href', '/avesta/omraden')
     })
+  })
+})
+
+describe('sena svar från källor', () => {
+  type Partial = (p: SearchResult) => void
+  const lateSearch = (first: SearchResult) => {
+    let send: Partial | undefined
+    const search = async (q: string, _signal?: AbortSignal, onPartial?: Partial) => {
+      // Svaret ska höra till hela frågan, inte en äldre sökning från medan man skrev.
+      if (q === 'Storgatan 12') send = onPartial
+      return first
+    }
+    render(
+      <MemoryRouter>
+        <AddressSearch search={search} suggest={async () => []} missing={async () => []} prefetch={vi.fn()} />
+      </MemoryRouter>,
+    )
+    return {
+      late: async (p: SearchResult) => {
+        await waitFor(() => expect(send).toBeDefined())
+        await act(async () => {
+          await new Promise((r) => setTimeout(r, 0))
+          send!(p)
+        })
+      },
+    }
+  }
+
+  it('ersätter "hittades inte" med träffen när en sen källa svarar, och varningen försvinner', async () => {
+    const { late } = lateSearch({ addresses: [], failed: ['avesta'], areaPickers: [] })
+    await userEvent.type(screen.getByRole('combobox'), 'Storgatan 12')
+    expect(await screen.findByText(/svarar inte just nu/)).toBeInTheDocument()
+    await late({ addresses: [a('avesta-storgatan-12', 'Storgatan 12', 'Avesta')], failed: [], areaPickers: [], pending: false })
+    expect(await screen.findByRole('option', { name: /Storgatan 12/ })).toBeInTheDocument()
+    expect(screen.queryByText(/svarar inte just nu/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/Söker hos fler källor/)).not.toBeInTheDocument()
+  })
+
+  it('tar bort varningen när en sen källa svarar utan träffar', async () => {
+    const { late } = lateSearch({ addresses: [], failed: ['avesta'], areaPickers: [] })
+    await userEvent.type(screen.getByRole('combobox'), 'Storgatan 12')
+    expect(await screen.findByText(/svarar inte just nu/)).toBeInTheDocument()
+    await late({ addresses: [], failed: [], areaPickers: [], pending: false })
+    await waitFor(() => expect(screen.queryByText(/svarar inte just nu/)).not.toBeInTheDocument())
+  })
+
+  it('sätter en sen exakt träff först, medan övriga rader står kvar i sin ordning', async () => {
+    const shown = [a('s-120', 'Storgatan 120', 'Avesta'), a('s-121', 'Storgatan 121', 'Avesta')]
+    const { late } = lateSearch({ addresses: shown, failed: [], areaPickers: [] })
+    await userEvent.type(screen.getByRole('combobox'), 'Storgatan 12')
+    await screen.findByRole('option', { name: /Storgatan 120/ })
+    await late({ addresses: [...shown, a('s-12', 'Storgatan 12', 'Avesta')], failed: [], areaPickers: [], pending: false })
+    await screen.findByRole('option', { name: /Storgatan 12(?!\d)/ })
+    expect(screen.getAllByRole('option').map((o) => o.textContent?.match(/Storgatan \d+/)?.[0])).toEqual(['Storgatan 12', 'Storgatan 120', 'Storgatan 121'])
   })
 })
