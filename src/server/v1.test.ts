@@ -20,7 +20,15 @@ const edp = (id: string, host: string, kommun: string): Source => ({
 
 const SOURCES: Source[] = [
   edp('uppsala', 'uppsala.test', 'Uppsala kommun'),
-  edp('trog', 'trog.test', 'Trög kommun'),
+  {
+    ...edp('trog', 'trog.test', 'Trög kommun'),
+    contact: {
+      phone: { number: '+4611123456', display: '011-12 34 56' },
+      email: 'kundtjanst@trog.test',
+      page: 'https://trog.test/kontakt',
+      checked: { url: 'https://trog.test/kontakt', date: '2026-11-07' },
+    },
+  },
   { ...edp('statisk', 'statisk.test', 'Statiska kommun'), config: { system: 'static' } },
   { ...edp('dold', 'dold.test', 'Dolda kommun'), hidden: true },
   { ...edp('avesta', 'avesta.test', 'Avesta kommun'), config: { system: 'static' }, selection: 'area', areaNotice: { title: 'Kontrollera området', text: 'Du har valt det själv.' } },
@@ -251,6 +259,14 @@ describe('handleV1Sources', () => {
       url: 'https://uppsala.test',
       kommuner: [{ code: '0000', name: 'Uppsala kommun' }],
       testData: false,
+      contact: null,
+    })
+    expect(body.sources[1].contact).toEqual({
+      phone: { number: '+4611123456', display: '011-12 34 56' },
+      email: 'kundtjanst@trog.test',
+      page: 'https://trog.test/kontakt',
+      checkedAt: '2026-11-07',
+      checkedUrl: 'https://trog.test/kontakt',
     })
     expect(Object.keys(body.fractions).sort()).toEqual(Object.keys(FRACTIONS).sort())
     expect(body.fractions.karl).toEqual({ name: 'Kärl', short: 'Kärl', color: '#526158', icon: 'container' })

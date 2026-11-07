@@ -598,7 +598,17 @@
                           "name": "Uppsala kommun"
                         }
                       ],
-                      "testData": false
+                      "testData": false,
+                      "contact": {
+                        "phone": {
+                          "number": "+46187279400",
+                          "display": "018-727 94 00"
+                        },
+                        "email": "kundservice@uppsalavatten.se",
+                        "page": "https://www.uppsalavatten.se/kontakt",
+                        "checkedAt": "2026-11-07",
+                        "checkedUrl": "https://www.uppsalavatten.se/kontakt"
+                      }
                     }
                   ],
                   "fractions": {
@@ -1180,7 +1190,8 @@
           "name",
           "url",
           "kommuner",
-          "testData"
+          "testData",
+          "contact"
         ],
         "properties": {
           "id": {
@@ -1222,6 +1233,83 @@
           "testData": {
             "type": "boolean",
             "description": "true om källan har påhittad testdata och inte ska litas på."
+          },
+          "contact": {
+            "description": "Hur man når källans kundtjänst. null när inget är känt.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SourceContact"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "SourceContact": {
+        "type": "object",
+        "description": "Kontaktuppgifter från källans egen webbplats. Minst en av phone, email och page har ett värde.",
+        "additionalProperties": false,
+        "required": [
+          "phone",
+          "email",
+          "page",
+          "checkedAt",
+          "checkedUrl"
+        ],
+        "properties": {
+          "phone": {
+            "description": "Kundtjänstens telefonnummer. null när det inte är känt.",
+            "oneOf": [
+              {
+                "type": "object",
+                "description": "Telefonnummer.",
+                "additionalProperties": false,
+                "required": [
+                  "number",
+                  "display"
+                ],
+                "properties": {
+                  "number": {
+                    "type": "string",
+                    "description": "Numret i E.164, för att ringa (tel:).",
+                    "pattern": "^\\+[1-9]\\d{6,14}$"
+                  },
+                  "display": {
+                    "type": "string",
+                    "description": "Numret i svenskt format, för att visa."
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "email": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Kundtjänstens e-postadress, aldrig en persons. null när den inte är känd."
+          },
+          "page": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Källans kontaktsida. null när den inte är känd."
+          },
+          "checkedAt": {
+            "type": "string",
+            "description": "Datum (YYYY-MM-DD) då uppgifterna senast kontrollerades.",
+            "format": "date"
+          },
+          "checkedUrl": {
+            "type": "string",
+            "description": "Sidan på källans webbplats där uppgifterna står.",
+            "format": "uri"
           }
         }
       },

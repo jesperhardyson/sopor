@@ -27,6 +27,12 @@ const SOURCES: Source[] = [
     url: 'https://trog.test',
     kommuner: [{ code: '0001', name: 'Trög kommun' }],
     config: { system: 'edp', baseUrl: 'https://trog.test/FutureWeb' },
+    contact: {
+      phone: { number: '+4611123456', display: '011-12 34 56' },
+      email: 'kundtjanst@trog.test',
+      page: 'https://trog.test/kontakt',
+      checked: { url: 'https://trog.test/kontakt', date: '2026-11-07' },
+    },
   },
   { id: 'avesta', name: 'Avesta AB', url: 'https://avesta.test', kommuner: [{ code: '1', name: 'Avesta kommun' }], config: { system: 'static' }, selection: 'area' },
   { id: 'statisk', name: 'Statisk AB', url: 'https://statisk.test', kommuner: [{ code: '0002', name: 'Statiska kommun' }], config: { system: 'static' }, testData: true },
@@ -200,7 +206,10 @@ describe('kontrakt: riktiga svar följer schemana', () => {
   })
 
   it('källor', async () => {
-    validate('SourcesResponse', await (await call(handleV1Sources, '/api/v1/kallor')).json())
+    const body = await (await call(handleV1Sources, '/api/v1/kallor')).json()
+    validate('SourcesResponse', body)
+    // En källa med kontaktuppgifter och en utan, så att båda formerna prövas.
+    expect(body.sources.filter((s: { contact: unknown }) => s.contact !== null)).toHaveLength(1)
   })
 
   it('ett fel av varje kod', async () => {
