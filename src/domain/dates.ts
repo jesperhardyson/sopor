@@ -61,6 +61,7 @@ export function daysBetween(from: string, to: string): number {
 export function relativeDayLabel(days: number): string {
   if (days === 0) return 'i dag'
   if (days === 1) return 'i morgon'
+  if (days === 2) return 'i övermorgon'
   return `om ${days} dagar`
 }
 

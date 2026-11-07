@@ -18,9 +18,11 @@ describe('daysBetween', () => {
 })
 
 describe('relativeDayLabel', () => {
-  it('säger i dag, i morgon och om n dagar', () => {
+  it('säger i dag, i morgon, i övermorgon och om n dagar', () => {
     expect(relativeDayLabel(0)).toBe('i dag')
     expect(relativeDayLabel(1)).toBe('i morgon')
+    expect(relativeDayLabel(2)).toBe('i övermorgon')
+    expect(relativeDayLabel(3)).toBe('om 3 dagar')
     expect(relativeDayLabel(12)).toBe('om 12 dagar')
   })
 })
