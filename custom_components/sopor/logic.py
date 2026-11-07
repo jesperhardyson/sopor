@@ -25,6 +25,7 @@ TEXTS = {
         "months": ["jan", "feb", "mars", "apr", "maj", "juni", "juli", "aug", "sep", "okt", "nov", "dec"],
         "today": "i dag",
         "tomorrow": "i morgon",
+        "day_after_tomorrow": "i övermorgon",
         "in_days": lambda days: f"om {days} dagar",
         "estimated": "beräknat",
         "none": "Inga kommande hämtningar",
@@ -40,6 +41,7 @@ TEXTS = {
         "months": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
         "today": "today",
         "tomorrow": "tomorrow",
+        "day_after_tomorrow": "in 2 days",
         "in_days": lambda days: f"in {days} days",
         "estimated": "estimated",
         "none": "No upcoming collections",
@@ -84,6 +86,8 @@ def relative_day_label(days: int, lang: Lang = "sv") -> str:
         return t["today"]
     if days == 1:
         return t["tomorrow"]
+    if days == 2:
+        return t["day_after_tomorrow"]
     return t["in_days"](days)
 
 

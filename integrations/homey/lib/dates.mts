@@ -33,6 +33,7 @@ export function relativeDayLabel(days: number, lang: Lang = 'sv'): string {
   const t = TEXTS[lang]
   if (days === 0) return t.today
   if (days === 1) return t.tomorrow
+  if (days === 2) return t.dayAfterTomorrow
   return t.inDays(days)
 }
 

@@ -22,6 +22,7 @@ describe('datum', () => {
   it('skriver relativa dagar på svenska', () => {
     expect(relativeDayLabel(0)).toBe('i dag')
     expect(relativeDayLabel(1)).toBe('i morgon')
+    expect(relativeDayLabel(2)).toBe('i övermorgon')
     expect(relativeDayLabel(4)).toBe('om 4 dagar')
   })
 
@@ -35,6 +36,7 @@ describe('texter på engelska', () => {
   it('säger dagar och datum på engelska', () => {
     expect(relativeDayLabel(0, 'en')).toBe('today')
     expect(relativeDayLabel(1, 'en')).toBe('tomorrow')
+    expect(relativeDayLabel(2, 'en')).toBe('in 2 days')
     expect(relativeDayLabel(4, 'en')).toBe('in 4 days')
     expect(shortDate('2026-11-04', 'en')).toBe('Wed 4 Nov')
     expect(shortDate('2026-11-04')).toBe('ons 4 nov')

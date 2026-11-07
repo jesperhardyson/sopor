@@ -28,8 +28,8 @@ def test_today_i_stockholm_fast_utc_ar_gardag():
 
 
 def test_relative_day_label():
-    assert [relative_day_label(d, "sv") for d in (0, 1, 4)] == ["i dag", "i morgon", "om 4 dagar"]
-    assert relative_day_label(4, "en") == "in 4 days"
+    assert [relative_day_label(d, "sv") for d in (0, 1, 2, 4)] == ["i dag", "i morgon", "i övermorgon", "om 4 dagar"]
+    assert [relative_day_label(d, "en") for d in (2, 4)] == ["in 2 days", "in 4 days"]
 
 
 def test_short_date():
