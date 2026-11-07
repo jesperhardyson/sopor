@@ -4,6 +4,7 @@ import { Link } from 'react-router'
 import { Dialog, DialogClose, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { SITE } from '@/config'
 import { GitHubMark } from '../components/GitHubMark'
+import { useSwipeToClose } from '../sheets/useSwipeToClose'
 
 const row = 'flex h-14 items-center gap-3.5 border-b border-border px-1 text-[17px] font-bold text-text last:border-b-0'
 const icon = 'size-5 shrink-0 text-text-2'
@@ -13,6 +14,7 @@ export function MobileMenu() {
   const [open, setOpen] = useState(false)
   // Efter ett val ska fokus inte tillbaka till knappen, då hoppar sidan upp i stället för till ankaret.
   const navigated = useRef(false)
+  const swipeRef = useSwipeToClose(() => setOpen(false))
 
   function choose() {
     navigated.current = true
@@ -48,6 +50,7 @@ export function MobileMenu() {
         <Menu className="size-5" aria-hidden />
       </DialogTrigger>
       <DialogContent
+        ref={swipeRef}
         showCloseButton={false}
         aria-describedby={undefined}
         onCloseAutoFocus={(e) => {
