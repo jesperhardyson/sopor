@@ -19,6 +19,9 @@ export function Footer() {
           <a href={`mailto:${SITE.contactEmail}`} className={link}>
             Kontakt
           </a>
+          <Link to="/integritet" className={link}>
+            Integritet
+          </Link>
           <span>{SITE.host}</span>
         </div>
       </div>

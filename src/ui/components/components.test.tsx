@@ -64,6 +64,7 @@ describe('Footer', () => {
     expect(screen.getByRole('link', { name: 'Kontakt' })).toHaveAttribute('href', 'mailto:support@hardyson.se')
     expect(screen.queryByText('Avesta Vatten och Avfall')).toBeNull()
     expect(screen.getByRole('link', { name: 'Bidra' })).toHaveAttribute('href', '/bidra')
+    expect(screen.getByRole('link', { name: 'Integritet' })).toHaveAttribute('href', '/integritet')
   })
 })
 

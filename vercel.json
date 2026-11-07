@@ -92,6 +92,10 @@
       "destination": "/kommuner/:slug/index.html"
     },
     {
+      "source": "/integritet",
+      "destination": "/integritet/index.html"
+    },
+    {
       "source": "/ics/:source/:file",
       "destination": "/api/ics?source=:source&file=:file"
     },

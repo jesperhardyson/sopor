@@ -33,8 +33,8 @@ async function page(event) {
   const { request } = event
   const cache = await caches.open(SHELL)
   const network = fetch(request).then(async (res) => {
-    // Kommunsidorna har eget innehåll i HTML:en och duger inte som appens skal
-    const shell = !new URL(request.url).pathname.startsWith('/kommuner')
+    // Kommunsidorna och integritetspolicyn har eget innehåll i HTML:en och duger inte som appens skal
+    const shell = !/^\/(kommuner|integritet)/.test(new URL(request.url).pathname)
     if (shell && res.ok && res.headers.get('Content-Type')?.startsWith('text/html')) await cache.put('/', res.clone())
     return res
   })

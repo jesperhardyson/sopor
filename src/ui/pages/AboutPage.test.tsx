@@ -75,6 +75,16 @@ describe('AboutPage', () => {
     expect(screen.queryByText('Bygger du något eget?')).not.toBeInTheDocument()
   })
 
+  it('länkar till integritetspolicyn och lovar inte mer än den', () => {
+    render(
+      <MemoryRouter>
+        <AboutPage />
+      </MemoryRouter>,
+    )
+    expect(screen.getByRole('link', { name: 'Läs hela integritetspolicyn' })).toHaveAttribute('href', '/integritet')
+    expect(screen.queryByText(/samlar inte in personuppgifter/)).toBeNull()
+  })
+
   it('kan glömma sparade adresser under Integritet', async () => {
     localStorage.setItem(
       'sopor.saved.v1',

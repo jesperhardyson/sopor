@@ -115,6 +115,18 @@ describe('service workern', () => {
     expect(await (await sw.request('/om', 'navigate'))!.text()).toBe('adress')
   })
 
+  it('sparar inte integritetspolicyn som appens skal', async () => {
+    const pages: Record<string, string> = { '/integritet': 'policy', '/uppsala/storgatan-2': 'adress' }
+    const sw = boot(async (req) => html(pages[new URL(req.url).pathname]))
+    await (await sw.request('/uppsala/storgatan-2', 'navigate'))!.text()
+    await Promise.resolve()
+    await (await sw.request('/integritet', 'navigate'))!.text()
+    await Promise.resolve()
+
+    sw.fetchFn.mockRejectedValue(new TypeError('offline'))
+    expect(await (await sw.request('/om', 'navigate'))!.text()).toBe('adress')
+  })
+
   it('sparar inte annat än HTML som sidan', async () => {
     const sw = boot(async () => Response.json({}))
     await sw.request('/', 'navigate')

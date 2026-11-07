@@ -4,7 +4,7 @@ import path from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
 import type { KommunPage } from '@/data/kommun-pages'
 import { embeddedData } from '@/ui/kommun/embedded'
-import { renderKommunerHtml, renderKommunHtml, sitemapXml } from './prerender'
+import { renderKommunerHtml, renderKommunHtml, renderPrivacyHtml, sitemapXml } from './prerender'
 
 const root = path.resolve(import.meta.dirname, '..')
 const template = readFileSync(path.join(root, 'index.html'), 'utf8')
@@ -112,13 +112,33 @@ describe('renderKommunerHtml', () => {
   })
 })
 
+describe('renderPrivacyHtml', () => {
+  const html = renderPrivacyHtml(template)
+
+  it('har eget innehåll, som reservsidan saknar', () => {
+    expect(rootContent(html)).toContain('Integritetspolicy')
+    expect(rootContent(html)).toContain('Dina rättigheter')
+    expect(template).not.toContain('Dina rättigheter')
+  })
+
+  it('sätter titel, beskrivning och kanonisk adress', () => {
+    expect(html).toContain('<title>Integritetspolicy – Sopor</title>')
+    expect(meta(html, 'name="description"')).toContain('Sophämtning')
+    expect(html).toContain('<link rel="canonical" href="https://sopor.hardyson.se/integritet" />')
+  })
+
+  it('stänger inte av indexering', () => {
+    expect(html).not.toContain('noindex')
+  })
+})
+
 describe('sitemapXml', () => {
   const xml = sitemapXml('https://sopor.hardyson.se', [uppsala, goteborg])
 
   it('listar sajtens sidor och alla kommuner', () => {
     const urls = [...xml.matchAll(/<loc>(.*?)<\/loc>/g)].map((m) => m[1])
     expect(urls).toEqual(
-      ['/', '/om', '/bidra', '/kommuner', '/kommuner/uppsala-kommun', '/kommuner/goteborgs-kommun'].map((p) => `https://sopor.hardyson.se${p}`),
+      ['/', '/om', '/integritet', '/bidra', '/kommuner', '/kommuner/uppsala-kommun', '/kommuner/goteborgs-kommun'].map((p) => `https://sopor.hardyson.se${p}`),
     )
   })
 
