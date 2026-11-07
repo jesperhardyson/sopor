@@ -437,9 +437,49 @@ describe('searchAll', () => {
       const started = Date.now()
       const result = await searchAll('Storgatan', undefined, (p) => partials.push(p))
       expect(Date.now() - started).toBeLessThan(1650)
-      expect(result.failed).toEqual(['boras'])
+      expect(result.failed).toEqual([])
+      expect(result.pending).toBe(true)
       await vi.waitFor(() => expect(partials.at(-1)).toMatchObject({ failed: [], pending: false }), { timeout: 1000 })
       expect(partials.at(-1)?.addresses.map((x) => x.sourceId)).toEqual(['boras'])
+    })
+
+    it('kallar bara en källa misslyckad när den inte svarat, inte när den är långsam', async () => {
+      const f = vi.fn(async (url: string) => {
+        if (url === '/data/gator/st.json') return Response.json({ storgatan: ['uppsala'] })
+        if (url === '/data/orter.json') return Response.json({})
+        if (url.startsWith('/api/sok')) {
+          await new Promise((r) => setTimeout(r, 900))
+          return new Response('', { status: 500 })
+        }
+        return new Response('', { status: 404 })
+      })
+      vi.stubGlobal('fetch', f)
+      const { searchAll } = await import('./registry')
+      const partials: SearchResult[] = []
+      const result = await searchAll('Storgatan', undefined, (p) => partials.push(p))
+      expect(result).toMatchObject({ failed: [], pending: true })
+      await vi.waitFor(() => expect(partials.at(-1)).toMatchObject({ failed: ['uppsala'], pending: false }), { timeout: 1000 })
+    })
+
+    it('visar ett avkortat svar direkt, innan frågan med orten har svarat', async () => {
+      const many = Array.from({ length: 10 }, (_, i) => inUppsala(`Storgatan ${i + 20}`))
+      stub(async (_source) => many)
+      const slowExtra = vi.mocked(fetch)
+      const plain = slowExtra.getMockImplementation()!
+      slowExtra.mockImplementation(async (input: RequestInfo | URL) => {
+        const url = String(input)
+        if (url.includes('uppsala&sources') || url.includes('%2C')) {
+          await new Promise((r) => setTimeout(r, 500))
+          return Response.json({ addresses: [inUppsala('Storgatan 2')], failed: [] })
+        }
+        return (plain as (u: string) => Promise<Response>)(url)
+      })
+      const { searchAll } = await import('./registry')
+      const partials: number[] = []
+      const result = await searchAll('Storgatan 2, Uppsala', undefined, (p) => partials.push(p.addresses.length))
+      expect(partials.some((n) => n === 10)).toBe(true)
+      expect(result.addresses[0].street).toBe('Storgatan 2')
+      expect(result.addresses).toHaveLength(11)
     })
 
     it('sätter exakt adress först oavsett vilken källa som svarar först', async () => {

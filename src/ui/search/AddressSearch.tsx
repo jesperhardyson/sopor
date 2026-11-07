@@ -25,7 +25,7 @@ type Search = (
 type State =
   | { kind: 'idle' }
   | { kind: 'results'; query: string; results: Address[]; pickers: AreaPicker[]; failed: string[]; pending?: boolean }
-  | { kind: 'notFound'; query: string; suggestions: Address[]; failed: string[]; missing: string[] }
+  | { kind: 'notFound'; query: string; suggestions: Address[]; failed: string[]; missing: string[]; pending?: boolean }
   | { kind: 'error' }
 
 const DEBOUNCE_MS = 150
@@ -35,6 +35,8 @@ const SKELETON_MS = 150
 const PER_KOMMUN = 3
 /** Adressrader i listan innan resten fälls ihop bakom "Visa N till". */
 const MAX_ROWS = 15
+/** Så länge ett klick på listan ignoreras när en rad just flyttat sig: det var menat för raden som stod där. */
+const CLICK_GUARD_MS = 600
 /** Nyckeln i `expanded` för hela listan (kommunnamn är aldrig tomma). */
 const ALL = ''
 
@@ -46,6 +48,12 @@ type Item =
   /** Egna rader för tangentbordet, som visas på samma rad under valet. */
   | { kind: 'changeChoice'; picker: AreaPicker; choice: AreaChoice }
   | { kind: 'forgetChoice'; picker: AreaPicker; choice: AreaChoice }
+/** Samma rad känns igen mellan två svar. */
+function itemKey(item: Item): string {
+  if (item.kind === 'address') return `${item.address.sourceId}/${item.address.id}`
+  if (item.kind === 'more') return `fler/${item.kommun ?? ''}`
+  return `${item.kind}/${item.picker.sourceId}`
+}
 interface Section {
   /** Saknas när alla träffar ligger i en kommun: då visas listan utan rubriker. */
   kommun?: string
@@ -122,10 +130,16 @@ function byKommun(results: Address[], expanded: Set<string>, grouped: boolean): 
   })
 }
 
-/** Raderna som redan syns behåller sin plats när nya träffar kommer in, utom att just det man skrev går först. */
-function keep(prev: State, incoming: Address[], query: string): Address[] {
+/** Just det man skrev går först. */
+const exactFirst = (query: string, rows: Address[]) => [...rows.filter((a) => isExactStreet(query, a)), ...rows.filter((a) => !isExactStreet(query, a))]
+
+/**
+ * Raderna som redan syns behåller sin plats när nya träffar kommer in, utom att just det man skrev
+ * går först. Medan användaren håller på att välja (`choosing`) står allt still.
+ */
+function keep(prev: State, incoming: Address[], query: string, choosing: boolean): Address[] {
   const rows = stableMerge(prev.kind === 'results' ? prev.results : [], incoming)
-  return [...rows.filter((a) => isExactStreet(query, a)), ...rows.filter((a) => !isExactStreet(query, a))]
+  return choosing ? rows : exactFirst(query, rows)
 }
 
 export function AddressSearch({
@@ -166,6 +180,14 @@ export function AddressSearch({
   // Valen ligger i lagringen, så listan behöver ritas om när ett val glöms.
   const [, setForgotten] = useState(0)
   const rootRef = useRef<HTMLDivElement>(null)
+  // Pekaren över listan eller en rad markerad med tangentbordet: användaren håller på att välja.
+  const pointerInList = useRef(false)
+  const activeNow = useRef(active)
+  const movedAt = useRef(Number.NEGATIVE_INFINITY)
+  const shownKeys = useRef<string[]>([])
+  useEffect(() => {
+    activeNow.current = active
+  }, [active])
 
   // Klick utanför avbryter sökningen och lämnar fokusläget, så att ingen gammal träfflista blir kvar.
   // Läget avgörs vid pointerdown (fokus har inte flyttat än) men verkställs först vid click,
@@ -205,30 +227,31 @@ export function AddressSearch({
       try {
         setLoading(true)
         skeleton = setTimeout(() => setSlow(true), SKELETON_MS)
-        const { addresses: results, failed, areaPickers } = await search(query, controller.signal, (partial) => {
+        const choosing = () => pointerInList.current || activeNow.current >= 0
+        const { addresses: results, failed, areaPickers, pending } = await search(query, controller.signal, (partial) => {
           if (controller.signal.aborted) return
           if (partial.addresses.length > 0 || partial.areaPickers.length > 0) {
             setState((prev) => ({
               kind: 'results',
               query,
-              results: keep(prev, partial.addresses, query),
+              results: keep(prev, partial.addresses, query, choosing()),
               pickers: partial.areaPickers,
               failed: partial.failed,
               pending: partial.pending ?? true,
             }))
           } else {
             // En sen källa svarade utan träffar: den ska inte längre stå som att den inte svarar.
-            setState((prev) => (prev.kind === 'notFound' && prev.query === query ? { ...prev, failed: partial.failed } : prev))
+            setState((prev) => (prev.kind === 'notFound' && prev.query === query ? { ...prev, failed: partial.failed, pending: partial.pending } : prev))
           }
         })
         if (controller.signal.aborted) return
         // Bara raden för områdesval är också ett resultat, inte "hittades inte".
         if (results.length > 0 || areaPickers.length > 0) {
-          setState((prev) => ({ kind: 'results', query, results: keep(prev, results, query), pickers: areaPickers, failed }))
+          setState((prev) => ({ kind: 'results', query, results: keep(prev, results, query, choosing()), pickers: areaPickers, failed, pending }))
         } else {
           const [suggestions, kommuner] = await Promise.all([suggest(query, controller.signal), missing(query, controller.signal)])
           // En sen källa kan ha hunnit ge träffar medan förslagen hämtades.
-          if (!controller.signal.aborted) setState((prev) => (prev.kind === 'results' && prev.query === query ? prev : { kind: 'notFound', query, suggestions, failed, missing: kommuner }))
+          if (!controller.signal.aborted) setState((prev) => (prev.kind === 'results' && prev.query === query ? prev : { kind: 'notFound', query, suggestions, failed, missing: kommuner, pending }))
         }
         setActive(-1)
       } catch {
@@ -254,6 +277,17 @@ export function AddressSearch({
   const pickers = state.kind === 'results' && related(query, state.query) ? state.pickers : []
   const list = sections(results, pickers, expanded)
   const items = list.flatMap((s) => s.items)
+  const keysNow = items.map(itemKey).join('\n')
+  // Nya rader kan knuffa de som syns. Då följer markeringen med sin rad, och ett klick i samma
+  // ögonblick var menat för raden som stod där. Försvinner rader har användaren själv ändrat listan.
+  useEffect(() => {
+    const before = shownKeys.current
+    const now = keysNow ? keysNow.split('\n') : []
+    shownKeys.current = now
+    if (!before.every((key) => now.includes(key)) || before.every((key, n) => now[n] === key)) return
+    movedAt.current = performance.now()
+    if (activeNow.current >= 0) setActive(now.indexOf(before[activeNow.current]))
+  }, [keysNow])
   const open = results.length > 0 || pickers.length > 0
   // Svaret gäller frågan det kom för: en kortare fråga utan träffar får inte synas när man skrivit vidare.
   const showNotFound =
@@ -394,7 +428,9 @@ export function AddressSearch({
       role: 'option',
       'aria-selected': n === active,
       onMouseDown: (e: React.MouseEvent) => e.preventDefault(),
-      onClick: () => choose(target),
+      onClick: () => {
+        if (performance.now() - movedAt.current >= CLICK_GUARD_MS) choose(target)
+      },
       onMouseEnter: () => setActive(n),
       onPointerDown: () => target.kind === 'address' && prefetch(target.address.sourceId, target.address.id),
     })
@@ -547,7 +583,18 @@ export function AddressSearch({
       </div>
 
       {open && (
-        <div className="absolute inset-x-0 top-full z-20 mt-3 rounded-[18px] border border-border bg-surface p-1.5 shadow-[0_12px_32px_#1B231F1F]">
+        <div
+          onPointerEnter={() => {
+            pointerInList.current = true
+          }}
+          onPointerLeave={() => {
+            pointerInList.current = false
+            setActive(-1)
+            // Det som väntade på att användaren skulle bli klar.
+            setState((prev) => (prev.kind === 'results' ? { ...prev, results: exactFirst(prev.query, prev.results) } : prev))
+          }}
+          className="absolute inset-x-0 top-full z-20 mt-3 rounded-[18px] border border-border bg-surface p-1.5 shadow-[0_12px_32px_#1B231F1F]"
+        >
         <ul id={listId} role="listbox" aria-label="Adresser" className="flex flex-col">
           {list.map((section, s) =>
             section.kommun ? (
@@ -608,6 +655,12 @@ export function AddressSearch({
           {showNotFound && state.failed.length > 0 && (
             <p className="rounded-2xl border border-border bg-surface px-4 py-3 text-sm font-semibold text-warn shadow-[0_12px_32px_#1B231F1F]">
               {state.failed.map((id) => getSource(id)?.name ?? id).join(', ')} svarar inte just nu.
+            </p>
+          )}
+          {showNotFound && state.pending && (
+            <p role="status" className="flex items-center gap-2 rounded-2xl border border-border bg-surface px-4 py-3 text-sm text-text-2 shadow-[0_12px_32px_#1B231F1F]">
+              <LoaderCircle className="size-4 animate-spin text-primary" aria-hidden />
+              Söker hos fler källor…
             </p>
           )}
           {showNotFound &&

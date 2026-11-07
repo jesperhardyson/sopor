@@ -35,7 +35,7 @@ Källor som frågas i det andra steget räknas inte i `failed`, eftersom frågan
 
 ### Tidsgränser
 
-- **Webben** ger sitt svar senast 1,5 s efter att anropen gått iväg. Källor som inte svarat står som "svarar inte just nu", men deras svar läggs in när de kommer och varningen försvinner då. Det nya försöket för sömniga källor finns kvar, men håller inte tillbaka svaret.
+- **Webben** ger sitt svar senast 1,5 s efter att anropen gått iväg. Källor som inte svarat än visas med "Söker hos fler källor…", och deras svar läggs in när de kommer. "Svarar inte just nu" visas först när källan faktiskt misslyckats, efter det nya försöket för sömniga källor. Ett avkortat svar visas direkt och kompletteras med svaret för gata och ort.
 - **API v1** svarar senast efter 2 s när frågan inte nämner en plats. Källor som inte hunnit står i `failed`, och svaret cachas kort (`CACHE_PARTIAL`). Med `kalla` eller en plats i frågan gäller källans vanliga tidsgräns, eftersom användaren då pekat ut källan.
 
 ### Rankning
@@ -49,6 +49,8 @@ Källor som frågas i det andra steget räknas inte i `failed`, eftersom frågan
 Annars behålls ordningen, så att träffarna från samma källa står som källan gav dem.
 
 Raderna som syns flyttas fortfarande inte när nya källor svarar, med ett undantag: en exakt träff går före de andra, eftersom det är den användaren letar efter.
+
+Det får inte ge felklick. Medan pekaren är över listan eller en rad är markerad med tangentbordet står raderna still, och den exakta träffen flyttas upp först när pekaren lämnar listan. Flyttas ändå en rad, till exempel när en ny träff knuffar den eller på mobil där det inte finns någon pekare, ignoreras klick i 600 ms och markeringen följer med sin rad.
 
 ### Mindre väntan i övrigt
 

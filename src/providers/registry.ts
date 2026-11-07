@@ -53,7 +53,7 @@ export interface SearchResult {
   failed: string[]
   /** Källor med områdesval som sökningen ska erbjuda, t.ex. [{ sourceId: "avesta", … }] */
   areaPickers: AreaPicker[]
-  /** Bara i delresultat: om sökningen inte gett sitt svar än. Efter svaret kan sena källor lägga till träffar. */
+  /** Källor har inte svarat än, och deras träffar kan läggas till. Det betyder inte att de är nere: se `failed`. */
   pending?: boolean
 }
 
@@ -227,10 +227,11 @@ async function searchLive(query: string, signal: AbortSignal | undefined, option
     const extra = fromCache(id, withPlace)
     return extra && merge(base, extra)
   }
-  const fetchFor = async (id: string) => {
+  /** Svaret för gatan visas direkt. Är det avkortat läggs svaret med orten till när det kommer. */
+  const fetchFor = async (id: string, show: (found: Address[]) => Promise<void>) => {
     const base = fromCache(id, q) ?? (await fetchSource(id, q, signal))
-    if (!narrowTo || base.length < SOURCE_LIMIT) return base
-    return merge(base, fromCache(id, withPlace) ?? (await fetchSource(id, withPlace, signal)))
+    await show(base)
+    if (narrowTo && base.length >= SOURCE_LIMIT) await show(fromCache(id, withPlace) ?? (await fetchSource(id, withPlace, signal)))
   }
   // Ort-tabellen behövs först när svaren ska visas, så den får inte hålla tillbaka anropen.
   const withKommun = async (list: Address[]) => {
@@ -253,11 +254,12 @@ async function searchLive(query: string, signal: AbortSignal | undefined, option
   let holding = false
   const report = () => {
     if (holding || signal?.aborted) return
-    if (addresses.length > 0 || answered) onPartial({ addresses, failed: [...failed], pending: !answered })
+    if (addresses.length > 0 || answered) onPartial({ addresses, failed: [...failed], pending: !answered || waiting.size > 0 })
   }
   const add = (found: Address[]) => {
-    addresses = rankHits(street, place, [...addresses, ...found], preferred)
-    if (found.length > 0) report()
+    const fresh = found.filter((a) => !addresses.some((b) => b.sourceId === a.sourceId && b.id === a.id))
+    addresses = rankHits(street, place, [...addresses, ...fresh], preferred)
+    if (fresh.length > 0) report()
   }
   /** Frågar källorna. Bara de första räknas som fel: övriga är källor som frågan inte gäller. */
   const ask = async (ids: string[], first: boolean, delayMs: number) => {
@@ -275,11 +277,10 @@ async function searchLive(query: string, signal: AbortSignal | undefined, option
       await Promise.all(
         missing.map(async (id) => {
           try {
-            const found = await withKommun(await fetchFor(id))
+            await fetchFor(id, async (list) => add(await withKommun(list)))
             failed.delete(id)
             waiting.delete(id)
-            add(found)
-            if (answered && found.length === 0) report()
+            if (answered) report()
           } catch {
             waiting.delete(id)
             if (first) failed.add(id)
@@ -311,8 +312,7 @@ async function searchLive(query: string, signal: AbortSignal | undefined, option
   ]).finally(() => clearTimeout(deadline))
   answered = true
   holding = false
-  for (const id of waiting) failed.add(id)
-  return { addresses, failed: [...failed] }
+  return { addresses, failed: [...failed], pending: waiting.size > 0 }
 }
 
 /**
@@ -397,8 +397,8 @@ export async function searchAll(
   areaPickers = await areaPickersFor(query, localAddresses, options.kommun)
   localDone = true
   report(latest)
-  const { addresses, failed } = await live
-  return { addresses: [...localAddresses, ...addresses], failed, areaPickers }
+  const { addresses, failed, pending } = await live
+  return { addresses: [...localAddresses, ...addresses], failed, areaPickers, ...(pending && { pending }) }
 }
 
 /**

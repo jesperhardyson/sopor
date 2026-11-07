@@ -828,7 +828,10 @@ describe('sena svar från källor', () => {
     }
     render(
       <MemoryRouter>
-        <AddressSearch search={search} suggest={async () => []} missing={async () => []} prefetch={vi.fn()} />
+        <Routes>
+          <Route path="/" element={<AddressSearch search={search} suggest={async () => []} missing={async () => []} prefetch={vi.fn()} />} />
+          <Route path="/:sourceId/:addressId" element={<Result />} />
+        </Routes>
       </MemoryRouter>,
     )
     return {
@@ -858,6 +861,59 @@ describe('sena svar från källor', () => {
     expect(await screen.findByText(/svarar inte just nu/)).toBeInTheDocument()
     await late({ addresses: [], failed: [], areaPickers: [], pending: false })
     await waitFor(() => expect(screen.queryByText(/svarar inte just nu/)).not.toBeInTheDocument())
+  })
+
+  it('säger att fler källor söks, inte att de är nere, när en källa är långsam', async () => {
+    const { late } = lateSearch({ addresses: [], failed: [], areaPickers: [], pending: true })
+    await userEvent.type(screen.getByRole('combobox'), 'Storgatan 12')
+    expect(await screen.findByText(/Söker hos fler källor/)).toBeInTheDocument()
+    expect(screen.queryByText(/svarar inte just nu/)).not.toBeInTheDocument()
+    await late({ addresses: [], failed: ['avesta'], areaPickers: [], pending: false })
+    expect(await screen.findByText(/svarar inte just nu/)).toBeInTheDocument()
+    expect(screen.queryByText(/Söker hos fler källor/)).not.toBeInTheDocument()
+  })
+
+  describe('skydd mot felklick', () => {
+    const shown = [a('s-120', 'Storgatan 120', 'Avesta'), a('s-121', 'Storgatan 121', 'Avesta')]
+    const withExact = { addresses: [...shown, a('s-12', 'Storgatan 12', 'Avesta')], failed: [], areaPickers: [] as [], pending: false }
+    const rows = () => screen.getAllByRole('option').map((o) => o.textContent?.match(/Storgatan \d+/)?.[0])
+    const start = async () => {
+      const { late } = lateSearch({ addresses: shown, failed: [], areaPickers: [] })
+      await userEvent.type(screen.getByRole('combobox'), 'Storgatan 12')
+      await screen.findByRole('option', { name: /Storgatan 120/ })
+      return late
+    }
+
+    it('flyttar inte raderna medan pekaren är över listan, utan när den lämnar den', async () => {
+      const late = await start()
+      const list = screen.getByRole('listbox').parentElement!
+      fireEvent.pointerEnter(list)
+      await late(withExact)
+      await screen.findByRole('option', { name: /Storgatan 12(?!\d)/ })
+      expect(rows()).toEqual(['Storgatan 120', 'Storgatan 121', 'Storgatan 12'])
+      fireEvent.pointerLeave(list)
+      await waitFor(() => expect(rows()).toEqual(['Storgatan 12', 'Storgatan 120', 'Storgatan 121']))
+    })
+
+    it('flyttar inte raderna medan en rad är markerad med tangentbordet', async () => {
+      const late = await start()
+      fireEvent.keyDown(screen.getByRole('combobox'), { key: 'ArrowDown' })
+      await late(withExact)
+      await screen.findByRole('option', { name: /Storgatan 12(?!\d)/ })
+      expect(rows()).toEqual(['Storgatan 120', 'Storgatan 121', 'Storgatan 12'])
+      expect(screen.getAllByRole('option')[0]).toHaveAttribute('aria-selected', 'true')
+    })
+
+    it('ignorerar ett klick precis efter att raderna flyttat sig, men inte ett senare', async () => {
+      const late = await start()
+      await late(withExact)
+      await waitFor(() => expect(rows()[0]).toBe('Storgatan 12'))
+      fireEvent.click(screen.getAllByRole('option')[0])
+      expect(screen.queryByText(/^Resultat/)).not.toBeInTheDocument()
+      await new Promise((r) => setTimeout(r, 650))
+      fireEvent.click(screen.getAllByRole('option')[0])
+      expect(await screen.findByText('Resultat avesta/s-12')).toBeInTheDocument()
+    })
   })
 
   it('sätter en sen exakt träff först, medan övriga rader står kvar i sin ordning', async () => {
