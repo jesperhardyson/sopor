@@ -434,14 +434,14 @@
                           "locality": "",
                           "kommun": "Avesta kommun",
                           "source": "avesta",
-                          "detail": "Tisdag, jämn vecka · Trakt 7",
+                          "detail": "Tisdag, jämn vecka · Område 7",
                           "selection": "area",
                           "notice": "Kontrollera att området stämmer. Väljer du fel område kan du missa din tömning.",
                           "areasUrl": "https://sopor.hardyson.se/avesta/omraden",
                           "url": "https://sopor.hardyson.se/api/v1/adress/avesta/trakt-7",
                           "area": {
                             "day": "Tisdag, jämn vecka",
-                            "label": "Trakt 7",
+                            "label": "Område 7",
                             "places": [
                               "Avesta tätort",
                               "Östanfors",
@@ -474,6 +474,7 @@
                               "Åsgarn",
                               "Västanberg",
                               "Västansjö",
+                              "område 7",
                               "trakt 7"
                             ]
                           }
@@ -501,7 +502,7 @@
                           "locality": "",
                           "kommun": "Avesta kommun",
                           "source": "avesta",
-                          "detail": "Tisdag, jämn vecka · Trakt 7",
+                          "detail": "Tisdag, jämn vecka · Område 7",
                           "selection": "area",
                           "notice": "Kontrollera att området stämmer. Väljer du fel område kan du missa din tömning.",
                           "areasUrl": "https://sopor.hardyson.se/avesta/omraden",
@@ -515,7 +516,7 @@
                           },
                           "area": {
                             "day": "Tisdag, jämn vecka",
-                            "label": "Trakt 7",
+                            "label": "Område 7",
                             "places": [
                               "Avesta tätort",
                               "Östanfors",
@@ -548,6 +549,7 @@
                               "Åsgarn",
                               "Västanberg",
                               "Västansjö",
+                              "område 7",
                               "trakt 7"
                             ]
                           }
@@ -876,7 +878,7 @@
               "string",
               "null"
             ],
-            "description": "Skiljer träffar med samma gata och ort åt, t.ex. \"Byggnad 78838\". För ett område är det hämtdagen, t.ex. \"Tisdag, jämn vecka · Trakt 7\". null när det saknas."
+            "description": "Skiljer träffar med samma gata och ort åt, t.ex. \"Byggnad 78838\". För ett område är det hämtdagen, t.ex. \"Tisdag, jämn vecka · Område 7\". null när det saknas."
           },
           "selection": {
             "type": "string",
@@ -937,7 +939,7 @@
               "string",
               "null"
             ],
-            "description": "Skiljer träffar med samma gata och ort åt, t.ex. \"Byggnad 78838\". För ett område är det hämtdagen, t.ex. \"Tisdag, jämn vecka · Trakt 7\". null när det saknas."
+            "description": "Skiljer träffar med samma gata och ort åt, t.ex. \"Byggnad 78838\". För ett område är det hämtdagen, t.ex. \"Tisdag, jämn vecka · Område 7\". null när det saknas."
           },
           "selection": {
             "type": "string",
@@ -1012,7 +1014,7 @@
               "string",
               "null"
             ],
-            "description": "Skiljer träffar med samma gata och ort åt, t.ex. \"Byggnad 78838\". För ett område är det hämtdagen, t.ex. \"Tisdag, jämn vecka · Trakt 7\". null när det saknas."
+            "description": "Skiljer träffar med samma gata och ort åt, t.ex. \"Byggnad 78838\". För ett område är det hämtdagen, t.ex. \"Tisdag, jämn vecka · Område 7\". null när det saknas."
           },
           "selection": {
             "type": "string",
@@ -1069,7 +1071,7 @@
               "string",
               "null"
             ],
-            "description": "Källans eget namn på området, t.ex. \"Trakt 1\". null när källan inte har något."
+            "description": "Källans eget namn på området, t.ex. \"Område 1\". null när källan inte har något."
           },
           "places": {
             "type": "array",
@@ -1138,7 +1140,7 @@
               "string",
               "null"
             ],
-            "description": "Skiljer träffar med samma gata och ort åt, t.ex. \"Byggnad 78838\". För ett område är det hämtdagen, t.ex. \"Tisdag, jämn vecka · Trakt 7\". null när det saknas."
+            "description": "Skiljer träffar med samma gata och ort åt, t.ex. \"Byggnad 78838\". För ett område är det hämtdagen, t.ex. \"Tisdag, jämn vecka · Område 7\". null när det saknas."
           },
           "selection": {
             "type": "string",

@@ -119,16 +119,16 @@ curl 'https://sopor.hardyson.se/api/v1/omraden?plats=Avesta'
 
 Svaret har också det som webbens områdessida visar, från samma data:
 
-- Varje träff har `area` med `day` ("Måndag, udda vecka"), `label` ("Trakt 1", eller `null`), `places` (platserna och gatorna att visa), `otherDays` (rader om gator med en annan hämtdag, oftast tom) och `searchTerms`. Filtrera listan på `street`, `day` och `searchTerms`, som webben gör. `searchTerms` kan ha gator som inte står bland platserna. Använd `area` i stället för att dela upp `detail`.
+- Varje träff har `area` med `day` ("Måndag, udda vecka"), `label` ("Område 1", eller `null`), `places` (platserna och gatorna att visa), `otherDays` (rader om gator med en annan hämtdag, oftast tom) och `searchTerms`. Filtrera listan på `street`, `day` och `searchTerms`, som webben gör. `searchTerms` kan ha gator som inte står bland platserna. Använd `area` i stället för att dela upp `detail`.
 - `sources` har en post per källa som svarade: `id`, `name`, `explanation` (varför användaren väljer område själv, visa överst) och `help` (vart man vänder sig när man är osäker, visa nederst).
 
 ```json
 "area": {
   "day": "Tisdag, jämn vecka",
-  "label": "Trakt 7",
+  "label": "Område 7",
   "places": ["Avesta tätort", "Östanfors", "Garpenbergsvägen", "Lycka", "…"],
   "otherDays": ["Till exempel Stallgatan och Storbogatan (måndag, udda vecka) och Bodgatan (onsdag, jämn vecka)."],
-  "searchTerms": ["Avesta tätort", "Östanfors", "Garpenbergsvägen", "…", "trakt 7"]
+  "searchTerms": ["Avesta tätort", "Östanfors", "Garpenbergsvägen", "…", "område 7", "trakt 7"]
 }
 ```
 

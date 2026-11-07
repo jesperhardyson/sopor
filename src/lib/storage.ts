@@ -191,7 +191,9 @@ function writeChoices(all: Record<string, AreaChoice>) {
 
 export function loadChoice(sourceId: string, street: string): AreaChoice | undefined {
   const choice = readChoices()[choiceKey(sourceId, street)]
-  return typeof choice?.areaId === 'string' && (choice.label === undefined || typeof choice.label === 'string') && typeof choice.day === 'string' ? choice : undefined
+  if (typeof choice?.areaId !== 'string' || (choice.label !== undefined && typeof choice.label !== 'string') || typeof choice.day !== 'string') return undefined
+  // Avestas områden hette "Trakt N" fram till november 2026 (#124). Sparade val visas med det nya namnet.
+  return choice.label?.startsWith('Trakt ') ? { ...choice, label: `Område ${choice.label.slice(6)}` } : choice
 }
 
 export function rememberChoice(choice: AreaChoice) {

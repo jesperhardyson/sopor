@@ -143,7 +143,7 @@ describe('sparade scheman', () => {
 })
 
 describe('eget val av område', () => {
-  const choice = { sourceId: 'avesta', street: 'Kungsgatan 12', areaId: 'trakt-7', label: 'Trakt 7', day: 'Tisdag, jämn vecka' }
+  const choice = { sourceId: 'avesta', street: 'Kungsgatan 12', areaId: 'trakt-7', label: 'Område 7', day: 'Tisdag, jämn vecka' }
   beforeEach(() => localStorage.clear())
 
   it('kommer ihåg valet oavsett versaler och kan glömma det', () => {
@@ -161,8 +161,13 @@ describe('eget val av område', () => {
 
   it('flyttar val från det gamla området vid ett byte', () => {
     rememberChoice(choice)
-    moveChoices('avesta', 'trakt-7', { id: 'trakt-1', label: 'Trakt 1', day: 'Måndag, udda vecka' })
-    expect(loadChoice('avesta', 'Kungsgatan 12')).toMatchObject({ areaId: 'trakt-1', label: 'Trakt 1' })
+    moveChoices('avesta', 'trakt-7', { id: 'trakt-1', label: 'Område 1', day: 'Måndag, udda vecka' })
+    expect(loadChoice('avesta', 'Kungsgatan 12')).toMatchObject({ areaId: 'trakt-1', label: 'Område 1' })
+  })
+
+  it('visar ett val sparat innan Avestas områden hette område med det nya namnet', () => {
+    rememberChoice({ ...choice, label: 'Trakt 7' })
+    expect(loadChoice('avesta', 'Kungsgatan 12')).toEqual(choice)
   })
 
   it('rensas tillsammans med sparade adresser', () => {

@@ -17,7 +17,7 @@ export interface Area {
   id: string
   name: string
   day: string
-  /** Källans eget namn på området, t.ex. "Trakt 7". Inte alla källor har något. */
+  /** Områdets nummer eller namn, t.ex. "Område 7". Alltid med ordet område, som webben. Inte alla källor har något. */
   label?: string
   places: string[]
   otherDays: string[]

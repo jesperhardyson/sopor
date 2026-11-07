@@ -619,9 +619,9 @@ describe('AddressSearch', () => {
       sourceId: 'avesta',
       kommun: 'Avesta kommun',
     })
-    const tatort = area('trakt-7', 'Avesta tätort, Östanfors m.fl.', 'Tisdag, jämn vecka · Trakt 7', ['Avesta tätort'])
-    const skogsbo = area('trakt-2', 'Skogsbo tätort, Rosse m.fl.', 'Tisdag, udda vecka · Trakt 2', ['Backa'])
-    const krylbo = area('trakt-4', 'Krylbo stationssidan, Lejde m.fl.', 'Torsdag, udda vecka · Trakt 4', ['Backa'])
+    const tatort = area('trakt-7', 'Avesta tätort, Östanfors m.fl.', 'Tisdag, jämn vecka · Område 7', ['Avesta tätort'])
+    const skogsbo = area('trakt-2', 'Skogsbo tätort, Rosse m.fl.', 'Tisdag, udda vecka · Område 2', ['Backa'])
+    const krylbo = area('trakt-4', 'Krylbo stationssidan, Lejde m.fl.', 'Torsdag, udda vecka · Område 4', ['Backa'])
     const hedemora: Address = { id: 'kungsgatan-12', street: 'Kungsgatan 12', locality: 'Hedemora', sourceId: 'hedemora', kommun: 'Hedemoras kommun' }
     const picker = (hasHits: boolean) => ({ sourceId: 'avesta', kommun: 'Avesta kommun', hasHits })
 
@@ -652,7 +652,7 @@ describe('AddressSearch', () => {
       await renderResult('Avesta tätort', { addresses: [tatort], areaPickers: [picker(true)] })
       const options = await screen.findAllByRole('option')
       expect(options).toHaveLength(2)
-      expect(options[0]).toHaveTextContent('Avesta tätort, Östanfors m.fl.Tisdag, jämn vecka · Trakt 7')
+      expect(options[0]).toHaveTextContent('Avesta tätort, Östanfors m.fl.Tisdag, jämn vecka · Område 7')
       expect(options[0].querySelector('.lucide-map')).not.toBeNull()
       expect(options[0].querySelector('.lucide-map-pin')).toBeNull()
       expect(options[1]).toHaveTextContent('Se alla områden i Avesta')
@@ -713,14 +713,14 @@ describe('AddressSearch', () => {
     })
 
     describe('eget val', () => {
-      const choice = { sourceId: 'avesta', street: 'Kungsgatan 12', areaId: 'trakt-7', label: 'Trakt 7', day: 'Tisdag, jämn vecka' }
+      const choice = { sourceId: 'avesta', street: 'Kungsgatan 12', areaId: 'trakt-7', label: 'Område 7', day: 'Tisdag, jämn vecka' }
       const withStreet = { areaPickers: [{ ...picker(false), street: 'Kungsgatan 12' }] }
       beforeEach(() => rememberChoice(choice))
 
       it('märks som användarens eget val och öppnar området', async () => {
         await renderResult('Kungsgatan 12', withStreet)
         const row = await screen.findByRole('option', { name: /Ditt val/ })
-        expect(row).toHaveTextContent('Trakt 7 · Tisdag, jämn vecka')
+        expect(row).toHaveTextContent('Område 7 · Tisdag, jämn vecka')
         expect(row).toHaveTextContent(/Ditt val, inte från/)
         await userEvent.click(row)
         expect(await screen.findByText('Resultat avesta/trakt-7')).toBeInTheDocument()

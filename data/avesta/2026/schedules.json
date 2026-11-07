@@ -7,7 +7,7 @@
   "note": "Påminnelse: ställ ut kärlen senast 06.00 på tömningsdagen.",
   "schedules": {
     "trakt-1": {
-      "name": "Trakt 1",
+      "name": "Område 1",
       "events": [
         {
           "date": "2026-09-07",
@@ -73,7 +73,7 @@
       ]
     },
     "trakt-2": {
-      "name": "Trakt 2",
+      "name": "Område 2",
       "events": [
         {
           "date": "2026-09-08",
@@ -137,7 +137,7 @@
       ]
     },
     "trakt-3": {
-      "name": "Trakt 3",
+      "name": "Område 3",
       "events": [
         {
           "date": "2026-09-09",
@@ -204,7 +204,7 @@
       ]
     },
     "trakt-4": {
-      "name": "Trakt 4",
+      "name": "Område 4",
       "events": [
         {
           "date": "2026-09-10",
@@ -271,7 +271,7 @@
       ]
     },
     "trakt-5": {
-      "name": "Trakt 5",
+      "name": "Område 5",
       "events": [
         {
           "date": "2026-09-11",
@@ -331,7 +331,7 @@
       ]
     },
     "trakt-6": {
-      "name": "Trakt 6",
+      "name": "Område 6",
       "events": [
         {
           "date": "2026-09-14",
@@ -391,7 +391,7 @@
       ]
     },
     "trakt-7": {
-      "name": "Trakt 7",
+      "name": "Område 7",
       "events": [
         {
           "date": "2026-09-01",
@@ -456,7 +456,7 @@
       ]
     },
     "trakt-8": {
-      "name": "Trakt 8",
+      "name": "Område 8",
       "events": [
         {
           "date": "2026-09-02",
@@ -519,7 +519,7 @@
       ]
     },
     "trakt-9": {
-      "name": "Trakt 9",
+      "name": "Område 9",
       "events": [
         {
           "date": "2026-09-03",
@@ -582,7 +582,7 @@
       ]
     },
     "trakt-10": {
-      "name": "Trakt 10",
+      "name": "Område 10",
       "events": [
         {
           "date": "2026-09-04",
