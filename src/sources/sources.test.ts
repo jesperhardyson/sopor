@@ -37,6 +37,10 @@ describe('källregistret', () => {
     expect(names).toContain('Uppsala kommun')
   })
 
+  it('förklarar hur statiska källor publicerar schemat, eftersom deras schema har ett slut', () => {
+    for (const s of ALL_SOURCES.filter((x) => x.config.system === 'static')) expect(s.publishing, s.id).toMatch(/\S.*\.$/)
+  })
+
   it('har kontaktuppgifter från källans egen webbplats', () => {
     const host = (u: string) => new URL(u).hostname.replace(/^www\./, '')
     const onSite = (s: Source, u: string) => host(u) === host(s.url) || host(u).endsWith(`.${host(s.url)}`)

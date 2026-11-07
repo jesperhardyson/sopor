@@ -129,6 +129,7 @@ export const handleV1Address: V1Handler = async (request, opts = {}) => {
         ...selectionFields(source),
       },
       ...scheduleBody(schedule, today),
+      schedule: schedule.validTo ? { until: schedule.validTo, reason: source.publishing ?? null } : null,
       links: { ics: `${url.origin}/ics/${path}.ics`, web: `${url.origin}/${path}` },
       updatedAt: schedule.updatedAt,
     },

@@ -33,6 +33,7 @@ export function mergeParts(parts: SchedulePart[]): Schedule {
     note: latest?.note,
     events: [...byDate.values()].sort((a, b) => a.date.localeCompare(b.date)),
     updatedAt: sorted.map((p) => p.updatedAt).sort().at(-1) ?? '',
+    validTo: sorted.map((p) => p.validTo).sort().at(-1),
   }
 }
 

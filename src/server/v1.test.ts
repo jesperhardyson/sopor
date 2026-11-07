@@ -31,7 +31,7 @@ const SOURCES: Source[] = [
   },
   { ...edp('statisk', 'statisk.test', 'Statiska kommun'), config: { system: 'static' } },
   { ...edp('dold', 'dold.test', 'Dolda kommun'), hidden: true },
-  { ...edp('avesta', 'avesta.test', 'Avesta kommun'), config: { system: 'static' }, selection: 'area', areaNotice: { title: 'Kontrollera området', text: 'Du har valt det själv.' } },
+  { ...edp('avesta', 'avesta.test', 'Avesta kommun'), config: { system: 'static' }, selection: 'area', areaNotice: { title: 'Kontrollera området', text: 'Du har valt det själv.' }, publishing: 'Avesta AB publicerar schemat ett år i taget.' },
 ]
 
 const event = (date: string) => ({ date, fractions: ['mat'], estimated: false })
@@ -115,6 +115,18 @@ describe('handleV1Address', () => {
       selection: 'address',
       notice: null,
     })
+  })
+
+  it('säger hur långt ett publicerat schema gäller och varför', async () => {
+    const area = await (await address('source=avesta&id=trakt-7')).json()
+    expect(area.schedule).toEqual({ until: '2026-12-31', reason: 'Avesta AB publicerar schemat ett år i taget.' })
+    const plain = await (await address('source=statisk&id=storgatan-1_%C3%B6rebro')).json()
+    expect(plain.schedule).toEqual({ until: '2026-12-31', reason: null })
+  })
+
+  it('ger inget slut för ett schema som räknas fram', async () => {
+    const body = await (await address('source=uppsala&id=storgatan-2_uppsala-4004688')).json()
+    expect(body.schedule).toBeNull()
   })
 
   it('ger nästa hämtning per fraktion med bekvämlighetsfälten', async () => {

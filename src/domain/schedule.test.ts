@@ -57,6 +57,11 @@ describe('mergeParts', () => {
     expect(merged.updatedAt).toBe('2026-12-15')
   })
 
+  it('gäller till det senaste årets slut', () => {
+    const merged = mergeParts([part({ validFrom: '2027-01-01', validTo: '2027-12-31' }), part({ validFrom: '2026-01-01', validTo: '2027-01-10' })])
+    expect(merged.validTo).toBe('2027-12-31')
+  })
+
   it('slår ihop händelser samma datum till en', () => {
     const merged = mergeParts([
       part({
