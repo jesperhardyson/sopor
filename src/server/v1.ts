@@ -293,11 +293,13 @@ export const handleV1Areas: V1Handler = async (request, opts = {}) => {
       if (!index) throw new Error(`${source.id} saknar områdesfil`)
       const kommun = source.kommuner[0]?.name ?? source.name
       const toAddress = (area: Area): Address => ({ id: area.id, street: area.name, locality: '', sourceId: source.id, kommun, detail: areaDetail(area) })
-      if (tomning === null) return { hits: index.areas.map((area) => ({ address: toAddress(area) })), covered: null }
+      const text = { id: source.id, name: source.name, explanation: index.explanation, help: index.help }
+      if (tomning === null) return { text, hits: index.areas.map((area) => ({ address: toAddress(area), area: v1Area(area) })), covered: null }
       const result = areasForDate(tomning, index.areas)
       const matches = result.kind === 'found' ? result.matches : []
       return {
-        hits: matches.map(({ area, previous, next }) => ({ address: toAddress(area), pickups: { previous, next } })),
+        text,
+        hits: matches.map(({ area, previous, next }) => ({ address: toAddress(area), area: v1Area(area), pickups: { previous, next } })),
         covered: result.kind !== 'outside',
       }
     }),
@@ -305,12 +307,16 @@ export const handleV1Areas: V1Handler = async (request, opts = {}) => {
   const failed = sources.filter((_, i) => results[i].status === 'rejected').map((s) => s.id)
   const answered = results.flatMap((r) => (r.status === 'fulfilled' ? [r.value] : []))
   const addresses = answered.flatMap((r) => r.hits).map(({ address, ...rest }) => ({ ...v1Address(address, url.origin, sources), ...rest }))
-  if (tomning === null) return v1Json({ addresses, failed }, 200, failed.length > 0 ? CACHE_PARTIAL : CACHE_SEARCH)
+  const texts = answered.map((r) => r.text)
+  if (tomning === null) return v1Json({ addresses, failed, sources: texts }, 200, failed.length > 0 ? CACHE_PARTIAL : CACHE_SEARCH)
 
   // true räcker med en källa. Annars vet vi bara att datumet ligger utanför om alla källor svarade, och minst en fanns.
   const dateCovered = answered.some((r) => r.covered) ? true : failed.length > 0 || answered.length === 0 ? null : false
-  return v1Json({ addresses, failed, dateCovered }, 200, failed.length > 0 ? CACHE_PARTIAL : addressCacheControl(now))
+  return v1Json({ addresses, failed, dateCovered, sources: texts }, 200, failed.length > 0 ? CACHE_PARTIAL : addressCacheControl(now))
 }
+
+/** Det webbens områdessida visar om ett område. `searchTerms` hittar området också på gator som inte står bland platserna. */
+const v1Area = (a: Area) => ({ day: a.day, label: a.label ?? null, places: a.places, otherDays: a.otherDays, searchTerms: a.searchTerms })
 
 const v1Contact = (c: SourceContact) => ({
   phone: c.phone ?? null,

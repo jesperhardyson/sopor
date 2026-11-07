@@ -114,8 +114,23 @@ curl 'https://sopor.hardyson.se/api/v1/omraden?plats=Avesta'
 ```
 
 - `plats` är kommunens namn, med eller utan "kommun", eller en ort i kommunen. Minst två tecken.
-- Svaret har samma form som `/sok`, och varje område har `selection: "area"` och `notice`, som ska visas innan användaren väljer. `areasUrl` är webbsidan som visar vilka platser som ingår i områdena och vem man kan fråga. Länka gärna dit, för Sopor vet inte vilket område en adress hör till. Fältet finns också på träffarna från `/sok` och är `null` för en vanlig adress.
+- Träffarna har samma fält som i `/sok` och några till (se nedan). Varje område har `selection: "area"` och `notice`, som ska visas innan användaren väljer. `areasUrl` är webbsidan som visar vilka platser som ingår i områdena och vem man kan fråga. Länka gärna dit, för Sopor vet inte vilket område en adress hör till. Fältet finns också på träffarna från `/sok` och är `null` för en vanlig adress.
 - En plats utan områdesval ger en tom lista.
+
+Svaret har också det som webbens områdessida visar, från samma data:
+
+- Varje träff har `area` med `day` ("Måndag, udda vecka"), `label` ("Trakt 1", eller `null`), `places` (platserna och gatorna att visa), `otherDays` (rader om gator med en annan hämtdag, oftast tom) och `searchTerms`. Filtrera listan på `street`, `day` och `searchTerms`, som webben gör. `searchTerms` kan ha gator som inte står bland platserna. Använd `area` i stället för att dela upp `detail`.
+- `sources` har en post per källa som svarade: `id`, `name`, `explanation` (varför användaren väljer område själv, visa överst) och `help` (vart man vänder sig när man är osäker, visa nederst).
+
+```json
+"area": {
+  "day": "Tisdag, jämn vecka",
+  "label": "Trakt 7",
+  "places": ["Avesta tätort", "Östanfors", "Garpenbergsvägen", "Lycka", "…"],
+  "otherDays": ["Till exempel Stallgatan och Storbogatan (måndag, udda vecka) och Bodgatan (onsdag, jämn vecka)."],
+  "searchTerms": ["Avesta tätort", "Östanfors", "Garpenbergsvägen", "…", "trakt 7"]
+}
+```
 
 Vet användaren inte sitt område kan du fråga när kärlet senast tömdes och skicka datumet som `tomning`:
 

@@ -194,7 +194,7 @@ describe('kontrakt: riktiga svar följer schemana', () => {
   })
 
   it('områden, med och utan tömning', async () => {
-    validate('SearchResponse', await (await call(handleV1Areas, '/api/v1/omraden?plats=Avesta')).json())
+    validate('AreasResponse', await (await call(handleV1Areas, '/api/v1/omraden?plats=Avesta')).json())
     const hit = await (await call(handleV1Areas, '/api/v1/omraden?plats=Avesta&tomning=2026-10-27')).json()
     expect(hit.addresses[0].pickups).toEqual({ previous: ['2026-10-13', '2026-10-27'], next: '2026-11-10' })
     validate('DatedAreasResponse', hit)
