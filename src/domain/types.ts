@@ -52,6 +52,8 @@ export interface Schedule {
   events: PickupEvent[]
   note?: string
   updatedAt: string
+  /** Sista dagen schemat gäller, när källan publicerar ett slut. Saknas när datumen räknas fram. */
+  validTo?: string
 }
 
 /** Schemat för en adress under ett års giltighetsperiod. */

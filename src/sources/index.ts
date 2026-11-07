@@ -57,6 +57,11 @@ export interface Source {
    * med överallt där schemat visas, i kalenderarket, kalenderfilen och API:t.
    */
   areaNotice?: { title: string; text: string }
+  /**
+   * Hur källan publicerar schemat, en mening. Krävs för statiska källor, vars schema har ett slut. Följer med
+   * sista dagen schemat gäller i API:t, så att klienter kan förklara varför det tar slut.
+   */
+  publishing?: string
   /** Visas i stället för "Inga kommande tömningar" när en adress hos källan har ett tomt schema. */
   emptyScheduleNote?: { title: string; text: string }
   contact?: SourceContact
@@ -91,6 +96,7 @@ export const ALL_SOURCES: Source[] = [
     kommuner: [{ code: '2084', name: 'Avesta kommun' }],
     config: { system: 'static' },
     selection: 'area',
+    publishing: 'Avesta Vatten publicerar hämtschemat ett år i taget.',
     areaNotice: {
       title: 'Kontrollera att området stämmer',
       text: 'Du har valt området själv, eftersom Avesta Vatten inte publicerar vilka adresser som hör till vilket område. Väljer du fel område kan du missa din tömning.',
@@ -112,6 +118,7 @@ export const ALL_SOURCES: Source[] = [
     kommuner: [{ code: '2082', name: 'Säters kommun' }],
     config: { system: 'static' },
     selection: 'area',
+    publishing: 'Säters kommun publicerar hämtveckorna en period i taget.',
     areaNotice: {
       title: 'Kontrollera att området stämmer',
       text: 'Du har valt området själv, eftersom Säters kommun inte visar öppet vilka adresser som hör till vilket område. Väljer du fel område kan du missa din tömning.',

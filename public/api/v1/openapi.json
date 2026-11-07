@@ -119,6 +119,7 @@
                       "icon": "apple"
                     }
                   },
+                  "schedule": null,
                   "links": {
                     "ics": "https://sopor.hardyson.se/ics/uppsala/storgatan-2_uppsala-4004688.ics",
                     "web": "https://sopor.hardyson.se/uppsala/storgatan-2_uppsala-4004688"
@@ -1555,6 +1556,7 @@
           "events",
           "bins",
           "fractions",
+          "schedule",
           "links",
           "updatedAt"
         ],
@@ -1602,6 +1604,17 @@
             "$ref": "#/components/schemas/FractionRegistry",
             "description": "Visningsuppgifter för fraktionerna som förekommer i events och bins."
           },
+          "schedule": {
+            "description": "Hur långt schemat gäller. null när schemat inte har något känt slut, till exempel när källan räknar fram datumen. Ett tomt schema efter until betyder att nästa period inte är publicerad än.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SchedulePeriod"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "links": {
             "$ref": "#/components/schemas/Links"
           },
@@ -1610,6 +1623,29 @@
             "description": "Datum då schemat senast hämtades eller uppdaterades hos källan, YYYY-MM-DD.",
             "format": "date",
             "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          }
+        }
+      },
+      "SchedulePeriod": {
+        "type": "object",
+        "description": "Hur långt ett publicerat schema gäller.",
+        "additionalProperties": false,
+        "required": [
+          "until",
+          "reason"
+        ],
+        "properties": {
+          "until": {
+            "type": "string",
+            "format": "date",
+            "description": "Sista dagen schemat gäller (YYYY-MM-DD, Europe/Stockholm). Efter den finns inga hämtningar förrän källan publicerar nästa period."
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Varför schemat tar slut, en mening på svenska att visa, t.ex. \"Avesta Vatten publicerar hämtschemat ett år i taget.\" null när den inte är känd."
           }
         }
       },
