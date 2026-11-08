@@ -70,6 +70,16 @@ const files: Record<string, unknown> = {
         dates: ['2026-10-13', '2026-10-20', '2026-10-27', '2026-11-10'],
       },
       { id: 'utan-etikett', name: 'Dalsbyn m.fl.', day: 'Måndag, ojämn vecka', places: [], otherDays: [], searchTerms: [], dates: ['2026-10-14', '2026-10-27'] },
+      {
+        id: 'trakt-7',
+        name: 'Avesta tätort',
+        day: 'Tisdag, jämn vecka',
+        label: 'Trakt 7',
+        places: ['Avesta tätort', 'Östanfors'],
+        otherDays: ['Till exempel Bodgatan (onsdag, jämn vecka).'],
+        searchTerms: ['Avesta tätort', 'Östanfors', 'Stallgatan', 'trakt 7'],
+        dates: ['2026-11-03'],
+      },
     ],
   },
   '/data/gator/kr.json': { krylbo: ['avesta'], kristinehamn: ['uppsala'] },
@@ -348,7 +358,7 @@ describe('handleV1Areas', () => {
     const body = await res.json()
     expect(body.apiVersion).toBe('1')
     expect(body.failed).toEqual([])
-    expect(body.addresses.map((a: { id: string }) => a.id)).toEqual(['trakt-3', 'utan-etikett'])
+    expect(body.addresses.map((a: { id: string }) => a.id)).toEqual(['trakt-3', 'utan-etikett', 'trakt-7'])
     expect(body.addresses[0]).toMatchObject({
       street: 'Fors, Nordanö m.fl.',
       locality: '',
@@ -382,8 +392,8 @@ describe('handleV1Areas', () => {
   })
 
   it('känner igen kommunen med ordet kommun och en ort i kommunen', async () => {
-    expect(await ids('avesta kommun')).toHaveLength(2)
-    expect(await ids('Krylbo')).toHaveLength(2)
+    expect(await ids('avesta kommun')).toHaveLength(3)
+    expect(await ids('Krylbo')).toHaveLength(3)
   })
 
   it('ger en tom lista för en plats utan områdesval', async () => {
@@ -732,6 +742,31 @@ describe('områden som träffar', () => {
       selection: 'area', notice: 'Kontrollera området. Du har valt det själv.',
     })
     expect(body.events.map((e: { date: string }) => e.date)).toEqual(['2026-11-03'])
-    expect(JSON.stringify(body)).not.toContain('searchTerms')
+  })
+
+  it('/adress ger områdets detaljer, så att gator med annan hämtdag syns', async () => {
+    const body = await (await address('source=avesta&id=trakt-7')).json()
+    expect(body.area).toEqual({
+      day: 'Tisdag, jämn vecka',
+      label: 'Trakt 7',
+      places: ['Avesta tätort', 'Östanfors'],
+      otherDays: ['Till exempel Bodgatan (onsdag, jämn vecka).'],
+      searchTerms: ['Avesta tätort', 'Östanfors', 'Stallgatan', 'trakt 7'],
+    })
+  })
+
+  it('/adress ger area null för adresser utan områdesval', async () => {
+    expect((await (await address('source=statisk&id=storgatan-1_%C3%B6rebro')).json()).area).toBeNull()
+    expect((await (await address('source=uppsala&id=storgatan-2_uppsala-4004688')).json()).area).toBeNull()
+  })
+
+  it('/adress svarar med schemat också när områdesfilen inte går att läsa', async () => {
+    const down = (async (input: string | URL | Request, init?: RequestInit) =>
+      String(input).includes('omraden.json') ? new Response('', { status: 500 }) : fetchFn(input, init)) as typeof fetch
+    const res = await v1(handleV1Address)(get('/api/v1/adress?source=avesta&id=trakt-7'), { ...opts, fetchFn: down })
+    expect(res.status).toBe(200)
+    const body = await res.json()
+    expect(body.events).toHaveLength(1)
+    expect(body.area).toBeNull()
   })
 })
