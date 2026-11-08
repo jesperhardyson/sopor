@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router'
 import { streetAndLocality } from '@/domain/address'
 import { formatLong, todayInStockholm } from '@/domain/dates'
-import { nextPickup, upcoming } from '@/domain/schedule'
+import { nextPickup, scheduleEnd, upcoming } from '@/domain/schedule'
 import type { Address } from '@/domain/types'
 import { findSaved, storeSchedule } from '@/lib/storage'
 import { getSource, hasCalendarFile, type Source } from '@/sources'
@@ -15,6 +15,8 @@ import { MonthCalendar } from '../result/MonthCalendar'
 import { NextPickup } from '../result/NextPickup'
 import { SmartHomeBox } from '../integrations/SmartHomeBox'
 import { EmptyState, ErrorState, LoadingState, StaleNotice, UnsupportedState } from '../result/ResultStates'
+import { ScheduleEndingNotice, ScheduleValidity } from '../result/ScheduleEnd'
+import { scheduleEndNote } from '../result/schedule-end-note'
 import { ShareButton } from '../result/ShareButton'
 import { SourceNote } from '../result/SourceNote'
 import { UpcomingList } from '../result/UpcomingList'
@@ -185,6 +187,7 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
   const area = areas.status === 'ready' ? areas.index.areas.find((a) => a.id === addressId) : undefined
   const next = nextPickup(schedule, today)
   const coming = upcoming(schedule, today)
+  const end = scheduleEnd(schedule, today)
 
   return (
     <div className={page}>
@@ -193,11 +196,12 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
       {state.status === 'stale' && (
         <StaleNotice sourceName={source.name} fetchedAt={formatLong(state.fetchedAt)} onRetry={retry} />
       )}
+      {end?.kind === 'until' && end.soon && <ScheduleEndingNotice sourceName={source.name} />}
       {/* Källan ligger sist på mobil men under vänsterspalten på desktop, där högerspalten spänner över båda raderna. */}
       <div className="flex flex-col gap-5 lg:grid lg:grid-cols-[minmax(0,1fr)_360px] lg:grid-rows-[auto_1fr] lg:items-start lg:gap-x-10">
         <div className="flex min-w-0 flex-col gap-5">
           {area && areas.status === 'ready' && <AreaInfo area={area} explanation={areas.index.explanation} />}
-          {next ? <NextPickup event={next} today={today} note={schedule.note} /> : <EmptyState note={source.emptyScheduleNote} />}
+          {next ? <NextPickup event={next} today={today} note={schedule.note} /> : <EmptyState note={scheduleEndNote(end, source.publishing) ?? source.emptyScheduleNote} />}
           {hasCalendarFile(source, schedule.events.length) && (
             <button
               type="button"
@@ -210,6 +214,7 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
             </button>
           )}
           {coming.length > 0 && <UpcomingList events={coming} today={today} />}
+          {end?.kind === 'until' && <ScheduleValidity until={end.until} reason={source.publishing} />}
         </div>
         <div className="flex flex-col gap-5 lg:row-span-2">
           {schedule.events.length > 0 && (
@@ -217,7 +222,7 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
           )}
           {address && <SmartHomeBox address={address} />}
         </div>
-        <SourceNote name={source.name} url={source.url} />
+        <SourceNote name={source.name} url={source.url} contact={source.contact} />
       </div>
       {address && (
         <>

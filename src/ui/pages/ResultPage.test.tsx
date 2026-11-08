@@ -301,6 +301,66 @@ describe('ResultPage', () => {
     expect(await screen.findByRole('heading', { name: 'Schemat för nästa år är inte publicerat än' })).toBeInTheDocument()
   })
 
+  describe('hur långt schemat gäller', () => {
+    const avesta = (today: string) => {
+      fake = makeProvider({
+        getAddress: async (id) => ({ ...villa, id, sourceId: 'avesta' }),
+        getSchedule: async () => ({ ...schedule, validTo: '2027-01-10' }),
+      })
+      renderAt('/avesta/krylbo-storgatan-12b', today)
+    }
+    const reason = 'Avesta Vatten publicerar hämtschemat ett år i taget.'
+
+    it('står under kommande tömningar, med källans förklaring', async () => {
+      avesta('2026-10-30')
+      expect(await screen.findByText('Schemat gäller till 10 januari 2027.')).toBeInTheDocument()
+      expect(screen.getByText(reason)).toBeInTheDocument()
+      expect(screen.queryByRole('heading', { name: 'Schemat tar snart slut' })).toBeNull()
+    })
+
+    it('varnar när det är 14 dagar eller mindre kvar, utan att upprepa förklaringen', async () => {
+      avesta('2026-12-27')
+      expect(await screen.findByRole('heading', { name: 'Schemat tar snart slut' })).toBeInTheDocument()
+      expect(screen.getByText('Nya tider visas här när Avesta Vatten och Avfall publicerar dem.')).toBeInTheDocument()
+      expect(screen.getAllByText(reason)).toHaveLength(1)
+    })
+
+    it('säger att det inte finns fler hämtningar i schemat', async () => {
+      avesta('2027-01-08')
+      expect(
+        await screen.findByRole('heading', { name: 'Inga fler hämtningar i schemat, som gäller till 10 januari 2027.' }),
+      ).toBeInTheDocument()
+      expect(screen.getByText(reason)).toBeInTheDocument()
+      expect(screen.queryByRole('heading', { name: 'Schemat tar snart slut' })).toBeNull()
+    })
+
+    it('säger att schemat har gått ut, inte att adressen saknas', async () => {
+      avesta('2027-01-12')
+      expect(
+        await screen.findByRole('heading', {
+          name: 'Schemat gällde till 10 januari 2027, och källan har inte publicerat nästa period än.',
+        }),
+      ).toBeInTheDocument()
+      expect(screen.queryByText(/finns inte/)).toBeNull()
+    })
+
+    it('visas inte när schemat saknar känt slut', async () => {
+      renderAt('/uppsala/krylbo-storgatan-12b')
+      await vi.waitFor(() => resolveSchedule!())
+      expect(await screen.findByText('Kommande tömningar')).toBeInTheDocument()
+      expect(screen.queryByText(/Schemat gäller till/)).toBeNull()
+    })
+  })
+
+  it('visar källans telefon, e-post och kontaktsida', async () => {
+    renderAt('/avesta/krylbo-storgatan-12b')
+    await vi.waitFor(() => resolveSchedule!())
+    const source = await screen.findByRole('region', { name: 'Källa' })
+    expect(within(source).getByRole('link', { name: /0226-64 55 00/ })).toHaveAttribute('href', 'tel:+46226645500')
+    expect(within(source).getByRole('link', { name: /avestavatten@avesta\.se/ })).toHaveAttribute('href', 'mailto:avestavatten@avesta.se')
+    expect(within(source).getByRole('link', { name: /Kontaktsida/ })).toHaveAttribute('href', 'https://www.avestavatten.se/support/')
+  })
+
   it('öppnar kalenderarket och spara-arket', async () => {
     renderAt('/uppsala/krylbo-storgatan-12b')
     await vi.waitFor(() => resolveSchedule!())
