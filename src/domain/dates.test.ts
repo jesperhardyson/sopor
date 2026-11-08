@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { daysBetween, formatLong, relativeDayLabel, secondsToStockholmMidnight, todayInStockholm, isoWeek, weekdayShort } from './dates'
+import { daysBetween, formatFull, formatLong, relativeDayLabel, secondsToStockholmMidnight, todayInStockholm, isoWeek, weekdayShort } from './dates'
 
 describe('todayInStockholm', () => {
   it('räknar dagen i svensk tid, inte UTC', () => {
@@ -68,5 +68,11 @@ describe('isoWeek', () => {
     ['2025-12-29', { year: 2026, week: 1 }],
   ])('%s', (date, expected) => {
     expect(isoWeek(date)).toEqual(expected)
+  })
+})
+
+describe('formatFull', () => {
+  it('skriver dag, månad och år', () => {
+    expect(formatFull('2027-01-10')).toBe('10 januari 2027')
   })
 })

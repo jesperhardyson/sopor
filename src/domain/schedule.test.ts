@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { eventsInMonth, mergeParts, nextPickup, upcoming } from './schedule'
+import { eventsInMonth, mergeParts, nextPickup, scheduleEnd, upcoming } from './schedule'
 import type { Schedule, SchedulePart } from './types'
 import { sortFractions } from './fractions'
 
@@ -92,5 +92,31 @@ describe('eventsInMonth', () => {
     const nov = eventsInMonth(villa, 2026, 11)
     expect([...nov.keys()]).toEqual(['2026-11-11', '2026-11-25'])
     expect(nov.get('2026-11-25')).toEqual(['papper', 'mat'])
+  })
+})
+
+describe('scheduleEnd', () => {
+  const avesta: Schedule = { ...villa, validTo: '2027-01-10' }
+
+  it('saknas när schemat inte har något känt slut (live-källor)', () => {
+    expect(scheduleEnd(villa, '2026-11-08')).toBeNull()
+  })
+
+  it('säger hur långt schemat gäller när det finns hämtningar kvar', () => {
+    expect(scheduleEnd(avesta, '2026-11-08')).toEqual({ kind: 'until', until: '2027-01-10', soon: false })
+  })
+
+  it('tar snart slut när det är 14 dagar eller mindre kvar', () => {
+    expect(scheduleEnd({ ...avesta, validTo: '2027-01-07' }, '2026-12-23')).toMatchObject({ kind: 'until', soon: false })
+    expect(scheduleEnd({ ...avesta, validTo: '2027-01-06' }, '2026-12-23')).toMatchObject({ kind: 'until', soon: true })
+  })
+
+  it('har inga fler hämtningar före slutet', () => {
+    expect(scheduleEnd(avesta, '2026-12-24')).toEqual({ kind: 'no-more', until: '2027-01-10' })
+    expect(scheduleEnd(avesta, '2027-01-10')).toEqual({ kind: 'no-more', until: '2027-01-10' })
+  })
+
+  it('har passerat slutet', () => {
+    expect(scheduleEnd(avesta, '2027-01-11')).toEqual({ kind: 'ended', until: '2027-01-10' })
   })
 })

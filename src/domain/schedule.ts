@@ -1,3 +1,4 @@
+import { daysBetween } from './dates.js'
 import { sortFractions } from './fractions.js'
 import type { FractionId, PickupEvent, Schedule, SchedulePart } from './types.js'
 
@@ -49,4 +50,20 @@ export function nextPickup(schedule: Schedule, today: string): PickupEvent | nul
 export function eventsInMonth(schedule: Schedule, year: number, month: number): Map<string, FractionId[]> {
   const prefix = `${year}-${String(month).padStart(2, '0')}-`
   return new Map(schedule.events.filter((e) => e.date.startsWith(prefix)).map((e) => [e.date, e.fractions]))
+}
+
+/** Så många dagar före slutet säger webben och appen att schemat snart tar slut. */
+export const SCHEDULE_ENDING_DAYS = 14
+
+/**
+ * Var användaren står i förhållande till schemats sista dag: hämtningar kvar (`until`, med `soon` nära
+ * slutet), inga fler hämtningar före slutet (`no-more`) eller slutet passerat (`ended`). Null utan känt slut.
+ */
+export type ScheduleEnd = { kind: 'until'; until: string; soon: boolean } | { kind: 'no-more' | 'ended'; until: string }
+
+export function scheduleEnd(schedule: Schedule, today: string): ScheduleEnd | null {
+  const until = schedule.validTo
+  if (!until) return null
+  if (nextPickup(schedule, today)) return { kind: 'until', until, soon: daysBetween(today, until) <= SCHEDULE_ENDING_DAYS }
+  return { kind: until < today ? 'ended' : 'no-more', until }
 }

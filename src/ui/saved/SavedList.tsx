@@ -1,8 +1,8 @@
 import { ChevronRight, Smartphone, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router'
-import { daysBetween, formatShort, relativeDayLabel, todayInStockholm } from '@/domain/dates'
-import { nextPickup } from '@/domain/schedule'
+import { daysBetween, formatLong, formatShort, relativeDayLabel, todayInStockholm } from '@/domain/dates'
+import { nextPickup, SCHEDULE_ENDING_DAYS } from '@/domain/schedule'
 import { streetAndLocality } from '@/domain/address'
 import { clearSaved, loadSaved, removeSaved, renameSaved, type SavedAddress } from '@/lib/storage'
 import { FractionIcon } from '../components/FractionIcon'
@@ -14,6 +14,8 @@ function SavedCard({ saved, today }: { saved: SavedAddress; today: string }) {
   const [state] = useSchedule(saved.sourceId, saved.addressId)
   // Även det sparade schemat, så att kortet inte blinkar till medan källan frågas
   const next = 'schedule' in state ? nextPickup(state.schedule, today) : null
+  const until = 'schedule' in state ? state.schedule.validTo : undefined
+  const left = until ? daysBetween(today, until) : -1
   return (
     <Link
       to={`/${saved.sourceId}/${saved.addressId}`}
@@ -31,6 +33,11 @@ function SavedCard({ saved, today }: { saved: SavedAddress; today: string }) {
           <span className="flex flex-wrap items-center gap-x-1.5 pt-1 text-sm">
             <span className="font-extrabold text-brand-text">{formatShort(next.date)}</span>
             <span className="text-text-2">· {relativeDayLabel(daysBetween(today, next.date))}</span>
+          </span>
+        )}
+        {until && left >= 0 && left <= SCHEDULE_ENDING_DAYS && (
+          <span className="text-[13px] font-semibold text-warn">
+            Schemat slutar {formatLong(until).day} {formatLong(until).month.slice(0, 3)}
           </span>
         )}
       </span>
