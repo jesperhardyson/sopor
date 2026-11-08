@@ -120,6 +120,7 @@
                     }
                   },
                   "schedule": null,
+                  "area": null,
                   "links": {
                     "ics": "https://sopor.hardyson.se/ics/uppsala/storgatan-2_uppsala-4004688.ics",
                     "web": "https://sopor.hardyson.se/uppsala/storgatan-2_uppsala-4004688"
@@ -1559,6 +1560,7 @@
           "bins",
           "fractions",
           "schedule",
+          "area",
           "links",
           "updatedAt"
         ],
@@ -1611,6 +1613,17 @@
             "oneOf": [
               {
                 "$ref": "#/components/schemas/SchedulePeriod"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "area": {
+            "description": "Det webbens resultatsida visar om det valda området, i samma form som träffarna i /omraden. Visa otherDays under en rubrik som \"Vissa gator har en annan hämtdag\", eftersom de gatorna inte hämtas på områdets dag. null för adresser utan områdesval, och när områdesdatat inte går att läsa.",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/AreaDetails"
               },
               {
                 "type": "null"

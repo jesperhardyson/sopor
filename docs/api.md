@@ -211,11 +211,14 @@ Alla fel har samma form:
 | `bins` | lista | Kärl/abonnemang: `fraction`, `sizeLiters`, `pickupsPerYear`, `frequencyText` (alla utom `fraction` kan vara `null`). Tom för många källor. |
 | `fractions` | objekt | Id → `name`, `short`, `color`, `icon` för de fraktioner som förekommer i svaret. |
 | `schedule` | objekt eller `null` | Hur långt schemat gäller: `{ "until": "YYYY-MM-DD", "reason": "…" eller null }`. `null` när schemat inte har något känt slut, till exempel när källan räknar fram datumen. |
+| `area` | objekt eller `null` | Det valda områdets `day`, `label`, `places`, `otherDays` och `searchTerms`, i samma form som i `/omraden`. `null` för adresser utan områdesval. |
 | `links.ics` | URL | Kalenderprenumeration (iCalendar). |
 | `links.web` | URL | Adressens sida på sajten. |
 | `updatedAt` | `"YYYY-MM-DD"` | Datum då schemat senast hämtades eller uppdaterades hos källan. |
 
 `today` är referensdatumet. Behöver du egen logik, till exempel "påminn två dagar innan", räknar du själv ur `events` och `today`.
+
+För ett område (`address.selection` är `"area"`) har svaret `area`, samma uppgifter som webbens resultatsida visar om området. Visa `otherDays` under en rubrik som "Vissa gator har en annan hämtdag": de gatorna ligger i området men hämtas en annan dag, så schemat gäller inte dem. `area` är `null` också om områdesdatat inte gick att läsa. Schemat i svaret gäller ändå.
 
 Vissa källor, till exempel Avesta och Säter, publicerar schemat en period i taget. Då är `schedule.until` sista dagen som gäller, och `reason` förklarar varför, till exempel `"Avesta Vatten publicerar hämtschemat ett år i taget."`. Sista hämtningen kan ligga före `until`. Är `events` tom efter `until` har källan inte publicerat nästa period än, och datumen kommer när den gör det. Kalenderprenumerationen fylls på av sig själv. Använd inte sista datumet i `events` som slut, eftersom en källa kan skicka bara de närmaste hämtningarna fast schemat fortsätter.
 

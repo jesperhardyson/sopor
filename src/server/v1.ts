@@ -116,6 +116,7 @@ export const handleV1Address: V1Handler = async (request, opts = {}) => {
   const today = todayInStockholm(now)
   const { address, schedule } = r
   const path = `${source.id}/${encodeURIComponent(address.id)}`
+  const area = source.selection === 'area' ? await areaDetails(source, address.id, url.origin, opts) : null
   return v1Json(
     {
       today,
@@ -130,12 +131,25 @@ export const handleV1Address: V1Handler = async (request, opts = {}) => {
       },
       ...scheduleBody(schedule, today),
       schedule: schedule.validTo ? { until: schedule.validTo, reason: source.publishing ?? null } : null,
+      area,
       links: { ics: `${url.origin}/ics/${path}.ics`, web: `${url.origin}/${path}` },
       updatedAt: schedule.updatedAt,
     },
     200,
     addressCacheControl(now),
   )
+}
+
+/** Områdets detaljer ur samma omraden.json som /omraden. null när filen inte går att läsa, eftersom schemat ändå gäller. */
+async function areaDetails(source: Source, id: string, origin: string, opts: HandlerOptions) {
+  try {
+    const index = await siteJson<AreasIndexFile>(origin, `/data/${source.id}/omraden.json`, opts.fetchFn, opts.timeoutMs)
+    const found = index?.areas.find((a) => a.id === id)
+    return found ? v1Area(found) : null
+  } catch (e) {
+    console.error('Områdesfilen gick inte att läsa', e)
+    return null
+  }
 }
 
 const SEARCH_LIMIT = 10

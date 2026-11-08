@@ -190,7 +190,9 @@ describe('kontrakt: riktiga svar följer schemana', () => {
     expect(hits.addresses).toHaveLength(1)
     expect(hits.addresses[0]).toMatchObject({ street: 'Avesta tätort', locality: '', detail: 'Tisdag, jämn vecka · Trakt 7' })
     validate('SearchResponse', hits)
-    validate('AddressResponse', await (await call(handleV1Address, '/api/v1/adress?source=avesta&id=trakt-7')).json())
+    const address = await (await call(handleV1Address, '/api/v1/adress?source=avesta&id=trakt-7')).json()
+    expect(address.area).toMatchObject({ day: 'Tisdag, jämn vecka', label: 'Trakt 7' })
+    validate('AddressResponse', address)
   })
 
   it('områden, med och utan tömning', async () => {
