@@ -16,7 +16,7 @@ describe('PrivacyPage', () => {
     setup()
     expect(screen.getByRole('heading', { level: 1, name: 'Integritetspolicy' })).toBeInTheDocument()
     expect(document.title).toBe('Integritetspolicy – Sopor')
-    expect(screen.getByText(/Senast ändrad 7 november 2026/)).toBeInTheDocument()
+    expect(screen.getByText(/Senast ändrad 10 november 2026/)).toBeInTheDocument()
   })
 
   it('tar upp allt som ärendet kräver', () => {
@@ -45,5 +45,13 @@ describe('PrivacyPage', () => {
     setup()
     expect(screen.getByText(/samlar inte in analysdata och spårar dig inte/)).toBeInTheDocument()
     expect(screen.getByText(/utan push-server/)).toBeInTheDocument()
+  })
+
+  it('säger vad hushåll i appen delar, med vem och var det lagras', () => {
+    setup()
+    expect(screen.getByRole('heading', { level: 3, name: 'Hushåll i appen' })).toBeInTheDocument()
+    expect(screen.getByText(/delas följande med dem du bjuder in eller som bjudit in dig/)).toBeInTheDocument()
+    expect(screen.getByText(/i hushållsägarens iCloud. Sopor kan inte läsa dem/)).toBeInTheDocument()
+    expect(screen.getByText(/Avslutar ägaren hushållet tas de delade uppgifterna bort ur iCloud/)).toBeInTheDocument()
   })
 })

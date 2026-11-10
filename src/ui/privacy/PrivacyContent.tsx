@@ -42,7 +42,7 @@ export function PrivacyContent() {
         <p className="text-[17px] leading-[1.45] text-text-2">
           Den här policyn gäller webbplatsen {SITE.host}, Sopors API och appen Sophämtning. Sopor har inga konton, ingen reklam och inga spårningscookies, och vi säljer inga uppgifter.
         </p>
-        <p className="text-[13px] text-text-2">Senast ändrad 7 november 2026</p>
+        <p className="text-[13px] text-text-2">Senast ändrad 10 november 2026</p>
       </div>
 
       <Section title="Vem som ansvarar">
@@ -101,13 +101,21 @@ export function PrivacyContent() {
       <Section title="Appen Sophämtning">
         <Points>
           <li>Appen har inga konton och ingen egen backend.</li>
-          <li>Adresser, inställningar och senast hämtade schema sparas bara i telefonen.</li>
+          <li>Adresser, inställningar och senast hämtade schema sparas i telefonen. Bara det du delar i ett hushåll sparas också i iCloud.</li>
           <li>Söktext och valda adresser skickas till Sopors API för att hämta schemat, och Sopor kan i sin tur fråga kommunens eller bolagets tjänst. Avsnittet om drift, loggar och cache gäller också här.</li>
           <li>Frågan om din kommun finns med besvaras i telefonen. Bara kommunens namn skickas vidare, och först när kommunen täcks.</li>
           <li>Appen samlar inte in analysdata och spårar dig inte.</li>
           <li>Notiser och Live Activities är lokala och avstängda från början. De fungerar utan push-server.</li>
           <li>Webblänkar öppnas i appens webbvy, och där gäller varje sidas egen hantering av uppgifter.</li>
         </Points>
+        <Part title="Hushåll i appen">
+          <P>
+            Om du väljer att skapa eller gå med i ett hushåll i appen Sophämtning delas följande med dem du bjuder in eller som bjudit in dig: de adresser du väljer att dela, markeringar om att kärlen är utställda (vem och när) och det namn du själv skriver i hushållet. Inget av detta delas med andra än deltagarna i hushållet.
+          </P>
+          <P>
+            Uppgifterna sparas i iCloud med Apples tjänst CloudKit, i hushållsägarens iCloud. Sopor kan inte läsa dem, och Apples integritetspolicy gäller för lagringen. Lämnar du hushållet slutar dina uppgifter att delas, och de adresser du har sparat finns kvar som dina egna. Avslutar ägaren hushållet tas de delade uppgifterna bort ur iCloud.
+          </P>
+        </Part>
         <P>Integrationerna för Homey och Home Assistant hämtar också schemat från Sopors API.</P>
       </Section>
 
