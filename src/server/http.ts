@@ -41,3 +41,13 @@ export async function fetchCalendar(url: string, opts: FetchOptions = {}): Promi
     throw new SourceError(`Ingen kontakt med ${new URL(url).host}: ${(error as Error).message}`)
   }
 }
+
+/** En webbsida som text, med samma fel som fetchJson (Miva, som bara har sitt tillstånd i sidan). */
+export async function fetchHtml(url: string, opts: FetchOptions = {}): Promise<string> {
+  const res = await request(url, {}, 'text/html', 'HTML', opts)
+  try {
+    return await res.text()
+  } catch (error) {
+    throw new SourceError(`Ingen kontakt med ${new URL(url).host}: ${(error as Error).message}`)
+  }
+}
