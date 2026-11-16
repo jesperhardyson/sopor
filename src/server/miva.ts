@@ -3,7 +3,11 @@
 // beslut 2 i docs/plans/2026-11-03-fler-kommuner.md). Sökträffarna är råa poster med personuppgifter,
 // så bara adress, ort och frekvens läses ur dem. Se docs/specs/2026-11-16-ornskoldsvik-miva.md.
 
-import { edpAddressId, idHash, titleCase, type EdpBuilding } from './edp.js'
+import { isoWeek, isValidDate, todayInStockholm, weekdayIndex } from '../domain/dates.js'
+import { expandWeekdays, weekRuleDates, type ExpandedPickup } from '../domain/recurrence.js'
+import type { Schedule } from '../domain/types.js'
+import { edpAddressId, idHash, mergeSeries, queryFromAddressId, titleCase, type EdpBuilding, type PickupSeries } from './edp.js'
+import { mapWasteType } from './fractions-map.js'
 import { fetchHtml, SourceError } from './http.js'
 
 export const MIVA_URL = 'https://miva.se/kundservice/sjalvservice/sophamtning/nar-kommer-sopbilen'
@@ -94,4 +98,84 @@ export async function mivaSearch(q: string, fetchFn?: typeof fetch, timeoutMs = 
     byAddress.set(key, found)
   }
   return [...byAddress.values()]
+}
+
+/** Adressen för ett adress-id. Gick sökningen direkt till schemat söks gatan utan nummer, för frekvensen. */
+export async function mivaFind(id: string, fetchFn?: typeof fetch, timeoutMs = 5000): Promise<MivaAddress | null> {
+  const parsed = queryFromAddressId(id)
+  if (!parsed) return null
+  const same = (a: MivaAddress) => mivaAddressId(a.address, a.city) === id
+  const found = (await mivaSearch(parsed.query, fetchFn, timeoutMs)).find(same)
+  if (!found || found.frequencies.length > 0) return found ?? null
+  const street = searchable(parsed.query).replace(/\s+\d+\s*\p{L}?$/u, '')
+  const listed = street && street !== searchable(parsed.query) ? (await mivaSearch(street, fetchFn, timeoutMs)).find(same) : undefined
+  return { ...found, frequencies: listed?.frequencies ?? [] }
+}
+
+/** En tur i schemat. `next` är adressens nästa tömning på vilken tur som helst, inte turens egen. */
+export interface MivaTrip {
+  text: string
+  types: string[]
+  first: string
+  next?: string
+}
+
+/** Källans tidpunkt för midnatt svensk tid ("2026-11-22T23:00:00.000Z") som datum. */
+function stockholmDate(iso: unknown): string {
+  if (!isText(iso) || Number.isNaN(Date.parse(iso))) throw unknownFormat()
+  const date = todayInStockholm(new Date(iso))
+  if (!isValidDate(date)) throw unknownFormat()
+  return date
+}
+
+/** En tom lista är ett giltigt svar för en adress som sökningen hittar. */
+export async function mivaTrips(a: Pick<MivaAddress, 'address' | 'city'>, fetchFn?: typeof fetch, timeoutMs = 5000): Promise<MivaTrip[]> {
+  const state = await mivaPage(`/details/${a.address}`, { city: a.city }, fetchFn, timeoutMs)
+  if (!Array.isArray(state.trips)) throw unknownFormat()
+  return (state.trips as Record<string, unknown>[]).map((t) => {
+    if (!isText(t?.text) || !Array.isArray(t.containers)) throw unknownFormat()
+    const types = (t.containers as Record<string, unknown>[]).map((c) => c?.typeText)
+    if (!types.every(isText)) throw unknownFormat()
+    return { text: t.text, types: [...new Set(types)], first: stockholmDate(t.pickupDateIso), ...(t.nextPickupDateIso != null && { next: stockholmDate(t.nextPickupDateIso) }) }
+  })
+}
+
+/** Frekvenserna Sopor kan räkna fram, tätast först. */
+const FREQUENCIES = ['2 gånger per vecka', '1 gång per vecka', 'var 14:e dag', 'var 14:e dag (v 22-39)']
+const densest = (frequencies: string[]) => FREQUENCIES.find((f) => frequencies.some((x) => x.trim().replace(/\s+/g, ' ').toLowerCase() === f))
+const isoWeekday = (date: string) => ((weekdayIndex(date) + 6) % 7) + 1
+
+/**
+ * Turens datum. Veckodag och paritet tas från källans datum, inte från texten: texten följer årets
+ * paritet, och efter vecka 53 är den fel för nästa år. Källans `next` räknas bara när regeln ger det.
+ */
+function tripDates(t: MivaTrip, frequency: string | undefined, onlyTrip: boolean): ExpandedPickup[] {
+  const own = [t.first, ...(onlyTrip && t.next ? [t.next] : [])].map((date) => ({ date, estimated: false }))
+  const weekday = weekdayIndex(t.first)
+  const parity = isoWeek(t.first).week % 2 === 0 ? 'jämn' : 'udda'
+  const rule =
+    frequency === 'var 14:e dag'
+      ? weekRuleDates(t.first, { weekday, every: 2, parity })
+      : frequency === 'var 14:e dag (v 22-39)'
+        ? weekRuleDates(t.first, { weekday, every: 2, parity }, { inWeeks: [22, 39] })
+        : frequency === '1 gång per vecka'
+          ? weekRuleDates(t.first, { weekday, every: 1 })
+          : frequency === '2 gånger per vecka' && onlyTrip && t.next
+            ? expandWeekdays({ next: t.first, weekdays: [...new Set([isoWeekday(t.first), isoWeekday(t.next)])] })
+            : null
+  if (!rule) return own
+  return rule.map((p) => (p.date === t.next ? { date: p.date, estimated: false } : p))
+}
+
+/** Datumen från i dag, en händelse per dag. Framräknade datum är `estimated`, som för EDP. */
+export function mivaSchedule(trips: MivaTrip[], frequencies: string[], today: string): Schedule {
+  const frequency = densest(frequencies)
+  const series = trips.flatMap((t) => {
+    const pickups = tripDates(t, frequency, trips.length === 1).filter((p) => p.date >= today)
+    return t.types.flatMap((type): PickupSeries[] => {
+      const mapped = mapWasteType(type)
+      return mapped ? [{ mapped, pickups }] : []
+    })
+  })
+  return { bins: [], events: mergeSeries(series), updatedAt: today }
 }
