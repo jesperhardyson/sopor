@@ -53,11 +53,11 @@ Stickprovet: tio breda sökningar ("vägen 1", "Sk", "berg" …) gav 1 088 adres
 - **Sökningen** tar bort orten (allt efter kommat) och `:`, och grupperar träffarna per adress och ort. Adresser med andra tecken än bokstäver, siffror, mellanslag och bindestreck visas inte, eftersom deras schema inte går att hämta.
 - **Datumen,** omräknade till svensk tid:
   - `pickupDateIso` och `nextPickupDateIso` visas som källans egna, `estimated: false`.
-  - `Var 14:e dag`: `weekRuleDates` med `every: 2`, veckodag och paritet ur `text`, tolv månader framåt.
+  - `Var 14:e dag`: `weekRuleDates` med `every: 2` och `fixedDays`, veckodagen ur källans datum, tolv månader framåt. Miva går i fasta steg om 14 dagar också över vecka 53 (samma tur är udda veckor 2026 och jämna 2027, kontrollerat live), så pariteten i `text` används inte.
   - `Var 14:e dag (v 22-39)`: som ovan, men bara i ISO-veckorna 22–39. `weekRuleDates` får ett nytt val, `inWeeks`.
   - `1 gång per vecka`: `every: 1`.
   - `2 gånger per vecka`: `expandWeekdays` med veckodagarna i de två datumen.
-  - Annan eller saknad frekvens, eller en `text` som inte stämmer med datumen: bara källans två datum.
+  - Annan eller saknad frekvens, en veckodag i `text` som inte stämmer med källans datum, eller en regel som inte ger källans nästa datum (en tömning flyttad för en helgdag): bara källans två datum.
   - Framräknade datum är `estimated: true`, som för EDP, och visas som "ca".
 - **Frekvensen per tur** tas från sökträffarna för samma adress. Gick sökningen direkt till schemat finns inga träffar, och då söks gatan utan nummer. Ger också den bara schemat visas bara källans två datum. Har adressens kärl olika frekvens används den tätaste för hela turen. Stickprovet hade ingen adress med blandade frekvenser.
 - **Fraktioner** går genom `mapWasteType` med `typeText`: `Restavfall` och `Hushållsavfall` blir `rest`, `Matavfall` blir `mat`. En okänd typ visas med källans text och rapporteras av bevakningen.

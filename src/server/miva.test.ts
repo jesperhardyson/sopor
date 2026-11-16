@@ -175,6 +175,23 @@ describe('mivaSchedule', () => {
     expect(events.slice(0, 3).map((e) => [e.date, e.fractions])).toEqual([['2026-11-16', ['mat']], ['2026-11-23', ['rest']], ['2026-11-30', ['mat']]])
   })
 
+  it('går var 14:e dag över vecka 53 och behåller källans nästa datum', () => {
+    const { events } = mivaSchedule([trip('2026-12-24', '2027-01-07', undefined, 'torsdag jämna veckor')], ['Var 14:e dag'], TODAY)
+    expect(events.slice(0, 3).map((e) => [e.date, e.estimated])).toEqual([
+      ['2026-12-24', false],
+      ['2027-01-07', false],
+      ['2027-01-21', true],
+    ])
+  })
+
+  it('visar bara källans datum när ett datum har flyttats för en helgdag', () => {
+    const { events } = mivaSchedule([trip('2027-04-01', '2027-04-16', undefined, 'fredag udda veckor')], ['Var 14:e dag'], TODAY)
+    expect(events.map((e) => [e.date, e.estimated])).toEqual([
+      ['2027-04-01', false],
+      ['2027-04-16', false],
+    ])
+  })
+
   it('tolkar Hushållsavfall som restavfall', () => {
     expect(mivaSchedule([trip('2026-11-16', undefined, ['Hushållsavfall'])], [], TODAY).events[0].fractions).toEqual(['rest'])
   })

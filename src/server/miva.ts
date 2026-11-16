@@ -3,10 +3,10 @@
 // beslut 2 i docs/plans/2026-11-03-fler-kommuner.md). Sökträffarna är råa poster med personuppgifter,
 // så bara adress, ort och frekvens läses ur dem. Se docs/specs/2026-11-16-ornskoldsvik-miva.md.
 
-import { isoWeek, isValidDate, todayInStockholm, weekdayIndex } from '../domain/dates.js'
+import { isValidDate, todayInStockholm, weekdayIndex } from '../domain/dates.js'
 import { expandWeekdays, weekRuleDates, type ExpandedPickup } from '../domain/recurrence.js'
 import type { Schedule } from '../domain/types.js'
-import { edpAddressId, idHash, mergeSeries, queryFromAddressId, titleCase, type EdpBuilding, type PickupSeries } from './edp.js'
+import { edpAddressId, idHash, mergeSeries, queryFromAddressId, titleCase, weekdaysIn, type EdpBuilding, type PickupSeries } from './edp.js'
 import { mapWasteType } from './fractions-map.js'
 import { fetchHtml, SourceError } from './http.js'
 
@@ -151,25 +151,29 @@ export const isKnownMivaFrequency = (frequency: string) => densest([frequency]) 
 const isoWeekday = (date: string) => ((weekdayIndex(date) + 6) % 7) + 1
 
 /**
- * Turens datum. Veckodag och paritet tas från källans datum, inte från texten: texten följer årets
- * paritet, och efter vecka 53 är den fel för nästa år. Källans `next` räknas bara när regeln ger det.
+ * Turens datum. Miva går i fasta steg om 14 dagar, också över vecka 53, så pariteten i texten
+ * ("udda veckor") är årets och används inte. Nämner texten en annan veckodag än källans datum, eller
+ * ger regeln inte källans nästa datum, har en tömning flyttats (t.ex. för en helgdag), och då visas
+ * bara källans egna datum.
  */
 function tripDates(t: MivaTrip, frequency: string | undefined, onlyTrip: boolean): ExpandedPickup[] {
-  const own = [t.first, ...(onlyTrip && t.next ? [t.next] : [])].map((date) => ({ date, estimated: false }))
+  const next = onlyTrip ? t.next : undefined
+  const own = [t.first, ...(next ? [next] : [])].map((date) => ({ date, estimated: false }))
+  const named = weekdaysIn(t.text)
+  if (named.length === 1 && named[0] !== isoWeekday(t.first)) return own
   const weekday = weekdayIndex(t.first)
-  const parity = isoWeek(t.first).week % 2 === 0 ? 'jämn' : 'udda'
   const rule =
     frequency === 'var 14:e dag'
-      ? weekRuleDates(t.first, { weekday, every: 2, parity })
+      ? weekRuleDates(t.first, { weekday, every: 2, fixedDays: true })
       : frequency === 'var 14:e dag (v 22-39)'
-        ? weekRuleDates(t.first, { weekday, every: 2, parity }, { inWeeks: [22, 39] })
+        ? weekRuleDates(t.first, { weekday, every: 2, fixedDays: true }, { inWeeks: [22, 39] })
         : frequency === '1 gång per vecka'
           ? weekRuleDates(t.first, { weekday, every: 1 })
-          : frequency === '2 gånger per vecka' && onlyTrip && t.next
-            ? expandWeekdays({ next: t.first, weekdays: [...new Set([isoWeekday(t.first), isoWeekday(t.next)])] })
+          : frequency === '2 gånger per vecka' && next
+            ? expandWeekdays({ next: t.first, weekdays: [...new Set([isoWeekday(t.first), isoWeekday(next)])] })
             : null
-  if (!rule) return own
-  return rule.map((p) => (p.date === t.next ? { date: p.date, estimated: false } : p))
+  if (!rule || (next && !rule.some((p) => p.date === next))) return own
+  return rule.map((p) => (p.date === next ? { date: p.date, estimated: false } : p))
 }
 
 /** Datumen från i dag, en händelse per dag. Framräknade datum är `estimated`, som för EDP. */
