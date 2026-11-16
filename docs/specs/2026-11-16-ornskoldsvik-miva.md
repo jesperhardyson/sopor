@@ -26,7 +26,7 @@ Stickprovet: tio breda sökningar ("vägen 1", "Sk", "berg" …) gav 1 088 adres
 - **En träff per kärl,** inte per adress. Adress och ort var unika bland de 1 088 (ingen adress hade två `PickupId`).
 - **Ger sökningen exakt en adress** skickas besökaren direkt till schemat: svaret har `route: "/schedule"`, `trips` och `address`, men inga `hits`.
 - **Orten i sökningen ger en tom lista** ("Skolgatan 3, Örnsköldsvik"). Det gör också `:`, men inte mellanslag före numret.
-- **Schemat slås upp på adress och ort, inte `pickupId`.** Ett påhittat `pickupId` gav rätt schema. Adressen är versalkänslig ("nygatan 2" ger en tom lista) men inte orten. En adress som inte finns ger en tom lista, inte ett fel. `/` i adressen ("Nygatan 5/ He", en av 1 088) ger ett svar utan tillstånd.
+- **Schemat slås upp på adress och ort, inte `pickupId`.** Ett påhittat `pickupId` gav rätt schema. Både adressen och orten är versalkänsliga: "nygatan 2" ger en tom lista, och orten måste skrivas med versaler som i sökträffarna ("BREDBYN"), fast schemat själv skriver "Bredbyn". En adress som inte finns ger en tom lista, inte ett fel. `/` i adressen ("Nygatan 5/ He", en av 1 088) ger ett svar utan tillstånd.
 - **Två datum per tur:** `pickupDateIso` och `nextPickupDateIso`, i UTC för midnatt svensk tid (`2026-11-22T23:00:00.000Z` är den 23 november).
 - **`text` på turen säger veckodag och jämn eller udda vecka,** men stämmer inte för tätare turer. "1 gång per vecka" och "2 gånger per vecka" står också som "tisdag udda veckor". Frekvensen finns bara i sökträffens `ExternalId`:
 

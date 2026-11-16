@@ -118,6 +118,12 @@ describe('mivaTrips', () => {
     expect(trips[1].first).toBe('2026-11-16')
   })
 
+  it('skickar orten med versaler, eftersom schemat annars är tomt', async () => {
+    const fetchFn = respond(fixture('miva-schema.html'))
+    await mivaTrips({ address: 'Nygatan 10', city: 'Bredbyn' }, fetchFn)
+    expect(called(fetchFn).searchParams.get('city')).toBe('BREDBYN')
+  })
+
   it('ger en tom lista för en adress utan tömningar', async () => {
     expect(await mivaTrips({ address: 'Nygatan 2', city: 'Bredbyn' }, respond(fixture('miva-schema-tomt.html')))).toEqual([])
   })

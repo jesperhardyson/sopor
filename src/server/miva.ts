@@ -128,9 +128,12 @@ function stockholmDate(iso: unknown): string {
   return date
 }
 
-/** En tom lista är ett giltigt svar för en adress som sökningen hittar. */
+/**
+ * En tom lista är ett giltigt svar för en adress som sökningen hittar. Orten skickas med versaler som i
+ * sökträffarna: schemat skriver den "Bredbyn" men är tomt för den stavningen.
+ */
 export async function mivaTrips(a: Pick<MivaAddress, 'address' | 'city'>, fetchFn?: typeof fetch, timeoutMs = 5000): Promise<MivaTrip[]> {
-  const state = await mivaPage(`/details/${a.address}`, { city: a.city }, fetchFn, timeoutMs)
+  const state = await mivaPage(`/details/${a.address}`, { city: a.city.toLocaleUpperCase('sv') }, fetchFn, timeoutMs)
   if (!Array.isArray(state.trips)) throw unknownFormat()
   return (state.trips as Record<string, unknown>[]).map((t) => {
     if (!isText(t?.text) || !Array.isArray(t.containers)) throw unknownFormat()
@@ -143,6 +146,8 @@ export async function mivaTrips(a: Pick<MivaAddress, 'address' | 'city'>, fetchF
 /** Frekvenserna Sopor kan räkna fram, tätast först. */
 const FREQUENCIES = ['2 gånger per vecka', '1 gång per vecka', 'var 14:e dag', 'var 14:e dag (v 22-39)']
 const densest = (frequencies: string[]) => FREQUENCIES.find((f) => frequencies.some((x) => x.trim().replace(/\s+/g, ' ').toLowerCase() === f))
+/** Om Sopor kan räkna fram datum för frekvensen. Bevakningen rapporterar andra. */
+export const isKnownMivaFrequency = (frequency: string) => densest([frequency]) !== undefined
 const isoWeekday = (date: string) => ((weekdayIndex(date) + 6) % 7) + 1
 
 /**
