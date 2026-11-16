@@ -79,6 +79,7 @@ Kommunerna som redan är live på sajten listas på [Om-sidan](https://sopor.har
 | Gävle | Gästrike Återvinnare | – | Nej, sökfunktionen är uttryckligen borttagen och hänvisar till Mina sidor (2026-11-06) | – | Inte med, fråga bolaget |
 | Norrköping | Nodra | – | Adressökning bara i Nodras app, och nästa tömning och schema på Mina sidor. Appen kräver apptoken, som regel 4 utesluter (2026-11-06) | – | Inte med, fråga bolaget |
 | Nykvarn | – | – | Telge Återvinnings söktjänst har inga adresser här: ingen av kommunens 204 gator gav en träff i Nykvarn (2026-11-06) | – | Inte med |
+| Örnsköldsvik | Miva | – | Sitevision-appen på "När kommer sopbilen?" (`miva.se`), med tillståndet som JSON i sidan: adresser, två datum per tur och frekvensen. Bara småhus. Sökträffarna visar också kundnummer, namn och e-post i källkoden (2026-11-16) | – | Byggs, undantag från beslut 2 (`docs/specs/2026-11-16-ornskoldsvik-miva.md`) |
 | Mölndal | – | – | EDP Future svarar men är tom (`future.molndal.se/FutureWeb`, 2026-11-03) | – | Inte med |
 | Östersund | – | – | EDP Future svarar men är tom (`edp.ostersund.se/FutureWeb`, 2026-11-03) | – | Inte med |
 | Upplands Väsby | Kommunen | – | EDP Future svarar men är tom (`edpfuture.upplandsvasby.se/FutureWeb`). Kommunen hänvisar till inloggning på Mina sidor | – | Inte med |
