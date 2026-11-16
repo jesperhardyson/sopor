@@ -46,9 +46,9 @@ Stickprovet: tio breda sökningar ("vägen 1", "Sk", "berg" …) gav 1 088 adres
 
 - **Undantag från beslut 2 (ingen skrapning).** Tillståndet är JSON med namngivna fält och ISO-datum, inte text som tolkas ur HTML. Det är närmare ett API än en skrapning. Risken är densamma som med andra källor: ändrar Miva appen går källan sönder, och bevakningen rapporterar det. Bara `registerInitialState` för appens id läses. Ingen annan del av sidan används.
 - **Regel 4.** Sidan är publik och utan inloggning. Skulle den börja kräva inloggning tas källan bort.
-- **Inga personuppgifter går vidare.** Klienten läser bara `PickupAddress`, `PickupCity`, `PickupZipCode` och `ExternalId` ur träffarna, och kastar resten direkt efter tolkningen. Inget annat fält sparas, cachas som tolkat svar, loggas eller skickas till webbläsaren. Fixturerna i testerna rensas på samma sätt (påhittade värden i de övriga fälten).
+- **Inga personuppgifter går vidare.** Klienten läser bara `PickupAddress`, `PickupCity` och `ExternalId` ur träffarna, och kastar resten direkt efter tolkningen. Inget annat fält sparas, cachas som tolkat svar, loggas eller skickas till webbläsaren. Fixturerna i testerna rensas på samma sätt (påhittade värden i de övriga fälten).
 - **Källan:** `{ id: 'miva', name: 'Miva', url: 'https://miva.se', kommuner: [Örnsköldsvik 2284], config: { system: 'miva' } }`. Id:t får aldrig ändras.
-- **Adress-id:** `nygatan-2_örnsköldsvik`, med `encode` som EDP, av `"<PickupAddress>, <PickupCity>"`. Inget byggnads-id, eftersom schemat inte använder `pickupId` och adress och ort var unika. Formatet får aldrig ändras (regel 3), och tester låser det.
+- **Adress-id:** `nygatan-2_örnsköldsvik-<hash>`, med `edpAddressId` och `"<PickupAddress>, <ort>"`. Hashen är `idHash` av `"<PickupAddress>, <ORT MED VERSALER>"`, som för Telge: schemat använder inte `pickupId`, och adress och ort var unika, men `queryFromAddressId` kräver en sista del. Formatet får aldrig ändras (regel 3), och tester låser det.
 - **Uppslaget** söker på adressdelen av id:t och väljer träffen vars id är detsamma. Ger sökningen direkt ett schema (`route: "/schedule"`) jämförs `address` och `city` i svaret i stället. Schemat hämtas sedan med källans exakta `PickupAddress` och ort. Id utan träff ger 502.
 - **Sökningen** tar bort orten (allt efter kommat) och `:`, och grupperar träffarna per adress och ort. Adresser med andra tecken än bokstäver, siffror, mellanslag och bindestreck visas inte, eftersom deras schema inte går att hämta.
 - **Datumen,** omräknade till svensk tid:
@@ -59,7 +59,7 @@ Stickprovet: tio breda sökningar ("vägen 1", "Sk", "berg" …) gav 1 088 adres
   - `2 gånger per vecka`: `expandWeekdays` med veckodagarna i de två datumen.
   - Annan eller saknad frekvens, eller en `text` som inte stämmer med datumen: bara källans två datum.
   - Framräknade datum är `estimated: true`, som för EDP, och visas som "ca".
-- **Frekvensen per tur** tas från sökträffarna för samma adress. Har adressens kärl olika frekvens används den tätaste för hela turen. Stickprovet hade ingen adress med blandade frekvenser.
+- **Frekvensen per tur** tas från sökträffarna för samma adress. Gick sökningen direkt till schemat finns inga träffar, och då söks gatan utan nummer. Ger också den bara schemat visas bara källans två datum. Har adressens kärl olika frekvens används den tätaste för hela turen. Stickprovet hade ingen adress med blandade frekvenser.
 - **Fraktioner** går genom `mapWasteType` med `typeText`: `Restavfall` och `Hushållsavfall` blir `rest`, `Matavfall` blir `mat`. En okänd typ visas med källans text och rapporteras av bevakningen.
 - **Text för tomt schema.** Sidan gäller bara småhus, så källan får en `emptyScheduleNote` som säger att flerbostadshus inte finns hos Miva.
 - **Kvar för förvaltaren:**
@@ -75,7 +75,7 @@ Stickprovet: tio breda sökningar ("vägen 1", "Sk", "berg" …) gav 1 088 adres
 ## Test
 
 - Sparade svar i `src/server/__fixtures__/`, rensade enligt ovan: `miva-sok.html` (flera träffar), `miva-sok-en.html` (direkt till schemat), `miva-schema.html` och `miva-schema-tomt.html`.
-- Klienten i `src/server/miva.test.ts`: tillståndet ur sidan, adress-id, sökning, uppslag i båda formerna, datum i svensk tid, alla fyra frekvenserna, fraktioner, okänd form och att inga andra fält än de fyra finns kvar efter tolkningen.
+- Klienten i `src/server/miva.test.ts`: tillståndet ur sidan, adress-id, sökning, uppslag i båda formerna, datum i svensk tid, alla fyra frekvenserna, fraktioner, okänd form och att inga andra fält än de tre finns kvar efter tolkningen.
 - `inWeeks` i `src/domain/recurrence.test.ts`, också över vecka 53.
 - `handleSearch`, `handleSchedule`, `handleIcs` och API v1 i `src/server/miva-handlers.test.ts`. Ett id utan träff ger 502.
 - Bevakningen i `scripts/source-checks.test.ts`.
