@@ -50,7 +50,7 @@ Provas med `npm run check:source` för de **100 största saknade kommunerna**: k
 | Kommun | Värd | Läge 2026-11-03 |
 |---|---|---|
 | Mölndal (71 000) | `future.molndal.se/FutureWeb` | Svarar men tom |
-| Lerum (44 000) | `vatjanst.lerum.se/FutureWeb` | Ingen kontakt 2026-11-03. Svarar med adresser och scheman 2026-11-17, och är med |
+| Lerum (44 000) | `vatjanst.lerum.se/FutureWeb` | Svarar med adresser och scheman från en svensk hemanslutning, men inte från Vercel (`arn1`), som Lerum blockerar (2026-11-17). Inte med |
 | Österåker, Vaxholm, Ekerö (91 000) | `edpmypage.roslagsvatten.se/FutureWebOS` | 404, men Roslagsvatten har en egen JSON-tjänst (fas 2, klar) |
 | Hudiksvall (38 000) | `gis.hudiksvall.se/origoserver/EDPFuture` | 404, behöver rätt sökväg |
 | Stenungsund (28 000) | via Remondis | Svarar men tom |
