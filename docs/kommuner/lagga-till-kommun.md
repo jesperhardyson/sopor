@@ -187,6 +187,7 @@ Gäller statiska källor. EDP-källorna hämtas live och behöver inget.
 - [ ] Behåll samma adress-id och område-id som förra året. Nya adresser får nya id.
 - [ ] För källor med område: kontrollera att områdenas innehåll, veckodagar och nummer är oförändrade innan datumen läggs in. Följer ett område inte med ska det få ett nytt id enligt [reglerna för områdesval](#områdesval-utan-adresser).
 - [ ] Låt förra årets mapp ligga kvar, eftersom kalendrar visar historiken.
+- [ ] Gå igenom källans `messages`. Ta bort ett meddelande som det nya schemat gör inaktuellt, till exempel "Hämtrutterna läggs om", eller sätt dess `validTo` till dagen före det nya schemats `validFrom`.
 - [ ] Kör `npm run lint && npm test && npm run build` och kontrollera några adresser i `npm run dev`.
 
 Prenumererade kalendrar hämtar den nya filen själva.
