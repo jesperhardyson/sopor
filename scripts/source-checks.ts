@@ -17,6 +17,7 @@ import { isKnownPlannerFrequency, plannerAddressId, plannerFind, plannerSchedule
 import { UDDEVALLA_URL, uddevallaFind, uddevallaPickups, uddevallaSchedule, uddevallaSearch, uddevallaWasteType } from '../src/server/uddevalla.js'
 import { isKnownSrvJob, SRV_URL, srvFind, srvSchedule, srvSearch, srvWasteType } from '../src/server/srv.js'
 import { parseSvoaAddress, sameSvoaAddress, svoaAddressId, SVOA_URL, svoaFractions, svoaSchedule, svoaSearch, svoaStep } from '../src/server/svoa.js'
+import { VOM_URL, vomAddresses, vomCode, vomFind, vomSchedule } from '../src/server/vom.js'
 import type { Source } from '../src/sources/index.js'
 import { classifyWasteTypes } from './check-source.js'
 
@@ -352,6 +353,29 @@ export async function checkFetchPlannerSource(source: Source, probe: string, tod
     ]
     const end = addDays(today, HORIZON_DAYS)
     const upcoming = plannerSchedule(trips, found.frequencies, today).events.some((e) => e.date <= end)
+    return { ...base, state: upcoming ? 'fungerar' : 'inga-tomningar', unknownWasteTypes }
+  } catch (error) {
+    return { ...base, state: stateForError(error), error: (error as Error).message }
+  }
+}
+
+/**
+ * VoM: kontrolladressen är ett adress-id. Datumen räknas fram ur koden, så det som kan gå sönder är
+ * listan och koderna. Har mer än 1 % av adresserna en okänd kod rapporteras det.
+ */
+export async function checkVomSource(source: Source, probe: string, today: string, fetchFn: typeof fetch = fetch): Promise<SourceResult> {
+  if (source.config.system !== 'vom') throw new Error(`${source.id} är ingen VoM-källa`)
+  const { resource } = source.config
+  const base = { sourceId: source.id, name: source.name, baseUrl: `${VOM_URL}/${resource}/allAddresses`, probe }
+  try {
+    const all = await vomAddresses(resource, fetchFn, TIMEOUT_MS)
+    if (all.length === 0) return { ...base, state: 'tom' }
+    const found = await vomFind(resource, probe, fetchFn, TIMEOUT_MS)
+    if (!found) return { ...base, state: 'nytt-format', error: `Kontrolladressen ${probe} finns inte i listan` }
+    const unknown = all.filter((a) => !vomCode(a.code))
+    const unknownWasteTypes = unknown.length > all.length / 100 ? [`Okända koder: ${unknown.length} av ${all.length} adresser (t.ex. ${[...new Set(unknown.map((a) => a.code))].slice(0, 3).join(', ')})`] : []
+    const end = addDays(today, HORIZON_DAYS)
+    const upcoming = vomSchedule(found.code, today).events.some((e) => e.date <= end)
     return { ...base, state: upcoming ? 'fungerar' : 'inga-tomningar', unknownWasteTypes }
   } catch (error) {
     return { ...base, state: stateForError(error), error: (error as Error).message }

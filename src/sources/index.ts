@@ -7,7 +7,7 @@ export interface Kommun {
 }
 
 /** Hur källans data hämtas. Ny leverantör = ny variant här + ny provider. */
-export type SourceConfig = { system: 'static' } | { system: 'edp'; baseUrl: string } | { system: 'svoa' } | { system: 'vasyd' } | { system: 'nsr' } | { system: 'srv' } | { system: 'appbolaget'; unit: string } | { system: 'uddevalla' } | { system: 'borlange' } | { system: 'roslagsvatten'; municipality: string } | { system: 'msva' } | { system: 'telge' } | { system: 'vakin' } | { system: 'fetchplanner'; page: string; app: string; hitsWithoutFrequency?: true }
+export type SourceConfig = { system: 'static' } | { system: 'edp'; baseUrl: string } | { system: 'svoa' } | { system: 'vasyd' } | { system: 'nsr' } | { system: 'srv' } | { system: 'appbolaget'; unit: string } | { system: 'uddevalla' } | { system: 'borlange' } | { system: 'roslagsvatten'; municipality: string } | { system: 'msva' } | { system: 'telge' } | { system: 'vakin' } | { system: 'fetchplanner'; page: string; app: string; hitsWithoutFrequency?: true } | { system: 'vom'; resource: string }
 
 /**
  * Hur man når källans kundtjänst, hämtat från källans egen webbplats. Minst en av `phone`, `email`
@@ -72,6 +72,18 @@ const VIVAB_CONTACT: SourceContact = {
   phone: { number: '+46757274000', display: '0757-27 40 00' },
   page: 'https://vivab.se/om-vivab/kundservice',
   checked: { url: 'https://vivab.se/om-vivab/kundservice', date: '2026-11-07' },
+}
+
+/** VoM har samma kundservice för alla tre kommunerna, men en kontaktsida per kommun. */
+const vomContact = (kommun: string): SourceContact => ({
+  phone: { number: '+46102515315', display: '010-251 53 15' },
+  email: 'kundservice@vattenmiljoresurs.se',
+  page: `https://www.vattenmiljoresurs.se/${kommun}/kundservice/kontakta-oss`,
+  checked: { url: `https://www.vattenmiljoresurs.se/${kommun}/kundservice/kontakta-oss`, date: '2026-11-17' },
+})
+const VOM_EMPTY_NOTE = {
+  title: 'Vatten och miljöresurs visar ingen tömning för adressen',
+  text: 'Adressen har ingen vanlig tömning varje eller varannan vecka hos källan. Kontakta Vatten och miljöresurs för att få veta när ditt kärl töms.',
 }
 
 const ROSLAGSVATTEN_CONTACT: SourceContact = {
@@ -694,6 +706,35 @@ export const ALL_SOURCES: Source[] = [
       title: 'Borlänge Energi visar ingen tömning just nu',
       text: 'Källan har inga planerade tömningar för den här adressen. Väntar du en tömning, kontakta Borlänge Energi.',
     },
+  },
+  {
+    // Ingen EDP: "När kommer sopbilen?" på vattenmiljoresurs.se (src/server/vom.ts) ger kommunens alla adresser
+    // med en kod för veckodag och vecka, så en källa per kommun. Se docs/specs/2026-11-17-vom-harjedalen-berg-bracke.md.
+    id: 'vom-harjedalen',
+    name: 'Vatten och miljöresurs',
+    url: 'https://www.vattenmiljoresurs.se',
+    contact: vomContact('harjedalen'),
+    kommuner: [{ code: '2361', name: 'Härjedalens kommun' }],
+    config: { system: 'vom', resource: '4.19317d4219c47956faa53c9/12.19317d4219c47956faa53d3' },
+    emptyScheduleNote: VOM_EMPTY_NOTE,
+  },
+  {
+    id: 'vom-berg',
+    name: 'Vatten och miljöresurs',
+    url: 'https://www.vattenmiljoresurs.se',
+    contact: vomContact('berg'),
+    kommuner: [{ code: '2326', name: 'Bergs kommun' }],
+    config: { system: 'vom', resource: '4.19317d4219c47956faa37c0/12.19317d4219c47956faa37ca' },
+    emptyScheduleNote: VOM_EMPTY_NOTE,
+  },
+  {
+    id: 'vom-bracke',
+    name: 'Vatten och miljöresurs',
+    url: 'https://www.vattenmiljoresurs.se',
+    contact: vomContact('bracke'),
+    kommuner: [{ code: '2305', name: 'Bräcke kommun' }],
+    config: { system: 'vom', resource: '4.19317d4219c47956faa4b46/12.19317d4219c47956faa4b50' },
+    emptyScheduleNote: VOM_EMPTY_NOTE,
   },
   {
     // Ingen EDP: hämtningsschemat på roslagsvatten.se (src/server/roslagsvatten.ts). Kommunen krävs i varje anrop, så en källa per kommun.

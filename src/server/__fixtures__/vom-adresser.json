@@ -1,0 +1,89 @@
+{
+ "allAddresses": [
+  {
+   "ort": "sveg",
+   "hamtstalle": "algatan 1",
+   "tbfurenhkorlistarad_strtomningsfrekvenskod": "h211"
+  },
+  {
+   "ort": "sveg",
+   "hamtstalle": "algatan 11",
+   "tbfurenhkorlistarad_strtomningsfrekvenskod": "h211"
+  },
+  {
+   "ort": "sveg",
+   "hamtstalle": "algatan 13",
+   "tbfurenhkorlistarad_strtomningsfrekvenskod": "h211"
+  },
+  {
+   "ort": "sveg",
+   "hamtstalle": "algatan 15",
+   "tbfurenhkorlistarad_strtomningsfrekvenskod": "h211"
+  },
+  {
+   "ort": "vemdalen ",
+   "hamtstalle": "björnrike björnvägen 60",
+   "tbfurenhkorlistarad_strtomningsfrekvenskod": "h114"
+  },
+  {
+   "ort": "vemdalen ",
+   "hamtstalle": "björnrike grizzlyvägen 9",
+   "tbfurenhkorlistarad_strtomningsfrekvenskod": "h114"
+  },
+  {
+   "ort": "hede",
+   "hamtstalle": "sonfjällsgatan 12 a",
+   "tbfurenhkorlistarad_strtomningsfrekvenskod": "h225"
+  },
+  {
+   "ort": "funäsdalen",
+   "hamtstalle": "industrivägen 1",
+   "tbfurenhkorlistarad_strtomningsfrekvenskod": "h411"
+  },
+  {
+   "ort": "lillhärdal",
+   "hamtstalle": "särnavägen 81",
+   "tbfurenhkorlistarad_strtomningsfrekvenskod": "bud"
+  },
+  {
+   "ort": "hede",
+   "hamtstalle": "sonfjällsgatan 12 a-e",
+   "tbfurenhkorlistarad_strtomningsfrekvenskod": "h225"
+  },
+  {
+   "ort": "hede",
+   "hamtstalle": "sonfjällsgatan 12 b",
+   "tbfurenhkorlistarad_strtomningsfrekvenskod": "h225"
+  },
+  {
+   "ort": "vemdalen ",
+   "hamtstalle": "bakom hotellet (vid skalsbyn brf)",
+   "tbfurenhkorlistarad_strtomningsfrekvenskod": "h224"
+  },
+  {
+   "ort": "vemdalen ",
+   "hamtstalle": "bakom hotellets rest /skalsbyn",
+   "tbfurenhkorlistarad_strtomningsfrekvenskod": "h224"
+  },
+  {
+   "ort": "funäsdalen",
+   "hamtstalle": "bergarvägen 18",
+   "tbfurenhkorlistarad_strtomningsfrekvenskod": "h221"
+  },
+  {
+   "ort": "vemdalen ",
+   "hamtstalle": "bastugatan 1 samt 1b",
+   "tbfurenhkorlistarad_strtomningsfrekvenskod": "h224"
+  },
+  {
+   "ort": "sveg",
+   "hamtstalle": "glissjöberg 440",
+   "tbfurenhkorlistarad_strtomningsfrekvenskod": "h221"
+  },
+  {
+   "ort": "sveg",
+   "hamtstalle": "glissjöberg 440",
+   "tbfurenhkorlistarad_strtomningsfrekvenskod": "h221"
+  }
+ ]
+}

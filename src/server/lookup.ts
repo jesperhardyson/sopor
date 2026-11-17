@@ -14,6 +14,7 @@ import { uddevallaFind, uddevallaPickups, uddevallaSchedule } from './uddevalla.
 import { borlangeFind, borlangePickups, borlangeSchedule } from './borlange.js'
 import { msvaFind, msvaSchedule } from './msva.js'
 import { telgeFind, telgePickups, telgeSchedule } from './telge.js'
+import { vomFind, vomSchedule } from './vom.js'
 import { plannerFind, plannerSchedule, plannerTrips, type PlannerApp } from './fetchplanner.js'
 import { vakinFind, vakinPickups, vakinSchedule } from './vakin.js'
 import { vasydSchedule, vasydSearch } from './vasyd.js'
@@ -47,6 +48,7 @@ export async function lookupAddress(
     if (source.config.system === 'telge') return await lookupTelge(source, id, opts)
     if (source.config.system === 'vakin') return await lookupVakin(source, id, origin, opts)
     if (source.config.system === 'fetchplanner') return await lookupFetchPlanner(source, source.config, id, opts)
+    if (source.config.system === 'vom') return await lookupVom(source, source.config.resource, id, opts)
     if (source.config.system === 'roslagsvatten') return await lookupRoslagsvatten(source, source.config.municipality, id, opts)
     return await lookupStatic(source, id, origin, opts)
   } catch (e) {
@@ -188,6 +190,13 @@ async function lookupVakin(source: Source, id: string, origin: string, opts: Han
   const schedule = vakinSchedule(await vakinPickups(found.params, today, opts.fetchFn, timeoutMs), today)
   const places = opts.places ?? (needsPlaces(source) ? await loadServerPlaces(origin, opts.fetchFn) : undefined)
   return { status: 200, address: toAddress(source, found.building, places), schedule }
+}
+
+/** VoM: kommunens hela lista, så ett id som inte finns i den finns inte hos källan. Alla datum räknas fram ur koden. */
+async function lookupVom(source: Source, resource: string, id: string, opts: HandlerOptions): Promise<Lookup> {
+  const found = await vomFind(resource, id, opts.fetchFn, opts.timeoutMs ?? 5000)
+  if (!found) return { status: 404 }
+  return { status: 200, address: toAddress(source, found.building, opts.places), schedule: vomSchedule(found.code, todayInStockholm(opts.now)) }
 }
 
 /** FetchPlanner (Miva, FEV): schemat slås upp på källans exakta adress och ort. Mivas frekvens kommer från sökningen. */

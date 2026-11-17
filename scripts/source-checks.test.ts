@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { SVOA_URL } from '../src/server/svoa.js'
 import { VASYD_URL } from '../src/server/vasyd.js'
 import { NSR_URL } from '../src/server/nsr.js'
@@ -15,10 +15,11 @@ import { MSVA_URL } from '../src/server/msva.js'
 import { TELGE_URL } from '../src/server/telge.js'
 import { VAKIN_URL } from '../src/server/vakin.js'
 import { plannerAddressId } from '../src/server/fetchplanner.js'
+import { clearVomCache, vomAddressId } from '../src/server/vom.js'
 
 const MIVA_URL = 'https://miva.se/kundservice/sjalvservice/sophamtning/nar-kommer-sopbilen'
 const MIVA_APP = '12.5e486747177feaef88f29850'
-import { checkAppbolagetSource, checkBorlangeSource, checkEdpSource, checkMsvaSource, checkNsrSource, checkRoslagsvattenSource, checkTelgeSource, checkVakinSource, checkFetchPlannerSource, checkSrvSource, checkUddevallaSource, checkSvoaSource, checkVasydSource, checkStaticSource, checkViaSite, unreachableFromHere } from './source-checks'
+import { checkAppbolagetSource, checkBorlangeSource, checkEdpSource, checkMsvaSource, checkNsrSource, checkRoslagsvattenSource, checkTelgeSource, checkVakinSource, checkFetchPlannerSource, checkVomSource, checkSrvSource, checkUddevallaSource, checkSvoaSource, checkVasydSource, checkStaticSource, checkViaSite, unreachableFromHere } from './source-checks'
 
 const json = (body: unknown) =>
   new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json; charset=utf-8' } })
@@ -811,5 +812,43 @@ describe('checkFetchPlannerSource', () => {
       return new Response(fevPage(state), { headers: { 'Content-Type': 'text/html' } })
     }) as unknown as typeof fetch
     expect(await checkFetchPlannerSource(fev, plannerAddressId('Ekvägen 1', 'FALUN'), '2026-11-17', fetchFn)).toMatchObject({ state: 'fungerar', baseUrl: 'https://fev.se/atervinning/sophamtning.html', unknownWasteTypes: [] })
+  })
+})
+
+describe('checkVomSource', () => {
+  const vom: Source = { ...source, id: 'vom-harjedalen', name: 'Vatten och miljöresurs', config: { system: 'vom', resource: 'a/b' } }
+  const probe = vomAddressId('algatan 1', 'sveg')
+  const rows = (...codes: string[]) => ({ allAddresses: codes.map((code, i) => ({ ort: 'sveg', hamtstalle: `algatan ${i + 1}`, tbfurenhkorlistarad_strtomningsfrekvenskod: code })) })
+  const respond = (body: unknown) =>
+    vi.fn(async () => {
+      if (body instanceof Error) throw body
+      return new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json' } })
+    }) as unknown as typeof fetch
+  const check = (fetchFn: typeof fetch) => checkVomSource(vom, probe, '2026-11-17', fetchFn)
+  beforeEach(() => clearVomCache())
+
+  it('fungerar med en känd kod', async () => {
+    expect(await check(respond(rows('h211', 'h112')))).toMatchObject({ state: 'fungerar', probe, unknownWasteTypes: [] })
+  })
+
+  it('svarar inte vid timeout', async () => {
+    expect((await check(respond(new TypeError('fetch failed')))).state).toBe('svarar-inte')
+  })
+
+  it('har nytt format när listan saknas eller kontrolladressen inte finns', async () => {
+    expect((await check(respond({ adresser: [] }))).state).toBe('nytt-format')
+    expect((await check(respond({ allAddresses: [{ ort: 'sveg', hamtstalle: 'bygatan 1', tbfurenhkorlistarad_strtomningsfrekvenskod: 'h211' }] }))).state).toBe('nytt-format')
+  })
+
+  it('är tom när listan är tom', async () => {
+    expect((await check(respond({ allAddresses: [] }))).state).toBe('tom')
+  })
+
+  it('har inga tömningar när kontrolladressens kod är okänd', async () => {
+    expect((await check(respond(rows('h411')))).state).toBe('inga-tomningar')
+  })
+
+  it('rapporterar när mer än 1 % av koderna är okända', async () => {
+    expect((await check(respond(rows('h211', 'h411')))).unknownWasteTypes).toEqual(['Okända koder: 1 av 2 adresser (t.ex. h411)'])
   })
 })

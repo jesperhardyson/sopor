@@ -18,6 +18,7 @@ import { roslagsvattenDetails, roslagsvattenSearch } from './roslagsvatten.js'
 import { uddevallaDetails, uddevallaSearch } from './uddevalla.js'
 import { borlangeSearch } from './borlange.js'
 import { msvaSearch } from './msva.js'
+import { vomSearch } from './vom.js'
 import { telgeSearch } from './telge.js'
 import { plannerSearch } from './fetchplanner.js'
 import { vakinSearch } from './vakin.js'
@@ -67,8 +68,8 @@ export async function searchLiveSource(source: LiveSource, street: string, place
       .map((a): Address => ({ id: svoaAddressId(a), street: a.street, locality: a.locality, sourceId: source.id, kommun }))
       .filter((a) => matchesPlace(a, place))
   }
-  if (source.config.system === 'nsr' || source.config.system === 'srv' || source.config.system === 'appbolaget' || source.config.system === 'uddevalla' || source.config.system === 'roslagsvatten' || source.config.system === 'borlange' || source.config.system === 'msva' || source.config.system === 'telge' || source.config.system === 'vakin' || source.config.system === 'fetchplanner') {
-    // NSR, SRV, Appbolaget, Uddevalla, Roslagsvatten, Borlänge, MSVA, Telge, Vakin och FetchPlanner (Miva, FEV) hittar inget med orten i sökningen, så den filtreras fram här.
+  if (source.config.system === 'nsr' || source.config.system === 'srv' || source.config.system === 'appbolaget' || source.config.system === 'uddevalla' || source.config.system === 'roslagsvatten' || source.config.system === 'borlange' || source.config.system === 'msva' || source.config.system === 'telge' || source.config.system === 'vakin' || source.config.system === 'fetchplanner' || source.config.system === 'vom') {
+    // NSR, SRV, Appbolaget, Uddevalla, Roslagsvatten, Borlänge, MSVA, Telge, Vakin, FetchPlanner (Miva, FEV) och VoM hittar inget med orten i sökningen, så den filtreras fram här.
     const [streetOnly, typedPlace = ''] = street.split(',').map((p) => p.trim())
     const timeoutMs = opts.timeoutMs ?? 3000
     const inPlace = (b: EdpBuilding) => matchesPlace(toAddress(source, b, opts.places), place || typedPlace)
@@ -101,6 +102,11 @@ export async function searchLiveSource(source: LiveSource, street: string, place
       return withDetails((await plannerSearch(source.config, streetOnly, opts.fetchFn, timeoutMs)).map((a) => a.building))
         .filter(([b]) => inPlace(b))
         .map(([b, detail]) => toAddress(source, b, opts.places, detail))
+    }
+    if (source.config.system === 'vom') {
+      return (await vomSearch(source.config.resource, streetOnly, opts.fetchFn, opts.timeoutMs ?? 5000))
+        .filter((a) => inPlace(a.building))
+        .map((a) => toAddress(source, a.building, opts.places))
     }
     if (source.config.system === 'telge') {
       return withDetails(await telgeSearch(streetOnly, opts.fetchFn, opts.timeoutMs))
