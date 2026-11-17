@@ -1,3 +1,4 @@
+import type { SourceMessage } from '../domain/messages.js'
 import { normalize } from '../domain/search.js'
 
 /** En kommun enligt SCB:s kommunkod. */
@@ -65,6 +66,8 @@ export interface Source {
   /** Visas i stället för "Inga kommande tömningar" när en adress hos källan har ett tomt schema. */
   emptyScheduleNote?: { title: string; text: string }
   contact?: SourceContact
+  /** Tillfälliga besked från källan. Regler i `docs/kommuner/lagga-till-kommun.md`. */
+  messages?: SourceMessage[]
 }
 
 /** Kontaktuppgifterna gäller alla källor hos samma organisation. */
