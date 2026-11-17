@@ -37,11 +37,12 @@ const MARK = `registerInitialState('${MIVA_APP}',`
 /** Appens tillstånd. Saknas det, eller har det varken träffar eller turer, har Miva ändrat appen. */
 export function mivaState(html: string): MivaState {
   const start = html.indexOf(MARK)
-  const end = start < 0 ? -1 : html.indexOf(');</script>', start)
-  if (end < 0) throw unknownFormat()
+  // Objektet slutar vid ")" före </script>, med eller utan semikolon och mellanrum.
+  const body = start < 0 ? null : html.slice(start + MARK.length).match(/^([\s\S]*?)\)\s*;?\s*<\/script>/)
+  if (!body) throw unknownFormat()
   let state: unknown
   try {
-    state = JSON.parse(html.slice(start + MARK.length, end))
+    state = JSON.parse(body[1])
   } catch {
     throw unknownFormat()
   }
@@ -107,7 +108,8 @@ export async function mivaFind(id: string, fetchFn?: typeof fetch, timeoutMs = 5
   const same = (a: MivaAddress) => mivaAddressId(a.address, a.city) === id
   const found = (await mivaSearch(parsed.query, fetchFn, timeoutMs)).find(same)
   if (!found || found.frequencies.length > 0) return found ?? null
-  const street = searchable(parsed.query).replace(/\s+\d+\s*\p{L}?$/u, '')
+  // "Nygatan 2", "Nygatan 2-4", "Vägen 12 ab" och "Storgatan 3 B" blir gatan.
+  const street = searchable(parsed.query).replace(/\s+\d+(?:\s*-\s*\d+)?(?:\s*\p{L}{1,2})?$/u, '')
   const listed = street && street !== searchable(parsed.query) ? (await mivaSearch(street, fetchFn, timeoutMs)).find(same) : undefined
   return { ...found, frequencies: listed?.frequencies ?? [] }
 }
@@ -169,8 +171,8 @@ function tripDates(t: MivaTrip, frequency: string | undefined, onlyTrip: boolean
         ? weekRuleDates(t.first, { weekday, every: 2, fixedDays: true }, { inWeeks: [22, 39] })
         : frequency === '1 gång per vecka'
           ? weekRuleDates(t.first, { weekday, every: 1 })
-          : frequency === '2 gånger per vecka' && next
-            ? expandWeekdays({ next: t.first, weekdays: [...new Set([isoWeekday(t.first), isoWeekday(next)])] })
+          : frequency === '2 gånger per vecka' && next && isoWeekday(t.first) !== isoWeekday(next)
+            ? expandWeekdays({ next: t.first, weekdays: [isoWeekday(t.first), isoWeekday(next)] })
             : null
   if (!rule || (next && !rule.some((p) => p.date === next))) return own
   return rule.map((p) => (p.date === next ? { date: p.date, estimated: false } : p))

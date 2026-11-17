@@ -22,6 +22,12 @@ describe('mivaState', () => {
     expect(state.hits).toHaveLength(6)
   })
 
+  it('tål mellanrum före slutet av skriptet', () => {
+    const state = { route: '/', hits: [] }
+    expect(mivaState(`<script>AppRegistry.registerInitialState('${MIVA_APP}',${JSON.stringify(state)});\n</script>`).route).toBe('/')
+    expect(mivaState(`<script>AppRegistry.registerInitialState('${MIVA_APP}', ${JSON.stringify(state)} )\n</script>`).route).toBe('/')
+  })
+
   it('kastar SourceError när tillståndet saknas', () => {
     expect(() => mivaState('<html></html>')).toThrow(SourceError)
   })
@@ -108,6 +114,22 @@ describe('mivaFind', () => {
   })
 })
 
+describe('mivaFind för gator med ensam adress', () => {
+  const direkt = (address: string, city: string) => page({ route: '/schedule', address, city, hits: [], trips: [] })
+  const lista = (address: string, city: string) => page({ route: '/', hits: [{ PickupAddress: address, PickupCity: city, ExternalId: 'Var 14:e dag' }] })
+
+  it.each([
+    ['Nygatan 2-4', 'nygatan'],
+    ['Vägen 12 ab', 'vägen'],
+    ['Storgatan 3 B', 'storgatan'],
+  ])('söker %s utan nummer för frekvensen', async (address, street) => {
+    const fetchFn = respond(direkt(address, 'Bredbyn'), lista(address, 'BREDBYN'))
+    const found = await mivaFind(mivaAddressId(address, 'BREDBYN'), fetchFn)
+    expect(called(fetchFn, 1).searchParams.get('q')).toBe(street)
+    expect(found?.frequencies).toEqual(['Var 14:e dag'])
+  })
+})
+
 describe('mivaTrips', () => {
   it('läser turerna med datum i svensk tid', async () => {
     const fetchFn = respond(fixture('miva-schema.html'))
@@ -190,6 +212,10 @@ describe('mivaSchedule', () => {
       ['2027-04-01', false],
       ['2027-04-16', false],
     ])
+  })
+
+  it('visar bara källans datum när två tömningar i veckan hamnar på samma veckodag', () => {
+    expect(dates([trip('2026-11-16', '2026-11-23')], ['2 gånger per vecka'])).toEqual(['2026-11-16', '2026-11-23'])
   })
 
   it('tolkar Hushållsavfall som restavfall', () => {
