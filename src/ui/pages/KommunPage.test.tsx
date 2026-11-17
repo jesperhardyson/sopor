@@ -111,6 +111,25 @@ describe('KommunRoute', () => {
     expect(screen.getByRole('link', { name: 'Välj område i Avesta' })).toHaveAttribute('href', '/avesta/omraden')
   })
 
+  it('visar källans meddelande på kommunsidan medan det gäller', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date('2026-11-20T10:00:00Z'))
+    embed('/kommuner/avesta-kommun', avesta)
+    show('/kommuner/avesta-kommun')
+    expect(await screen.findByRole('heading', { name: 'Hämtrutterna läggs om' })).toBeInTheDocument()
+    vi.useRealTimers()
+  })
+
+  it('visar inget meddelande på kommunsidan innan det gäller', () => {
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date('2026-11-01T10:00:00Z'))
+    embed('/kommuner/avesta-kommun', avesta)
+    show('/kommuner/avesta-kommun')
+    expect(screen.getByRole('link', { name: 'Välj område i Avesta' })).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Hämtrutterna läggs om' })).toBeNull()
+    vi.useRealTimers()
+  })
+
   it('länkar inte till områdesval på andra kommuner', () => {
     embed('/kommuner/uppsala-kommun', uppsala)
     show('/kommuner/uppsala-kommun')
