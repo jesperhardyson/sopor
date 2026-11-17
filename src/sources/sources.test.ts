@@ -23,6 +23,7 @@ describe('källregistret', () => {
     expect(avesta.testData).toBeUndefined()
     expect(avesta.emptyScheduleNote?.title).toBe('Schemat för nästa år är inte publicerat än')
     expect(activeMessages(avesta.messages, '2026-11-17').map((m) => m.id)).toEqual(['nya-rutter-2026'])
+    expect(avesta.messages?.[0].url).toBe('https://avestavatten.se/avfall/Narsorterat/')
   })
 
   it('kräver en varning för varje källa med områdesval', () => {
