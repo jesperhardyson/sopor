@@ -73,7 +73,7 @@ Kommunerna som redan är live på sajten listas på [Om-sidan](https://sopor.har
 |---|---|---|---|---|---|
 | Göteborg | Kretslopp och vatten | Bara frekvenser, inga dagar | Nej, hämtdagarna finns på Mina sidor med e-legitimation (2026-11-06) | – | Inte med, fråga kommunen |
 | Linköping | Tekniska verken | – | Nej, hämtningsdagarna finns på Mina sidor och i appen Mitt Tekniska verken (2026-11-06) | – | Inte med, fråga bolaget |
-| Karlstad | Karlstads Energi | – | Nej, "logga in på Mina sidor". Ingen EDP-tjänst på `minasidor.karlstadsenergi.se` (2026-11-06) | – | Inte med, fråga bolaget |
+| Karlstad | Karlstads Energi | – | Nej, "logga in på Mina sidor". Ingen EDP-tjänst på `minasidor.karlstadsenergi.se` (2026-11-06). Kontrollerat igen 2026-11-17: sajten hänvisar fortfarande till appen och Mina sidor, och sitemap.xml har ingen sökning per adress | – | Inte med, fråga bolaget. Mest efterfrågade saknade kommunen i statistiken |
 | Halmstad | HEM | – | Nej, hämtdagarna finns i appen Mitt HEM, i chatten och per telefon. Ingen EDP-tjänst på `minasidor.hem.se` (2026-11-06) | – | Inte med, fråga bolaget |
 | Eskilstuna | Eskilstuna Energi och Miljö | – | Nej, hämtningsdagen finns på Mina sidor. Ingen EDP-tjänst på `minasidor.eem.se` (2026-11-06) | – | Inte med, fråga bolaget |
 | Gävle | Gästrike Återvinnare | – | Nej, sökfunktionen är uttryckligen borttagen och hänvisar till Mina sidor (2026-11-06) | – | Inte med, fråga bolaget |
