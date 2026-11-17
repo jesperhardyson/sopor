@@ -159,11 +159,12 @@ export async function plannerTrips(app: PlannerApp, a: Pick<PlannerAddress, 'add
       return { text: t.text, types: [...new Set(types)], first: stockholmDate(app, t.pickupDateIso), ...(t.nextPickupDateIso != null && { next: stockholmDate(app, t.nextPickupDateIso) }) }
     })
   }
-  // FEV: turerna är tomma och datumen står på varje kärl. Kärl utan datum har ingen planerad tömning.
+  // FEV: turerna är tomma och datumen står på varje kärl. Ett kärl utan planerad tömning har inga
+  // datum, eller tomma texter i stället för datum ("pickupDateIso": "").
   if (!Array.isArray(state.containers)) return []
   return (state.containers as Record<string, unknown>[]).flatMap((c): PlannerTrip[] => {
     if (!isText(c?.typeText)) throw unknownFormat(app)
-    const dates = [c.pickupDateIso, c.nextPickupDateIso].filter((d) => d != null).map((d) => stockholmDate(app, d))
+    const dates = [c.pickupDateIso, c.nextPickupDateIso].filter((d) => d != null && d !== '').map((d) => stockholmDate(app, d))
     if (dates.length === 0) return []
     return [{ text: '', types: [c.typeText], first: dates[0], ...(dates[1] && { next: dates[1] }), ownNext: true }]
   })
