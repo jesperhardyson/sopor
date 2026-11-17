@@ -12,11 +12,18 @@ from homeassistant.data_entry_flow import FlowResultType, InvalidData
 FIXTURES = Path(__file__).parent / "fixtures"
 SOK = json.loads((FIXTURES / "sok.json").read_text(encoding="utf-8"))
 KALLOR = json.loads((FIXTURES / "kallor.json").read_text(encoding="utf-8"))
+# Källornas meddelanden finns i svaret men används inte av integrationen än
+OMRADEN_KALLOR = [
+    {"id": "avesta", "name": "Avesta", "explanation": "E", "help": "H", "messages": KALLOR["sources"][0]["messages"]}
+]
 
 
 def _mocka(aioclient_mock, q: str, search: Search = SOK, kallor=KALLOR, omraden=None):
     aioclient_mock.get(f"{BASE_URL}/sok", json=search)
-    aioclient_mock.get(f"{BASE_URL}/omraden", json={"apiVersion": "1", "addresses": omraden or [], "failed": []})
+    aioclient_mock.get(
+        f"{BASE_URL}/omraden",
+        json={"apiVersion": "1", "addresses": omraden or [], "failed": [], "sources": OMRADEN_KALLOR},
+    )
     if kallor is None:
         aioclient_mock.get(f"{BASE_URL}/kallor", status=502, text="Bad Gateway")
     else:
