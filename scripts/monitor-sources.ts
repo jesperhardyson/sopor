@@ -33,7 +33,6 @@ export const PROBES: Record<string, string> = {
   varberg: 'Storgatan 3, TRÄSLÖVSLÄGE',
   falkenberg: 'Storgatan 1, FALKENBERG',
   partille: 'Kyrkogatan 1, Jonsered',
-  lerum: 'Björkvägen 1, Floda',
   kungalv: 'Kyrkogatan 1, MARSTRAND',
   boden: 'Drottninggatan 1, Boden',
   danderyd: 'Skolvägen 1, Enebyberg',
