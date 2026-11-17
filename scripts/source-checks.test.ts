@@ -14,8 +14,11 @@ import type { Source } from '../src/sources/index.js'
 import { MSVA_URL } from '../src/server/msva.js'
 import { TELGE_URL } from '../src/server/telge.js'
 import { VAKIN_URL } from '../src/server/vakin.js'
-import { MIVA_APP, MIVA_URL, mivaAddressId } from '../src/server/miva.js'
-import { checkAppbolagetSource, checkBorlangeSource, checkEdpSource, checkMsvaSource, checkNsrSource, checkRoslagsvattenSource, checkTelgeSource, checkVakinSource, checkMivaSource, checkSrvSource, checkUddevallaSource, checkSvoaSource, checkVasydSource, checkStaticSource, checkViaSite, unreachableFromHere } from './source-checks'
+import { plannerAddressId } from '../src/server/fetchplanner.js'
+
+const MIVA_URL = 'https://miva.se/kundservice/sjalvservice/sophamtning/nar-kommer-sopbilen'
+const MIVA_APP = '12.5e486747177feaef88f29850'
+import { checkAppbolagetSource, checkBorlangeSource, checkEdpSource, checkMsvaSource, checkNsrSource, checkRoslagsvattenSource, checkTelgeSource, checkVakinSource, checkFetchPlannerSource, checkSrvSource, checkUddevallaSource, checkSvoaSource, checkVasydSource, checkStaticSource, checkViaSite, unreachableFromHere } from './source-checks'
 
 const json = (body: unknown) =>
   new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json; charset=utf-8' } })
@@ -748,9 +751,9 @@ describe('checkRoslagsvattenSource', () => {
   })
 })
 
-describe('checkMivaSource', () => {
-  const miva: Source = { ...source, id: 'miva', name: 'Miva', config: { system: 'miva' } }
-  const probe = mivaAddressId('Nygatan 2', 'ÖRNSKÖLDSVIK')
+describe('checkFetchPlannerSource', () => {
+  const miva: Source = { ...source, id: 'miva', name: 'Miva', config: { system: 'fetchplanner', page: 'https://miva.se/kundservice/sjalvservice/sophamtning/nar-kommer-sopbilen', app: '12.5e486747177feaef88f29850' } }
+  const probe = plannerAddressId('Nygatan 2', 'ÖRNSKÖLDSVIK')
   const hit = (ExternalId = 'Var 14:e dag', PickupAddress = 'Nygatan 2') => ({ PickupAddress, PickupCity: 'ÖRNSKÖLDSVIK', ExternalId, ContentTypeName: 'Restavfall' })
   const trip = (typeText = 'Restavfall', pickupDateIso = '2026-11-22T23:00:00.000Z') => ({ text: 'måndag jämna veckor', containers: [{ type: 'household', typeText }], pickupDateIso, nextPickupDateIso: '2026-12-06T23:00:00.000Z' })
   const page = (state: unknown) => `<script>AppRegistry.registerInitialState('${MIVA_APP}',${JSON.stringify(state)});</script>`
@@ -761,7 +764,7 @@ describe('checkMivaSource', () => {
       if (body instanceof Error) throw body
       return new Response(typeof body === 'string' ? body : page(body), { headers: { 'Content-Type': 'text/html;charset=UTF-8' } })
     }) as unknown as typeof fetch
-  const check = (fetchFn: typeof fetch) => checkMivaSource(miva, probe, '2026-11-16', fetchFn)
+  const check = (fetchFn: typeof fetch) => checkFetchPlannerSource(miva, probe, '2026-11-16', fetchFn)
   const hittad = { route: '/', hits: [hit()] }
 
   it('fungerar med en tömning inom 60 dagar', async () => {
@@ -784,7 +787,7 @@ describe('checkMivaSource', () => {
   it('har nytt format när kontrolladressen inte finns men gatan har adresser', async () => {
     const r = await check(respond({ route: '/', hits: [hit('Var 14:e dag', 'Nygatan 3')] }))
     expect(r.state).toBe('nytt-format')
-    expect(r.error).toContain(mivaAddressId('Nygatan 3', 'ÖRNSKÖLDSVIK'))
+    expect(r.error).toContain(plannerAddressId('Nygatan 3', 'ÖRNSKÖLDSVIK'))
   })
 
   it('märker om tjänsten slutar ge kommande tömningar', async () => {

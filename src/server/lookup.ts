@@ -14,7 +14,7 @@ import { uddevallaFind, uddevallaPickups, uddevallaSchedule } from './uddevalla.
 import { borlangeFind, borlangePickups, borlangeSchedule } from './borlange.js'
 import { msvaFind, msvaSchedule } from './msva.js'
 import { telgeFind, telgePickups, telgeSchedule } from './telge.js'
-import { mivaFind, mivaSchedule, mivaTrips } from './miva.js'
+import { plannerFind, plannerSchedule, plannerTrips, type PlannerApp } from './fetchplanner.js'
 import { vakinFind, vakinPickups, vakinSchedule } from './vakin.js'
 import { vasydSchedule, vasydSearch } from './vasyd.js'
 import { queryFromSvoaId, sameSvoaAddress, SVOA_LIMIT, svoaSchedule, svoaSearch, type SvoaAddress } from './svoa.js'
@@ -46,7 +46,7 @@ export async function lookupAddress(
     if (source.config.system === 'msva') return await lookupMsva(source, id, opts)
     if (source.config.system === 'telge') return await lookupTelge(source, id, opts)
     if (source.config.system === 'vakin') return await lookupVakin(source, id, origin, opts)
-    if (source.config.system === 'miva') return await lookupMiva(source, id, opts)
+    if (source.config.system === 'fetchplanner') return await lookupFetchPlanner(source, source.config, id, opts)
     if (source.config.system === 'roslagsvatten') return await lookupRoslagsvatten(source, source.config.municipality, id, opts)
     return await lookupStatic(source, id, origin, opts)
   } catch (e) {
@@ -190,12 +190,12 @@ async function lookupVakin(source: Source, id: string, origin: string, opts: Han
   return { status: 200, address: toAddress(source, found.building, places), schedule }
 }
 
-/** Miva: schemat slås upp på källans exakta adress och ort, och frekvensen kommer från sökningen. */
-async function lookupMiva(source: Source, id: string, opts: HandlerOptions): Promise<Lookup> {
+/** FetchPlanner (Miva, FEV): schemat slås upp på källans exakta adress och ort. Mivas frekvens kommer från sökningen. */
+async function lookupFetchPlanner(source: Source, app: PlannerApp, id: string, opts: HandlerOptions): Promise<Lookup> {
   const timeoutMs = opts.timeoutMs ?? 5000
-  const found = await mivaFind(id, opts.fetchFn, timeoutMs)
+  const found = await plannerFind(app, id, opts.fetchFn, timeoutMs)
   if (!found) return { status: 502 }
-  const schedule = mivaSchedule(await mivaTrips(found, opts.fetchFn, timeoutMs), found.frequencies, todayInStockholm(opts.now))
+  const schedule = plannerSchedule(await plannerTrips(app, found, opts.fetchFn, timeoutMs), found.frequencies, todayInStockholm(opts.now))
   return { status: 200, address: toAddress(source, found.building, opts.places), schedule }
 }
 

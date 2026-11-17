@@ -7,7 +7,7 @@ export interface Kommun {
 }
 
 /** Hur källans data hämtas. Ny leverantör = ny variant här + ny provider. */
-export type SourceConfig = { system: 'static' } | { system: 'edp'; baseUrl: string } | { system: 'svoa' } | { system: 'vasyd' } | { system: 'nsr' } | { system: 'srv' } | { system: 'appbolaget'; unit: string } | { system: 'uddevalla' } | { system: 'borlange' } | { system: 'roslagsvatten'; municipality: string } | { system: 'msva' } | { system: 'telge' } | { system: 'vakin' } | { system: 'miva' }
+export type SourceConfig = { system: 'static' } | { system: 'edp'; baseUrl: string } | { system: 'svoa' } | { system: 'vasyd' } | { system: 'nsr' } | { system: 'srv' } | { system: 'appbolaget'; unit: string } | { system: 'uddevalla' } | { system: 'borlange' } | { system: 'roslagsvatten'; municipality: string } | { system: 'msva' } | { system: 'telge' } | { system: 'vakin' } | { system: 'fetchplanner'; page: string; app: string }
 
 /**
  * Hur man når källans kundtjänst, hämtat från källans egen webbplats. Minst en av `phone`, `email`
@@ -619,7 +619,7 @@ export const ALL_SOURCES: Source[] = [
     },
   },
   {
-    // Ingen API: "När kommer sopbilen?" på miva.se (src/server/miva.ts), appens tillstånd som JSON i sidan.
+    // Ingen API: "När kommer sopbilen?" på miva.se (src/server/fetchplanner.ts), appens tillstånd som JSON i sidan.
     // Undantag från beslut 2 i docs/plans/2026-11-03-fler-kommuner.md, se docs/specs/2026-11-16-ornskoldsvik-miva.md.
     id: 'miva',
     name: 'Miva',
@@ -630,7 +630,7 @@ export const ALL_SOURCES: Source[] = [
       checked: { url: 'https://miva.se/kundservice/kontakta-oss', date: '2026-11-16' },
     },
     kommuner: [{ code: '2284', name: 'Örnsköldsviks kommun' }],
-    config: { system: 'miva' },
+    config: { system: 'fetchplanner', page: 'https://miva.se/kundservice/sjalvservice/sophamtning/nar-kommer-sopbilen', app: '12.5e486747177feaef88f29850' },
     emptyScheduleNote: {
       title: 'Miva visar ingen tömning just nu',
       text: 'Källan har inga planerade tömningar för den här adressen. Miva visar bara villor, radhus och fritidshus med eget kärl. Bor du i flerbostadshus, kontakta Miva.',

@@ -3,8 +3,11 @@ import path from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
 import { ALL_SOURCES, type Source } from '../sources/index.js'
 import { handleIcs, handleSchedule, handleSearch } from './handlers.js'
-import { MIVA_APP, mivaAddressId } from './miva.js'
+import { plannerAddressId } from './fetchplanner.js'
 import { handleV1Address, v1 } from './v1.js'
+
+const MIVA = { page: 'https://miva.se/kundservice/sjalvservice/sophamtning/nar-kommer-sopbilen', app: '12.5e486747177feaef88f29850' }
+const MIVA_APP = MIVA.app
 
 const fixture = (name: string) => readFileSync(path.resolve(import.meta.dirname, '__fixtures__', name), 'utf8')
 const html = (body: string) => new Response(body, { headers: { 'Content-Type': 'text/html;charset=UTF-8' } })
@@ -14,9 +17,9 @@ const miva: Source = {
   name: 'Miva',
   url: 'https://miva.se',
   kommuner: [{ code: '2284', name: 'Örnsköldsviks kommun' }],
-  config: { system: 'miva' },
+  config: { system: 'fetchplanner', page: 'https://miva.se/kundservice/sjalvservice/sophamtning/nar-kommer-sopbilen', app: '12.5e486747177feaef88f29850' },
 }
-const ID = mivaAddressId('Nygatan 2', 'ÖRNSKÖLDSVIK')
+const ID = plannerAddressId('Nygatan 2', 'ÖRNSKÖLDSVIK')
 
 const route = (input: string | URL | Request) => new URL(String(input)).searchParams.get(`sv.${MIVA_APP}.route`) ?? ''
 const fake = ({ sok = fixture('miva-sok.html'), schema = fixture('miva-schema.html') } = {}) =>
@@ -49,7 +52,7 @@ describe('Miva i sajtens API', () => {
   })
 
   it('ger 502 för ett id utan träff', async () => {
-    expect((await handleSchedule(schema(mivaAddressId('Nygatan 99', 'ÖRNSKÖLDSVIK')), opts())).status).toBe(502)
+    expect((await handleSchedule(schema(plannerAddressId('Nygatan 99', 'ÖRNSKÖLDSVIK')), opts())).status).toBe(502)
   })
 
   it('ger 502 när Miva har ändrat appen', async () => {
@@ -63,7 +66,7 @@ describe('Miva i sajtens API', () => {
   })
 
   it('ger kalenderprenumerationen 502 när adressen inte hittas', async () => {
-    const res = await handleIcs(url(`/api/ics?source=miva&file=${encodeURIComponent(mivaAddressId('Nygatan 99', 'ÖRNSKÖLDSVIK'))}.ics`), opts())
+    const res = await handleIcs(url(`/api/ics?source=miva&file=${encodeURIComponent(plannerAddressId('Nygatan 99', 'ÖRNSKÖLDSVIK'))}.ics`), opts())
     expect(res.status).toBe(502)
   })
 
@@ -77,7 +80,7 @@ describe('Miva i registret', () => {
   const source = ALL_SOURCES.find((s) => s.id === 'miva')
 
   it('täcker Örnsköldsvik', () => {
-    expect(source).toMatchObject({ name: 'Miva', url: 'https://miva.se', kommuner: [{ code: '2284', name: 'Örnsköldsviks kommun' }], config: { system: 'miva' } })
+    expect(source).toMatchObject({ name: 'Miva', url: 'https://miva.se', kommuner: [{ code: '2284', name: 'Örnsköldsviks kommun' }], config: { system: 'fetchplanner', page: 'https://miva.se/kundservice/sjalvservice/sophamtning/nar-kommer-sopbilen', app: '12.5e486747177feaef88f29850' } })
   })
 
   it('förklarar ett tomt schema', () => {

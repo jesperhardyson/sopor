@@ -9,7 +9,7 @@ import { todayInStockholm } from '../src/domain/dates.js'
 import { queryFromAddressId } from '../src/server/edp.js'
 import { SOURCES, type Source } from '../src/sources/index.js'
 import { readYears } from './build-data.js'
-import { checkAppbolagetSource, checkBorlangeSource, checkEdpSource, checkMsvaSource, checkNsrSource, checkRoslagsvattenSource, checkTelgeSource, checkVakinSource, checkMivaSource, checkSrvSource, checkUddevallaSource, checkSvoaSource, checkVasydSource, checkStaticSource, checkViaSite, unreachableFromHere, type SourceResult } from './source-checks.js'
+import { checkAppbolagetSource, checkBorlangeSource, checkEdpSource, checkMsvaSource, checkNsrSource, checkRoslagsvattenSource, checkTelgeSource, checkVakinSource, checkFetchPlannerSource, checkSrvSource, checkUddevallaSource, checkSvoaSource, checkVasydSource, checkStaticSource, checkViaSite, unreachableFromHere, type SourceResult } from './source-checks.js'
 import { applyIssues, ensureLabels, listOpenIssues, planIssues } from './source-issues.js'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
@@ -86,13 +86,13 @@ async function checkOne(
   readValidTo: (id: string) => string[],
 ): Promise<SourceResult> {
   if (source.config.system === 'static') return checkStaticSource(source, readValidTo(source.id), today)
-  const checks = { svoa: checkSvoaSource, vasyd: checkVasydSource, nsr: checkNsrSource, srv: checkSrvSource, appbolaget: checkAppbolagetSource, uddevalla: checkUddevallaSource, borlange: checkBorlangeSource, roslagsvatten: checkRoslagsvattenSource, msva: checkMsvaSource, telge: checkTelgeSource, vakin: checkVakinSource, miva: checkMivaSource, edp: checkEdpSource }
+  const checks = { svoa: checkSvoaSource, vasyd: checkVasydSource, nsr: checkNsrSource, srv: checkSrvSource, appbolaget: checkAppbolagetSource, uddevalla: checkUddevallaSource, borlange: checkBorlangeSource, roslagsvatten: checkRoslagsvattenSource, msva: checkMsvaSource, telge: checkTelgeSource, vakin: checkVakinSource, fetchplanner: checkFetchPlannerSource, edp: checkEdpSource }
   const check = checks[source.config.system]
   const direct = await check(source, probes[source.id], today, fetchFn)
   if (!unreachableFromHere(direct)) return direct
   // Fungerar källan från sajten är det bara GitHub som stängs ute, och det är inget att larma om.
-  // NSR:s, SRV:s, Appbolagets, Uddevallas, Borlänges, Roslagsvattens, MSVA:s, Telges, Vakins och Mivas kontrolladresser är adress-id; sajten söker på gatan och orten i dem.
-  const siteProbe = ['nsr', 'srv', 'appbolaget', 'uddevalla', 'borlange', 'roslagsvatten', 'msva', 'telge', 'vakin', 'miva'].includes(source.config.system) ? (queryFromAddressId(probes[source.id])?.query ?? probes[source.id]) : probes[source.id]
+  // NSR:s, SRV:s, Appbolagets, Uddevallas, Borlänges, Roslagsvattens, MSVA:s, Telges, Vakins och FetchPlanner-källornas kontrolladresser är adress-id; sajten söker på gatan och orten i dem.
+  const siteProbe = ['nsr', 'srv', 'appbolaget', 'uddevalla', 'borlange', 'roslagsvatten', 'msva', 'telge', 'vakin', 'fetchplanner'].includes(source.config.system) ? (queryFromAddressId(probes[source.id])?.query ?? probes[source.id]) : probes[source.id]
   const site = await checkViaSite(source, siteProbe, today, fetchFn)
   if (site.state === 'fungerar') return { ...direct, ...site, error: direct.error }
   return { ...direct, error: `${direct.error}. Via sajten: ${site.error ?? site.state}` }
