@@ -295,6 +295,19 @@ describe('ResultPage', () => {
     expect(await screen.findByText('Inga kommande tömningar i schemat än')).toBeInTheDocument()
   })
 
+  it('visar källans meddelande medan det gäller', async () => {
+    fake = makeProvider({ getAddress: async (id) => ({ ...villa, id, sourceId: 'avesta' }), getSchedule: async () => schedule })
+    renderAt('/avesta/krylbo-storgatan-12b', '2026-11-20')
+    expect(await screen.findByRole('heading', { name: 'Hämtrutterna läggs om' })).toBeInTheDocument()
+  })
+
+  it('visar inget meddelande innan det börjar gälla', async () => {
+    fake = makeProvider({ getAddress: async (id) => ({ ...villa, id, sourceId: 'avesta' }), getSchedule: async () => schedule })
+    renderAt('/avesta/krylbo-storgatan-12b', '2026-10-30')
+    expect(await screen.findByRole('button', { name: 'Lägg till i kalender' })).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Hämtrutterna läggs om' })).toBeNull()
+  })
+
   it('visar Avestas besked när alla tömningar har passerat', async () => {
     renderAt('/avesta/krylbo-storgatan-12b', '2027-03-01')
     await vi.waitFor(() => resolveSchedule!())

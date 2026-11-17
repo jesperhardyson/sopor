@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router'
 import { streetAndLocality } from '@/domain/address'
 import { formatLong, todayInStockholm } from '@/domain/dates'
+import { activeMessages } from '@/domain/messages'
 import { nextPickup, scheduleEnd, upcoming } from '@/domain/schedule'
 import type { Address } from '@/domain/types'
 import { findSaved, storeSchedule } from '@/lib/storage'
@@ -25,6 +26,7 @@ import { CalendarSheet } from '../sheets/CalendarSheet'
 import { SaveSheet } from '../sheets/SaveSheet'
 import { NotFound } from '../search/NotFound'
 import { usePageTitle } from '../hooks/usePageTitle'
+import { SourceMessages } from '../result/SourceMessages'
 
 const dot = "inline-flex items-center before:inline-block before:w-5 before:text-center before:content-['·']"
 const page = 'mx-auto flex w-full max-w-[920px] flex-col gap-5 px-5 pt-1 pb-8 md:px-8 md:pt-4 lg:gap-7 lg:px-0 lg:pb-20'
@@ -197,6 +199,7 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
         <StaleNotice sourceName={source.name} fetchedAt={formatLong(state.fetchedAt)} onRetry={retry} />
       )}
       {end?.kind === 'until' && end.soon && <ScheduleEndingNotice sourceName={source.name} />}
+      <SourceMessages messages={activeMessages(source.messages, today)} sourceName={source.name} />
       {/* Källan ligger sist på mobil men under vänsterspalten på desktop, där högerspalten spänner över båda raderna. */}
       <div className="flex flex-col gap-5 lg:grid lg:grid-cols-[minmax(0,1fr)_360px] lg:grid-rows-[auto_1fr] lg:items-start lg:gap-x-10">
         <div className="flex min-w-0 flex-col gap-5">
