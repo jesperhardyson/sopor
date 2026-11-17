@@ -537,6 +537,20 @@ describe('ResultPage för ett område', () => {
     expect(screen.queryByText(/beräknad/i)).toBeNull()
   })
 
+  it('visar nästa tömning först, sedan källans meddelande och sist området ihopfällt', async () => {
+    fake = areaProvider({ getSchedule: async () => ({ ...areaSchedule, events: [{ date: '2026-11-24', fractions: ['mat'] }] }) })
+    renderAt('/avesta/trakt-7', '2026-11-20')
+    const next = await screen.findByRole('region', { name: 'Nästa tömning' })
+    const message = await screen.findByRole('heading', { name: 'Hämtrutterna läggs om' })
+    const area = await screen.findByRole('group', { name: /Om Trakt 7/ })
+    const before = (a: Element, b: Element) => Boolean(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING)
+    expect(before(next, message)).toBe(true)
+    expect(before(message, area)).toBe(true)
+    expect(area).not.toHaveAttribute('open')
+    await userEvent.click(within(area).getByText(/Om Trakt 7/))
+    expect(area).toHaveAttribute('open')
+  })
+
   it('utelämnar rubriken om andra hämtdagar när området saknar sådana', async () => {
     fake = areaProvider({ listAreas: async () => ({ ...index, areas: [{ ...trakt7, otherDays: [] }] }) })
     renderAt('/avesta/trakt-7')

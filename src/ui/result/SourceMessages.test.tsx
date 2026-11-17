@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 import type { SourceMessage } from '@/domain/messages'
 import { SourceMessages } from './SourceMessages'
@@ -22,5 +23,17 @@ describe('SourceMessages', () => {
   it('visar ingenting utan meddelanden', () => {
     const { container } = render(<SourceMessages messages={[]} sourceName="Avesta AB" />)
     expect(container).toBeEmptyDOMElement()
+  })
+
+  it('kan visa bara början av texten och fälla ut resten', async () => {
+    render(<SourceMessages messages={[{ ...base, url: 'https://avesta.test/nyheter' }]} sourceName="Avesta AB" collapsible />)
+    const toggle = screen.getByRole('button', { name: 'Visa hela meddelandet' })
+    expect(toggle).toHaveAttribute('aria-expanded', 'false')
+    expect(screen.getByText('Schemat kan bli fel.')).toHaveClass('line-clamp-2')
+    expect(screen.queryByRole('link')).toBeNull()
+    await userEvent.click(toggle)
+    expect(screen.getByRole('button', { name: 'Visa mindre' })).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.getByText('Schemat kan bli fel.')).not.toHaveClass('line-clamp-2')
+    expect(screen.getByRole('link', { name: 'Läs mer hos Avesta AB' })).toBeInTheDocument()
   })
 })

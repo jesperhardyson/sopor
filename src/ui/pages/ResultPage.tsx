@@ -204,12 +204,12 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
         <StaleNotice sourceName={source.name} fetchedAt={formatLong(state.fetchedAt)} onRetry={retry} />
       )}
       {end?.kind === 'until' && end.soon && <ScheduleEndingNotice sourceName={source.name} />}
-      {messages}
       {/* Källan ligger sist på mobil men under vänsterspalten på desktop, där högerspalten spänner över båda raderna. */}
       <div className="flex flex-col gap-5 lg:grid lg:grid-cols-[minmax(0,1fr)_360px] lg:grid-rows-[auto_1fr] lg:items-start lg:gap-x-10">
         <div className="flex min-w-0 flex-col gap-5">
-          {area && areas.status === 'ready' && <AreaInfo area={area} explanation={areas.index.explanation} />}
           {next ? <NextPickup event={next} today={today} note={schedule.note} /> : <EmptyState note={scheduleEndNote(end, source.publishing) ?? source.emptyScheduleNote} />}
+          {/* Schemat först. Meddelandet står under det datum det gäller, kort tills man fäller ut det. */}
+          <SourceMessages messages={activeMessages(source.messages, today)} sourceName={source.name} collapsible />
           {hasCalendarFile(source, schedule.events.length) && (
             <button
               type="button"
@@ -223,6 +223,7 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
           )}
           {coming.length > 0 && <UpcomingList events={coming} today={today} />}
           {end?.kind === 'until' && <ScheduleValidity until={end.until} reason={source.publishing} />}
+          {area && areas.status === 'ready' && <AreaInfo area={area} explanation={areas.index.explanation} />}
         </div>
         <div className="flex flex-col gap-5 lg:row-span-2">
           {schedule.events.length > 0 && (
