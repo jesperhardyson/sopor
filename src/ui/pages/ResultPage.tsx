@@ -167,10 +167,14 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
     </div>
   )
 
+  // Meddelandet följer med sajten, så det visas även när schemat inte gått att hämta.
+  const messages = <SourceMessages messages={activeMessages(source.messages, today)} sourceName={source.name} />
+
   if (state.status === 'loading') {
     return (
       <div className={page}>
         {header}
+        {messages}
         <LoadingState sourceName={source.name} />
       </div>
     )
@@ -180,6 +184,7 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
     return (
       <div className={page}>
         {header}
+        {messages}
         <ErrorState onRetry={retry} />
       </div>
     )
@@ -199,7 +204,7 @@ export function ResultPage({ today = todayInStockholm() }: { today?: string }) {
         <StaleNotice sourceName={source.name} fetchedAt={formatLong(state.fetchedAt)} onRetry={retry} />
       )}
       {end?.kind === 'until' && end.soon && <ScheduleEndingNotice sourceName={source.name} />}
-      <SourceMessages messages={activeMessages(source.messages, today)} sourceName={source.name} />
+      {messages}
       {/* Källan ligger sist på mobil men under vänsterspalten på desktop, där högerspalten spänner över båda raderna. */}
       <div className="flex flex-col gap-5 lg:grid lg:grid-cols-[minmax(0,1fr)_360px] lg:grid-rows-[auto_1fr] lg:items-start lg:gap-x-10">
         <div className="flex min-w-0 flex-col gap-5">

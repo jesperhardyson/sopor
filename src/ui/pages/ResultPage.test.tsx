@@ -298,7 +298,27 @@ describe('ResultPage', () => {
   it('visar källans meddelande medan det gäller', async () => {
     fake = makeProvider({ getAddress: async (id) => ({ ...villa, id, sourceId: 'avesta' }), getSchedule: async () => schedule })
     renderAt('/avesta/krylbo-storgatan-12b', '2026-11-20')
+    expect(await screen.findByRole('button', { name: 'Lägg till i kalender' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Hämtrutterna läggs om' })).toBeInTheDocument()
+  })
+
+  it('visar källans meddelande också när schemat inte går att hämta', async () => {
+    fake = makeProvider({
+      getAddress: async (id) => ({ ...villa, id, sourceId: 'avesta' }),
+      getSchedule: async () => {
+        throw new Error('nere')
+      },
+    })
+    renderAt('/avesta/krylbo-storgatan-12b', '2026-11-20')
+    expect(await screen.findByRole('button', { name: 'Försök igen' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Hämtrutterna läggs om' })).toBeInTheDocument()
+  })
+
+  it('visar källans meddelande medan schemat laddas', async () => {
+    fake = makeProvider({ getAddress: async (id) => ({ ...villa, id, sourceId: 'avesta' }) })
+    renderAt('/avesta/krylbo-storgatan-12b', '2026-11-20')
     expect(await screen.findByRole('heading', { name: 'Hämtrutterna läggs om' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Lägg till i kalender' })).toBeNull()
   })
 
   it('visar inget meddelande innan det börjar gälla', async () => {
