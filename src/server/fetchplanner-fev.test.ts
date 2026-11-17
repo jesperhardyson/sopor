@@ -96,6 +96,19 @@ describe('FetchPlanner hos Falu Energi & Vatten', () => {
     expect(fetchFn).toHaveBeenCalledTimes(1)
   })
 
+  it('hoppar över kärl vars datum är tomma texter, som FEV skriver dem (Ryckepungsvägen 1)', async () => {
+    const body = page({
+      address: 'Ryckepungsvägen 1',
+      city: 'Falun',
+      trips: [],
+      containers: [
+        { typeText: 'Pappersförpackningar', pickupDateIso: '', nextPickupDateIso: '', hasCalendars: false },
+        { typeText: 'Matavfall', pickupDateIso: '2026-11-23T23:00:00.000Z', nextPickupDateIso: '2026-12-07T23:00:00.000Z', hasCalendars: true },
+      ],
+    })
+    expect(await plannerTrips(FEV, { address: 'Ryckepungsvägen 1', city: 'Falun' }, respond(body))).toEqual([{ text: '', types: ['Matavfall'], first: '2026-11-24', next: '2026-12-08', ownNext: true }])
+  })
+
   it('hoppar över kärl utan datum', async () => {
     const body = page({ address: 'Ekvägen 1', city: 'Falun', trips: [], containers: [{ typeText: 'Restavfall' }, { typeText: 'Matavfall', pickupDateIso: '2026-11-26T23:00:00.000Z' }] })
     expect(await plannerTrips(FEV, { address: 'Ekvägen 1', city: 'Falun' }, respond(body))).toEqual([{ text: '', types: ['Matavfall'], first: '2026-11-27', ownNext: true }])
