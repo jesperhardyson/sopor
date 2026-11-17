@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { isLive, SOURCES, type Source } from '../src/sources/index.js'
 import { plannerAddressId } from '../src/server/fetchplanner.js'
+import { vomAddressId } from '../src/server/vom.js'
 import { formatTable, PROBES, runChecks } from './monitor-sources'
 import type { SourceResult } from './source-checks'
 
@@ -26,6 +27,12 @@ describe('kontrolladresserna', () => {
   it('har FetchPlanner-källornas kontrolladresser som adress-id', () => {
     expect(PROBES.miva).toBe(plannerAddressId('Nygatan 2', 'ÖRNSKÖLDSVIK'))
     expect(PROBES.fev).toBe(plannerAddressId('Ekvägen 1', 'FALUN'))
+  })
+
+  it('har VoM:s kontrolladresser som adress-id', () => {
+    expect(PROBES['vom-harjedalen']).toBe(vomAddressId('algatan 1', 'sveg'))
+    expect(PROBES['vom-berg']).toBe(vomAddressId('svenstagatan 1', 'svenstavik'))
+    expect(PROBES['vom-bracke']).toBe(vomAddressId('bangatan 2', 'bräcke'))
   })
 
   it('har VA Syds kontrolladress', () => {
