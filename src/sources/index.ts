@@ -103,8 +103,8 @@ const dvaaSource = (id: string, kommun: { code: string; name: string }): Source 
   selection: 'area',
   publishing: 'Dala Vatten och Avfall publicerar schemat för ett år i taget.',
   areaNotice: {
-    title: 'Kontrollera att trakten stämmer',
-    text: 'Du har valt området själv, eftersom Dala Vatten och Avfall inte visar öppet vilka adresser som hör till vilken trakt. Väljer du fel område kan du missa din tömning. Schemat gäller helårskunder, inte fritidshus.',
+    title: 'Kontrollera att området stämmer',
+    text: 'Du har valt området själv, eftersom Dala Vatten och Avfall inte visar öppet vilka adresser som hör till vilket område. Väljer du fel område kan du missa din tömning. Schemat gäller helårskunder, inte fritidshus.',
   },
   emptyScheduleNote: {
     title: 'Nästa års schema är inte publicerat än',
