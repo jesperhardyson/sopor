@@ -11,9 +11,10 @@ Appen finns som testversion i Homey App Store: [homey.app/a/se.hardyson.sopor/te
 - **Adress:** en enhet per adress. Den visar nästa hämtning, "Dagar kvar", "I morgon" och en rad per avfallstyp. Avfallstyper du inte har kan döljas.
 - **Sopkärl:** en enhet per kärl, med de avfallstyper du väljer. Den visar nästa tömning och har knappen "Utställt", som slås av natten efter tömningen.
 - **Flödeskort:**
-  - *När:* sopor hämtas i morgon (vid enhetens påminnelsetid) eller i dag (vid morgontiden), hämtschemat ändrades, ett sopkärl töms i morgon eller i dag, eller ställdes ut.
+  - *När:* sopor hämtas i morgon (vid enhetens påminnelsetid) eller i dag (vid morgontiden), hämtschemat ändrades, källan har ett nytt meddelande, ett sopkärl töms i morgon eller i dag, eller ställdes ut.
   - *Och:* en avfallstyp hämtas (inte) i dag, i morgon, i övermorgon eller om N dagar, och ett sopkärl är (inte) utställt.
   - *Då:* uppdatera hämtschemat, markera ett sopkärl som utställt eller intaget, och "vilka sopor hämtas …?" (Advanced Flow).
+- **Meddelanden från källan:** när källan meddelar något, till exempel att hämtrutterna läggs om, visas det som en varning på adressens enhet medan det gäller. Triggern *Källan har ett nytt meddelande* går en gång per meddelande, med `rubrik`, `text` och `lank` (tom när källan inte har någon sida om saken).
 - **Widget:** "Nästa hämtning" för Homeys dashboards.
 
 Vilka kommuner som finns syns på [sopor.hardyson.se/bidra](https://sopor.hardyson.se/bidra#kommuner).
