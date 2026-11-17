@@ -1,9 +1,11 @@
-import { ChevronRight, Smartphone, Trash2 } from 'lucide-react'
+import { ChevronRight, Megaphone, Smartphone, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router'
 import { daysBetween, formatLong, formatShort, relativeDayLabel, todayInStockholm } from '@/domain/dates'
+import { activeMessages } from '@/domain/messages'
 import { nextPickup, SCHEDULE_ENDING_DAYS } from '@/domain/schedule'
 import { streetAndLocality } from '@/domain/address'
+import { getSource } from '@/sources'
 import { clearSaved, loadSaved, removeSaved, renameSaved, type SavedAddress } from '@/lib/storage'
 import { FractionIcon } from '../components/FractionIcon'
 import { useSchedule } from '../hooks/useSchedule'
@@ -16,6 +18,7 @@ function SavedCard({ saved, today }: { saved: SavedAddress; today: string }) {
   const next = 'schedule' in state ? nextPickup(state.schedule, today) : null
   const until = 'schedule' in state ? state.schedule.validTo : undefined
   const left = until ? daysBetween(today, until) : -1
+  const messages = activeMessages(getSource(saved.sourceId)?.messages, today)
   return (
     <Link
       to={`/${saved.sourceId}/${saved.addressId}`}
@@ -35,6 +38,12 @@ function SavedCard({ saved, today }: { saved: SavedAddress; today: string }) {
             <span className="text-text-2">· {relativeDayLabel(daysBetween(today, next.date))}</span>
           </span>
         )}
+        {messages.map((m) => (
+          <span key={m.id} className="flex items-center gap-1 text-[13px] font-semibold text-warn">
+            <Megaphone className="size-3.5 shrink-0" aria-hidden />
+            <span className="truncate">{m.title}</span>
+          </span>
+        ))}
         {until && left >= 0 && left <= SCHEDULE_ENDING_DAYS && (
           <span className="text-[13px] font-semibold text-warn">
             Schemat slutar {formatLong(until).day} {formatLong(until).month.slice(0, 3)}
