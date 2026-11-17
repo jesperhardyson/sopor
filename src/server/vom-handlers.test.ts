@@ -35,8 +35,18 @@ describe('VoM i sajtens API', () => {
     expect(body.schedule.events[0]).toEqual({ date: '2026-11-30', fractions: ['rest', 'mat'], estimated: true })
   })
 
-  it('ger 404 för ett id som inte finns i listan', async () => {
-    expect((await handleSchedule(url(`/api/schema?source=vom-harjedalen&id=${encodeURIComponent(vomAddressId('algatan 99', 'sveg'))}`), opts())).status).toBe(404)
+  it('ger 502 för ett id som inte finns i listan, så att kalenderprenumerationen behåller sina datum', async () => {
+    const missing = encodeURIComponent(vomAddressId('algatan 99', 'sveg'))
+    expect((await handleSchedule(url(`/api/schema?source=vom-harjedalen&id=${missing}`), opts())).status).toBe(502)
+    expect((await handleIcs(url(`/api/ics?source=vom-harjedalen&file=${missing}.ics`), opts())).status).toBe(502)
+  })
+
+  it('filtrerar på orten innan träffarna begränsas till 50', async () => {
+    const rows = [...Array.from({ length: 60 }, (_, i) => ({ hamtstalle: `storgatan ${i + 1}`, ort: 'sveg', tbfurenhkorlistarad_strtomningsfrekvenskod: 'h211' })), { hamtstalle: 'storgatan 1', ort: 'funäsdalen', tbfurenhkorlistarad_strtomningsfrekvenskod: 'h211' }]
+    const fetchFn = vi.fn(async () => new Response(JSON.stringify({ allAddresses: rows }), { headers: { 'Content-Type': 'application/json' } })) as unknown as typeof fetch
+    const o = { ...opts(), fetchFn }
+    expect((await (await handleSearch(url('/api/sok?q=Storgatan, Funäsdalen&sources=vom-harjedalen'), o)).json()).addresses.map((a: { locality: string }) => a.locality)).toEqual(['Funäsdalen'])
+    expect((await (await handleSearch(url('/api/sok?q=Storgatan&sources=vom-harjedalen'), o)).json()).addresses).toHaveLength(50)
   })
 
   it('ger ett tomt schema för en okänd kod', async () => {

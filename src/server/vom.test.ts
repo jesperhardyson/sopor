@@ -72,7 +72,6 @@ describe('sökningen', () => {
 
   it('kastar SourceError när listan har ett annat format', async () => {
     await expect(vomSearch(RESOURCE, 'algatan', respond('{"adresser":[]}'))).rejects.toThrow(SourceError)
-    await expect(vomSearch(RESOURCE, 'algatan', respond('{"allAddresses":[{"ort":"sveg"}]}'))).rejects.toThrow(SourceError)
   })
 
   it('hämtar listan en gång och sparar den i minnet', async () => {
@@ -80,6 +79,50 @@ describe('sökningen', () => {
     await vomSearch(RESOURCE, 'algatan', fetchFn)
     await vomSearch(RESOURCE, 'hede', fetchFn)
     expect(fetchFn).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('listan', () => {
+  const list = (rows: unknown[]) => JSON.stringify({ allAddresses: rows })
+  const row = (hamtstalle: string, ort = 'sveg', code = 'h211') => ({ hamtstalle, ort, tbfurenhkorlistarad_strtomningsfrekvenskod: code })
+
+  it('hoppar över enstaka trasiga rader i stället för att ge fel för hela kommunen', async () => {
+    const found = await vomSearch(RESOURCE, 'algatan', respond(list([row('algatan 1'), { hamtstalle: 'algatan 2', ort: null }, null])))
+    expect(found.map((a) => a.building.street)).toEqual(['Algatan 1'])
+  })
+
+  it('kastar SourceError när ingen rad går att läsa', async () => {
+    await expect(vomSearch(RESOURCE, 'algatan', respond(list([{ ort: 'sveg' }, { hamtstalle: 1 }])))).rejects.toThrow(SourceError)
+  })
+
+  it('ger alla träffar, så att orten kan filtreras före gränsen', async () => {
+    const rows = [...Array.from({ length: 60 }, (_, i) => row(`storgatan ${i + 1}`, 'sveg')), row('storgatan 1', 'funäsdalen')]
+    expect(await vomSearch(RESOURCE, 'storgatan', respond(list(rows)))).toHaveLength(61)
+  })
+
+  it('hämtar listan en gång för samtidiga anrop', async () => {
+    const fetchFn = respond()
+    await Promise.all([vomSearch(RESOURCE, 'algatan', fetchFn), vomSearch(RESOURCE, 'hede', fetchFn), vomFind(RESOURCE, 'x-1', fetchFn)])
+    expect(fetchFn).toHaveBeenCalledTimes(1)
+  })
+
+  it('använder den gamla listan när en ny hämtning misslyckas', async () => {
+    vi.useFakeTimers({ now: new Date('2026-11-17T10:00:00Z') })
+    try {
+      await vomSearch(RESOURCE, 'algatan', respond())
+      vi.setSystemTime(new Date('2026-11-17T17:00:00Z'))
+      const failing = vi.fn(async () => new Response('fel', { status: 503 })) as unknown as typeof fetch
+      expect(await vomSearch(RESOURCE, 'algatan 1', failing)).toHaveLength(4)
+      expect(failing).toHaveBeenCalledTimes(1)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('kastar felet när det inte finns någon gammal lista', async () => {
+    const failing = vi.fn(async () => new Response('fel', { status: 503 })) as unknown as typeof fetch
+    await expect(vomSearch(RESOURCE, 'algatan', failing)).rejects.toThrow(SourceError)
+    expect((await vomSearch(RESOURCE, 'algatan', respond())).length).toBe(4)
   })
 })
 

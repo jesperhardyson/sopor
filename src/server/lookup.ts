@@ -192,10 +192,13 @@ async function lookupVakin(source: Source, id: string, origin: string, opts: Han
   return { status: 200, address: toAddress(source, found.building, places), schedule }
 }
 
-/** VoM: kommunens hela lista, så ett id som inte finns i den finns inte hos källan. Alla datum räknas fram ur koden. */
+/**
+ * VoM: alla datum räknas fram ur adressens kod. Ett id som saknas i listan ger 502, inte 404: en 404
+ * byter ut hela kalenderprenumerationen, och ett id kan försvinna när VoM rättar en ort ("vemhpn").
+ */
 async function lookupVom(source: Source, resource: string, id: string, opts: HandlerOptions): Promise<Lookup> {
   const found = await vomFind(resource, id, opts.fetchFn, opts.timeoutMs ?? 5000)
-  if (!found) return { status: 404 }
+  if (!found) return { status: 502 }
   return { status: 200, address: toAddress(source, found.building, opts.places), schedule: vomSchedule(found.code, todayInStockholm(opts.now)) }
 }
 

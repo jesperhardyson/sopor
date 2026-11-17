@@ -1,6 +1,6 @@
 # Spec: Härjedalen, Berg och Bräcke (Vatten och miljöresurs)
 
-Status: utkast, 2026-11-17. Härjedalen har flest besök av kommunerna utan källa i besöksstatistiken (fem besökare på en månad). Berg och Bräcke följer med, eftersom samma bolag och samma app täcker dem.
+Status: byggd, 2026-11-17. Härjedalen har flest besök av kommunerna utan källa i besöksstatistiken (fem besökare på en månad). Berg och Bräcke följer med, eftersom samma bolag och samma app täcker dem.
 
 ## Bakgrund
 
@@ -27,17 +27,19 @@ Kontrollerat 2026-11-17, med Sopors User-Agent:
 ## Beslut
 
 - **En källa per kommun**, som Roslagsvatten: `vom-harjedalen`, `vom-berg` och `vom-bracke`, med `name: 'Vatten och miljöresurs'` och `config: { system: 'vom', resource: '<sid-id>/<portlet-id>' }`. Kommunen kommer från källan, så Bräckes adresser med postorten Östersund hamnar i Bräcke. Id:na får aldrig ändras.
-- **Klienten** (`src/server/vom.ts`) hämtar kommunens lista och sparar den i minnet i sex timmar per instans. Svaren cachas dessutom i CDN:en som för andra källor.
+- **Klienten** (`src/server/vom.ts`) hämtar kommunens lista och sparar den i minnet i sex timmar per instans. Samtidiga anrop delar på en hämtning, och misslyckas en ny hämtning används den gamla listan. Enstaka trasiga rader hoppas över; går ingen rad att läsa är det nytt format. Svaren cachas dessutom i CDN:en som för andra källor.
 - **Adress-id:** `algatan-1_sveg-<hash>`, med `edpAddressId` och hashen `idHash("<hamtstalle>, <ort>")` på den trimmade texten med gemener. Formatet får aldrig ändras (regel 3), och tester låser det.
 - **Visningen:** första bokstaven med versal ("Algatan 1, Sveg", "Storsjö kapell"), och ensamma bokstäver efter numret med versaler ("Sonfjällsgatan 12 A-E"). Versal på varje ord blir fel på svenska ("Anders Pers Väg").
 - **Adresser som inte visas:** text med andra tecken än bokstäver, siffror, mellanslag, bindestreck, komma och punkt (`/`, parenteser, `+`). De kan inte ligga i ett adress-id i en URL. Bortfallet är omkring 1 %.
-- **Sökningen** jämför gatan i sökningen med början av adressen, utan hänsyn till versaler, som appens egen sökning. Orten filtreras som för andra live-källor. Högst 50 träffar.
+- **Sökningen** jämför gatan i sökningen med början av adressen, utan hänsyn till versaler, som appens egen sökning. Orten filtreras som för andra live-källor, och först därefter begränsas träffarna till 50.
 - **Datumen:**
   - `h2` med paritet: veckodagen i ISO-veckor med rätt paritet, tolv månader framåt (`weekRuleDates` med `every: 2` och `parity`). Vecka 53 och vecka 1 är båda udda, som i `docs/specs/2026-11-03-vecka-53.md` och som VoM:s egen sida räknar.
   - `h1`: veckodagen varje vecka, tolv månader framåt.
   - Första datumet är det första från och med i dag som passar koden.
   - **Alla datum är beräknade** (`estimated: true`, "ca"), eftersom källan inte ger något datum. Datum på röda dagar får varningen "kan flyttas", som för andra källor.
+  - Vecka 53 är inte bekräftad med VoM. Sidan säger bara "var fjortonde dag", men räknar själv med pariteten.
   - Andra koder (`h4xx`, `bud`, tomma): inget schema. Källan får en `emptyScheduleNote` som hänvisar till VoM:s kundservice.
+- **Ett id som saknas i listan ger 502, inte 404.** En 404 byter ut hela kalenderprenumerationen mot ett meddelande, och ett id kan försvinna när VoM rättar en ort eller en adress. Så gör också Stockholm och VA Syd.
 - **Fraktioner:** `rest` och `mat` vid varje tömning.
 - **Kontakt:** kundservice 010-251 53 15, kundservice@vattenmiljoresurs.se, [kontaktsidan](https://www.vattenmiljoresurs.se/harjedalen/kundservice/kontakta-oss) per kommun.
 

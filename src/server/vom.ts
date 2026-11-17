@@ -12,7 +12,7 @@ import { fetchJson, SourceError } from './http.js'
 
 export const VOM_URL = 'https://www.vattenmiljoresurs.se/appresource'
 const CACHE_MS = 6 * 60 * 60 * 1000
-const MAX_HITS = 50
+export const VOM_MAX_HITS = 50
 
 export interface VomAddress {
   building: EdpBuilding
@@ -65,34 +65,59 @@ function building(hamtstalle: string, ort: string): EdpBuilding {
 const usable = (hamtstalle: string) => /^[\p{L}\p{N}\s,.-]+$/u.test(hamtstalle) && /\p{L}/u.test(hamtstalle)
 
 const cache = new Map<string, { at: number; addresses: VomAddress[] }>()
+const pending = new Map<string, Promise<VomAddress[]>>()
 /** För testerna. */
-export const clearVomCache = () => cache.clear()
+export const clearVomCache = () => {
+  cache.clear()
+  pending.clear()
+}
 
-/** Kommunens alla adresser, sparade i minnet i sex timmar. Dubbletter tas bort. */
-export async function vomAddresses(resource: string, fetchFn?: typeof fetch, timeoutMs = 5000): Promise<VomAddress[]> {
-  const hit = cache.get(resource)
-  if (hit && Date.now() - hit.at < CACHE_MS) return hit.addresses
-  const body = await fetchJson<{ allAddresses?: unknown }>(`${VOM_URL}/${resource}/allAddresses`, {}, { fetchFn, timeoutMs })
-  if (!Array.isArray(body?.allAddresses)) throw unknownFormat()
+/** Raderna som adresser. Enstaka trasiga rader hoppas över, men går ingen rad att läsa har listan ändrats. */
+function parse(rows: unknown): VomAddress[] {
+  if (!Array.isArray(rows)) throw unknownFormat()
   const byId = new Map<string, VomAddress>()
-  for (const row of body.allAddresses as Partial<Row>[]) {
-    if (typeof row?.hamtstalle !== 'string' || typeof row.ort !== 'string') throw unknownFormat()
-    if (!usable(row.hamtstalle)) continue
+  for (const row of rows as Partial<Row>[]) {
+    if (typeof row?.hamtstalle !== 'string' || typeof row.ort !== 'string' || !usable(row.hamtstalle)) continue
     const b = building(row.hamtstalle, row.ort)
     const id = edpAddressId(b)
     if (!byId.has(id)) byId.set(id, { building: b, code: clean(row.tbfurenhkorlistarad_strtomningsfrekvenskod ?? '') })
   }
-  const addresses = [...byId.values()]
-  cache.set(resource, { at: Date.now(), addresses })
-  return addresses
+  if (rows.length > 0 && byId.size === 0) throw unknownFormat()
+  return [...byId.values()]
 }
 
-/** Adresser som börjar med gatan i sökningen, som appens egen sökning. Orten tas bort. */
+/**
+ * Kommunens alla adresser, sparade i minnet i sex timmar. Samtidiga anrop delar på en hämtning, och
+ * misslyckas en ny hämtning används den gamla listan.
+ */
+export async function vomAddresses(resource: string, fetchFn?: typeof fetch, timeoutMs = 5000): Promise<VomAddress[]> {
+  const hit = cache.get(resource)
+  if (hit && Date.now() - hit.at < CACHE_MS) return hit.addresses
+  let request = pending.get(resource)
+  if (!request) {
+    request = fetchJson<{ allAddresses?: unknown }>(`${VOM_URL}/${resource}/allAddresses`, {}, { fetchFn, timeoutMs })
+      .then((body) => parse(body?.allAddresses))
+      .then((addresses) => {
+        cache.set(resource, { at: Date.now(), addresses })
+        return addresses
+      })
+      .finally(() => pending.delete(resource))
+    pending.set(resource, request)
+  }
+  try {
+    return await request
+  } catch (error) {
+    if (hit) return hit.addresses
+    throw error
+  }
+}
+
+/** Adresser som börjar med gatan i sökningen, som appens egen sökning. Orten tas bort och filtreras av den som anropar. */
 export async function vomSearch(resource: string, q: string, fetchFn?: typeof fetch, timeoutMs = 5000): Promise<VomAddress[]> {
   const street = clean(q.split(',')[0])
   if (!street) return []
   const all = await vomAddresses(resource, fetchFn, timeoutMs)
-  return all.filter((a) => clean(a.building.raw).startsWith(street)).slice(0, MAX_HITS)
+  return all.filter((a) => clean(a.building.raw).startsWith(street))
 }
 
 export async function vomFind(resource: string, id: string, fetchFn?: typeof fetch, timeoutMs = 5000): Promise<VomAddress | null> {

@@ -18,7 +18,7 @@ import { roslagsvattenDetails, roslagsvattenSearch } from './roslagsvatten.js'
 import { uddevallaDetails, uddevallaSearch } from './uddevalla.js'
 import { borlangeSearch } from './borlange.js'
 import { msvaSearch } from './msva.js'
-import { vomSearch } from './vom.js'
+import { VOM_MAX_HITS, vomSearch } from './vom.js'
 import { telgeSearch } from './telge.js'
 import { plannerSearch } from './fetchplanner.js'
 import { vakinSearch } from './vakin.js'
@@ -106,6 +106,7 @@ export async function searchLiveSource(source: LiveSource, street: string, place
     if (source.config.system === 'vom') {
       return (await vomSearch(source.config.resource, streetOnly, opts.fetchFn, opts.timeoutMs ?? 5000))
         .filter((a) => inPlace(a.building))
+        .slice(0, VOM_MAX_HITS)
         .map((a) => toAddress(source, a.building, opts.places))
     }
     if (source.config.system === 'telge') {
