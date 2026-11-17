@@ -18,3 +18,8 @@ asyncio_mode = "auto"
 [tool.ruff]
 target-version = "py314"
 line-length = 120
+
+[tool.uv]
+# Home Assistant 2026.10 låser Pillow 12.3.0, som har kända sårbarheter.
+# Lyft den tills pytest-homeassistant-custom-component följer med HA 2026.11 (Pillow 13).
+override-dependencies = ["pillow>=13.0.0"]
