@@ -152,6 +152,7 @@ export const ALL_SOURCES: Source[] = [
         id: 'nya-rutter-2026',
         title: 'Hämtrutterna läggs om',
         text: 'Avesta Vatten och Avfall lägger om hämtrutterna under hösten 2026 när kärlen för förpackningar ställs ut. Schemat här kan bli fel. Kontrollera dina tömningsdagar på Mina sidor hos Avesta Vatten.',
+        url: 'https://avestavatten.se/avfall/Narsorterat/',
         validFrom: '2026-11-17',
         validTo: '2027-03-31',
       },
