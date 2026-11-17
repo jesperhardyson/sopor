@@ -12,13 +12,14 @@ import { useSchedule } from '../hooks/useSchedule'
 import { ForgetAll } from './ForgetAll'
 import { NameIcon } from './NameIcon'
 
-function SavedCard({ saved, today }: { saved: SavedAddress; today: string }) {
+/** `withMessages` bara på första kortet per källa, så att samma besked inte upprepas. */
+function SavedCard({ saved, today, withMessages }: { saved: SavedAddress; today: string; withMessages: boolean }) {
   const [state] = useSchedule(saved.sourceId, saved.addressId)
   // Även det sparade schemat, så att kortet inte blinkar till medan källan frågas
   const next = 'schedule' in state ? nextPickup(state.schedule, today) : null
   const until = 'schedule' in state ? state.schedule.validTo : undefined
   const left = until ? daysBetween(today, until) : -1
-  const messages = activeMessages(getSource(saved.sourceId)?.messages, today)
+  const messages = withMessages ? activeMessages(getSource(saved.sourceId)?.messages, today) : []
   return (
     <Link
       to={`/${saved.sourceId}/${saved.addressId}`}
@@ -79,7 +80,7 @@ export function SavedList({ today = todayInStockholm() }: { today?: string }) {
         </button>
       </div>
 
-      {saved.map((s) => {
+      {saved.map((s, i) => {
         const key = `${s.sourceId}/${s.addressId}`
         if (editing) {
           return (
@@ -107,7 +108,8 @@ export function SavedList({ today = todayInStockholm() }: { today?: string }) {
             </div>
           )
         }
-        return <SavedCard key={key} saved={s} today={today} />
+        const firstOfSource = saved.findIndex((x) => x.sourceId === s.sourceId) === i
+        return <SavedCard key={key} saved={s} today={today} withMessages={firstOfSource} />
       })}
 
       {editing && <ForgetAll label="Glöm alla adresser på den här enheten" onConfirm={() => setSaved(clearSaved())} />}

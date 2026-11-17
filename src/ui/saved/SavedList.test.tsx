@@ -66,7 +66,9 @@ describe('SavedList', () => {
   it('visar rubriken på källans meddelande medan det gäller', async () => {
     schedule = { bins: [], updatedAt: '2026-11-01', events: [{ date: '2026-11-24', fractions: ['rest'] }] }
     setup('2026-11-20')
-    expect(await screen.findAllByText('Hämtrutterna läggs om')).toHaveLength(2)
+    // Två sparade Avesta-adresser, men meddelandet står bara på den första.
+    expect(await screen.findAllByText('Tis 24 nov')).toHaveLength(2)
+    expect(screen.getAllByText('Hämtrutterna läggs om')).toHaveLength(1)
   })
 
   it('visar inget meddelande innan det gäller', async () => {
