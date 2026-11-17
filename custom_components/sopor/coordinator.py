@@ -14,11 +14,33 @@ from homeassistant.util import dt as dt_util
 
 from .api import Schedule, SoporClient, SoporError
 from .const import CONF_HIDDEN, DOMAIN, UPDATE_INTERVAL
-from .logic import ScheduleChange, schedule_changes, today_in_stockholm, without_fractions
+from .logic import (
+    ScheduleChange,
+    active_messages,
+    lang_of,
+    message_text,
+    schedule_changes,
+    today_in_stockholm,
+    without_fractions,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
 type SoporConfigEntry = ConfigEntry[SoporCoordinator]
+
+
+def message_issue_prefix(source: str) -> str:
+    """Ärendena för källans meddelanden. Ett per meddelande och källa, så att två adresser hos samma källa delar det."""
+    return f"message_{source}_"
+
+
+@callback
+def delete_message_issues(hass: HomeAssistant, source: str, keep: set[str] | None = None) -> None:
+    """Tar bort källans ärenden för meddelanden som inte finns i `keep`."""
+    prefix = message_issue_prefix(source)
+    for domain, issue_id in list(ir.async_get(hass).issues):
+        if domain == DOMAIN and issue_id.startswith(prefix) and issue_id not in (keep or set()):
+            ir.async_delete_issue(hass, DOMAIN, issue_id)
 
 
 def store_for(hass: HomeAssistant, entry_id: str) -> Store[dict[str, Any]]:
@@ -61,6 +83,35 @@ class SoporCoordinator(DataUpdateCoordinator[Schedule]):
             return False
         self.async_set_updated_data(stored["schedule"])
         return True
+
+    @callback
+    def async_update_listeners(self) -> None:
+        """Håller ärendena för källans meddelanden i takt med datan och dagens datum."""
+        super().async_update_listeners()
+        self._sync_message_issues()
+
+    @callback
+    def _sync_message_issues(self) -> None:
+        if self.data is None:
+            return
+        source = self.config_entry.data["source"]
+        prefix = message_issue_prefix(source)
+        active = active_messages(self.data, self.today)
+        for message in active:
+            # Ett ignorerat ärende förblir ignorerat när det skapas igen med samma id
+            ir.async_create_issue(
+                self.hass,
+                DOMAIN,
+                prefix + message["id"],
+                is_fixable=False,
+                severity=ir.IssueSeverity.WARNING,
+                translation_key="source_message",
+                translation_placeholders={
+                    "title": message["title"],
+                    "text": message_text(message, lang_of(self.hass.config.language)),
+                },
+            )
+        delete_message_issues(self.hass, source, {prefix + m["id"] for m in active})
 
     @callback
     def async_tick(self, now: datetime | None = None) -> None:
