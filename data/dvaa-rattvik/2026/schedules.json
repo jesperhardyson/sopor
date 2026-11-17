@@ -1,0 +1,1512 @@
+{
+  "year": 2026,
+  "source": "Dala Vatten och Avfall, Sophämtningsschema 2026, helårskund Rättvik, https://www.dalavattenavfall.se/avfall-och-atervinning/sophamtningsschema.html",
+  "validFrom": "2026-01-01",
+  "validTo": "2027-01-03",
+  "updatedAt": "2026-11-17",
+  "note": "Gäller helårskunder med egna kärl. Ställ ut kärlen senast 06.00 på hämtdagen. Hämtning sker också på helgdagar enligt schemat.",
+  "schedules": {
+    "jamn-mandag": {
+      "name": "Område 1 – måndag, jämn vecka",
+      "events": [
+        {
+          "date": "2026-01-05",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-01-19",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-02-02",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-02-16",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-03-02",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-03-16",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-03-30",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-04-13",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-04-27",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-05-11",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-05-25",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-06-08",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-06-22",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-07-06",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-07-20",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-08-03",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-08-17",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-08-31",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-09-14",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-09-28",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-10-12",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-10-26",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-11-09",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-11-23",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-07",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-21",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        }
+      ]
+    },
+    "jamn-tisdag": {
+      "name": "Område 2 – tisdag, jämn vecka",
+      "events": [
+        {
+          "date": "2026-01-06",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-01-20",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-02-03",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-02-17",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-03-03",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-03-17",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-03-31",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-04-14",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-04-28",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-05-12",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-05-26",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-06-09",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-06-23",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-07-07",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-07-21",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-08-04",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-08-18",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-09-01",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-09-15",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-09-29",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-10-13",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-10-27",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-11-10",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-11-24",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-08",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-22",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        }
+      ]
+    },
+    "jamn-onsdag": {
+      "name": "Område 3 – onsdag, jämn vecka",
+      "events": [
+        {
+          "date": "2026-01-07",
+          "fractions": [
+            "papper"
+          ]
+        },
+        {
+          "date": "2026-01-21",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-02-04",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-02-18",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-03-04",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-03-18",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-04-01",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-04-15",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-04-29",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-05-13",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-05-27",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-06-10",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-06-24",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-07-08",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-07-22",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-08-05",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-08-19",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-09-02",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-09-16",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-09-30",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-10-14",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-10-28",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-11-11",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-11-25",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-09",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-23",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        }
+      ]
+    },
+    "jamn-torsdag": {
+      "name": "Område 4 – torsdag, jämn vecka",
+      "events": [
+        {
+          "date": "2026-01-08",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-01-22",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-02-05",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-02-19",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-03-05",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-03-19",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-04-02",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-04-16",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-04-30",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-05-14",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-05-28",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-06-11",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-06-25",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-07-09",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-07-23",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-08-06",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-08-20",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-09-03",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-09-17",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-10-01",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-10-15",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-10-29",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-11-12",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-11-26",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-10",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-24",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        }
+      ]
+    },
+    "udda-mandag": {
+      "name": "Område 5 – måndag, udda vecka",
+      "events": [
+        {
+          "date": "2026-01-12",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-01-26",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-02-09",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-02-23",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-03-09",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-03-23",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-04-06",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-04-20",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-05-04",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-05-18",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-06-01",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-06-15",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-06-29",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-07-13",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-07-27",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-08-10",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-08-24",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-09-07",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-09-21",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-10-05",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-10-19",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-11-02",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-11-16",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-11-30",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-14",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-28",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        }
+      ]
+    },
+    "udda-tisdag": {
+      "name": "Område 6 – tisdag, udda vecka",
+      "events": [
+        {
+          "date": "2026-01-13",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-01-27",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-02-10",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-02-24",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-03-10",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-03-24",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-04-07",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-04-21",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-05-05",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-05-19",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-06-02",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-06-16",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-06-30",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-07-14",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-07-28",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-08-11",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-08-25",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-09-08",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-09-22",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-10-06",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-10-20",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-11-03",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-11-17",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-01",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-15",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-29",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        }
+      ]
+    },
+    "udda-onsdag": {
+      "name": "Område 7 – onsdag, udda vecka",
+      "events": [
+        {
+          "date": "2026-01-14",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-01-28",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-02-11",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-02-25",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-03-11",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-03-25",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-04-08",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-04-22",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-05-06",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-05-20",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-06-03",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-06-17",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-07-01",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-07-15",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-07-29",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-08-12",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-08-26",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-09-09",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-09-23",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-10-07",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-10-21",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-11-04",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-11-18",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-02",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-16",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-30",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        }
+      ]
+    },
+    "udda-torsdag": {
+      "name": "Område 8 – torsdag, udda vecka",
+      "events": [
+        {
+          "date": "2026-01-01",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-01-15",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-01-29",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-02-12",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-02-26",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-03-12",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-03-26",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-04-09",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-04-23",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-05-07",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-05-21",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-06-04",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-06-18",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-07-02",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-07-16",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-07-30",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-08-13",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-08-27",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-09-10",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-09-24",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-10-08",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-10-22",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-11-05",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-11-19",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-03",
+          "fractions": [
+            "papper",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-17",
+          "fractions": [
+            "rest",
+            "mat"
+          ]
+        },
+        {
+          "date": "2026-12-31",
+          "fractions": [
+            "plast",
+            "mat"
+          ]
+        }
+      ]
+    }
+  }
+}

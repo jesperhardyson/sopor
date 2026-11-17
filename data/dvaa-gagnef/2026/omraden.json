@@ -1,0 +1,245 @@
+{
+  "explanation": "Dala Vatten och Avfall visar sophämtningen i Gagnef per trakt på sin webbplats, men inte vilka adresser som hör till vilken trakt. Schemat gäller helårskunder med egna kärl.",
+  "help": "Osäker? Se dina hämtningsdagar i appen Mitt DVA, eller ring Dala Vatten och Avfall på 0247-44 100.",
+  "areas": [
+    {
+      "id": "jamn-tisdag",
+      "name": "Färmsnäs, Högsveden m.fl.",
+      "day": "Tisdag, jämn vecka",
+      "label": "Område 1",
+      "schedule": "jamn-tisdag",
+      "places": [
+        "Färmsnäs",
+        "Högsveden",
+        "Borgsheden",
+        "Nordanholen",
+        "Heden",
+        "Högberget",
+        "Lassas Hage",
+        "Lindbyn",
+        "Nordanbyn",
+        "Nyåkern"
+      ],
+      "streets": [
+        "Skampervägen"
+      ],
+      "searchTerms": [
+        "trakt 1"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "jamn-onsdag",
+      "name": "Björbo Centrum, Holarna m.fl.",
+      "day": "Onsdag, jämn vecka",
+      "label": "Område 2",
+      "schedule": "jamn-onsdag",
+      "places": [
+        "Björbo Centrum",
+        "Holarna",
+        "Nybyn",
+        "Gybäcksholan",
+        "Handbacken",
+        "Forsen",
+        "Gåsholmen",
+        "Källbäcken"
+      ],
+      "streets": [],
+      "searchTerms": [
+        "trakt 2"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "jamn-fredag",
+      "name": "Djurås Centrum, Skogen m.fl.",
+      "day": "Fredag, jämn vecka",
+      "label": "Område 3",
+      "schedule": "jamn-fredag",
+      "places": [
+        "Djurås Centrum",
+        "Skogen",
+        "Djurås By",
+        "Färjbacken",
+        "Kiltäppan"
+      ],
+      "streets": [
+        "Tägtvägen",
+        "Fagervägen",
+        "Skogsvägen"
+      ],
+      "searchTerms": [
+        "trakt 3"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "udda-mandag",
+      "name": "Gräv, Gråda m.fl.",
+      "day": "Måndag, udda vecka",
+      "label": "Område 4",
+      "schedule": "udda-mandag",
+      "places": [
+        "Gräv",
+        "Gråda",
+        "Gärde",
+        "Österfors",
+        "Nedre Tjärna",
+        "Kyrkbyn",
+        "Sörbyn",
+        "Tallbacken"
+      ],
+      "streets": [
+        "Kyrkbyvägen",
+        "Tegelbruksvägen",
+        "Rännarhedsvägen",
+        "Wernervägen"
+      ],
+      "searchTerms": [
+        "trakt 4"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "udda-tisdag",
+      "name": "Benarvet, Jugasåkern m.fl.",
+      "day": "Tisdag, udda vecka",
+      "label": "Område 5",
+      "schedule": "udda-tisdag",
+      "places": [
+        "Benarvet",
+        "Jugasåkern",
+        "Västanbäcken",
+        "Myrholen",
+        "Heden",
+        "Björka",
+        "By",
+        "Ellheden",
+        "Nysäl",
+        "Bröttjärna",
+        "Holarna",
+        "Stängsla",
+        "Backen",
+        "Ersholen"
+      ],
+      "streets": [],
+      "searchTerms": [
+        "trakt 5"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "udda-onsdag",
+      "name": "Mjälgen, Bodarna m.fl.",
+      "day": "Onsdag, udda vecka",
+      "label": "Område 6",
+      "schedule": "udda-onsdag",
+      "places": [
+        "Mjälgen",
+        "Bodarna",
+        "Myrheden",
+        "Arvslindan",
+        "Bäsna"
+      ],
+      "streets": [],
+      "searchTerms": [
+        "trakt 6"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "udda-torsdag",
+      "name": "Djurmo, Bäckan m.fl.",
+      "day": "Torsdag, udda vecka",
+      "label": "Område 7",
+      "schedule": "udda-torsdag",
+      "places": [
+        "Djurmo",
+        "Bäckan",
+        "Sifferbo"
+      ],
+      "streets": [],
+      "searchTerms": [
+        "trakt 7"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "udda-fredag",
+      "name": "Syrholen, Risholn m.fl.",
+      "day": "Fredag, udda vecka",
+      "label": "Område 8",
+      "schedule": "udda-fredag",
+      "places": [
+        "Syrholen",
+        "Risholn",
+        "Mossel",
+        "Bäckbyn",
+        "Svedjebyn",
+        "Sälje",
+        "Forsgärdet",
+        "Hagen",
+        "Holsåker"
+      ],
+      "streets": [],
+      "searchTerms": [
+        "trakt 8"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "jamn-mandag",
+      "name": "Övre Tjärna, Tjärna m.fl.",
+      "day": "Måndag, jämn vecka",
+      "label": "Område 9",
+      "schedule": "jamn-mandag",
+      "places": [
+        "Övre Tjärna",
+        "Tjärna",
+        "Stationsområdet",
+        "Moje",
+        "Gröntuv",
+        "Hampgårdarna",
+        "Holen",
+        "Prosgårdarna"
+      ],
+      "streets": [],
+      "searchTerms": [
+        "trakt 9"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "jamn-torsdag",
+      "name": "Rista, Mon m.fl.",
+      "day": "Torsdag, jämn vecka",
+      "label": "Område 10",
+      "schedule": "jamn-torsdag",
+      "places": [
+        "Rista",
+        "Mon",
+        "Lindan",
+        "Djur",
+        "Svedjan",
+        "Näset",
+        "Snobbrännan",
+        "Överbacka",
+        "Östtjärna",
+        "Västtjärna",
+        "Bomsarvet",
+        "Dunkarbacken",
+        "Gruvan",
+        "Nordåker",
+        "Gagnefsbyn",
+        "Nordbäck",
+        "Västerfors",
+        "Älvnäs"
+      ],
+      "streets": [],
+      "searchTerms": [
+        "trakt 10"
+      ],
+      "otherDays": []
+    }
+  ]
+}

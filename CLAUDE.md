@@ -7,3 +7,4 @@
 - Vercel: använd Vercel MCP eller `vercel` CLI. Sajten och preview-adresserna är publika (Vercel Authentication avstängd). Ändra inte skyddet utan att användaren ber om det.
 - Avesta har områdesval (`selection: 'area'`). Schemat täcker bara det som PDF:en anger, så nästa års schema läggs in för hand enligt `docs/kommuner/lagga-till-kommun.md`.
 - Säter har också områdesval. Schemat täcker bara vecka 45–53 2026, så fortsättningen läggs in för hand när kommunen har publicerat den (se `docs/specs/2026-11-04-sater-omradesval.md`).
+- Gagnef, Leksand, Rättvik och Vansbro (Dala Vatten och Avfall, `dvaa-*`) har områdesval. Bara 2026 är publicerat, så 2027 läggs in för hand när det kommer, och källans datum kontrolleras mot `src/data/dvaa.test.ts` (se `docs/specs/2026-11-17-dala-vatten-och-avfall.md`).

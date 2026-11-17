@@ -1,0 +1,204 @@
+{
+  "explanation": "Dala Vatten och Avfall visar sophämtningen i Rättvik per trakt på sin webbplats, men inte vilka adresser som hör till vilken trakt. Schemat gäller helårskunder med egna kärl.",
+  "help": "Osäker? Se dina hämtningsdagar i appen Mitt DVA, eller ring Dala Vatten och Avfall på 0247-44 100.",
+  "areas": [
+    {
+      "id": "jamn-mandag",
+      "name": "Furudal, Furudalsbruk m.fl.",
+      "day": "Måndag, jämn vecka",
+      "label": "Område 1",
+      "schedule": "jamn-mandag",
+      "places": [
+        "Furudal",
+        "Furudalsbruk",
+        "Näset",
+        "Böle",
+        "Dalfors",
+        "Norrboda",
+        "Sörboda",
+        "Sunnanhed",
+        "Östansjö",
+        "Östanvik"
+      ],
+      "streets": [],
+      "searchTerms": [
+        "trakt 1"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "jamn-tisdag",
+      "name": "Hjortgården, Kalkbackarna m.fl.",
+      "day": "Tisdag, jämn vecka",
+      "label": "Område 2",
+      "schedule": "jamn-tisdag",
+      "places": [
+        "Hjortgården",
+        "Kalkbackarna",
+        "Granmor",
+        "Vikarbyn norr om riksväg 70, fram till Röjeråsvägen",
+        "Västbjörka",
+        "Röjeråsen",
+        "Tammeråsen",
+        "Öja"
+      ],
+      "streets": [
+        "Röjeråsvägen"
+      ],
+      "searchTerms": [
+        "trakt 2",
+        "Vikarbyn"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "jamn-onsdag",
+      "name": "Västanå, Solberga m.fl.",
+      "day": "Onsdag, jämn vecka",
+      "label": "Område 3",
+      "schedule": "jamn-onsdag",
+      "places": [
+        "Västanå",
+        "Solberga",
+        "Ovanmyra",
+        "Lenåsen",
+        "Östra Boda",
+        "Österängarna",
+        "Baggetorp",
+        "Nedre Gärdsjö",
+        "Övre Gärdsjö",
+        "Ingels",
+        "Lisskog",
+        "Blecket",
+        "Born",
+        "Stenbacken"
+      ],
+      "streets": [],
+      "searchTerms": [
+        "trakt 3"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "jamn-torsdag",
+      "name": "Hedslund, Nyheden m.fl.",
+      "day": "Torsdag, jämn vecka",
+      "label": "Område 4",
+      "schedule": "jamn-torsdag",
+      "places": [
+        "Hedslund",
+        "Nyheden",
+        "Altsarbyn",
+        "Vidablick",
+        "Bäck",
+        "Mårtanberg",
+        "Söderåsbacken, riksväg 69",
+        "Centrum",
+        "Söderås",
+        "Utanåker",
+        "Östergrav",
+        "Västergrav",
+        "Västgärde",
+        "Utby"
+      ],
+      "streets": [
+        "Hagas väg",
+        "Börjesväg"
+      ],
+      "searchTerms": [
+        "trakt 4",
+        "Söderåsbacken"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "udda-mandag",
+      "name": "Backa, Östbjörka m.fl.",
+      "day": "Måndag, udda vecka",
+      "label": "Område 5",
+      "schedule": "udda-mandag",
+      "places": [
+        "Backa",
+        "Östbjörka",
+        "Sätra",
+        "Västberg",
+        "Rovgärdet",
+        "Nittsjö",
+        "Templet",
+        "Lugnet"
+      ],
+      "streets": [],
+      "searchTerms": [
+        "trakt 5"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "udda-tisdag",
+      "name": "Änderåsen, Kärvsåsen m.fl.",
+      "day": "Tisdag, udda vecka",
+      "label": "Område 6",
+      "schedule": "udda-tisdag",
+      "places": [
+        "Änderåsen",
+        "Kärvsåsen",
+        "Osmundsberg",
+        "Gulleråsen",
+        "Dalbyn",
+        "Arvet",
+        "Boda",
+        "Silverberg"
+      ],
+      "streets": [],
+      "searchTerms": [
+        "trakt 6"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "udda-onsdag",
+      "name": "Sjurberg, Vikarbystrand m.fl.",
+      "day": "Onsdag, udda vecka",
+      "label": "Område 7",
+      "schedule": "udda-onsdag",
+      "places": [
+        "Sjurberg",
+        "Vikarbystrand",
+        "Stumsnäs",
+        "Ickholmen",
+        "Vikarbyn söder om riksväg 70"
+      ],
+      "streets": [],
+      "searchTerms": [
+        "trakt 7",
+        "Vikarbyn"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "udda-torsdag",
+      "name": "Gärdebyn, Lerdal m.fl.",
+      "day": "Torsdag, udda vecka",
+      "label": "Område 8",
+      "schedule": "udda-torsdag",
+      "places": [
+        "Gärdebyn",
+        "Lerdal",
+        "Vålsveden"
+      ],
+      "streets": [
+        "Faluvägen",
+        "Siljansvägen",
+        "Östlundsväg",
+        "Slöjdvägen",
+        "Gärdebygatan",
+        "Wallenkampfsväg",
+        "Persslogsväg"
+      ],
+      "searchTerms": [
+        "trakt 8"
+      ],
+      "otherDays": []
+    }
+  ]
+}
