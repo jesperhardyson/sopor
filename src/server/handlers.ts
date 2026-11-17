@@ -218,7 +218,7 @@ export async function handleIcs(url: URL, opts: HandlerOptions = {}): Promise<Re
       headers: { 'Content-Type': 'text/calendar; charset=utf-8', 'Cache-Control': 'public, s-maxage=3600' },
     })
   }
-  const content = buildIcs({ address: r.address, kommunName: r.address.kommun, schedule: r.schedule, notice: areaNoticeText(live), reminder })
+  const content = buildIcs({ address: r.address, kommunName: r.address.kommun, schedule: r.schedule, notice: areaNoticeText(live), messages: live?.messages, reminder })
   return new Response(content, {
     headers: { 'Content-Type': 'text/calendar; charset=utf-8', 'Cache-Control': CACHE_SCHEDULE },
   })

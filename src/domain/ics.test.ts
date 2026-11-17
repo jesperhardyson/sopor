@@ -170,3 +170,26 @@ describe('buildIcs med varning för valt område', () => {
     expect(buildIcs({ address: area, kommunName: 'Avesta kommun', schedule: schedule as never })).not.toContain('Kontrollera')
   })
 })
+
+describe('buildIcs med meddelanden från källan', () => {
+  const schedule = { updatedAt: '2026-11-04', bins: [], events: [{ date: '2026-11-10', fractions: ['mat' as const] }, { date: '2026-11-24', fractions: ['mat' as const] }] }
+  const messages = [{ id: 'rutter', title: 'Rutterna läggs om', text: 'Kontrollera schemat.', validFrom: '2026-11-20', validTo: '2026-11-30' }]
+  const without = buildIcs({ address, kommunName: 'Avesta kommun', schedule })
+  const withMessages = buildIcs({ address, kommunName: 'Avesta kommun', schedule, messages })
+
+  it('står i tömningar inom meddelandets period, före friskrivningen', () => {
+    const description = vevent(withMessages, '2026-11-24').find((l) => l.startsWith('DESCRIPTION:'))!
+    expect(description).toMatch(/^DESCRIPTION:Rutterna läggs om: Kontrollera schemat\.\\n/)
+  })
+
+  it('saknas i tömningar utanför perioden', () => {
+    expect(vevent(withMessages, '2026-11-10')).toEqual(vevent(without, '2026-11-10'))
+  })
+
+  it('ändrar inget annat än beskrivningen', () => {
+    const rest = (text: string) => unfold(text).filter((l) => !l.startsWith('DESCRIPTION:Rutterna'))
+    const changed = unfold(withMessages).filter((l, i) => l !== unfold(without)[i])
+    expect(changed).toEqual([expect.stringMatching(/^DESCRIPTION:Rutterna läggs om/)])
+    expect(rest(withMessages)).toHaveLength(unfold(without).length - 1)
+  })
+})

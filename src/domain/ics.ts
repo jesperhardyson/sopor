@@ -1,6 +1,7 @@
 import { streetAndLocality } from './address.js'
 import { addDays, formatLong } from './dates.js'
 import { FRACTIONS, sortFractions } from './fractions.js'
+import { messagesOn, type SourceMessage } from './messages.js'
 import { DEFAULT_REMINDER, REMINDERS, type ReminderId } from './reminders.js'
 import type { Address, PickupEvent, Schedule } from './types.js'
 
@@ -49,9 +50,11 @@ export function buildIcs(input: {
   host?: string
   /** Vad vi inte vet om schemat gäller, när användaren valt område själv */
   notice?: string
+  /** Källans meddelanden. Står i tömningar vars datum ligger inom meddelandets period. */
+  messages?: SourceMessage[]
   reminder?: ReminderId
 }): string {
-  const { address, kommunName, schedule, notice, host = 'sopor.hardyson.se', reminder = DEFAULT_REMINDER } = input
+  const { address, kommunName, schedule, notice, messages, host = 'sopor.hardyson.se', reminder = DEFAULT_REMINDER } = input
   const stamp = `${compact(schedule.updatedAt)}T000000Z`
 
   const lines = [
@@ -69,7 +72,7 @@ export function buildIcs(input: {
   for (const event of schedule.events) {
     const names = sortFractions(event.fractions).map((f) => event.labels?.[f] ?? FRACTIONS[f].name)
     const summary = `Sopor: ${names.join(' + ')}${event.estimated ? ' (beräknat)' : ''}`
-    const description = [event.warning, deviationText(event), event.estimated ? ESTIMATE_NOTE : undefined, notice, DISCLAIMER]
+    const description = [event.warning, deviationText(event), event.estimated ? ESTIMATE_NOTE : undefined, notice, ...messagesOn(messages, event.date).map((m) => `${m.title}: ${m.text}`), DISCLAIMER]
       .filter(Boolean)
       .join('\n')
     lines.push(
