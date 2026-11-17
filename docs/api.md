@@ -153,7 +153,7 @@ Sopor bygger svaret på datumet användaren anger och vet fortfarande inte vilke
 
 ### `GET /api/v1/kallor`
 
-Alla synliga källor (id, namn, vilka kommuner de täcker) och alla kända fraktioner med namn, färg och ikon. Cachas i ett dygn. Bra för att bygga en källväljare.
+Alla synliga källor (id, namn, vilka kommuner de täcker) och alla kända fraktioner med namn, färg och ikon. Cachas i högst sex timmar och aldrig förbi midnatt svensk tid. Bra för att bygga en källväljare.
 
 ```bash
 curl 'https://sopor.hardyson.se/api/v1/kallor'
@@ -183,7 +183,7 @@ Ibland har en källa ett tillfälligt besked, till exempel att hämtrutterna lä
 
 - `/adress` har `messages` på toppnivå, med källans meddelanden som gäller i dag.
 - `/omraden` har `messages` på varje post i `sources`, med de som gäller i dag.
-- `/kallor` har `messages` per källa, med de som gäller i dag och de som börjar senare.
+- `/kallor` har `messages` per källa, med de som gäller i dag och de som börjar senare. Kontrollera `validFrom` innan du visar ett meddelande därifrån som aktuellt.
 
 ```json
 "messages": [

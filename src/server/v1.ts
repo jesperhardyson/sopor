@@ -20,7 +20,6 @@ import { loadServerPlaces, siteJson } from './site.js'
 export type V1Handler = (request: Request, opts?: HandlerOptions) => Promise<Response>
 
 const CACHE_SHORT = 'public, s-maxage=60'
-const CACHE_SOURCES = 'public, s-maxage=86400'
 
 const v1Json = (body: object, status = 200, cache = 'no-store') =>
   Response.json({ apiVersion: '1', ...body }, { status, headers: { 'Cache-Control': cache } })
@@ -331,7 +330,8 @@ export const handleV1Areas: V1Handler = async (request, opts = {}) => {
   const answered = results.flatMap((r) => (r.status === 'fulfilled' ? [r.value] : []))
   const addresses = answered.flatMap((r) => r.hits).map(({ address, ...rest }) => ({ ...v1Address(address, url.origin, sources), ...rest }))
   const texts = answered.map((r) => r.text)
-  if (tomning === null) return v1Json({ addresses, failed, sources: texts }, 200, failed.length > 0 ? CACHE_PARTIAL : CACHE_SEARCH)
+  // Källornas meddelanden byts vid midnatt, så cachen slutar där.
+  if (tomning === null) return v1Json({ addresses, failed, sources: texts }, 200, failed.length > 0 ? CACHE_PARTIAL : addressCacheControl(now))
 
   // true räcker med en källa. Annars vet vi bara att datumet ligger utanför om alla källor svarade, och minst en fanns.
   const dateCovered = answered.some((r) => r.covered) ? true : failed.length > 0 || answered.length === 0 ? null : false
@@ -354,7 +354,8 @@ const v1Messages = (list: SourceMessage[]) =>
 
 /** GET /api/v1/kallor */
 export const handleV1Sources: V1Handler = async (_request, opts = {}) => {
-  const today = todayInStockholm(opts.now ?? new Date())
+  const now = opts.now ?? new Date()
+  const today = todayInStockholm(now)
   return v1Json(
     {
       sources: visibleSources(opts).map((s) => ({
@@ -369,7 +370,8 @@ export const handleV1Sources: V1Handler = async (_request, opts = {}) => {
       fractions: fractionRegistry(Object.keys(FRACTIONS) as FractionId[]),
     },
     200,
-    CACHE_SOURCES,
+    // Utgångna meddelanden ska försvinna vid midnatt.
+    addressCacheControl(now),
   )
 }
 

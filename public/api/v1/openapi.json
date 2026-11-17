@@ -660,7 +660,7 @@
       "get": {
         "operationId": "listSources",
         "summary": "Källor och fraktioner",
-        "description": "Alla synliga källor och alla kända fraktioner med visningsuppgifter. Cachas i ett dygn. Fraktionslistan kan växa.",
+        "description": "Alla synliga källor och alla kända fraktioner med visningsuppgifter. Cachas i högst sex timmar och aldrig förbi midnatt i Stockholm, eftersom källornas meddelanden byts då. Fraktionslistan kan växa.",
         "responses": {
           "200": {
             "description": "Källor och fraktioner.",
@@ -673,7 +673,7 @@
                 }
               },
               "Cache-Control": {
-                "description": "public, s-maxage=86400",
+                "description": "public, s-maxage högst 21600 och aldrig förbi midnatt i Stockholm",
                 "schema": {
                   "type": "string"
                 }

@@ -284,7 +284,8 @@ describe('handleV1Sources', () => {
   it('listar synliga källor utan config och hela fraktionsregistret', async () => {
     const res = await v1(handleV1Sources)(get('/api/v1/kallor'), opts)
     expect(res.status).toBe(200)
-    expect(res.headers.get('Cache-Control')).toBe('public, s-maxage=86400')
+    // Utgångna meddelanden ska försvinna vid midnatt.
+    expect(res.headers.get('Cache-Control')).toBe(addressCacheControl(opts.now))
     const body = await res.json()
     expect(body.apiVersion).toBe('1')
     expect(body.sources.map((s: { id: string }) => s.id)).toEqual(['uppsala', 'trog', 'statisk', 'avesta'])
@@ -496,7 +497,8 @@ describe('handleV1Areas', () => {
 
     it('ändrar inget i svaret utan tomning', async () => {
       const res = await areas('Avesta')
-      expect(res.headers.get('Cache-Control')).toBe('public, s-maxage=86400, stale-while-revalidate=604800')
+      // Källornas meddelanden byts vid midnatt, så cachen får inte gå förbi den.
+      expect(res.headers.get('Cache-Control')).toBe(addressCacheControl(opts.now))
       const body = await res.json()
       expect(Object.keys(body).sort()).toEqual(['addresses', 'apiVersion', 'failed', 'sources'])
       expect(Object.keys(body.addresses[0]).sort()).toEqual(['area', 'areasUrl', 'detail', 'id', 'kommun', 'locality', 'notice', 'selection', 'source', 'street', 'url'])
