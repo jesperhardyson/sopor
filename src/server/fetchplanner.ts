@@ -33,6 +33,8 @@ export interface PlannerAddress {
   city: string
   /** De olika frekvenserna ("Var 14:e dag") för adressens kärl. Tom när sökningen gick direkt till schemat. */
   frequencies: string[]
+  /** Sökningen gick direkt till schemat och gav därför ingen frekvens. */
+  direct?: true
 }
 
 const unknownFormat = (app: PlannerApp) => new SourceError(`${new URL(app.page).hostname} svarade med ett okänt format`)
@@ -90,7 +92,7 @@ export async function plannerSearch(app: PlannerApp, q: string, fetchFn?: typeof
   // Exakt en adress: appen går direkt till schemat, utan träffar och därmed utan frekvens.
   if (!Array.isArray(state.hits) || state.hits.length === 0) {
     if (!isText(state.address) || !isText(state.city)) return []
-    return canBeFoundAgain(state.address) ? [{ building: building(state.address, state.city), address: state.address, city: state.city, frequencies: [] }] : []
+    return canBeFoundAgain(state.address) ? [{ building: building(state.address, state.city), address: state.address, city: state.city, frequencies: [], direct: true }] : []
   }
   const byAddress = new Map<string, PlannerAddress>()
   for (const hit of state.hits as Record<string, unknown>[]) {
@@ -112,11 +114,12 @@ export async function plannerFind(app: PlannerApp, id: string, fetchFn?: typeof 
   if (!parsed) return null
   const same = (a: PlannerAddress) => plannerAddressId(a.address, a.city) === id
   const found = (await plannerSearch(app, parsed.query, fetchFn, timeoutMs)).find(same)
-  if (!found || found.frequencies.length > 0) return found ?? null
+  // FEV har ingen frekvens i träffarna, så bara en sökning som gick direkt till schemat görs om.
+  if (!found || !found.direct) return found ?? null
   // "Nygatan 2", "Nygatan 2-4", "Vägen 12 ab" och "Storgatan 3 B" blir gatan.
   const street = searchable(parsed.query).replace(/\s+\d+(?:\s*-\s*\d+)?(?:\s*\p{L}{1,2})?$/u, '')
   const listed = street && street !== searchable(parsed.query) ? (await plannerSearch(app, street, fetchFn, timeoutMs)).find(same) : undefined
-  return { ...found, frequencies: listed?.frequencies ?? [] }
+  return { building: found.building, address: found.address, city: found.city, frequencies: listed?.frequencies ?? [] }
 }
 
 /**

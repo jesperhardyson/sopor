@@ -87,3 +87,33 @@ describe('Miva i registret', () => {
     expect(source?.emptyScheduleNote?.text).toContain('flerbostadshus')
   })
 })
+
+describe('FEV i sajtens API', () => {
+  const fev = ALL_SOURCES.find((s) => s.id === 'fev')!
+  const FEV_ID = plannerAddressId('Ekvägen 1', 'FALUN')
+  const fevFake = () => vi.fn(async (input: string | URL | Request) => {
+    const r = new URL(String(input)).searchParams.get('sv.12.1daee82819540d202c7322ce.route') ?? ''
+    return html(r.startsWith('/details/') ? fixture('fev-schema.html') : fixture('fev-sok.html'))
+  }) as unknown as typeof fetch
+  const fevOpts = () => ({ fetchFn: fevFake(), sources: [fev], timeoutMs: 50, now: new Date('2026-11-17T10:00:00Z') })
+
+  it('täcker Falun med FEV:s sida och app', () => {
+    expect(fev).toMatchObject({ name: 'Falu Energi & Vatten', kommuner: [{ code: '2080', name: 'Falu kommun' }], config: { system: 'fetchplanner', page: 'https://fev.se/atervinning/sophamtning.html', app: '12.1daee82819540d202c7322ce' } })
+  })
+
+  it('söker och ger adressen med kommunen', async () => {
+    const res = await (await handleSearch(url('/api/sok?q=Ekvägen 1, Falun&sources=fev'), fevOpts())).json()
+    expect(res.addresses).toContainEqual({ id: FEV_ID, street: 'Ekvägen 1', locality: 'Falun', sourceId: 'fev', kommun: 'Falu kommun' })
+  })
+
+  it('hämtar schemat med alla fyra fraktionerna', async () => {
+    const body = await (await handleSchedule(url(`/api/schema?source=fev&id=${encodeURIComponent(FEV_ID)}`), fevOpts())).json()
+    expect(body.schedule.events[0]).toEqual({ date: '2026-11-27', fractions: ['plast', 'mat'], estimated: false })
+    expect(new Set(body.schedule.events.flatMap((e: { fractions: string[] }) => e.fractions))).toEqual(new Set(['mat', 'plast', 'rest', 'papper']))
+  })
+
+  it('ger kalenderfilen med stabila UID', async () => {
+    const res = await handleIcs(url(`/api/ics?source=fev&file=${encodeURIComponent(FEV_ID)}.ics`), fevOpts())
+    expect(await res.text()).toContain(`UID:${FEV_ID}-2026-12-11@sopor.hardyson.se`)
+  })
+})

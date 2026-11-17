@@ -99,7 +99,7 @@ Beslut 2026-11-03: Sopor skrapar inte webbsidor. Sidorna ändras utan förvarnin
 | Källa | Kommuner | Invånare |
 |---|---|---|
 | Självservice (`sjalvservice.kungsbacka.se`, `sjalvservice.nvaa.se`) | Kungsbacka, Norrtälje | 152 000 |
-| Falu Energi & Vatten | Falun | 60 000 |
+| ~~Falu Energi & Vatten~~ | Falun | 60 000 (byggd enligt beslut 9: samma app som Miva, tillståndet som JSON) |
 | Hudiksvall, Västervik (VMEAB), Ronneby, Hedemora, Älvsbyn | | cirka 130 000 |
 | Indecta- och "kalender"-PHP (Nårab, SÅM, VMAB) | flera små | – |
 
@@ -134,3 +134,4 @@ Göteborg, Linköping, Karlstad, Halmstad, Eskilstuna, Gävle och Norrköping: c
 6. **Rambo hoppas över, bara Uddevalla byggs av WordPress-appen** (2026-11-04). Tjänsten ger nästa tömning per kärl utan frekvens. Hos Rambo hade 51 av 114 kärl (45 %) ett datum som redan passerat, som äldst en vecka, och utan frekvens går rätt datum inte att räkna fram. Lysekil, Sotenäs, Munkedal och Tanum går till fas 5, med en fråga om schemat eller frekvensen. Hos Uddevalla Energi hade inget av 94 kärl ett passerat datum, så där byggs källan trots att kalendern bara visar nästa tömning.
 7. **Fas 3 pausas efter Telge och MSVA** (2026-11-06). De återstående källorna täcker mindre kommuner och var och en ger mer underhåll. Sajten hade 55 besökare den första veckan och två sökningar på saknade kommuner, så efterfrågan säger inget än. Fortsätt när `/saknas/<kommun>` i statistiken visar vilka kommuner som efterfrågas. Fas 5 kan gå parallellt, eftersom den mest är väntan på svar.
 8. **Örnsköldsvik (Miva) byggs som ett undantag från beslut 2** (2026-11-16). Sidan har inget API, men Sitevision-appen lägger sitt tillstånd som JSON i sidan, med namngivna fält och ISO-datum. Det läses i stället för den synliga texten. Kommunen efterfrågades i [#139](https://github.com/jesperhardyson/sopor/issues/139). Spec: `docs/specs/2026-11-16-ornskoldsvik-miva.md`. Undantaget gäller tillstånd som JSON, inte HTML-text: fas 4 står kvar som den är.
+9. **Falun (Falu Energi & Vatten) byggs under samma undantag som beslut 8** (2026-11-17). FEV kör samma Sitevision-app som Miva, så klienten görs allmän (`src/server/fetchplanner.ts`) i stället för att kopieras. Spec: `docs/specs/2026-11-17-falun-fev.md`.

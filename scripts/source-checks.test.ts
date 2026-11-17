@@ -798,4 +798,18 @@ describe('checkFetchPlannerSource', () => {
     const r = await check(respond({ route: '/', hits: [hit('Var 3:e vecka')] }, { route: '/schedule', trips: [trip('Grovsopor')] }))
     expect(r.unknownWasteTypes).toEqual(['Grovsopor', 'Frekvens: Var 3:e vecka'])
   })
+
+  it('fungerar för FEV, med datumen på kärlen', async () => {
+    const FEV_APP = '12.1daee82819540d202c7322ce'
+    const fev: Source = { ...source, id: 'fev', name: 'Falu Energi & Vatten', config: { system: 'fetchplanner', page: 'https://fev.se/atervinning/sophamtning.html', app: FEV_APP } }
+    const fevPage = (state: unknown) => `<script>AppRegistry.registerInitialState('${FEV_APP}',${JSON.stringify(state)});</script>`
+    const fetchFn = vi.fn(async (input: string | URL | Request) => {
+      const details = (new URL(String(input)).searchParams.get(`sv.${FEV_APP}.route`) ?? '').startsWith('/details/')
+      const state = details
+        ? { address: 'Ekvägen 1', city: 'Falun', trips: [], containers: [{ typeText: 'Matavfall', pickupDateIso: '2026-11-26T23:00:00.000Z', nextPickupDateIso: '2026-12-10T23:00:00.000Z' }] }
+        : { hits: [{ PickupAddress: 'Ekvägen 1', PickupCity: 'FALUN', ExternalId: '' }] }
+      return new Response(fevPage(state), { headers: { 'Content-Type': 'text/html' } })
+    }) as unknown as typeof fetch
+    expect(await checkFetchPlannerSource(fev, plannerAddressId('Ekvägen 1', 'FALUN'), '2026-11-17', fetchFn)).toMatchObject({ state: 'fungerar', baseUrl: 'https://fev.se/atervinning/sophamtning.html', unknownWasteTypes: [] })
+  })
 })

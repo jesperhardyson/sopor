@@ -66,6 +66,8 @@ export const PROBES: Record<string, string> = {
   vakin: 'berghemsskolan_umeå-90339',
   // Miva: en villa på Nygatan i Örnsköldsvik, som adress-id (docs/specs/2026-11-16-ornskoldsvik-miva.md). Ändrar Miva appen saknas tillståndet i sidan.
   miva: 'nygatan-2_örnsköldsvik-qrzjva',
+  // FEV: en villa på Ekvägen i Falun, som adress-id (docs/specs/2026-11-17-falun-fev.md).
+  fev: 'ekvägen-1_falun-1dm1h0o',
   // Roslagsvatten: kommunernas egna hus, som adress-id (docs/specs/2026-11-04-roslagsvatten.md).
   osteraker: 'hackstavägen-22_åkersberga-1bqsdr9',
   ekero: 'tappströmsvägen-2_ekerö-ouhkuq',
