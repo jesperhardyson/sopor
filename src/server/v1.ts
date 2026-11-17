@@ -4,6 +4,7 @@
 import { areaDetail, areasForDate } from '../domain/areas.js'
 import { isValidDate, secondsToStockholmMidnight, todayInStockholm } from '../domain/dates.js'
 import { FRACTIONS, sortFractions } from '../domain/fractions.js'
+import { activeMessages, currentAndUpcoming, type SourceMessage } from '../domain/messages.js'
 import { nextPerFraction, pickupSummary } from '../domain/next.js'
 import { upcoming } from '../domain/schedule.js'
 import { mergeHits, normalize, rankHits, searchAddresses } from '../domain/search.js'
@@ -132,6 +133,7 @@ export const handleV1Address: V1Handler = async (request, opts = {}) => {
       ...scheduleBody(schedule, today),
       schedule: schedule.validTo ? { until: schedule.validTo, reason: source.publishing ?? null } : null,
       area,
+      messages: v1Messages(activeMessages(source.messages, today)),
       links: { ics: `${url.origin}/ics/${path}.ics`, web: `${url.origin}/${path}` },
       updatedAt: schedule.updatedAt,
     },
@@ -308,7 +310,13 @@ export const handleV1Areas: V1Handler = async (request, opts = {}) => {
       if (!index) throw new Error(`${source.id} saknar områdesfil`)
       const kommun = source.kommuner[0]?.name ?? source.name
       const toAddress = (area: Area): Address => ({ id: area.id, street: area.name, locality: '', sourceId: source.id, kommun, detail: areaDetail(area) })
-      const text = { id: source.id, name: source.name, explanation: index.explanation, help: index.help }
+      const text = {
+        id: source.id,
+        name: source.name,
+        explanation: index.explanation,
+        help: index.help,
+        messages: v1Messages(activeMessages(source.messages, todayInStockholm(now))),
+      }
       if (tomning === null) return { text, hits: index.areas.map((area) => ({ address: toAddress(area), area: v1Area(area) })), covered: null }
       const result = areasForDate(tomning, index.areas)
       const matches = result.kind === 'found' ? result.matches : []
@@ -341,9 +349,13 @@ const v1Contact = (c: SourceContact) => ({
   checkedUrl: c.checked.url,
 })
 
+const v1Messages = (list: SourceMessage[]) =>
+  list.map((m) => ({ id: m.id, title: m.title, text: m.text, url: m.url ?? null, validFrom: m.validFrom, validTo: m.validTo }))
+
 /** GET /api/v1/kallor */
-export const handleV1Sources: V1Handler = async (_request, opts = {}) =>
-  v1Json(
+export const handleV1Sources: V1Handler = async (_request, opts = {}) => {
+  const today = todayInStockholm(opts.now ?? new Date())
+  return v1Json(
     {
       sources: visibleSources(opts).map((s) => ({
         id: s.id,
@@ -352,12 +364,14 @@ export const handleV1Sources: V1Handler = async (_request, opts = {}) =>
         kommuner: s.kommuner.map((k) => ({ code: k.code, name: k.name })),
         testData: s.testData ?? false,
         contact: s.contact ? v1Contact(s.contact) : null,
+        messages: v1Messages(currentAndUpcoming(s.messages, today)),
       })),
       fractions: fractionRegistry(Object.keys(FRACTIONS) as FractionId[]),
     },
     200,
     CACHE_SOURCES,
   )
+}
 
 /** Allt annat under /api/v1/ */
 export const handleV1NotFound: V1Handler = async () => v1Error(404, 'not_found', 'Okänd sökväg i API:t')

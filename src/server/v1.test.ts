@@ -31,7 +31,11 @@ const SOURCES: Source[] = [
   },
   { ...edp('statisk', 'statisk.test', 'Statiska kommun'), config: { system: 'static' } },
   { ...edp('dold', 'dold.test', 'Dolda kommun'), hidden: true },
-  { ...edp('avesta', 'avesta.test', 'Avesta kommun'), config: { system: 'static' }, selection: 'area', areaNotice: { title: 'Kontrollera området', text: 'Du har valt det själv.' }, publishing: 'Avesta AB publicerar schemat ett år i taget.' },
+  { ...edp('avesta', 'avesta.test', 'Avesta kommun'), config: { system: 'static' }, selection: 'area', areaNotice: { title: 'Kontrollera området', text: 'Du har valt det själv.' }, publishing: 'Avesta AB publicerar schemat ett år i taget.',
+    messages: [
+      { id: 'snart', title: 'Snart', text: 'Kommer i november.', validFrom: '2026-11-10', validTo: '2026-11-30' },
+      { id: 'nu', title: 'Nu', text: 'Gäller i oktober.', url: 'https://avesta.test/nyheter', validFrom: '2026-10-01', validTo: '2026-10-31' },
+    ] },
 ]
 
 const event = (date: string) => ({ date, fractions: ['mat'], estimated: false })
@@ -291,6 +295,7 @@ describe('handleV1Sources', () => {
       kommuner: [{ code: '0000', name: 'Uppsala kommun' }],
       testData: false,
       contact: null,
+      messages: [],
     })
     expect(body.sources[1].contact).toEqual({
       phone: { number: '+4611123456', display: '011-12 34 56' },
@@ -387,7 +392,7 @@ describe('handleV1Areas', () => {
 
   it('ger förklaring och hjälp för varje källa som svarade', async () => {
     const body = await (await areas('Avesta')).json()
-    expect(body.sources).toEqual([{ id: 'avesta', name: 'avesta AB', explanation: 'Förklaring.', help: 'Hjälp.' }])
+    expect(body.sources).toEqual([{ id: 'avesta', name: 'avesta AB', explanation: 'Förklaring.', help: 'Hjälp.', messages: [expect.objectContaining({ id: 'nu' })] }])
     expect((await (await areas('Uppsala')).json()).sources).toEqual([])
   })
 
@@ -768,5 +773,42 @@ describe('områden som träffar', () => {
     const body = await res.json()
     expect(body.events).toHaveLength(1)
     expect(body.area).toBeNull()
+  })
+})
+
+describe('källornas meddelanden', () => {
+  const at = (iso: string) => ({ ...opts, now: new Date(iso) })
+  const addressAt = async (o: typeof opts, query = 'source=avesta&id=trakt-7') =>
+    (await v1(handleV1Address)(get(`/api/v1/adress?${query}`), o)).json()
+  const NU = { id: 'nu', title: 'Nu', text: 'Gäller i oktober.', url: 'https://avesta.test/nyheter', validFrom: '2026-10-01', validTo: '2026-10-31' }
+  const SNART = { id: 'snart', title: 'Snart', text: 'Kommer i november.', url: null, validFrom: '2026-11-10', validTo: '2026-11-30' }
+
+  it('ger adressen källans meddelanden som gäller i dag', async () => {
+    expect((await addressAt(opts)).messages).toEqual([NU])
+  })
+
+  it('ger en tom lista för en källa utan meddelanden', async () => {
+    expect((await addressAt(opts, 'source=statisk&id=storgatan-1_%C3%B6rebro')).messages).toEqual([])
+  })
+
+  it('räknar sista dagen med', async () => {
+    expect((await addressAt(at('2026-10-31T10:00:00Z'))).messages).toEqual([NU])
+  })
+
+  it('räknar dagen i Stockholm, inte i UTC', async () => {
+    expect((await addressAt(at('2026-11-09T23:30:00Z'))).messages).toEqual([SNART])
+  })
+
+  it('ger områdenas källa de meddelanden som gäller i dag', async () => {
+    const body = await (await v1(handleV1Areas)(get('/api/v1/omraden?plats=Avesta'), opts)).json()
+    expect(body.sources[0].messages).toEqual([NU])
+  })
+
+  it('ger källorna både aktuella och kommande meddelanden', async () => {
+    const body = await (await v1(handleV1Sources)(get('/api/v1/kallor'), opts)).json()
+    const byId = Object.fromEntries(body.sources.map((s: { id: string; messages: unknown }) => [s.id, s.messages]))
+    expect(byId.avesta).toEqual([NU, SNART])
+    expect(byId.uppsala).toEqual([])
+    expect((await (await v1(handleV1Sources)(get('/api/v1/kallor'), at('2026-11-15T10:00:00Z'))).json()).sources.find((s: { id: string }) => s.id === 'avesta').messages).toEqual([SNART])
   })
 })

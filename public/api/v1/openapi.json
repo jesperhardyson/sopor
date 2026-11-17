@@ -121,6 +121,7 @@
                   },
                   "schedule": null,
                   "area": null,
+                  "messages": [],
                   "links": {
                     "ics": "https://sopor.hardyson.se/ics/uppsala/storgatan-2_uppsala-4004688.ics",
                     "web": "https://sopor.hardyson.se/uppsala/storgatan-2_uppsala-4004688"
@@ -487,7 +488,8 @@
                           "id": "avesta",
                           "name": "Avesta Vatten och Avfall",
                           "explanation": "Avesta Vatten publicerar sophämtningen per område, men inte vilka adresser som hör till vilket område.",
-                          "help": "Osäker? Fråga Avesta Vatten på 0226-64 55 00."
+                          "help": "Osäker? Fråga Avesta Vatten på 0226-64 55 00.",
+                          "messages": []
                         }
                       ]
                     }
@@ -563,7 +565,8 @@
                           "id": "avesta",
                           "name": "Avesta Vatten och Avfall",
                           "explanation": "Avesta Vatten publicerar sophämtningen per område, men inte vilka adresser som hör till vilket område.",
-                          "help": "Osäker? Fråga Avesta Vatten på 0226-64 55 00."
+                          "help": "Osäker? Fråga Avesta Vatten på 0226-64 55 00.",
+                          "messages": []
                         }
                       ]
                     }
@@ -704,7 +707,8 @@
                         "page": "https://www.uppsalavatten.se/kontakt",
                         "checkedAt": "2026-11-07",
                         "checkedUrl": "https://www.uppsalavatten.se/kontakt"
-                      }
+                      },
+                      "messages": []
                     }
                   ],
                   "fractions": {
@@ -1417,7 +1421,8 @@
           "url",
           "kommuner",
           "testData",
-          "contact"
+          "contact",
+          "messages"
         ],
         "properties": {
           "id": {
@@ -1470,6 +1475,13 @@
                 "type": "null"
               }
             ]
+          },
+          "messages": {
+            "type": "array",
+            "description": "Källans meddelanden som gäller i dag och de som börjar senare. Utgångna tas inte med.",
+            "items": {
+              "$ref": "#/components/schemas/SourceMessage"
+            }
           }
         }
       },
@@ -1561,6 +1573,7 @@
           "fractions",
           "schedule",
           "area",
+          "messages",
           "links",
           "updatedAt"
         ],
@@ -1629,6 +1642,13 @@
                 "type": "null"
               }
             ]
+          },
+          "messages": {
+            "type": "array",
+            "description": "Källans meddelanden som gäller i dag. Tom lista när inget gäller. Visa dem tillsammans med schemat.",
+            "items": {
+              "$ref": "#/components/schemas/SourceMessage"
+            }
           },
           "links": {
             "$ref": "#/components/schemas/Links"
@@ -1744,7 +1764,8 @@
           "id",
           "name",
           "explanation",
-          "help"
+          "help",
+          "messages"
         ],
         "properties": {
           "id": {
@@ -1762,6 +1783,13 @@
           "help": {
             "type": "string",
             "description": "Vart man vänder sig när man är osäker på området. Visa nederst."
+          },
+          "messages": {
+            "type": "array",
+            "description": "Källans meddelanden som gäller i dag. Tom lista när inget gäller.",
+            "items": {
+              "$ref": "#/components/schemas/SourceMessage"
+            }
           }
         }
       },
@@ -1878,6 +1906,52 @@
                 "description": "Förklaring på svenska. Avsedd för människor; bygg inte logik på texten, använd code."
               }
             }
+          }
+        }
+      },
+      "SourceMessage": {
+        "type": "object",
+        "description": "Ett tillfälligt besked från källan, till exempel att hämtrutterna läggs om. id återanvänds aldrig, så en klient kan minnas vilka meddelanden den redan har visat.",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "title",
+          "text",
+          "url",
+          "validFrom",
+          "validTo"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unikt inom källan och ändras aldrig.",
+            "pattern": "^[a-z0-9-]+$"
+          },
+          "title": {
+            "type": "string",
+            "description": "Kort rubrik, högst 60 tecken."
+          },
+          "text": {
+            "type": "string",
+            "description": "Beskedet som vanlig text, högst 400 tecken."
+          },
+          "url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Källans egen sida om saken. null när den saknas.",
+            "format": "uri"
+          },
+          "validFrom": {
+            "type": "string",
+            "description": "Första dagen (YYYY-MM-DD) meddelandet gäller.",
+            "format": "date"
+          },
+          "validTo": {
+            "type": "string",
+            "description": "Sista dagen (YYYY-MM-DD) meddelandet gäller.",
+            "format": "date"
           }
         }
       }
