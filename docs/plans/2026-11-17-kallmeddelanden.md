@@ -32,7 +32,7 @@
 
 ---
 
-### Uppgift 1: Datamodell och regler
+### Task 1: Datamodell och regler
 
 **Filer:**
 - Skapa: `src/domain/messages.ts`, `src/domain/messages.test.ts`
@@ -57,7 +57,7 @@
 - [ ] **Steg 6:** `npx vitest run src/sources src/domain/messages.test.ts` → PASS.
 - [ ] **Steg 7: Commit** `feat: Meddelanden från källorna i datamodellen`
 
-### Uppgift 2: API:t
+### Task 2: API:t
 
 **Filer:**
 - Ändra: `src/server/v1.ts`, `public/api/v1/openapi.json`, `docs/api.md`
@@ -86,7 +86,7 @@
 - [ ] **Steg 8:** `npm run lint && npm test` → grönt.
 - [ ] **Steg 9: Commit** `feat: Källornas meddelanden i API:t`
 
-### Uppgift 3: Kalenderfilen
+### Task 3: Kalenderfilen
 
 **Filer:**
 - Ändra: `src/domain/ics.ts`, `src/server/handlers.ts:221`, `src/data/static-format.ts:291`
@@ -107,7 +107,7 @@
 - [ ] **Steg 5:** `npm test` → PASS.
 - [ ] **Steg 6: Commit** `feat: Källornas meddelanden i kalenderfilen`
 
-### Uppgift 4: Sajten
+### Task 4: Sajten
 
 **Filer:**
 - Design: `docs/design/sopor-design.pen`, bara via Pencil MCP
@@ -126,7 +126,7 @@
 - [ ] **Steg 5:** `npm run lint && npm test && npm run build` → grönt.
 - [ ] **Steg 6: Commit** `feat: Sajten visar källornas meddelanden`
 
-### Uppgift 5: Avestas meddelande och dokumentation
+### Task 5: Avestas meddelande och dokumentation
 
 **Filer:**
 - Ändra: `src/sources/index.ts` (Avesta), `docs/kommuner/lagga-till-kommun.md`, `src/sources/sources.test.ts`
@@ -137,7 +137,7 @@
 - [ ] **Steg 4:** `npm run lint && npm test && npm run build` → grönt. Kontrollera i `public/ics/avesta/` att en händelse efter 2026-11-17 har texten.
 - [ ] **Steg 5: Commit** `feat: Avesta meddelar att hämtrutterna läggs om`
 
-### Uppgift 6: Befintliga integrationer påverkas inte
+### Task 6: Befintliga integrationer påverkas inte
 
 **Filer:**
 - Test: `integrations/home-assistant/tests/` (testfixturen för `/adress` och `/omraden`) och `integrations/homey/lib/api.test.mts`
