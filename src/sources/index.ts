@@ -7,7 +7,7 @@ export interface Kommun {
 }
 
 /** Hur källans data hämtas. Ny leverantör = ny variant här + ny provider. */
-export type SourceConfig = { system: 'static' } | { system: 'edp'; baseUrl: string } | { system: 'svoa' } | { system: 'vasyd' } | { system: 'nsr' } | { system: 'srv' } | { system: 'appbolaget'; unit: string } | { system: 'uddevalla' } | { system: 'borlange' } | { system: 'roslagsvatten'; municipality: string } | { system: 'msva' } | { system: 'telge' } | { system: 'vakin' } | { system: 'fetchplanner'; page: string; app: string }
+export type SourceConfig = { system: 'static' } | { system: 'edp'; baseUrl: string } | { system: 'svoa' } | { system: 'vasyd' } | { system: 'nsr' } | { system: 'srv' } | { system: 'appbolaget'; unit: string } | { system: 'uddevalla' } | { system: 'borlange' } | { system: 'roslagsvatten'; municipality: string } | { system: 'msva' } | { system: 'telge' } | { system: 'vakin' } | { system: 'fetchplanner'; page: string; app: string; hitsWithoutFrequency?: true }
 
 /**
  * Hur man når källans kundtjänst, hämtat från källans egen webbplats. Minst en av `phone`, `email`
@@ -649,7 +649,7 @@ export const ALL_SOURCES: Source[] = [
       checked: { url: 'https://fev.se/om-oss/kontakta-oss.html', date: '2026-11-17' },
     },
     kommuner: [{ code: '2080', name: 'Falu kommun' }],
-    config: { system: 'fetchplanner', page: 'https://fev.se/atervinning/sophamtning.html', app: '12.1daee82819540d202c7322ce' },
+    config: { system: 'fetchplanner', page: 'https://fev.se/atervinning/sophamtning.html', app: '12.1daee82819540d202c7322ce', hitsWithoutFrequency: true },
     emptyScheduleNote: {
       title: 'Falu Energi & Vatten visar ingen tömning just nu',
       text: 'Källan har inga planerade tömningar för den här adressen. I flerbostadshus kan soprummet finnas på en annan adress. Väntar du en tömning, kontakta Falu Energi & Vatten.',

@@ -1,5 +1,7 @@
 # Örnsköldsvik (Miva) Implementation Plan
 
+> Genomförd. 2026-11-17 blev `src/server/miva.ts` den allmänna `src/server/fetchplanner.ts` för Falun, och namnen nedan (`mivaState`, `MIVA_URL`, `checkMivaSource` …) heter nu `plannerState`, sidan och app-id:t i källans konfiguration och `checkFetchPlannerSource`. Se `docs/specs/2026-11-17-falun-fev.md`.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** En ny live-källa, `miva`, som ger Örnsköldsviks adresser och hämtschema från Sitevision-appen på miva.se.

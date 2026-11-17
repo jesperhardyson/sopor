@@ -15,6 +15,8 @@ import { fetchHtml, SourceError } from './http.js'
 export interface PlannerApp {
   page: string
   app: string
+  /** Träffarna har aldrig frekvens (FEV), så uppslaget söker inte om på gatan för att hitta den. */
+  hitsWithoutFrequency?: true
 }
 
 export interface PlannerState {
@@ -114,8 +116,8 @@ export async function plannerFind(app: PlannerApp, id: string, fetchFn?: typeof 
   if (!parsed) return null
   const same = (a: PlannerAddress) => plannerAddressId(a.address, a.city) === id
   const found = (await plannerSearch(app, parsed.query, fetchFn, timeoutMs)).find(same)
-  // FEV har ingen frekvens i träffarna, så bara en sökning som gick direkt till schemat görs om.
-  if (!found || !found.direct) return found ?? null
+  // Bara en sökning som gick direkt till schemat saknar träffarnas frekvens och görs om på gatan.
+  if (!found || !found.direct || app.hitsWithoutFrequency) return found ?? null
   // "Nygatan 2", "Nygatan 2-4", "Vägen 12 ab" och "Storgatan 3 B" blir gatan.
   const street = searchable(parsed.query).replace(/\s+\d+(?:\s*-\s*\d+)?(?:\s*\p{L}{1,2})?$/u, '')
   const listed = street && street !== searchable(parsed.query) ? (await plannerSearch(app, street, fetchFn, timeoutMs)).find(same) : undefined
@@ -161,8 +163,9 @@ export async function plannerTrips(app: PlannerApp, a: Pick<PlannerAddress, 'add
   if (!Array.isArray(state.containers)) return []
   return (state.containers as Record<string, unknown>[]).flatMap((c): PlannerTrip[] => {
     if (!isText(c?.typeText)) throw unknownFormat(app)
-    if (c.pickupDateIso == null) return []
-    return [{ text: '', types: [c.typeText], first: stockholmDate(app, c.pickupDateIso), ...(c.nextPickupDateIso != null && { next: stockholmDate(app, c.nextPickupDateIso) }), ownNext: true }]
+    const dates = [c.pickupDateIso, c.nextPickupDateIso].filter((d) => d != null).map((d) => stockholmDate(app, d))
+    if (dates.length === 0) return []
+    return [{ text: '', types: [c.typeText], first: dates[0], ...(dates[1] && { next: dates[1] }), ownNext: true }]
   })
 }
 
@@ -179,7 +182,9 @@ const isSeasonal = (types: string[]) => types.some((t) => /trädgård/i.test(t))
 
 /**
  * Ett kärl med två egna datum (FEV). Steget mellan dem är frekvensen. Är det 1–6 hela veckor räknas
- * datum fram med samma steg. Annars har en tömning flyttats, och då visas bara källans datum.
+ * datum fram med samma steg. Annars har en tömning flyttats, och då visas bara källans datum. FEV
+ * tömmer också på röda dagar (papper på juldagen 2026), så en helgdag emellan betyder inte att en
+ * tömning har hoppats över.
  */
 function containerDates(t: PlannerTrip): ExpandedPickup[] {
   if (!t.next || isSeasonal(t.types)) return own([t.first, t.next])

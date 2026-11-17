@@ -80,6 +80,22 @@ describe('FetchPlanner hos Falu Energi & Vatten', () => {
     expect(dates([single], 'Restavfall')).toEqual(['2026-12-11'])
   })
 
+  it('räknar fram sexveckorskärl också över jul, eftersom FEV tömmer på röda dagar', async () => {
+    const trips = await plannerTrips(FEV, { address: 'Ekvägen 1', city: 'Falun' }, respond(fixture('fev-schema.html')))
+    expect(dates(trips, 'Plastförpackningar').slice(0, 3)).toEqual(['2026-11-27', '2027-01-08', 'ca 2027-02-19'])
+  })
+
+  it('använder nästa datum ensamt när kärlet bara har det', async () => {
+    const body = page({ trips: [], containers: [{ typeText: 'Matavfall', nextPickupDateIso: '2026-12-10T23:00:00.000Z' }] })
+    expect(await plannerTrips(FEV, { address: 'Ekvägen 1', city: 'Falun' }, respond(body))).toEqual([{ text: '', types: ['Matavfall'], first: '2026-12-11', ownNext: true }])
+  })
+
+  it('söker inte om på gatan när träffarna aldrig har frekvens', async () => {
+    const fetchFn = respond(fixture('fev-sok-en.html'))
+    expect(await plannerFind({ ...FEV, hitsWithoutFrequency: true }, plannerAddressId('Ekvägen 12', 'FALUN'), fetchFn)).toMatchObject({ address: 'Ekvägen 12' })
+    expect(fetchFn).toHaveBeenCalledTimes(1)
+  })
+
   it('hoppar över kärl utan datum', async () => {
     const body = page({ address: 'Ekvägen 1', city: 'Falun', trips: [], containers: [{ typeText: 'Restavfall' }, { typeText: 'Matavfall', pickupDateIso: '2026-11-26T23:00:00.000Z' }] })
     expect(await plannerTrips(FEV, { address: 'Ekvägen 1', city: 'Falun' }, respond(body))).toEqual([{ text: '', types: ['Matavfall'], first: '2026-11-27', ownNext: true }])
