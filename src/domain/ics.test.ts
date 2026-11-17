@@ -186,10 +186,15 @@ describe('buildIcs med meddelanden från källan', () => {
     expect(vevent(withMessages, '2026-11-10')).toEqual(vevent(without, '2026-11-10'))
   })
 
-  it('ändrar inget annat än beskrivningen', () => {
-    const rest = (text: string) => unfold(text).filter((l) => !l.startsWith('DESCRIPTION:Rutterna'))
+  it('ändrar bara beskrivningen och tidsstämpeln i berörda tömningar', () => {
     const changed = unfold(withMessages).filter((l, i) => l !== unfold(without)[i])
-    expect(changed).toEqual([expect.stringMatching(/^DESCRIPTION:Rutterna läggs om/)])
-    expect(rest(withMessages)).toHaveLength(unfold(without).length - 1)
+    // Tidsstämpeln blir meddelandets första dag, så att kalenderappar ser att händelsen ändrats.
+    expect(changed).toEqual(['DTSTAMP:20261120T000000Z', expect.stringMatching(/^DESCRIPTION:Rutterna läggs om/)])
+    expect(unfold(withMessages)).toHaveLength(unfold(without).length)
+  })
+
+  it('behåller schemats tidsstämpel när den är senare än meddelandet', () => {
+    const later = buildIcs({ address, kommunName: 'Avesta kommun', schedule: { ...schedule, updatedAt: '2026-11-22' }, messages })
+    expect(vevent(later, '2026-11-24')).toContain('DTSTAMP:20261122T000000Z')
   })
 })

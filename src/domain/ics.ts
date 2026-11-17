@@ -55,7 +55,6 @@ export function buildIcs(input: {
   reminder?: ReminderId
 }): string {
   const { address, kommunName, schedule, notice, messages, host = 'sopor.hardyson.se', reminder = DEFAULT_REMINDER } = input
-  const stamp = `${compact(schedule.updatedAt)}T000000Z`
 
   const lines = [
     'BEGIN:VCALENDAR',
@@ -72,13 +71,16 @@ export function buildIcs(input: {
   for (const event of schedule.events) {
     const names = sortFractions(event.fractions).map((f) => event.labels?.[f] ?? FRACTIONS[f].name)
     const summary = `Sopor: ${names.join(' + ')}${event.estimated ? ' (beräknat)' : ''}`
-    const description = [event.warning, deviationText(event), event.estimated ? ESTIMATE_NOTE : undefined, notice, ...messagesOn(messages, event.date).map((m) => `${m.title}: ${m.text}`), DISCLAIMER]
+    const eventMessages = messagesOn(messages, event.date)
+    // Ett nytt meddelande ändrar händelsen, så tidsstämpeln följer med. Den beror bara på datan, så filen blir densamma vid varje bygge.
+    const eventStamp = `${compact([schedule.updatedAt, ...eventMessages.map((m) => m.validFrom)].sort().at(-1)!)}T000000Z`
+    const description = [event.warning, deviationText(event), event.estimated ? ESTIMATE_NOTE : undefined, notice, ...eventMessages.map((m) => `${m.title}: ${m.text}`), DISCLAIMER]
       .filter(Boolean)
       .join('\n')
     lines.push(
       'BEGIN:VEVENT',
       `UID:${address.id}-${event.date}@${host}`,
-      `DTSTAMP:${stamp}`,
+      `DTSTAMP:${eventStamp}`,
       `DTSTART;VALUE=DATE:${compact(event.date)}`,
       `DTEND;VALUE=DATE:${compact(addDays(event.date, 1))}`,
       `SUMMARY:${escapeText(summary)}`,
