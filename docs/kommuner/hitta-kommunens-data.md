@@ -73,13 +73,13 @@ Kommunerna som redan är live på sajten listas på [Om-sidan](https://sopor.har
 |---|---|---|---|---|---|
 | Göteborg | Kretslopp och vatten | Bara frekvenser, inga dagar | Nej, hämtdagarna finns på Mina sidor med e-legitimation (2026-11-06) | – | Inte med, fråga kommunen |
 | Linköping | Tekniska verken | – | Nej, hämtningsdagarna finns på Mina sidor och i appen Mitt Tekniska verken (2026-11-06) | – | Inte med, fråga bolaget |
-| Karlstad | Karlstads Energi | – | Nej, "logga in på Mina sidor". Ingen EDP-tjänst på `minasidor.karlstadsenergi.se` (2026-11-06) | – | Inte med, fråga bolaget |
+| Karlstad | Karlstads Energi | – | Nej, "logga in på Mina sidor". Ingen EDP-tjänst på `minasidor.karlstadsenergi.se` (2026-11-06). Kontrollerat igen 2026-11-17: sajten hänvisar fortfarande till appen och Mina sidor, och sitemap.xml har ingen sökning per adress | – | Inte med, fråga bolaget. Mest efterfrågade saknade kommunen i statistiken |
 | Halmstad | HEM | – | Nej, hämtdagarna finns i appen Mitt HEM, i chatten och per telefon. Ingen EDP-tjänst på `minasidor.hem.se` (2026-11-06) | – | Inte med, fråga bolaget |
 | Eskilstuna | Eskilstuna Energi och Miljö | – | Nej, hämtningsdagen finns på Mina sidor. Ingen EDP-tjänst på `minasidor.eem.se` (2026-11-06) | – | Inte med, fråga bolaget |
 | Gävle | Gästrike Återvinnare | – | Nej, sökfunktionen är uttryckligen borttagen och hänvisar till Mina sidor (2026-11-06) | – | Inte med, fråga bolaget |
 | Norrköping | Nodra | – | Adressökning bara i Nodras app, och nästa tömning och schema på Mina sidor. Appen kräver apptoken, som regel 4 utesluter (2026-11-06) | – | Inte med, fråga bolaget |
 | Nykvarn | – | – | Telge Återvinnings söktjänst har inga adresser här: ingen av kommunens 204 gator gav en träff i Nykvarn (2026-11-06) | – | Inte med |
-| Mölndal | – | – | EDP Future svarar men är tom (`future.molndal.se/FutureWeb`, 2026-11-03) | – | Inte med |
+| Mölndal | Staden | – | EDP Future svarar men är tom (`future.molndal.se/FutureWeb`, 2026-11-03 och 2026-11-17). E-tjänsten "Se din sophämtningsdag" (`etjanst.molndal.se/oversikt/overview/720`) kräver e-legitimation eller kundnummer och personnummer | – | Inte med, be staden fylla SimpleWastePickup i EDP |
 | Östersund | – | – | EDP Future svarar men är tom (`edp.ostersund.se/FutureWeb`, 2026-11-03) | – | Inte med |
 | Upplands Väsby | Kommunen | – | EDP Future svarar men är tom (`edpfuture.upplandsvasby.se/FutureWeb`). Kommunen hänvisar till inloggning på Mina sidor | – | Inte med |
 | Täby | Kommunen (Verdis) | – | Egen JSON i Sitevision-appen `garbageTruckFetcher` på taby.se (`/appresource/…/getAddresses` och `getContainer`), ger datum per fraktion ungefär ett år fram | – | Kandidat för egen källtyp (fas 3) |

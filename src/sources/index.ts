@@ -302,6 +302,19 @@ export const ALL_SOURCES: Source[] = [
     config: { system: 'edp', baseUrl: 'https://vatjanst.partille.se/FutureWeb' },
   },
   {
+    id: 'lerum',
+    name: 'Lerums kommun',
+    url: 'https://lerum.se',
+    contact: {
+      phone: { number: '+46302521000', display: '0302-52 10 00' },
+      email: 'kommun@lerum.se',
+      page: 'https://lerum.se/kommun-och-politik/kommunens-organisation/forvaltning/kundcenter-komin',
+      checked: { url: 'https://lerum.se/kommun-och-politik/kommunens-organisation/forvaltning/kundcenter-komin', date: '2026-11-17' },
+    },
+    kommuner: [{ code: '1441', name: 'Lerums kommun' }],
+    config: { system: 'edp', baseUrl: 'https://vatjanst.lerum.se/FutureWeb' },
+  },
+  {
     id: 'kungalv',
     name: 'Kungälvs kommun',
     url: 'https://www.kungalv.se',
