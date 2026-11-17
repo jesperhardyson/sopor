@@ -255,7 +255,7 @@ export const ALL_SOURCES: Source[] = [
       page: 'https://ssam.se/om-ssam/kontakta-ssam.html',
       checked: { url: 'https://ssam.se/om-ssam/kontakta-ssam.html', date: '2026-11-07' },
     },
-    kommuner: [{ code: '0780', name: 'Växjö kommun' }, { code: '0764', name: 'Alvesta kommun' }, { code: '0761', name: 'Lessebo kommun' }, { code: '0763', name: 'Tingsryds kommun' }, { code: '0760', name: 'Uppvidinge kommun' }],
+    kommuner: [{ code: '0780', name: 'Växjö kommun' }, { code: '0764', name: 'Alvesta kommun' }, { code: '0761', name: 'Lessebo kommun' }, { code: '0763', name: 'Tingsryds kommun' }],
     config: { system: 'edp', baseUrl: 'https://edpfuture.ssam.se/FutureWeb' },
   },
   {
@@ -267,9 +267,18 @@ export const ALL_SOURCES: Source[] = [
       page: 'https://kretsloppsydost.se/kontakt/',
       checked: { url: 'https://kretsloppsydost.se/kontakt/', date: '2026-11-07' },
     },
-    kommuner: [{ code: '0880', name: 'Kalmar kommun' }, { code: '0881', name: 'Nybro kommun' }, { code: '0862', name: 'Emmaboda kommun' }, { code: '0834', name: 'Torsås kommun' }, { code: '0840', name: 'Mörbylånga kommun' }, { code: '0885', name: 'Borgholms kommun' }],
-    // Söktjänsten har även adresser här (sedd 2026-10-31), t.ex. Kristdala, Korsberga och Åseda.
-    grannkommuner: [{ code: '0882', name: 'Oskarshamns kommun' }, { code: '0685', name: 'Vetlanda kommun' }, { code: '0684', name: 'Sävsjö kommun' }, { code: '0760', name: 'Uppvidinge kommun' }],
+    // Förbundets åtta medlemskommuner enligt kretsloppsydost.se, kontrollerade mot söktjänsten 2026-11-17.
+    // Emmaboda och Borgholm är inte med och har inga adresser i tjänsten.
+    kommuner: [
+      { code: '0880', name: 'Kalmar kommun' },
+      { code: '0881', name: 'Nybro kommun' },
+      { code: '0834', name: 'Torsås kommun' },
+      { code: '0840', name: 'Mörbylånga kommun' },
+      { code: '0882', name: 'Oskarshamns kommun' },
+      { code: '0685', name: 'Vetlanda kommun' },
+      { code: '0684', name: 'Sävsjö kommun' },
+      { code: '0760', name: 'Uppvidinge kommun' },
+    ],
     config: { system: 'edp', baseUrl: 'https://kundportal.kretsloppsydost.se/FutureWeb' },
   },
   {

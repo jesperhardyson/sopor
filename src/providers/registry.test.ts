@@ -629,8 +629,8 @@ describe('missingKommuner', () => {
 
 describe('kommunStatus', () => {
   const sverige = {
-    kommuner: { '2083': 'Hedemora kommun', '0380': 'Uppsala kommun', '0882': 'Oskarshamns kommun' },
-    orter: { hedemora: ['2083'], uppsala: ['0380'], storvreta: ['0380'], oskarshamn: ['0882'], bergby: ['0380', '2083'] },
+    kommuner: { '2083': 'Hedemora kommun', '0380': 'Uppsala kommun', '0882': 'Oskarshamns kommun', '0862': 'Emmaboda kommun' },
+    orter: { hedemora: ['2083'], uppsala: ['0380'], storvreta: ['0380'], oskarshamn: ['0882'], emmaboda: ['0862'], bergby: ['0380', '2083'] },
   }
 
   afterEach(() => {
@@ -660,8 +660,10 @@ describe('kommunStatus', () => {
     expect(await status('Gamla Uppsala')).toEqual([{ name: 'Uppsala kommun', covered: true }])
   })
 
-  it('räknar inte kommuner där en källa bara har en del adresser', async () => {
-    expect(await status('Oskarshamn')).toEqual([{ name: 'Oskarshamns kommun', covered: false }])
+  // Kretslopp Sydost, kontrollerat 2026-11-17: Oskarshamn är medlem, Emmaboda har inga adresser i tjänsten.
+  it('räknar Oskarshamn som täckt och Emmaboda som saknad', async () => {
+    expect(await status('Oskarshamn')).toEqual([{ name: 'Oskarshamns kommun', covered: true }])
+    expect(await status('Emmaboda')).toEqual([{ name: 'Emmaboda kommun', covered: false }])
   })
 
   it('ger en rad per kommun för orter i flera kommuner', async () => {

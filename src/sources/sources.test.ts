@@ -96,3 +96,17 @@ describe('kommunForLocality', () => {
     expect(kommunForLocality(source, 'Korsberga', { korsberga: 'Vetlanda kommun' })).toBe('Vetlanda kommun')
   })
 })
+
+describe('Kretslopp Sydost och SSAM', () => {
+  const codes = (id: string) => getSource(id)!.kommuner.map((k) => k.code).sort()
+
+  // Medlemskommunerna enligt kretsloppsydost.se, kontrollerade mot söktjänsten 2026-11-17.
+  it('täcker Kretslopp Sydosts åtta medlemskommuner och inga andra', () => {
+    expect(codes('kretslopp-sydost')).toEqual(['0684', '0685', '0760', '0834', '0840', '0880', '0881', '0882'])
+    expect(getSource('kretslopp-sydost')!.grannkommuner ?? []).toEqual([])
+  })
+
+  it('räknar inte Uppvidinge till SSAM, som saknar kommunens adresser', () => {
+    expect(codes('ssam')).not.toContain('0760')
+  })
+})
