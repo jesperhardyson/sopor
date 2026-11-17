@@ -40,7 +40,7 @@ export interface WeekRule {
  * vet hur kommunen räknar efter nyår, och var 4:e vecka bara till och med vecka 52. Stämmer källans
  * datum inte med veckodagen, pariteten eller startveckan (flyttat vid en helgdag) visas bara det.
  */
-export function weekRuleDates(next: string, rule: WeekRule, opts: { inMonths?: number[] } = {}): ExpandedPickup[] {
+export function weekRuleDates(next: string, rule: WeekRule, opts: { inMonths?: number[]; inWeeks?: [number, number] } = {}): ExpandedPickup[] {
   const only: ExpandedPickup[] = [{ date: next, estimated: false }]
   const { year, week } = isoWeek(next)
   const parity = rule.parity && (rule.parity === 'jämn' ? 0 : 1)
@@ -75,14 +75,16 @@ function withWarnings(dates: string[], next: string): ExpandedPickup[] {
 
 /**
  * Var `stepDays`:e dag från `next` i `months` månader (Stockholm m.fl.). Med `inMonths` (1–12)
- * räknas bara datum i de månaderna, för tömningar med säsong som "april-nov".
+ * räknas bara datum i de månaderna, för tömningar med säsong som "april-nov". Med `inWeeks` räknas
+ * bara datum i ISO-veckorna från och med den första till och med den andra ("v 22-39").
  */
-export function expandEvery(input: { next: string; stepDays: number; months?: number; inMonths?: number[] }): ExpandedPickup[] {
-  const { next, stepDays, months = 12, inMonths } = input
+export function expandEvery(input: { next: string; stepDays: number; months?: number; inMonths?: number[]; inWeeks?: [number, number] }): ExpandedPickup[] {
+  const { next, stepDays, months = 12, inMonths, inWeeks } = input
+  const inSeason = (d: string) => !inWeeks || (isoWeek(d).week >= inWeeks[0] && isoWeek(d).week <= inWeeks[1])
   const end = monthsEnd(next, months)
   const dates: string[] = []
   for (let d = next; d <= end; d = addDays(d, stepDays)) {
-    if (d === next || !inMonths || inMonths.includes(Number(d.slice(5, 7)))) dates.push(d)
+    if (d === next || ((!inMonths || inMonths.includes(Number(d.slice(5, 7)))) && inSeason(d))) dates.push(d)
   }
   return withWarnings(dates, next)
 }

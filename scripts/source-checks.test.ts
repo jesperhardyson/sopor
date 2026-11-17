@@ -14,7 +14,8 @@ import type { Source } from '../src/sources/index.js'
 import { MSVA_URL } from '../src/server/msva.js'
 import { TELGE_URL } from '../src/server/telge.js'
 import { VAKIN_URL } from '../src/server/vakin.js'
-import { checkAppbolagetSource, checkBorlangeSource, checkEdpSource, checkMsvaSource, checkNsrSource, checkRoslagsvattenSource, checkTelgeSource, checkVakinSource, checkSrvSource, checkUddevallaSource, checkSvoaSource, checkVasydSource, checkStaticSource, checkViaSite, unreachableFromHere } from './source-checks'
+import { MIVA_APP, MIVA_URL, mivaAddressId } from '../src/server/miva.js'
+import { checkAppbolagetSource, checkBorlangeSource, checkEdpSource, checkMsvaSource, checkNsrSource, checkRoslagsvattenSource, checkTelgeSource, checkVakinSource, checkMivaSource, checkSrvSource, checkUddevallaSource, checkSvoaSource, checkVasydSource, checkStaticSource, checkViaSite, unreachableFromHere } from './source-checks'
 
 const json = (body: unknown) =>
   new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json; charset=utf-8' } })
@@ -744,5 +745,54 @@ describe('checkRoslagsvattenSource', () => {
   it('rapporterar okända kärl men inte fyrfackskärl', async () => {
     expect((await check(respond(rows('A'), schema('Deponi')))).unknownWasteTypes).toEqual(['Deponi'])
     expect((await check(respond(rows('A'), schema('Fyrfack 1')))).unknownWasteTypes).toEqual([])
+  })
+})
+
+describe('checkMivaSource', () => {
+  const miva: Source = { ...source, id: 'miva', name: 'Miva', config: { system: 'miva' } }
+  const probe = mivaAddressId('Nygatan 2', 'ÖRNSKÖLDSVIK')
+  const hit = (ExternalId = 'Var 14:e dag', PickupAddress = 'Nygatan 2') => ({ PickupAddress, PickupCity: 'ÖRNSKÖLDSVIK', ExternalId, ContentTypeName: 'Restavfall' })
+  const trip = (typeText = 'Restavfall', pickupDateIso = '2026-11-22T23:00:00.000Z') => ({ text: 'måndag jämna veckor', containers: [{ type: 'household', typeText }], pickupDateIso, nextPickupDateIso: '2026-12-06T23:00:00.000Z' })
+  const page = (state: unknown) => `<script>AppRegistry.registerInitialState('${MIVA_APP}',${JSON.stringify(state)});</script>`
+  const respond = (sok: unknown, schema: unknown = { route: '/schedule', trips: [trip()] }) =>
+    vi.fn(async (input: string | URL | Request) => {
+      const details = (new URL(String(input)).searchParams.get(`sv.${MIVA_APP}.route`) ?? '').startsWith('/details/')
+      const body = details ? schema : sok
+      if (body instanceof Error) throw body
+      return new Response(typeof body === 'string' ? body : page(body), { headers: { 'Content-Type': 'text/html;charset=UTF-8' } })
+    }) as unknown as typeof fetch
+  const check = (fetchFn: typeof fetch) => checkMivaSource(miva, probe, '2026-11-16', fetchFn)
+  const hittad = { route: '/', hits: [hit()] }
+
+  it('fungerar med en tömning inom 60 dagar', async () => {
+    expect(await check(respond(hittad))).toMatchObject({ state: 'fungerar', baseUrl: MIVA_URL, probe, unknownWasteTypes: [] })
+  })
+
+  it('svarar inte vid timeout', async () => {
+    expect((await check(respond(new TypeError('fetch failed')))).state).toBe('svarar-inte')
+  })
+
+  it('har nytt format när appens tillstånd saknas i sidan', async () => {
+    expect((await check(respond('<html></html>'))).state).toBe('nytt-format')
+    expect((await check(respond(hittad, '<html></html>'))).state).toBe('nytt-format')
+  })
+
+  it('är tom när sökningen inte hittar något', async () => {
+    expect((await check(respond({ route: '/', hits: [] }))).state).toBe('tom')
+  })
+
+  it('har nytt format när kontrolladressen inte finns men gatan har adresser', async () => {
+    const r = await check(respond({ route: '/', hits: [hit('Var 14:e dag', 'Nygatan 3')] }))
+    expect(r.state).toBe('nytt-format')
+    expect(r.error).toContain(mivaAddressId('Nygatan 3', 'ÖRNSKÖLDSVIK'))
+  })
+
+  it('märker om tjänsten slutar ge kommande tömningar', async () => {
+    expect((await check(respond(hittad, { route: '/schedule', trips: [] }))).state).toBe('inga-tomningar')
+  })
+
+  it('rapporterar okända typer och frekvenser', async () => {
+    const r = await check(respond({ route: '/', hits: [hit('Var 3:e vecka')] }, { route: '/schedule', trips: [trip('Grovsopor')] }))
+    expect(r.unknownWasteTypes).toEqual(['Grovsopor', 'Frekvens: Var 3:e vecka'])
   })
 })

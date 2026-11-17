@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { addDays } from './dates'
+import { addDays, isoWeek } from './dates'
 import { expandEvery, expandWeekdays, weekRuleDates, type WeekRule } from './recurrence'
 
 describe('expandWeekdays', () => {
@@ -119,5 +119,19 @@ describe('expandEvery', () => {
   it('varnar för beräknade datum på helgdagar', () => {
     const christmas = expandEvery({ next: '2026-12-11', stepDays: 14 }).find((d) => d.date === '2026-12-25')
     expect(christmas).toEqual({ date: '2026-12-25', estimated: true, warning: 'Infaller på juldagen – kan flyttas.' })
+  })
+})
+
+describe('weekRuleDates med inWeeks', () => {
+  it('räknar bara datum i veckorna 22–39 med inWeeks', () => {
+    const dates = weekRuleDates('2027-06-01', { weekday: 2, every: 2, parity: 'jämn' }, { inWeeks: [22, 39] }).map((p) => p.date)
+    expect(dates[0]).toBe('2027-06-01')
+    expect(dates.every((d) => isoWeek(d).week >= 22 && isoWeek(d).week <= 39)).toBe(true)
+    expect(dates).toContain('2027-09-21')
+    expect(dates.filter((d) => d > '2027-09-21' && d < '2028-05-29')).toEqual([])
+  })
+
+  it('behåller källans datum utanför inWeeks', () => {
+    expect(weekRuleDates('2026-11-17', { weekday: 2, every: 2, parity: 'udda' }, { inWeeks: [22, 39] })[0]).toEqual({ date: '2026-11-17', estimated: false })
   })
 })

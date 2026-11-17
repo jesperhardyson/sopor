@@ -13,6 +13,7 @@ import { BORLANGE_URL, borlangeFind, borlangePickups, borlangeSchedule, borlange
 import { MSVA_URL, msvaFind, msvaSchedule, msvaSearch, msvaWasteType } from '../src/server/msva.js'
 import { TELGE_URL, telgeFind, telgePickups, telgeSchedule, telgeSearch } from '../src/server/telge.js'
 import { VAKIN_URL, vakinFind, vakinPickups, vakinSchedule, vakinSearch } from '../src/server/vakin.js'
+import { isKnownMivaFrequency, MIVA_URL, mivaAddressId, mivaFind, mivaSchedule, mivaSearch, mivaTrips } from '../src/server/miva.js'
 import { UDDEVALLA_URL, uddevallaFind, uddevallaPickups, uddevallaSchedule, uddevallaSearch, uddevallaWasteType } from '../src/server/uddevalla.js'
 import { isKnownSrvJob, SRV_URL, srvFind, srvSchedule, srvSearch, srvWasteType } from '../src/server/srv.js'
 import { parseSvoaAddress, sameSvoaAddress, svoaAddressId, SVOA_URL, svoaFractions, svoaSchedule, svoaSearch, svoaStep } from '../src/server/svoa.js'
@@ -319,6 +320,36 @@ export async function checkVakinSource(source: Source, probe: string, today: str
     ]
     const end = addDays(today, HORIZON_DAYS)
     const upcoming = vakinSchedule(pickups, today).events.some((e) => e.date <= end)
+    return { ...base, state: upcoming ? 'fungerar' : 'inga-tomningar', unknownWasteTypes }
+  } catch (error) {
+    return { ...base, state: stateForError(error), error: (error as Error).message }
+  }
+}
+
+/** Miva: kontrolladressen är ett adress-id. Ändrar Miva appen saknas tillståndet i sidan, och det blir nytt format. */
+export async function checkMivaSource(source: Source, probe: string, today: string, fetchFn: typeof fetch = fetch): Promise<SourceResult> {
+  const base = { sourceId: source.id, name: source.name, baseUrl: MIVA_URL, probe }
+  try {
+    const found = await mivaFind(probe, fetchFn, TIMEOUT_MS)
+    if (!found) {
+      const hits = await mivaSearch(queryFromAddressId(probe)?.query ?? probe, fetchFn, TIMEOUT_MS)
+      if (hits.length === 0) return { ...base, state: 'tom' }
+      return { ...base, state: 'nytt-format', error: `Kontrolladressen ${probe} hittades inte hos Miva, bara t.ex. ${mivaAddressId(hits[0].address, hits[0].city)}` }
+    }
+    const trips = await mivaTrips(found, fetchFn, TIMEOUT_MS)
+    const unknownWasteTypes = [
+      ...new Set(
+        trips
+          .flatMap((t) => t.types)
+          .filter((type) => {
+            const mapped = mapWasteType(type)
+            return mapped?.fractions.includes('karl') && !isKnownBin(mapped.label ?? '')
+          }),
+      ),
+      ...found.frequencies.filter((f) => !isKnownMivaFrequency(f)).map((f) => `Frekvens: ${f}`),
+    ]
+    const end = addDays(today, HORIZON_DAYS)
+    const upcoming = mivaSchedule(trips, found.frequencies, today).events.some((e) => e.date <= end)
     return { ...base, state: upcoming ? 'fungerar' : 'inga-tomningar', unknownWasteTypes }
   } catch (error) {
     return { ...base, state: stateForError(error), error: (error as Error).message }

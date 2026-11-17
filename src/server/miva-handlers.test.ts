@@ -1,0 +1,86 @@
+import { readFileSync } from 'node:fs'
+import path from 'node:path'
+import { describe, expect, it, vi } from 'vitest'
+import { ALL_SOURCES, type Source } from '../sources/index.js'
+import { handleIcs, handleSchedule, handleSearch } from './handlers.js'
+import { MIVA_APP, mivaAddressId } from './miva.js'
+import { handleV1Address, v1 } from './v1.js'
+
+const fixture = (name: string) => readFileSync(path.resolve(import.meta.dirname, '__fixtures__', name), 'utf8')
+const html = (body: string) => new Response(body, { headers: { 'Content-Type': 'text/html;charset=UTF-8' } })
+
+const miva: Source = {
+  id: 'miva',
+  name: 'Miva',
+  url: 'https://miva.se',
+  kommuner: [{ code: '2284', name: 'Örnsköldsviks kommun' }],
+  config: { system: 'miva' },
+}
+const ID = mivaAddressId('Nygatan 2', 'ÖRNSKÖLDSVIK')
+
+const route = (input: string | URL | Request) => new URL(String(input)).searchParams.get(`sv.${MIVA_APP}.route`) ?? ''
+const fake = ({ sok = fixture('miva-sok.html'), schema = fixture('miva-schema.html') } = {}) =>
+  vi.fn(async (input: string | URL | Request) => html(route(input).startsWith('/details/') ? schema : sok)) as unknown as typeof fetch & ReturnType<typeof vi.fn>
+const opts = (fetchFn: typeof fetch = fake()) => ({ fetchFn, sources: [miva], timeoutMs: 50, now: new Date('2026-11-16T10:00:00Z') })
+const url = (p: string) => new URL(`https://preview.test${p}`)
+const schema = (id: string) => url(`/api/schema?source=miva&id=${encodeURIComponent(id)}`)
+
+describe('Miva i sajtens API', () => {
+  it('söker utan orten och ger adressen med kommunen', async () => {
+    const fetchFn = fake()
+    const res = await (await handleSearch(url('/api/sok?q=Nygatan 2, Örnsköldsvik&sources=miva'), opts(fetchFn))).json()
+    expect(res.failed).toEqual([])
+    expect(res.addresses).toContainEqual({ id: ID, street: 'Nygatan 2', locality: 'Örnsköldsvik', sourceId: 'miva', kommun: 'Örnsköldsviks kommun' })
+    expect(new URL(String(fetchFn.mock.calls[0][0])).searchParams.get('q')).toBe('Nygatan 2')
+  })
+
+  it('hämtar schemat med tömningen i dag först', async () => {
+    const res = await handleSchedule(schema(ID), opts())
+    expect(res.status).toBe(200)
+    const body = await res.json()
+    expect(body.address).toMatchObject({ id: ID, street: 'Nygatan 2', locality: 'Örnsköldsvik', kommun: 'Örnsköldsviks kommun' })
+    expect(body.schedule.events[0]).toEqual({ date: '2026-11-16', fractions: ['rest', 'mat'], estimated: false })
+  })
+
+  it('ger ett tomt schema för en adress utan tömningar, inte ett fel', async () => {
+    const res = await handleSchedule(schema(ID), opts(fake({ schema: fixture('miva-schema-tomt.html') })))
+    expect(res.status).toBe(200)
+    expect((await res.json()).schedule.events).toEqual([])
+  })
+
+  it('ger 502 för ett id utan träff', async () => {
+    expect((await handleSchedule(schema(mivaAddressId('Nygatan 99', 'ÖRNSKÖLDSVIK')), opts())).status).toBe(502)
+  })
+
+  it('ger 502 när Miva har ändrat appen', async () => {
+    expect((await handleSchedule(schema(ID), opts(fake({ schema: '<html></html>' })))).status).toBe(502)
+  })
+
+  it('ger kalenderfilen med stabila UID', async () => {
+    const res = await handleIcs(url(`/api/ics?source=miva&file=${encodeURIComponent(ID)}.ics`), opts())
+    expect(res.status).toBe(200)
+    expect(await res.text()).toContain(`UID:${ID}-2026-11-23@sopor.hardyson.se`)
+  })
+
+  it('ger kalenderprenumerationen 502 när adressen inte hittas', async () => {
+    const res = await handleIcs(url(`/api/ics?source=miva&file=${encodeURIComponent(mivaAddressId('Nygatan 99', 'ÖRNSKÖLDSVIK'))}.ics`), opts())
+    expect(res.status).toBe(502)
+  })
+
+  it('ger schemat i API v1', async () => {
+    const res = await v1(handleV1Address)(new Request(`https://preview.test/api/v1/adress?source=miva&id=${encodeURIComponent(ID)}`), opts())
+    expect(res.status).toBe(200)
+  })
+})
+
+describe('Miva i registret', () => {
+  const source = ALL_SOURCES.find((s) => s.id === 'miva')
+
+  it('täcker Örnsköldsvik', () => {
+    expect(source).toMatchObject({ name: 'Miva', url: 'https://miva.se', kommuner: [{ code: '2284', name: 'Örnsköldsviks kommun' }], config: { system: 'miva' } })
+  })
+
+  it('förklarar ett tomt schema', () => {
+    expect(source?.emptyScheduleNote?.text).toContain('flerbostadshus')
+  })
+})

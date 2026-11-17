@@ -19,6 +19,7 @@ import { uddevallaDetails, uddevallaSearch } from './uddevalla.js'
 import { borlangeSearch } from './borlange.js'
 import { msvaSearch } from './msva.js'
 import { telgeSearch } from './telge.js'
+import { mivaSearch } from './miva.js'
 import { vakinSearch } from './vakin.js'
 import { lookupAddress } from './lookup.js'
 
@@ -66,8 +67,8 @@ export async function searchLiveSource(source: LiveSource, street: string, place
       .map((a): Address => ({ id: svoaAddressId(a), street: a.street, locality: a.locality, sourceId: source.id, kommun }))
       .filter((a) => matchesPlace(a, place))
   }
-  if (source.config.system === 'nsr' || source.config.system === 'srv' || source.config.system === 'appbolaget' || source.config.system === 'uddevalla' || source.config.system === 'roslagsvatten' || source.config.system === 'borlange' || source.config.system === 'msva' || source.config.system === 'telge' || source.config.system === 'vakin') {
-    // NSR, SRV, Appbolaget, Uddevalla, Roslagsvatten, Borlänge, MSVA, Telge och Vakin hittar inget med orten i sökningen, så den filtreras fram här.
+  if (source.config.system === 'nsr' || source.config.system === 'srv' || source.config.system === 'appbolaget' || source.config.system === 'uddevalla' || source.config.system === 'roslagsvatten' || source.config.system === 'borlange' || source.config.system === 'msva' || source.config.system === 'telge' || source.config.system === 'vakin' || source.config.system === 'miva') {
+    // NSR, SRV, Appbolaget, Uddevalla, Roslagsvatten, Borlänge, MSVA, Telge, Vakin och Miva hittar inget med orten i sökningen, så den filtreras fram här.
     const [streetOnly, typedPlace = ''] = street.split(',').map((p) => p.trim())
     const timeoutMs = opts.timeoutMs ?? 3000
     const inPlace = (b: EdpBuilding) => matchesPlace(toAddress(source, b, opts.places), place || typedPlace)
@@ -93,6 +94,11 @@ export async function searchLiveSource(source: LiveSource, street: string, place
     }
     if (source.config.system === 'vakin') {
       return withDetails((await vakinSearch(streetOnly, opts.fetchFn, timeoutMs)).map((a) => a.building))
+        .filter(([b]) => inPlace(b))
+        .map(([b, detail]) => toAddress(source, b, opts.places, detail))
+    }
+    if (source.config.system === 'miva') {
+      return withDetails((await mivaSearch(streetOnly, opts.fetchFn, timeoutMs)).map((a) => a.building))
         .filter(([b]) => inPlace(b))
         .map(([b, detail]) => toAddress(source, b, opts.places, detail))
     }
