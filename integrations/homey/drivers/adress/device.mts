@@ -2,6 +2,7 @@ import Homey from 'homey'
 import type SoporApp from '../../app.mjs'
 import { SoporError, type SoporSchedule } from '../../lib/api.mjs'
 import { addDays, languageOf, shortDate, stockholmTime, todayInStockholm } from '../../lib/dates.mjs'
+import { activeMessages, newMessages, warningText } from '../../lib/messages.mjs'
 import { REMINDER_TIMES, isValidTime, reminderDue } from '../../lib/reminder.mjs'
 import { KNOWN_FRACTIONS, changeText, collectedOn, daysToNext, fractionIds, fractionName, fractionsOn, nextText, scheduleChanges, summary, tomorrowText, withoutFractions } from '../../lib/schedule.mjs'
 
@@ -24,6 +25,10 @@ const capabilityFor = (fraction: string) => PREFIX + fraction.toLowerCase().repl
 export default class AddressDevice extends Homey.Device {
   private nextFetch = 0
   private timers: NodeJS.Timeout[] = []
+  /** Varningen som senast visades, så att den inte skrivs om var 15:e minut. */
+  private warning: string | null | undefined
+  /** Omritningar kan gå samtidigt (timern och inställningarna). Kön gör att ett meddelande bara triggar en gång. */
+  private messageQueue: Promise<void> = Promise.resolve()
 
   async onInit() {
     await this.migrate()
@@ -163,6 +168,30 @@ export default class AddressDevice extends Homey.Device {
     await this.setCapabilityValue('sopor_summary', summary(schedule, today, this.lang))
     await this.setCapabilityValue('sopor_tomorrow', tomorrowText(schedule, today, this.lang))
     await this.setCapabilityValue('sopor_days', daysToNext(schedule, today))
+    await this.showMessages(today)
+  }
+
+  /** Källans meddelanden: en varning på enheten medan de gäller, och triggern en gång per meddelande. */
+  private showMessages(today: string) {
+    this.messageQueue = this.messageQueue.then(() => this.showMessagesNow(today)).catch(this.error)
+    return this.messageQueue
+  }
+
+  private async showMessagesNow(today: string) {
+    // Hela schemat, eftersom dolda avfallstyper inte påverkar meddelandena
+    const schedule = this.storedSchedule
+    if (!schedule) return
+    const warning = warningText(activeMessages(schedule, today))
+    if (warning !== this.warning) {
+      if (warning) await this.setWarning(warning)
+      else await this.unsetWarning()
+      this.warning = warning
+    }
+    const { fresh, seen } = newMessages(schedule, today, this.getStoreValue('seenMessages') ?? [])
+    if (!fresh.length) return
+    await this.setStoreValue('seenMessages', seen)
+    const card = this.homey.flow.getDeviceTriggerCard('nytt_meddelande')
+    for (const m of fresh) await card.trigger(this, { rubrik: m.title, text: m.text, lank: m.url ?? '' })
   }
 
   private requireSchedule(): SoporSchedule {

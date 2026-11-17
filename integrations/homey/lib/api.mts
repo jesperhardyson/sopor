@@ -39,6 +39,16 @@ export interface SoporFraction {
   icon: string
 }
 
+/** Ett tillfälligt besked från källan. `id` återanvänds aldrig inom källan. */
+export interface SoporMessage {
+  id: string
+  title: string
+  text: string
+  url: string | null
+  validFrom: string
+  validTo: string
+}
+
 export interface SoporSchedule {
   apiVersion: string
   today: string
@@ -46,6 +56,8 @@ export interface SoporSchedule {
   events: SoporEvent[]
   fractions: Record<string, SoporFraction>
   links: { ics: string; web: string }
+  /** Saknas i svar som sparades innan API:t fick fältet. */
+  messages?: SoporMessage[]
 }
 
 export interface SoporSources {

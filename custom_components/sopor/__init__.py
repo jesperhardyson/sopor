@@ -6,12 +6,14 @@ from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.event import async_track_time_interval
 
 from .const import DOMAIN, TICK_INTERVAL
-from .coordinator import SoporConfigEntry, SoporCoordinator, store_for
+from .coordinator import SoporConfigEntry, SoporCoordinator, delete_orphan_message_issues, store_for
 
 PLATFORMS: list[Platform] = [Platform.SENSOR, Platform.BINARY_SENSOR, Platform.CALENDAR, Platform.EVENT]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: SoporConfigEntry) -> bool:
+    # Ärenden för en källa som ingen adress längre har, till exempel när adressen bytt källa med Konfigurera om
+    delete_orphan_message_issues(hass)
     coordinator = SoporCoordinator(hass, entry)
     if await coordinator.async_load():
         # Det sparade svaret räcker för att starta, även om hämtningen misslyckas
@@ -32,3 +34,5 @@ async def async_remove_entry(hass: HomeAssistant, entry: SoporConfigEntry) -> No
     """Raderar postens sparade svar och reparationsärende."""
     await store_for(hass, entry.entry_id).async_remove()
     ir.async_delete_issue(hass, DOMAIN, f"address_gone_{entry.entry_id}")
+    # Källans meddelanden delas av adresserna hos samma källa. Ärendena går bara när den sista tas bort.
+    delete_orphan_message_issues(hass, entry.entry_id)

@@ -18,6 +18,7 @@ Hämtschemat för din adress som sensorer, kalender och en händelse när schema
 - *Nästa hämtning*, *Dagar kvar*, *Hämtas i dag* och *Hämtas i morgon*.
 - *Hämtschema*: en kalender som fungerar med kalendertriggerns förskjutning, till exempel en påminnelse kvällen innan kl. 18.
 - *Schemat ändrades*: en händelse när en hämtning flyttas, till exempel kring helgdagar.
+- *Meddelanden från källan*, till exempel att hämtrutterna läggs om, som attribut och som ärende under Reparationer.
 - Dölj avfallstyper du inte har, och byt adress utan att automationerna går sönder.
 
 Hela beskrivningen, med exempel på automationer, finns i [dokumentationen](https://github.com/jesperhardyson/sopor/tree/main/integrations/home-assistant).

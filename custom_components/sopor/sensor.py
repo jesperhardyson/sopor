@@ -13,7 +13,7 @@ from .api import Event
 from .const import DOMAIN
 from .coordinator import SoporConfigEntry, SoporCoordinator
 from .entity import SoporEntity, lang
-from .logic import days_to_next, fraction_ids, fraction_name, next_event, summary
+from .logic import active_messages, days_to_next, fraction_ids, fraction_name, next_event, summary
 
 
 async def async_setup_entry(
@@ -99,6 +99,18 @@ class SoporSummarySensor(SoporEntity, SensorEntity):
     def native_value(self) -> str | None:
         visible = self.coordinator.visible
         return summary(visible, self.coordinator.today, lang(self.hass)) if visible else None
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        """Källans meddelanden som gäller i dag, till exempel att rutterna läggs om."""
+        data = self.coordinator.data
+        messages = active_messages(data, self.coordinator.today) if data else []
+        return {
+            "meddelanden": [
+                {"id": m["id"], "rubrik": m["title"], "text": m["text"], "lank": m["url"], "till": m["validTo"]}
+                for m in messages
+            ]
+        }
 
 
 class SoporDaysSensor(SoporEntity, SensorEntity):

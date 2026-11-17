@@ -1,6 +1,6 @@
 """Typer för Soporas publika API v1. Bara det integrationen behöver av svaren är med."""
 
-from typing import Any, TypedDict, cast
+from typing import Any, NotRequired, TypedDict, cast
 
 import aiohttp
 
@@ -54,6 +54,17 @@ class Links(TypedDict):
     web: str
 
 
+class Message(TypedDict):
+    """Ett tillfälligt besked från källan. `id` återanvänds aldrig inom källan."""
+
+    id: str
+    title: str
+    text: str
+    url: str | None
+    validFrom: str
+    validTo: str
+
+
 class Schedule(TypedDict):
     apiVersion: str
     today: str
@@ -61,6 +72,8 @@ class Schedule(TypedDict):
     events: list[Event]
     fractions: dict[str, Fraction]
     links: Links
+    # Saknas i svar sparade innan API:t fick fältet
+    messages: NotRequired[list[Message]]
 
 
 class SourceKommun(TypedDict):

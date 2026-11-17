@@ -271,6 +271,62 @@
         ]
       },
       {
+        "id": "nytt_meddelande",
+        "title": {
+          "en": "The waste company has a new message",
+          "sv": "Källan har ett nytt meddelande"
+        },
+        "hint": {
+          "en": "Runs once per message from the waste company, for example that collection routes are changing and the schedule may be wrong. The message is also shown as a warning on the device while it applies. A message that already applies when the address is added runs right away.",
+          "sv": "Går en gång per meddelande från källan, till exempel att hämtrutterna läggs om och att schemat kan bli fel. Meddelandet visas också som en varning på enheten medan det gäller. Ett meddelande som redan gäller när adressen läggs till går direkt."
+        },
+        "tokens": [
+          {
+            "name": "rubrik",
+            "type": "string",
+            "title": {
+              "en": "Title",
+              "sv": "Rubrik"
+            },
+            "example": {
+              "en": "Hämtrutterna läggs om",
+              "sv": "Hämtrutterna läggs om"
+            }
+          },
+          {
+            "name": "text",
+            "type": "string",
+            "title": {
+              "en": "Message",
+              "sv": "Meddelande"
+            },
+            "example": {
+              "en": "Schemat här kan bli fel.",
+              "sv": "Schemat här kan bli fel."
+            }
+          },
+          {
+            "name": "lank",
+            "type": "string",
+            "title": {
+              "en": "Link",
+              "sv": "Länk"
+            },
+            "example": {
+              "en": "https://avestavatten.se/avfall/Narsorterat/",
+              "sv": "https://avestavatten.se/avfall/Narsorterat/"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=adress"
+          }
+        ]
+      },
+      {
         "id": "karl_toms_i_morgon",
         "title": {
           "en": "The waste bin is emptied tomorrow",

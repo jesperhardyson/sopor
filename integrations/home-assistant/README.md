@@ -27,7 +27,7 @@ En enhet per adress, med adressen som namn.
 | Entitet | Typ | Visar |
 |---|---|---|
 | En per avfallstyp | sensor (datum) | Nästa hämtning av typen, eller okänt när inget väntar. Attribut: `beraknat` (datumet är inte bekräftat) och `avvikelse` (källans förklaring, `null` när det inte finns någon avvikelse) |
-| Nästa hämtning | sensor | Till exempel "Plast & metall – om 4 dagar" |
+| Nästa hämtning | sensor | Till exempel "Plast & metall – om 4 dagar". Attributet `meddelanden` listar källans meddelanden som gäller i dag, var och ett med `id` (ändras aldrig), `rubrik`, `text`, `lank` (`null` när källan inte har någon sida om saken) och `till` (sista dagen). Tom lista när inget gäller |
 | Dagar kvar | sensor (dagar) | Dagar till nästa hämtning av någon typ |
 | Hämtas i dag | binär sensor | På om något hämtas i dag. Attributet `avfallstyper` listar typerna med komma emellan, och är en tom sträng när inget hämtas |
 | Hämtas i morgon | binär sensor | Som ovan, för i morgon |
@@ -37,6 +37,41 @@ En enhet per adress, med adressen som namn.
 - Datumsensorerna följer vad adressen har. Tillkommer eller försvinner en avfallstyp hos källan läggs sensorn till eller tas bort.
 - En avfallstyps sensor får sitt namn när den skapas. Byter källan namn på typen senare behåller sensorn det gamla namnet, tills du byter namn på den själv eller tar bort och lägger till integrationen igen.
 - "I dag" räknas alltid i `Europe/Stockholm`, oavsett Home Assistants tidszon. Texter som integrationen räknar fram följer Home Assistants språk: svenska om det är `sv`, annars engelska. Avfallstypernas namn är alltid svenska.
+
+## Meddelanden från källan
+
+Ibland har källan ett tillfälligt besked, till exempel att hämtrutterna läggs om och att schemat kan bli fel. Medan det gäller:
+
+- står det i attributet `meddelanden` på sensorn *Nästa hämtning*,
+- och visas som ett ärende under *Inställningar → Reparationer*, med källans text och länk. Ett ärende per meddelande, även om du har flera adresser hos samma källa.
+
+Väljer du *Ignorera* på ärendet kommer samma meddelande inte tillbaka. Ärendet försvinner av sig självt efter sista dagen, och när du tar bort den sista adressen hos källan.
+
+Vill du ha en notis kan du trigga på attributet. Exemplet skickar bara meddelanden vars `id` inte fanns i förra tillståndet, och inget alls direkt efter en omstart:
+
+```yaml
+automation:
+  - alias: "Meddelande från Sophämtning"
+    triggers:
+      - trigger: state
+        entity_id: sensor.storgatan_2_uppsala_nasta_hamtning
+        attribute: meddelanden
+    conditions:
+      - "{{ trigger.from_state is not none and trigger.to_state is not none }}"
+    variables:
+      tidigare: "{{ trigger.from_state.attributes.get('meddelanden', []) | map(attribute='id') | list }}"
+      nya: "{{ trigger.to_state.attributes.get('meddelanden', []) | rejectattr('id', 'in', tidigare) | list }}"
+    actions:
+      - repeat:
+          for_each: "{{ nya }}"
+          sequence:
+            - action: notify.notify
+              data:
+                title: "{{ repeat.item.rubrik }}"
+                message: "{{ repeat.item.text }}"
+```
+
+Byt `entity_id` mot sensorns id hos dig. På engelska heter den till exempel `sensor.storgatan_2_uppsala_next_collection`.
 
 ## Dölja avfallstyper och byta adress
 
