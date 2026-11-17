@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
+import { daysBetween, isValidDate } from '../domain/dates'
+import { activeMessages } from '../domain/messages'
 import { ALL_SOURCES, getSource, kommunForLocality, SOURCES, sourceLabel, supportedKommuner, type Source } from './index'
+
+const host = (u: string) => new URL(u).hostname.replace(/^www\./, '')
+/** Källans egen domän eller en underdomän till den. */
+const onSite = (s: Source, u: string) => host(u) === host(s.url) || host(u).endsWith(`.${host(s.url)}`)
 
 describe('källregistret', () => {
   it('har unika och URL-säkra id', () => {
@@ -16,6 +22,7 @@ describe('källregistret', () => {
     expect(avesta.hidden).toBeUndefined()
     expect(avesta.testData).toBeUndefined()
     expect(avesta.emptyScheduleNote?.title).toBe('Schemat för nästa år är inte publicerat än')
+    expect(activeMessages(avesta.messages, '2026-11-17').map((m) => m.id)).toEqual(['nya-rutter-2026'])
   })
 
   it('kräver en varning för varje källa med områdesval', () => {
@@ -42,8 +49,6 @@ describe('källregistret', () => {
   })
 
   it('har kontaktuppgifter från källans egen webbplats', () => {
-    const host = (u: string) => new URL(u).hostname.replace(/^www\./, '')
-    const onSite = (s: Source, u: string) => host(u) === host(s.url) || host(u).endsWith(`.${host(s.url)}`)
     for (const s of ALL_SOURCES.filter((x) => x.contact)) {
       const c = s.contact!
       expect(c.phone ?? c.email ?? c.page, s.id).toBeDefined()
@@ -57,6 +62,27 @@ describe('källregistret', () => {
         expect(onSite(s, u), `${s.id}: ${u}`).toBe(true)
       }
       expect(c.checked.date, s.id).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+    }
+  })
+
+  it('har giltiga meddelanden', () => {
+    for (const s of ALL_SOURCES.filter((x) => x.messages)) {
+      const ids = s.messages!.map((m) => m.id)
+      expect(new Set(ids).size, s.id).toBe(ids.length)
+      for (const m of s.messages!) {
+        const name = `${s.id}/${m.id}`
+        expect(m.id, name).toMatch(/^[a-z0-9-]+$/)
+        expect(isValidDate(m.validFrom) && isValidDate(m.validTo), name).toBe(true)
+        expect(m.validFrom <= m.validTo, name).toBe(true)
+        expect(daysBetween(m.validFrom, m.validTo), name).toBeLessThanOrEqual(183)
+        expect(m.title.length, name).toBeLessThanOrEqual(60)
+        expect(m.text.length, name).toBeLessThanOrEqual(400)
+        for (const t of [m.title, m.text]) expect(t, name).toMatch(/^[^<>*`[]+$/)
+        if (m.url !== undefined) {
+          expect(m.url, name).toMatch(/^https:\/\//)
+          expect(onSite(s, m.url), `${name}: ${m.url}`).toBe(true)
+        }
+      }
     }
   })
 

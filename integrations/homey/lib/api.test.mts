@@ -52,4 +52,18 @@ describe('fält som tillkommit i API:t', () => {
     expect(result.addresses[0].id).toBe('trakt-7')
     expect(result.addresses[0].notice).toBe('Kontrollera området.')
   })
+
+  it('tål källornas meddelanden i schemat, områdena och källorna', async () => {
+    const messages = [{ id: 'nya-rutter-2026', title: 'Hämtrutterna läggs om', text: 'Schemat kan bli fel.', url: null, validFrom: '2026-11-17', validTo: '2027-03-31' }]
+    const bodies: Record<string, unknown> = {
+      '/adress/avesta/trakt-7': { apiVersion: '1', today: '2026-11-17', address: { id: 'trakt-7' }, events: [], fractions: {}, messages },
+      '/omraden': { apiVersion: '1', addresses: [], failed: [], sources: [{ id: 'avesta', name: 'Avesta', explanation: 'E', help: 'H', messages }] },
+      '/kallor': { apiVersion: '1', sources: [{ id: 'avesta', name: 'Avesta', kommuner: [], messages }], fractions: {} },
+    }
+    const fetch = vi.fn(async (url: string) => json(200, bodies[Object.keys(bodies).find((k) => url.includes(k))!]))
+    const client = createClient({ fetch, userAgent: 'x' })
+    expect((await client.schedule('https://sopor.hardyson.se/api/v1/adress/avesta/trakt-7')).address.id).toBe('trakt-7')
+    expect((await client.areas('Avesta')).addresses).toEqual([])
+    expect((await client.sources()).sources[0].id).toBe('avesta')
+  })
 })

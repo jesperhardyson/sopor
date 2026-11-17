@@ -1,3 +1,4 @@
+import type { SourceMessage } from '../domain/messages.js'
 import { normalize } from '../domain/search.js'
 
 /** En kommun enligt SCB:s kommunkod. */
@@ -65,6 +66,8 @@ export interface Source {
   /** Visas i stället för "Inga kommande tömningar" när en adress hos källan har ett tomt schema. */
   emptyScheduleNote?: { title: string; text: string }
   contact?: SourceContact
+  /** Tillfälliga besked från källan. Regler i `docs/kommuner/lagga-till-kommun.md`. */
+  messages?: SourceMessage[]
 }
 
 /** Kontaktuppgifterna gäller alla källor hos samma organisation. */
@@ -117,6 +120,16 @@ export const ALL_SOURCES: Source[] = [
       title: 'Schemat för nästa år är inte publicerat än',
       text: 'Avesta Vatten publicerar hämtschemat ett år i taget. Datumen visas här när det nya schemat finns.',
     },
+    // Enligt Avesta Vatten och Avfall i mejl 2026-11-17. Byt mot det nya schemat när det finns.
+    messages: [
+      {
+        id: 'nya-rutter-2026',
+        title: 'Hämtrutterna läggs om',
+        text: 'Avesta Vatten och Avfall lägger om hämtrutterna under hösten 2026 när kärlen för förpackningar ställs ut. Schemat här kan bli fel. Kontrollera dina tömningsdagar på Mina sidor hos Avesta Vatten.',
+        validFrom: '2026-11-17',
+        validTo: '2027-03-31',
+      },
+    ],
   },
   {
     id: 'sater',

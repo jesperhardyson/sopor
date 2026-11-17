@@ -63,6 +63,21 @@ describe('SavedList', () => {
     expect(await screen.findAllByText('Schemat slutar 10 jan')).toHaveLength(2)
   })
 
+  it('visar rubriken på källans meddelande medan det gäller', async () => {
+    schedule = { bins: [], updatedAt: '2026-11-01', events: [{ date: '2026-11-24', fractions: ['rest'] }] }
+    setup('2026-11-20')
+    // Två sparade Avesta-adresser, men meddelandet står bara på den första.
+    expect(await screen.findAllByText('Tis 24 nov')).toHaveLength(2)
+    expect(screen.getAllByText('Hämtrutterna läggs om')).toHaveLength(1)
+  })
+
+  it('visar inget meddelande innan det gäller', async () => {
+    schedule = { bins: [], updatedAt: '2026-11-01', events: [{ date: '2026-11-24', fractions: ['rest'] }] }
+    setup('2026-11-10')
+    expect(await screen.findAllByText('Tis 24 nov')).toHaveLength(2)
+    expect(screen.queryByText('Hämtrutterna läggs om')).toBeNull()
+  })
+
   it('säger inget om slutet när det är längre kvar', async () => {
     schedule = { bins: [], updatedAt: '2026-11-01', validTo: '2027-01-10', events: [{ date: '2027-01-07', fractions: ['rest'] }] }
     setup('2026-12-26')

@@ -4,6 +4,7 @@ import { Link, useLocation, useParams } from 'react-router'
 import { kommunInText } from '@/domain/kommun'
 import { searchAddresses } from '@/domain/search'
 import { todayInStockholm } from '@/domain/dates'
+import { activeMessages } from '@/domain/messages'
 import type { Address, Area } from '@/domain/types'
 import { moveChoices, rememberChoice, replaceSaved } from '@/lib/storage'
 import { cn } from '@/lib/utils'
@@ -13,6 +14,7 @@ import { useAreas } from '../hooks/useAreas'
 import { usePageTitle } from '../hooks/usePageTitle'
 import { ErrorState, UnsupportedState } from '../result/ResultStates'
 import { AreaFinderSheet } from '../sheets/AreaFinderSheet'
+import { SourceMessages } from '../result/SourceMessages'
 
 const page = 'mx-auto flex w-full max-w-[920px] flex-col gap-5 px-5 pt-1 pb-8 md:px-8 md:pt-4 lg:gap-7 lg:px-0 lg:pb-20'
 
@@ -114,6 +116,7 @@ export function AreaPage({ today = todayInStockholm() }: { today?: string }) {
         <h1 className="text-[28px] leading-tight font-extrabold tracking-[-0.6px] text-text lg:text-[40px]">Välj ditt område</h1>
         <span className="rounded-md bg-brand-soft px-2 py-0.5 text-[13px] font-extrabold text-brand-text">{source.kommuner[0].name}</span>
       </div>
+      <SourceMessages messages={activeMessages(source.messages, today)} sourceName={source.name} />
       {state.status === 'loading' && <div aria-busy className="h-40 rounded-[20px] bg-surface" />}
       {state.status === 'error' && <ErrorState onRetry={retry} />}
       {index && (

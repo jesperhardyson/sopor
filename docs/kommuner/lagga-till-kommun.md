@@ -187,9 +187,21 @@ Gäller statiska källor. EDP-källorna hämtas live och behöver inget.
 - [ ] Behåll samma adress-id och område-id som förra året. Nya adresser får nya id.
 - [ ] För källor med område: kontrollera att områdenas innehåll, veckodagar och nummer är oförändrade innan datumen läggs in. Följer ett område inte med ska det få ett nytt id enligt [reglerna för områdesval](#områdesval-utan-adresser).
 - [ ] Låt förra årets mapp ligga kvar, eftersom kalendrar visar historiken.
+- [ ] Gå igenom källans `messages`. Ta bort ett meddelande som det nya schemat gör inaktuellt, till exempel "Hämtrutterna läggs om", eller sätt dess `validTo` till dagen före det nya schemats `validFrom`.
 - [ ] Kör `npm run lint && npm test && npm run build` och kontrollera några adresser i `npm run dev`.
 
 Prenumererade kalendrar hämtar den nya filen själva.
+
+## Meddelanden från källan
+
+När källan meddelar något som gör schemat osäkert en tid, till exempel att hämtrutterna läggs om, läggs ett meddelande i källans `messages` i `src/sources/index.ts`. Det visas på sajten, står i API:t (`messages`) och i kalenderfilens tömningar inom perioden. Spec: `docs/specs/2026-11-17-kallmeddelanden.md`.
+
+- `id` är gemener, siffror och bindestreck, till exempel `nya-rutter-2026`. Det är unikt inom källan och **återanvänds aldrig**, eftersom appar minns vilka id:n de redan har visat.
+- `validFrom` och `validTo` är första och sista dagen, båda inklusive. Perioden får vara högst 183 dagar. Behövs mer, förläng med ett nytt `validTo`. Ta bort meddelandet när det inte längre behövs, eller låt det gå ut.
+- `title` högst 60 tecken och `text` högst 400 tecken, vanlig text utan HTML eller Markdown. Skriv med egna ord, inte som citat ur ett mejl.
+- `url` är valfri och ska ligga på källans egen webbplats.
+
+`npm test` kontrollerar reglerna.
 
 ## Kommunsidan
 

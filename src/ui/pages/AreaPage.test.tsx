@@ -49,11 +49,11 @@ function Probe() {
   return <p>resultat {sourceId}/{addressId}{changed && ' områdesbyte: ja'}</p>
 }
 
-function show(path: string | { pathname: string; state: unknown } = '/avesta/omraden') {
+function show(path: string | { pathname: string; state: unknown } = '/avesta/omraden', today = '2026-11-04') {
   render(
     <MemoryRouter initialEntries={[path]}>
       <Routes>
-        <Route path=":sourceId/omraden" element={<AreaRoute today="2026-11-04" />} />
+        <Route path=":sourceId/omraden" element={<AreaRoute today={today} />} />
         <Route path=":sourceId/:addressId" element={<Probe />} />
       </Routes>
     </MemoryRouter>,
@@ -79,6 +79,17 @@ describe('AreaPage', () => {
     expect(screen.getByText('Tisdag, jämn vecka')).toBeInTheDocument()
     expect(screen.getByText('Område 7')).toBeInTheDocument()
     expect(document.title).toBe('Välj område – Sopor')
+  })
+
+  it('visar källans meddelanden bara medan de gäller', async () => {
+    show('/avesta/omraden', '2026-11-20')
+    expect(await screen.findByRole('heading', { name: 'Hämtrutterna läggs om' })).toBeInTheDocument()
+  })
+
+  it('visar inget meddelande innan det börjar gälla', async () => {
+    show()
+    expect(await screen.findByRole('heading', { name: 'Välj ditt område' })).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Hämtrutterna läggs om' })).toBeNull()
   })
 
   it('visar alla platser, så att man kan hitta sitt område i listan', async () => {
