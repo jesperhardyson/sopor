@@ -1405,5 +1405,15 @@
     "ics": "https://sopor.hardyson.se/ics/uppsala/storgatan-2_uppsala-4004688.ics",
     "web": "https://sopor.hardyson.se/uppsala/storgatan-2_uppsala-4004688"
   },
-  "updatedAt": "2026-11-01"
+  "updatedAt": "2026-11-01",
+  "messages": [
+    {
+      "id": "nya-rutter-2026",
+      "title": "Hämtrutterna läggs om",
+      "text": "Schemat kan bli fel.",
+      "url": null,
+      "validFrom": "2026-11-17",
+      "validTo": "2027-03-31"
+    }
+  ]
 }

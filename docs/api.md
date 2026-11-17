@@ -93,6 +93,7 @@ Förkortat svar:
   "fractions": { "plast": { "name": "Plastförpackningar", "short": "Plast", "color": "#A8431F", "icon": "cup-soda" } },
   "links": { "ics": "https://sopor.hardyson.se/ics/uppsala/storgatan-2_uppsala-4004688.ics",
              "web": "https://sopor.hardyson.se/uppsala/storgatan-2_uppsala-4004688" },
+  "messages": [],
   "updatedAt": "2026-10-31"
 }
 ```
@@ -152,7 +153,7 @@ Sopor bygger svaret på datumet användaren anger och vet fortfarande inte vilke
 
 ### `GET /api/v1/kallor`
 
-Alla synliga källor (id, namn, vilka kommuner de täcker) och alla kända fraktioner med namn, färg och ikon. Cachas i ett dygn. Bra för att bygga en källväljare.
+Alla synliga källor (id, namn, vilka kommuner de täcker) och alla kända fraktioner med namn, färg och ikon. Cachas i högst sex timmar och aldrig förbi midnatt svensk tid. Bra för att bygga en källväljare.
 
 ```bash
 curl 'https://sopor.hardyson.se/api/v1/kallor'
@@ -173,6 +174,34 @@ Varje källa har `contact`: hur man når källans kundtjänst, eller `null` när
 - `phone.number` är i E.164 och passar i en `tel:`-länk. `phone.display` är till för att visa.
 - `phone`, `email` och `page` kan var och en vara `null`, men minst en har ett värde. `email` går till kundtjänst, aldrig till en person.
 - Uppgifterna kommer från källans egen webbplats: `checkedUrl` är sidan där de står, och `checkedAt` är dagen de senast kontrollerades.
+
+Varje källa har också `messages`, se [Meddelanden från källan](#meddelanden-från-källan).
+
+### Meddelanden från källan
+
+Ibland har en källa ett tillfälligt besked, till exempel att hämtrutterna läggs om och att schemat kan bli fel. Det står i fältet `messages`, en lista som är tom (`[]`) när inget gäller:
+
+- `/adress` har `messages` på toppnivå, med källans meddelanden som gäller i dag.
+- `/omraden` har `messages` på varje post i `sources`, med de som gäller i dag.
+- `/kallor` har `messages` per källa, med de som gäller i dag och de som börjar senare. Kontrollera `validFrom` innan du visar ett meddelande därifrån som aktuellt.
+
+```json
+"messages": [
+  {
+    "id": "nya-rutter-2026",
+    "title": "Hämtrutterna läggs om",
+    "text": "Avesta Vatten och Avfall lägger om hämtrutterna under hösten 2026 …",
+    "url": null,
+    "validFrom": "2026-11-17",
+    "validTo": "2027-03-31"
+  }
+]
+```
+
+- Visa `title` och `text` tillsammans med schemat. `text` är vanlig text utan formatering. Länka till `url` när den inte är `null`.
+- `validFrom` och `validTo` är första och sista dagen meddelandet gäller, båda inklusive, räknat i Stockholm.
+- `id` är unikt inom källan och återanvänds aldrig. Spara de id:n du redan har visat eller notifierat om, med källans id, så att samma besked inte visas som nytt igen.
+- Listan är sorterad på `validFrom` och sedan `id`.
 
 ### Fel
 
@@ -211,6 +240,7 @@ Alla fel har samma form:
 | `bins` | lista | Kärl/abonnemang: `fraction`, `sizeLiters`, `pickupsPerYear`, `frequencyText` (alla utom `fraction` kan vara `null`). Tom för många källor. |
 | `fractions` | objekt | Id → `name`, `short`, `color`, `icon` för de fraktioner som förekommer i svaret. |
 | `schedule` | objekt eller `null` | Hur långt schemat gäller: `{ "until": "YYYY-MM-DD", "reason": "…" eller null }`. `null` när schemat inte har något känt slut, till exempel när källan räknar fram datumen. |
+| `messages` | lista | Källans meddelanden som gäller i dag, se [Meddelanden från källan](#meddelanden-från-källan). `[]` när inget gäller. |
 | `area` | objekt eller `null` | Det valda områdets `day`, `label`, `places`, `otherDays` och `searchTerms`, i samma form som i `/omraden`. `null` för adresser utan områdesval. |
 | `links.ics` | URL | Kalenderprenumeration (iCalendar). |
 | `links.web` | URL | Adressens sida på sajten. |

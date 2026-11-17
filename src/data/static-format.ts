@@ -293,6 +293,7 @@ export function buildMunicipality(
       kommunName: source.kommuner[0]?.name ?? source.name,
       schedule: mergeParts(a.refs.map((ref) => scheduleFiles.get(ref)!)),
       notice: areaNoticeText(source),
+      messages: source.messages,
     }),
   }))
 

@@ -1,7 +1,9 @@
 import { ArrowRight, SearchX } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, useSyncExternalStore } from 'react'
 import { Link, useLocation, useParams } from 'react-router'
+import { todayInStockholm } from '@/domain/dates'
 import { kommunInText } from '@/domain/kommun'
+import { activeMessages } from '@/domain/messages'
 import type { KommunPage as KommunPageData } from '@/data/kommun-pages'
 import { kommunPage, searchInKommun } from '@/providers/registry'
 import { SOURCES } from '@/sources'
@@ -9,6 +11,7 @@ import { usePageTitle } from '../hooks/usePageTitle'
 import { AllKommunerLink, BackLink, KommunColumn, KommunContent } from '../kommun/KommunContent'
 import { embeddedData } from '../kommun/embedded'
 import { ErrorState } from '../result/ResultStates'
+import { SourceMessages } from '../result/SourceMessages'
 import { AddressSearch } from '../search/AddressSearch'
 
 export function KommunRoute() {
@@ -60,6 +63,7 @@ function KommunSearch({ page }: { page: KommunPageData }) {
   const areaHref = areaSource && `/${areaSource.id}/omraden`
   return (
     <div className="flex flex-col gap-3.5">
+      <KommunMessages code={page.code} />
       <AddressSearch search={search} suggest={suggest} kommun={page.name} areaHref={areaHref} />
       {areaHref && (
         <Link to={areaHref} className="inline-flex items-center gap-1.5 self-start text-[15px] font-bold text-primary">
@@ -69,6 +73,20 @@ function KommunSearch({ page }: { page: KommunPageData }) {
       )}
     </div>
   )
+}
+
+const noSubscription = () => () => {}
+
+/**
+ * Meddelanden från kommunens källor. Sidan förrenderas vid bygget, så rutan ritas först i webbläsaren
+ * med dagens datum. Annars kunde ett utgånget meddelande ligga kvar i HTML:en till nästa deploy.
+ */
+function KommunMessages({ code }: { code: string }) {
+  const today = useSyncExternalStore(noSubscription, () => todayInStockholm(), () => undefined)
+  if (!today) return null
+  return SOURCES.filter((s) => s.kommuner.some((k) => k.code === code)).map((s) => (
+    <SourceMessages key={s.id} messages={activeMessages(s.messages, today)} sourceName={s.name} />
+  ))
 }
 
 function UnknownKommun() {

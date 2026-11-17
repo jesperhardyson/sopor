@@ -33,8 +33,9 @@ const SOURCES: Source[] = [
       page: 'https://trog.test/kontakt',
       checked: { url: 'https://trog.test/kontakt', date: '2026-11-07' },
     },
+    messages: [{ id: 'kommer', title: 'Kommer', text: 'Senare.', validFrom: '2099-01-01', validTo: '2099-01-31' }],
   },
-  { id: 'avesta', name: 'Avesta AB', url: 'https://avesta.test', kommuner: [{ code: '1', name: 'Avesta kommun' }], config: { system: 'static' }, selection: 'area' },
+  { id: 'avesta', name: 'Avesta AB', url: 'https://avesta.test', kommuner: [{ code: '1', name: 'Avesta kommun' }], config: { system: 'static' }, selection: 'area', messages: [{ id: 'alltid', title: 'Rutterna läggs om', text: 'Kontrollera schemat.', url: 'https://avesta.test/nyheter', validFrom: '2000-01-01', validTo: '2099-12-31' }] },
   { id: 'statisk', name: 'Statisk AB', url: 'https://statisk.test', kommuner: [{ code: '0002', name: 'Statiska kommun' }], config: { system: 'static' }, testData: true },
 ]
 
@@ -192,6 +193,7 @@ describe('kontrakt: riktiga svar följer schemana', () => {
     validate('SearchResponse', hits)
     const address = await (await call(handleV1Address, '/api/v1/adress?source=avesta&id=trakt-7')).json()
     expect(address.area).toMatchObject({ day: 'Tisdag, jämn vecka', label: 'Trakt 7' })
+    expect(address.messages).toHaveLength(1)
     validate('AddressResponse', address)
   })
 
