@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { isLive, SOURCES, type Source } from '../src/sources/index.js'
+import { plannerAddressId } from '../src/server/fetchplanner.js'
 import { formatTable, PROBES, runChecks } from './monitor-sources'
 import type { SourceResult } from './source-checks'
 
@@ -20,6 +21,11 @@ describe('kontrolladresserna', () => {
 
   it.each(live)('finns för %s. Lägg till en i PROBES i scripts/monitor-sources.ts', (id) => {
     expect(PROBES[id]).toBeTruthy()
+  })
+
+  it('har FetchPlanner-källornas kontrolladresser som adress-id', () => {
+    expect(PROBES.miva).toBe(plannerAddressId('Nygatan 2', 'ÖRNSKÖLDSVIK'))
+    expect(PROBES.fev).toBe(plannerAddressId('Ekvägen 1', 'FALUN'))
   })
 
   it('har VA Syds kontrolladress', () => {

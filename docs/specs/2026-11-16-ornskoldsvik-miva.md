@@ -1,6 +1,6 @@
 # Spec: Örnsköldsvik (Miva)
 
-Status: utkast, 2026-11-16. Efterfrågad i [#139](https://github.com/jesperhardyson/sopor/issues/139). Örnsköldsvik har cirka 56 000 invånare. Källan bryter mot beslut 2 i `docs/plans/2026-11-03-fler-kommuner.md` (ingen skrapning) och byggs som ett undantag, se *Beslut*.
+Status: byggd, 2026-11-16. Klienten gjordes allmän för Falun 2026-11-17 (`src/server/fetchplanner.ts`, `system: 'fetchplanner'`), se `docs/specs/2026-11-17-falun-fev.md`. Efterfrågad i [#139](https://github.com/jesperhardyson/sopor/issues/139). Örnsköldsvik har cirka 56 000 invånare. Källan bryter mot beslut 2 i `docs/plans/2026-11-03-fler-kommuner.md` (ingen skrapning) och byggs som ett undantag, se *Beslut*.
 
 ## Bakgrund
 
@@ -47,7 +47,7 @@ Stickprovet: tio breda sökningar ("vägen 1", "Sk", "berg" …) gav 1 088 adres
 - **Undantag från beslut 2 (ingen skrapning).** Tillståndet är JSON med namngivna fält och ISO-datum, inte text som tolkas ur HTML. Det är närmare ett API än en skrapning. Risken är densamma som med andra källor: ändrar Miva appen går källan sönder, och bevakningen rapporterar det. Bara `registerInitialState` för appens id läses. Ingen annan del av sidan används.
 - **Regel 4.** Sidan är publik och utan inloggning. Skulle den börja kräva inloggning tas källan bort.
 - **Inga personuppgifter går vidare.** Klienten läser bara `PickupAddress`, `PickupCity` och `ExternalId` ur träffarna, och kastar resten direkt efter tolkningen. Inget annat fält sparas, cachas som tolkat svar, loggas eller skickas till webbläsaren. Fixturerna i testerna rensas på samma sätt (påhittade värden i de övriga fälten).
-- **Källan:** `{ id: 'miva', name: 'Miva', url: 'https://miva.se', kommuner: [Örnsköldsvik 2284], config: { system: 'miva' } }`. Id:t får aldrig ändras.
+- **Källan:** `{ id: 'miva', name: 'Miva', url: 'https://miva.se', kommuner: [Örnsköldsvik 2284], config: { system: 'fetchplanner', page, app } }` (från början `system: 'miva'`). Id:t får aldrig ändras.
 - **Adress-id:** `nygatan-2_örnsköldsvik-<hash>`, med `edpAddressId` och `"<PickupAddress>, <ort>"`. Hashen är `idHash` av `"<PickupAddress>, <ORT MED VERSALER>"`, som för Telge: schemat använder inte `pickupId`, och adress och ort var unika, men `queryFromAddressId` kräver en sista del. Formatet får aldrig ändras (regel 3), och tester låser det.
 - **Uppslaget** söker på adressdelen av id:t och väljer träffen vars id är detsamma. Ger sökningen direkt ett schema (`route: "/schedule"`) jämförs `address` och `city` i svaret i stället. Schemat hämtas sedan med källans exakta `PickupAddress` och ort. Id utan träff ger 502.
 - **Sökningen** tar bort orten (allt efter kommat) och `:`, och grupperar träffarna per adress och ort. Adresser med andra tecken än bokstäver, siffror, mellanslag och bindestreck visas inte, eftersom deras schema inte går att hämta.
@@ -68,14 +68,14 @@ Stickprovet: tio breda sökningar ("vägen 1", "Sk", "berg" …) gav 1 088 adres
 
 ## Bevakningen
 
-- `checkMivaSource` i `scripts/source-checks.ts`, med samma lägen och samma fallback via sajten som de andra.
+- `checkFetchPlannerSource` i `scripts/source-checks.ts` (från början `checkMivaSource`), med samma lägen och samma fallback via sajten som de andra.
 - Saknas `registerInitialState` för appens id, eller har tillståndet inte `hits` eller `trips`, rapporteras det som nytt format. Det är så en ändrad app syns.
 - Kontrolladressen i `PROBES` är ett adress-id. En ny frekvenstext eller fraktionstyp rapporteras som okänd.
 
 ## Test
 
 - Sparade svar i `src/server/__fixtures__/`, rensade enligt ovan: `miva-sok.html` (flera träffar), `miva-sok-en.html` (direkt till schemat), `miva-schema.html` och `miva-schema-tomt.html`.
-- Klienten i `src/server/miva.test.ts`: tillståndet ur sidan, adress-id, sökning, uppslag i båda formerna, datum i svensk tid, alla fyra frekvenserna, fraktioner, okänd form och att inga andra fält än de tre finns kvar efter tolkningen.
+- Klienten i `src/server/fetchplanner.test.ts`: tillståndet ur sidan, adress-id, sökning, uppslag i båda formerna, datum i svensk tid, alla fyra frekvenserna, fraktioner, okänd form och att inga andra fält än de tre finns kvar efter tolkningen.
 - `inWeeks` i `src/domain/recurrence.test.ts`, också över vecka 53.
-- `handleSearch`, `handleSchedule`, `handleIcs` och API v1 i `src/server/miva-handlers.test.ts`. Ett id utan träff ger 502.
+- `handleSearch`, `handleSchedule`, `handleIcs` och API v1 i `src/server/fetchplanner-handlers.test.ts`. Ett id utan träff ger 502.
 - Bevakningen i `scripts/source-checks.test.ts`.

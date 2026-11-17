@@ -13,7 +13,7 @@ import { BORLANGE_URL, borlangeFind, borlangePickups, borlangeSchedule, borlange
 import { MSVA_URL, msvaFind, msvaSchedule, msvaSearch, msvaWasteType } from '../src/server/msva.js'
 import { TELGE_URL, telgeFind, telgePickups, telgeSchedule, telgeSearch } from '../src/server/telge.js'
 import { VAKIN_URL, vakinFind, vakinPickups, vakinSchedule, vakinSearch } from '../src/server/vakin.js'
-import { isKnownMivaFrequency, MIVA_URL, mivaAddressId, mivaFind, mivaSchedule, mivaSearch, mivaTrips } from '../src/server/miva.js'
+import { isKnownPlannerFrequency, plannerAddressId, plannerFind, plannerSchedule, plannerSearch, plannerTrips } from '../src/server/fetchplanner.js'
 import { UDDEVALLA_URL, uddevallaFind, uddevallaPickups, uddevallaSchedule, uddevallaSearch, uddevallaWasteType } from '../src/server/uddevalla.js'
 import { isKnownSrvJob, SRV_URL, srvFind, srvSchedule, srvSearch, srvWasteType } from '../src/server/srv.js'
 import { parseSvoaAddress, sameSvoaAddress, svoaAddressId, SVOA_URL, svoaFractions, svoaSchedule, svoaSearch, svoaStep } from '../src/server/svoa.js'
@@ -326,17 +326,19 @@ export async function checkVakinSource(source: Source, probe: string, today: str
   }
 }
 
-/** Miva: kontrolladressen är ett adress-id. Ändrar Miva appen saknas tillståndet i sidan, och det blir nytt format. */
-export async function checkMivaSource(source: Source, probe: string, today: string, fetchFn: typeof fetch = fetch): Promise<SourceResult> {
-  const base = { sourceId: source.id, name: source.name, baseUrl: MIVA_URL, probe }
+/** FetchPlanner (Miva, FEV): kontrolladressen är ett adress-id. Ändras appen saknas tillståndet i sidan, och det blir nytt format. */
+export async function checkFetchPlannerSource(source: Source, probe: string, today: string, fetchFn: typeof fetch = fetch): Promise<SourceResult> {
+  if (source.config.system !== 'fetchplanner') throw new Error(`${source.id} är ingen FetchPlanner-källa`)
+  const app = source.config
+  const base = { sourceId: source.id, name: source.name, baseUrl: app.page, probe }
   try {
-    const found = await mivaFind(probe, fetchFn, TIMEOUT_MS)
+    const found = await plannerFind(app, probe, fetchFn, TIMEOUT_MS)
     if (!found) {
-      const hits = await mivaSearch(queryFromAddressId(probe)?.query ?? probe, fetchFn, TIMEOUT_MS)
+      const hits = await plannerSearch(app, queryFromAddressId(probe)?.query ?? probe, fetchFn, TIMEOUT_MS)
       if (hits.length === 0) return { ...base, state: 'tom' }
-      return { ...base, state: 'nytt-format', error: `Kontrolladressen ${probe} hittades inte hos Miva, bara t.ex. ${mivaAddressId(hits[0].address, hits[0].city)}` }
+      return { ...base, state: 'nytt-format', error: `Kontrolladressen ${probe} hittades inte hos ${source.name}, bara t.ex. ${plannerAddressId(hits[0].address, hits[0].city)}` }
     }
-    const trips = await mivaTrips(found, fetchFn, TIMEOUT_MS)
+    const trips = await plannerTrips(app, found, fetchFn, TIMEOUT_MS)
     const unknownWasteTypes = [
       ...new Set(
         trips
@@ -346,10 +348,10 @@ export async function checkMivaSource(source: Source, probe: string, today: stri
             return mapped?.fractions.includes('karl') && !isKnownBin(mapped.label ?? '')
           }),
       ),
-      ...found.frequencies.filter((f) => !isKnownMivaFrequency(f)).map((f) => `Frekvens: ${f}`),
+      ...found.frequencies.filter((f) => !isKnownPlannerFrequency(f)).map((f) => `Frekvens: ${f}`),
     ]
     const end = addDays(today, HORIZON_DAYS)
-    const upcoming = mivaSchedule(trips, found.frequencies, today).events.some((e) => e.date <= end)
+    const upcoming = plannerSchedule(trips, found.frequencies, today).events.some((e) => e.date <= end)
     return { ...base, state: upcoming ? 'fungerar' : 'inga-tomningar', unknownWasteTypes }
   } catch (error) {
     return { ...base, state: stateForError(error), error: (error as Error).message }
