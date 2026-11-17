@@ -34,13 +34,36 @@ def message_issue_prefix(source: str) -> str:
     return f"message_{source}_"
 
 
+def _issue_source(issue_id: str) -> str | None:
+    """Källan i `message_<källa>_<id>`. Käll- och meddelande-id har bara gemener, siffror och bindestreck."""
+    parts = issue_id.split("_", 2)
+    return parts[1] if len(parts) == 3 and parts[0] == "message" else None
+
+
 @callback
 def delete_message_issues(hass: HomeAssistant, source: str, keep: set[str] | None = None) -> None:
     """Tar bort källans ärenden för meddelanden som inte finns i `keep`."""
-    prefix = message_issue_prefix(source)
     for domain, issue_id in list(ir.async_get(hass).issues):
-        if domain == DOMAIN and issue_id.startswith(prefix) and issue_id not in (keep or set()):
+        if domain == DOMAIN and _issue_source(issue_id) == source and issue_id not in (keep or set()):
             ir.async_delete_issue(hass, DOMAIN, issue_id)
+
+
+@callback
+def delete_orphan_message_issues(hass: HomeAssistant, removed_entry_id: str | None = None) -> None:
+    """Tar bort ärenden för källor som ingen adress längre har, till exempel efter byte av adress eller borttagning."""
+    sources = {
+        e.data.get("source") for e in hass.config_entries.async_entries(DOMAIN) if e.entry_id != removed_entry_id
+    }
+    for domain, issue_id in list(ir.async_get(hass).issues):
+        if domain == DOMAIN and (source := _issue_source(issue_id)) is not None and source not in sources:
+            ir.async_delete_issue(hass, DOMAIN, issue_id)
+
+
+def source_data(hass: HomeAssistant, source: str) -> list[Schedule]:
+    """Senaste svaret för varje uppsatt adress hos källan."""
+    entries = hass.config_entries.async_entries(DOMAIN)
+    coordinators = [getattr(e, "runtime_data", None) for e in entries if e.data.get("source") == source]
+    return [c.data for c in coordinators if isinstance(c, SoporCoordinator) and c.data is not None]
 
 
 def store_for(hass: HomeAssistant, entry_id: str) -> Store[dict[str, Any]]:
@@ -94,24 +117,34 @@ class SoporCoordinator(DataUpdateCoordinator[Schedule]):
     def _sync_message_issues(self) -> None:
         if self.data is None:
             return
-        source = self.config_entry.data["source"]
-        prefix = message_issue_prefix(source)
-        active = active_messages(self.data, self.today)
-        for message in active:
-            # Ett ignorerat ärende förblir ignorerat när det skapas igen med samma id
-            ir.async_create_issue(
-                self.hass,
-                DOMAIN,
-                prefix + message["id"],
-                is_fixable=False,
-                severity=ir.IssueSeverity.WARNING,
-                translation_key="source_message",
-                translation_placeholders={
-                    "title": message["title"],
-                    "text": message_text(message, lang_of(self.hass.config.language)),
-                },
-            )
-        delete_message_issues(self.hass, source, {prefix + m["id"] for m in active})
+        try:
+            source = self.config_entry.data["source"]
+            prefix = message_issue_prefix(source)
+            for message in active_messages(self.data, self.today):
+                # Ett ignorerat ärende förblir ignorerat när det skapas igen med samma id
+                ir.async_create_issue(
+                    self.hass,
+                    DOMAIN,
+                    prefix + message["id"],
+                    is_fixable=False,
+                    severity=ir.IssueSeverity.WARNING,
+                    translation_key="source_message",
+                    translation_placeholders={
+                        "title": message["title"],
+                        "text": message_text(message, lang_of(self.hass.config.language)),
+                    },
+                )
+            # En annan adress hos källan kan ha hämtat senare. Ett ärende går bara när ingen av dem har meddelandet,
+            # eftersom borttagningen också glömmer att användaren valt Ignorera.
+            keep = {
+                prefix + m["id"]
+                for data in [self.data, *source_data(self.hass, source)]
+                for m in active_messages(data, self.today)
+            }
+            delete_message_issues(self.hass, source, keep)
+        except KeyError, TypeError:
+            # Ett trasigt meddelande får inte stoppa schemat
+            _LOGGER.exception("Källans meddelanden gick inte att läsa")
 
     @callback
     def async_tick(self, now: datetime | None = None) -> None:

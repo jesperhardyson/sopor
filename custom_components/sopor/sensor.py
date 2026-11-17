@@ -107,7 +107,8 @@ class SoporSummarySensor(SoporEntity, SensorEntity):
         messages = active_messages(data, self.coordinator.today) if data else []
         return {
             "meddelanden": [
-                {"rubrik": m["title"], "text": m["text"], "lank": m["url"], "till": m["validTo"]} for m in messages
+                {"id": m["id"], "rubrik": m["title"], "text": m["text"], "lank": m["url"], "till": m["validTo"]}
+                for m in messages
             ]
         }
 

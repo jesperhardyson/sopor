@@ -412,8 +412,8 @@
         "sv": "Källan har ett nytt meddelande"
       },
       "hint": {
-        "en": "Runs once per message from the waste company, for example that collection routes are changing and the schedule may be wrong. The message is also shown as a warning on the device while it applies.",
-        "sv": "Går en gång per meddelande från källan, till exempel att hämtrutterna läggs om och att schemat kan bli fel. Meddelandet visas också som en varning på enheten medan det gäller."
+        "en": "Runs once per message from the waste company, for example that collection routes are changing and the schedule may be wrong. The message is also shown as a warning on the device while it applies. A message that already applies when the address is added runs right away.",
+        "sv": "Går en gång per meddelande från källan, till exempel att hämtrutterna läggs om och att schemat kan bli fel. Meddelandet visas också som en varning på enheten medan det gäller. Ett meddelande som redan gäller när adressen läggs till går direkt."
       },
       "tokens": [
         {

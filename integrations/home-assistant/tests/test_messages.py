@@ -7,6 +7,7 @@ import pytest
 from custom_components.sopor.const import DOMAIN
 from custom_components.sopor.logic import active_messages, message_text
 from homeassistant.helpers import entity_registry as er
+from homeassistant.helpers import issue_registry as ir
 from pytest_homeassistant_custom_component.common import async_fire_time_changed
 
 ARENDE = "message_uppsala_nya-rutter-2026"
@@ -71,6 +72,8 @@ async def test_sensorn_har_meddelandet_som_attribut(hass, setup_entry):
     state = _summary_state(hass, setup_entry)
     assert state.attributes["meddelanden"] == [
         {
+            # Automationer behöver id:t för att känna igen ett meddelande de redan skickat
+            "id": "nya-rutter-2026",
             "rubrik": "Hämtrutterna läggs om",
             "text": "Schemat kan bli fel.",
             "lank": "https://www.uppsalavatten.se/nyheter",
@@ -129,3 +132,68 @@ async def test_borttagen_post_raderar_kallans_arende(hass, setup_entry, issue_re
     assert await hass.config_entries.async_remove(setup_entry.entry_id)
     await hass.async_block_till_done()
     assert issue_registry.async_get_issue(DOMAIN, ARENDE) is None
+
+
+async def test_aldre_data_hos_en_annan_adress_tar_inte_bort_arendet(
+    hass, setup_entry, second_entry, aioclient_mock, issue_registry, schedule_json
+):
+    # Två adresser hos samma källa. Den andra har ännu inte hämtat meddelandet.
+    aioclient_mock.get(second_entry.data["url"], json=_med(schedule_json))
+    second_entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(second_entry.entry_id)
+    await hass.async_block_till_done()
+    ir.async_ignore_issue(hass, DOMAIN, ARENDE, True)
+    second_entry.runtime_data.async_set_updated_data(_med(schedule_json))
+    second_entry.runtime_data.async_tick()
+    issue = issue_registry.async_get_issue(DOMAIN, ARENDE)
+    assert issue is not None
+    assert issue.dismissed_version is not None
+
+
+async def test_arendet_gar_nar_ingen_adress_hos_kallan_har_meddelandet(
+    hass, setup_entry, second_entry, aioclient_mock, issue_registry, schedule_json
+):
+    aioclient_mock.get(second_entry.data["url"], json=schedule_json)
+    second_entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(second_entry.entry_id)
+    await hass.async_block_till_done()
+    for entry in (setup_entry, second_entry):
+        entry.runtime_data.async_set_updated_data(_med(schedule_json))
+    assert issue_registry.async_get_issue(DOMAIN, ARENDE) is None
+
+
+async def test_ärenden_för_en_källa_utan_adresser_tas_bort_vid_start(
+    hass, mock_entry, aioclient_mock, freezer, issue_registry, schedule_json
+):
+    # Till exempel när den enda adressen hos källan bytt till en annan källa med Konfigurera om
+    ir.async_create_issue(
+        hass,
+        DOMAIN,
+        "message_avesta_nya-rutter-2026",
+        is_fixable=False,
+        severity=ir.IssueSeverity.WARNING,
+        translation_key="source_message",
+        translation_placeholders={"title": "T", "text": "T"},
+    )
+    freezer.move_to("2026-11-01T12:00:00+01:00")
+    aioclient_mock.get(mock_entry.data["url"], json=schedule_json)
+    mock_entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(mock_entry.entry_id)
+    await hass.async_block_till_done()
+    assert issue_registry.async_get_issue(DOMAIN, "message_avesta_nya-rutter-2026") is None
+    assert issue_registry.async_get_issue(DOMAIN, ARENDE) is not None
+
+
+async def test_en_källa_vars_id_börjar_likadant_rörs_inte(hass, setup_entry, issue_registry, schedule_json):
+    ir.async_create_issue(
+        hass,
+        DOMAIN,
+        "message_uppsala-lan_x",
+        is_fixable=False,
+        severity=ir.IssueSeverity.WARNING,
+        translation_key="source_message",
+        translation_placeholders={"title": "T", "text": "T"},
+    )
+    setup_entry.runtime_data.async_set_updated_data(_med(schedule_json))
+    # Källan uppsala-lan har ingen adress, men det avgörs vid start, inte av uppsalas uppdatering
+    assert issue_registry.async_get_issue(DOMAIN, "message_uppsala-lan_x") is not None

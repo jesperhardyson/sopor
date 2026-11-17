@@ -27,6 +27,8 @@ export default class AddressDevice extends Homey.Device {
   private timers: NodeJS.Timeout[] = []
   /** Varningen som senast visades, så att den inte skrivs om var 15:e minut. */
   private warning: string | null | undefined
+  /** Omritningar kan gå samtidigt (timern och inställningarna). Kön gör att ett meddelande bara triggar en gång. */
+  private messageQueue: Promise<void> = Promise.resolve()
 
   async onInit() {
     await this.migrate()
@@ -170,7 +172,12 @@ export default class AddressDevice extends Homey.Device {
   }
 
   /** Källans meddelanden: en varning på enheten medan de gäller, och triggern en gång per meddelande. */
-  private async showMessages(today: string) {
+  private showMessages(today: string) {
+    this.messageQueue = this.messageQueue.then(() => this.showMessagesNow(today)).catch(this.error)
+    return this.messageQueue
+  }
+
+  private async showMessagesNow(today: string) {
     // Hela schemat, eftersom dolda avfallstyper inte påverkar meddelandena
     const schedule = this.storedSchedule
     if (!schedule) return
