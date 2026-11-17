@@ -108,6 +108,16 @@ export const ALL_SOURCES: Source[] = [
       title: 'Schemat för nästa år är inte publicerat än',
       text: 'Avesta Vatten publicerar hämtschemat ett år i taget. Datumen visas här när det nya schemat finns.',
     },
+    // Enligt Avesta Vatten och Avfall i mejl 2026-11-17. Byt mot det nya schemat när det finns.
+    messages: [
+      {
+        id: 'nya-rutter-2026',
+        title: 'Hämtrutterna läggs om',
+        text: 'Avesta Vatten och Avfall lägger om hämtrutterna under hösten 2026 när kärlen för förpackningar ställs ut. Schemat här kan bli fel. Kontrollera dina tömningsdagar på Mina sidor hos Avesta Vatten.',
+        validFrom: '2026-11-17',
+        validTo: '2027-03-31',
+      },
+    ],
   },
   {
     id: 'sater',

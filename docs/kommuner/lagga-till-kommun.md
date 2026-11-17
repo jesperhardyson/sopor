@@ -191,6 +191,17 @@ Gäller statiska källor. EDP-källorna hämtas live och behöver inget.
 
 Prenumererade kalendrar hämtar den nya filen själva.
 
+## Meddelanden från källan
+
+När källan meddelar något som gör schemat osäkert en tid, till exempel att hämtrutterna läggs om, läggs ett meddelande i källans `messages` i `src/sources/index.ts`. Det visas på sajten, står i API:t (`messages`) och i kalenderfilens tömningar inom perioden. Spec: `docs/specs/2026-11-17-kallmeddelanden.md`.
+
+- `id` är gemener, siffror och bindestreck, till exempel `nya-rutter-2026`. Det är unikt inom källan och **återanvänds aldrig**, eftersom appar minns vilka id:n de redan har visat.
+- `validFrom` och `validTo` är första och sista dagen, båda inklusive. Perioden får vara högst 183 dagar. Behövs mer, förläng med ett nytt `validTo`. Ta bort meddelandet när det inte längre behövs, eller låt det gå ut.
+- `title` högst 60 tecken och `text` högst 400 tecken, vanlig text utan HTML eller Markdown. Skriv med egna ord, inte som citat ur ett mejl.
+- `url` är valfri och ska ligga på källans egen webbplats.
+
+`npm test` kontrollerar reglerna.
+
 ## Kommunsidan
 
 En ny kommun i `src/sources/index.ts` får sin sida på `/kommuner/<slug>` automatiskt, med källan och sökfältet. Du behöver inte göra något. Slugen ändras aldrig: byter en kommun namn läggs den gamla slugen som undantag i `src/data/kommun-pages.ts`, och `src/data/kommun-slugs.json` vakar över det.

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { daysBetween, isValidDate } from '../domain/dates'
+import { activeMessages } from '../domain/messages'
 import { ALL_SOURCES, getSource, kommunForLocality, SOURCES, sourceLabel, supportedKommuner, type Source } from './index'
 
 const host = (u: string) => new URL(u).hostname.replace(/^www\./, '')
@@ -21,6 +22,7 @@ describe('källregistret', () => {
     expect(avesta.hidden).toBeUndefined()
     expect(avesta.testData).toBeUndefined()
     expect(avesta.emptyScheduleNote?.title).toBe('Schemat för nästa år är inte publicerat än')
+    expect(activeMessages(avesta.messages, '2026-11-17').map((m) => m.id)).toEqual(['nya-rutter-2026'])
   })
 
   it('kräver en varning för varje källa med områdesval', () => {
