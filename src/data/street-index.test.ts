@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Source } from '@/sources'
-import { buildStreetIndex, candidateSources, isKnownStreet, matchesPlace, pickLiveSources, shardKey, sourcesAtPlace, splitPlace, type OsmKommun } from './street-index'
+import { buildStreetIndex, candidateSources, isKnownStreet, matchesPlace, namesSource, pickLiveSources, shardKey, sourcesAtPlace, splitPlace, type OsmKommun } from './street-index'
 
 const src = (id: string, kommuner: [string, string][]): Source => ({
   id,
@@ -229,5 +229,25 @@ describe('sourcesAtPlace', () => {
 
   it('ger en tom lista när orten är känd men ingen av källorna täcker den', () => {
     expect(sourcesAtPlace('grums', null, lookup, {}, sources)).toEqual([])
+  })
+})
+
+describe('namesSource', () => {
+  const leksand = { id: 'dvaa-leksand', name: 'Dala Vatten och Avfall', url: 'https://x', kommuner: [{ code: '2029', name: 'Leksands kommun' }], config: { system: 'static' }, selection: 'area' } as Source
+  // Leksand har en by som heter Stockholm, och den finns i platsens delfil.
+  const shard = { stockholm: ['dvaa-leksand'], insjön: ['dvaa-leksand'] }
+  const lookup = { kommuner: { '0180': 'Stockholms kommun', '2029': 'Leksands kommun' }, orter: { stockholm: ['0180'], stockholms: ['0180'], leksand: ['2029'], leksands: ['2029'] } }
+
+  it('känner igen källans kommun och orter', () => {
+    expect(namesSource('Leksand', null, leksand, lookup)).toBe(true)
+    expect(namesSource('Insjön', shard, leksand, lookup)).toBe(true)
+  })
+
+  it('läser ett kommunnamn som kommunen, fast en by hos källan heter likadant', () => {
+    expect(namesSource('Stockholm', shard, leksand, lookup)).toBe(false)
+  })
+
+  it('går på delfilen utan ortlistan', () => {
+    expect(namesSource('Stockholm', shard, leksand)).toBe(true)
   })
 })

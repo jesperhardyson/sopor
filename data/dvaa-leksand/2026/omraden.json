@@ -1,0 +1,230 @@
+{
+  "explanation": "Dala Vatten och Avfall visar sophämtningen i Leksand per trakt på sin webbplats, men inte vilka adresser som hör till vilken trakt. Schemat gäller helårskunder med egna kärl.",
+  "help": "Osäker? Se dina hämtningsdagar i appen Mitt DVA, eller ring Dala Vatten och Avfall på 0247-44 100.",
+  "areas": [
+    {
+      "id": "jamn-mandag",
+      "name": "Insjön, Tunsta m.fl.",
+      "day": "Måndag, jämn vecka",
+      "label": "Område 1",
+      "schedule": "jamn-mandag",
+      "places": [
+        "Insjön",
+        "Tunsta",
+        "Holsåkern",
+        "Ålbyn",
+        "Lustholen",
+        "Åhl-Sätra",
+        "Holen",
+        "Ål-Tällberg",
+        "Nedre Heden",
+        "Knippboheden",
+        "Övre Heden",
+        "Knippbodarna",
+        "Lövladbo"
+      ],
+      "streets": [
+        "Faluvägen"
+      ],
+      "searchTerms": [
+        "trakt 1",
+        "Tällberg",
+        "Heden"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "jamn-tisdag",
+      "name": "Övermo, Edshult m.fl.",
+      "day": "Tisdag, jämn vecka",
+      "label": "Område 2",
+      "schedule": "jamn-tisdag",
+      "places": [
+        "Övermo",
+        "Edshult",
+        "Åkerö",
+        "Lisselby"
+      ],
+      "streets": [
+        "Insjövägen"
+      ],
+      "searchTerms": [
+        "trakt 2"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "jamn-onsdag",
+      "name": "Byggningen, Bränngärdet m.fl.",
+      "day": "Onsdag, jämn vecka",
+      "label": "Område 3",
+      "schedule": "jamn-onsdag",
+      "places": [
+        "Byggningen",
+        "Bränngärdet",
+        "Hjortnäsheden",
+        "Sunnanäng",
+        "Hjortnäs",
+        "Dalsberget",
+        "Sandåsarna",
+        "Tällberg",
+        "Plintsberg"
+      ],
+      "streets": [],
+      "searchTerms": [
+        "trakt 3"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "jamn-torsdag",
+      "name": "Moskogen, Källberget m.fl.",
+      "day": "Torsdag, jämn vecka",
+      "label": "Område 4",
+      "schedule": "jamn-torsdag",
+      "places": [
+        "Moskogen",
+        "Källberget",
+        "Yttermo",
+        "Mjälgen",
+        "Gärde",
+        "Ytteråkerö",
+        "Smedby",
+        "Västannor",
+        "Hagen"
+      ],
+      "streets": [],
+      "searchTerms": [
+        "trakt 4"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "jamn-fredag",
+      "name": "Djura, Styrsjöbo m.fl.",
+      "day": "Fredag, jämn vecka",
+      "label": "Område 5",
+      "schedule": "jamn-fredag",
+      "places": [
+        "Djura",
+        "Styrsjöbo",
+        "Heden",
+        "Hästberg",
+        "Jonheden",
+        "Knutsgårdarna",
+        "Rälta",
+        "Rältlindor"
+      ],
+      "streets": [],
+      "searchTerms": [
+        "trakt 5"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "udda-mandag",
+      "name": "Noret, Lima m.fl.",
+      "day": "Måndag, udda vecka",
+      "label": "Område 6",
+      "schedule": "udda-mandag",
+      "places": [
+        "Noret",
+        "Lima",
+        "Kärringberget",
+        "Limhagen"
+      ],
+      "streets": [
+        "Siljansvägen"
+      ],
+      "searchTerms": [
+        "trakt 6"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "udda-tisdag",
+      "name": "Norsbro, Lycka m.fl.",
+      "day": "Tisdag, udda vecka",
+      "label": "Område 7",
+      "schedule": "udda-tisdag",
+      "places": [
+        "Norsbro",
+        "Lycka",
+        "Tibble",
+        "Ullvi",
+        "Hälla",
+        "Romma",
+        "Berg",
+        "Rönnäs",
+        "Helgnäs",
+        "Brenäs"
+      ],
+      "streets": [],
+      "searchTerms": [
+        "trakt 7"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "udda-onsdag",
+      "name": "Almo, Alvik m.fl.",
+      "day": "Onsdag, udda vecka",
+      "label": "Område 8",
+      "schedule": "udda-onsdag",
+      "places": [
+        "Almo",
+        "Alvik",
+        "Räckselbackarna",
+        "Gassarvet",
+        "Tasbäck",
+        "Karlsarvet",
+        "Västanvik",
+        "Grytnäs",
+        "Sundsnäs"
+      ],
+      "streets": [],
+      "searchTerms": [
+        "trakt 8"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "udda-torsdag",
+      "name": "Siljansnäs",
+      "day": "Torsdag, udda vecka",
+      "label": "Område 9",
+      "schedule": "udda-torsdag",
+      "places": [
+        "Siljansnäs"
+      ],
+      "streets": [],
+      "searchTerms": [
+        "trakt 9"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "udda-fredag",
+      "name": "Laknäs, Östanhol m.fl.",
+      "day": "Fredag, udda vecka",
+      "label": "Område 10",
+      "schedule": "udda-fredag",
+      "places": [
+        "Laknäs",
+        "Östanhol",
+        "Kullsbjörken",
+        "Leksboda",
+        "Sjugare",
+        "Torrberg",
+        "Norr och Söder Bergsäng",
+        "Västberg"
+      ],
+      "streets": [],
+      "searchTerms": [
+        "trakt 10",
+        "Bergsäng"
+      ],
+      "otherDays": []
+    }
+  ]
+}

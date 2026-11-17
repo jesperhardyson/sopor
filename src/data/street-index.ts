@@ -192,10 +192,16 @@ export function matchesPlace(a: { locality: string; kommun: string }, place: str
   return !p || [a.locality, a.kommun].some((name) => normalize(name, false).startsWith(p))
 }
 
-/** Om platsen är källans kommun, eller en ort eller gata hos källan enligt platsens delfil. */
-export function namesSource(place: string, placeShard: StreetShard | null, source: Source): boolean {
+/**
+ * Om platsen är källans kommun, eller en ort eller gata hos källan enligt platsens delfil. Med Sveriges
+ * orter (`lookup`) betyder ett kommunnamn kommunen, som i `sourcesAtPlace`: "Stockholm" är inte byn
+ * Stockholm i Leksand.
+ */
+export function namesSource(place: string, placeShard: StreetShard | null, source: Source, lookup?: PlaceLookup | null): boolean {
   const key = normalize(place, false)
   if (key === '') return false
+  const named = lookup ? kommunerNamed(lookup, key) : []
+  if (named.length > 0) return placeKommuner(source).some((k) => named.includes(k.code))
   return (
     placeKommuner(source).some((k) => normalize(k.name.replace(/ kommun$/, ''), false) === key) ||
     (placeShard?.[key]?.includes(source.id) ?? false)
@@ -211,13 +217,14 @@ export async function streetAtSourcePlace(
   query: string,
   source: Source,
   loadShard: (key: string) => Promise<StreetShard | null>,
+  lookup?: PlaceLookup | null,
 ): Promise<string | undefined> {
   if (normalize(query).length < 2) return undefined
   const parts = splitPlace(await loadShard(shardKey(query)), query)
   const words = parts.street.split(' ')
   const { street, place } = parts.place ? parts : { street: words.slice(0, -1).join(' '), place: words.at(-1) ?? '' }
   if (!street || !place) return undefined
-  return namesSource(place, await loadShard(shardKey(place)), source) ? street : undefined
+  return namesSource(place, await loadShard(shardKey(place)), source, lookup) ? street : undefined
 }
 
 /**

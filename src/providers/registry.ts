@@ -341,11 +341,11 @@ async function areaPickersFor(query: string, found: Address[], kommun?: Kommun):
   if (sources.length === 0 || normalize(query).length < 2) return []
   const shard = await loadShard(shardKey(query))
   const { place } = splitPlace(shard, query)
-  const placeShard = place ? await loadShard(shardKey(place)) : null
+  const [placeShard, lookup] = place ? await Promise.all([loadShard(shardKey(place)), loadSwedenPlaces()]) : [null, null]
   return sources.flatMap((s) => {
     const hasHits = found.some((a) => a.sourceId === s.id)
     // Nämner frågan en annan plats hör gatan inte till källan, hur väl gatan än är känd.
-    const relevant = hasHits || (place ? namesSource(place, placeShard, s) : isKnownStreet(shard, query, s.id))
+    const relevant = hasHits || (place ? namesSource(place, placeShard, s, lookup) : isKnownStreet(shard, query, s.id))
     if (!relevant) return []
     const picker = { sourceId: s.id, kommun: s.kommuner[0]?.name ?? s.name, hasHits }
     return [hasHits ? picker : { ...picker, street: streetOnly(query, place) }]
@@ -362,7 +362,7 @@ async function searchStaticSource(source: Source, query: string, signal: AbortSi
   const mode = { areaPrefix: !!kommun }
   const hits = await provider.searchAddresses(query, signal, mode)
   if (source.selection !== 'area') return hits
-  const street = await streetAtSourcePlace(query, source, loadShard)
+  const street = await streetAtSourcePlace(query, source, loadShard, await loadSwedenPlaces())
   return street ? mergeHits(hits, await provider.searchAddresses(street, signal, mode)) : hits
 }
 

@@ -1,0 +1,144 @@
+{
+  "explanation": "Dala Vatten och Avfall visar sophämtningen i Vansbro per trakt på sin webbplats, men inte vilka adresser som hör till vilken trakt. Schemat gäller helårskunder med egna kärl.",
+  "help": "Osäker? Se dina hämtningsdagar i appen Mitt DVA, eller ring Dala Vatten och Avfall på 0247-44 100.",
+  "areas": [
+    {
+      "id": "jamn-mandag",
+      "name": "Dala-Järna",
+      "day": "Måndag, jämn vecka",
+      "label": "Område 1",
+      "schedule": "jamn-mandag",
+      "places": [
+        "Dala-Järna"
+      ],
+      "streets": [],
+      "searchTerms": [
+        "trakt 1"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "jamn-tisdag",
+      "name": "Vansbro centrum, Söderåsen m.fl.",
+      "day": "Tisdag, jämn vecka",
+      "label": "Område 2",
+      "schedule": "jamn-tisdag",
+      "places": [
+        "Vansbro centrum",
+        "Söderåsen",
+        "Källbacken"
+      ],
+      "streets": [],
+      "searchTerms": [
+        "trakt 2",
+        "Vansbro"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "jamn-torsdag",
+      "name": "Skamhed, Saltvik m.fl.",
+      "day": "Torsdag, jämn vecka",
+      "label": "Område 3",
+      "schedule": "jamn-torsdag",
+      "places": [
+        "Skamhed",
+        "Saltvik",
+        "Dalasågen",
+        "Nordanåker",
+        "Hulån",
+        "Duvnäs",
+        "Skålö",
+        "Ilbäcken"
+      ],
+      "streets": [],
+      "searchTerms": [
+        "trakt 3"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "udda-torsdag",
+      "name": "Snöån, Strömsheden m.fl.",
+      "day": "Torsdag, udda vecka",
+      "label": "Område 4",
+      "schedule": "udda-torsdag",
+      "places": [
+        "Snöån",
+        "Strömsheden",
+        "Nås"
+      ],
+      "streets": [],
+      "searchTerms": [
+        "trakt 4"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "jamn-fredag",
+      "name": "Malmsta, Storbyn m.fl.",
+      "day": "Fredag, jämn vecka",
+      "label": "Område 5",
+      "schedule": "jamn-fredag",
+      "places": [
+        "Malmsta",
+        "Storbyn",
+        "Närsjö",
+        "Orsala",
+        "Lindesnäs",
+        "Närsen",
+        "Sågen",
+        "Kroktorp",
+        "Örskogen",
+        "Eldforsen",
+        "Heden"
+      ],
+      "streets": [],
+      "searchTerms": [
+        "trakt 5"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "udda-mandag",
+      "name": "Äppelbo",
+      "day": "Måndag, udda vecka",
+      "label": "Område 6",
+      "schedule": "udda-mandag",
+      "places": [
+        "Äppelbo"
+      ],
+      "streets": [],
+      "searchTerms": [
+        "trakt 6"
+      ],
+      "otherDays": []
+    },
+    {
+      "id": "udda-onsdag",
+      "name": "Grönalid, Bomled m.fl.",
+      "day": "Onsdag, udda vecka",
+      "label": "Område 7",
+      "schedule": "udda-onsdag",
+      "places": [
+        "Grönalid",
+        "Bomled",
+        "Rutån",
+        "Skiffsforsen",
+        "Sandbäcken",
+        "Uppsälje",
+        "Västgård",
+        "Grånäs",
+        "Snöborg",
+        "Högosta"
+      ],
+      "streets": [
+        "Strandvägen"
+      ],
+      "searchTerms": [
+        "trakt 7"
+      ],
+      "otherDays": []
+    }
+  ]
+}

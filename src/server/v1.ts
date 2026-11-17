@@ -193,7 +193,7 @@ async function searchStatic(source: Source, query: string, origin: string, opts:
   const hits = find(query)
   if (source.selection !== 'area') return hits
   // Nämner frågan källans plats söks områdena också på gatudelen, som i registret på sajten.
-  const street = await streetAtSourcePlace(query, source, (key) => streetShard(key, origin, opts))
+  const street = await streetAtSourcePlace(query, source, (key) => streetShard(key, origin, opts), await swedenLookup(origin, opts))
   return street ? mergeHits(hits, find(street)).slice(0, SEARCH_LIMIT) : hits
 }
 
@@ -206,10 +206,13 @@ async function streetShard(q: string, origin: string, opts: HandlerOptions): Pro
   }
 }
 
+/** Sveriges orter och kommuner, null när filen saknas. */
+const swedenLookup = (origin: string, opts: HandlerOptions) => siteJson<PlaceLookup>(origin, '/data/sverige.json', opts.fetchFn, opts.timeoutMs).catch(() => null)
+
 /** Källorna som täcker platsen i frågan, null när platsen är okänd. Saknas filerna frågas som vanligt. */
 async function sourcesForPlace(place: string, live: Source[], origin: string, opts: HandlerOptions): Promise<string[] | null> {
   const [lookup, placeShard, orter] = await Promise.all([
-    siteJson<PlaceLookup>(origin, '/data/sverige.json', opts.fetchFn, opts.timeoutMs).catch(() => null),
+    swedenLookup(origin, opts),
     streetShard(place, origin, opts),
     opts.places ?? loadServerPlaces(origin, opts.fetchFn),
   ])
@@ -301,8 +304,8 @@ export const handleV1Areas: V1Handler = async (request, opts = {}) => {
   if (tomning !== null && !isValidDate(tomning)) return v1Error(400, 'bad_request', 'Ogiltigt datum, använd formen ÅÅÅÅ-MM-DD')
   if (tomning !== null && tomning > todayInStockholm(now)) return v1Error(400, 'bad_request', 'Datumet har inte varit än')
 
-  const shard = await streetShard(place, url.origin, opts)
-  const sources = visibleSources(opts).filter((s) => s.selection === 'area' && namesSource(place, shard, s))
+  const [shard, lookup] = await Promise.all([streetShard(place, url.origin, opts), swedenLookup(url.origin, opts)])
+  const sources = visibleSources(opts).filter((s) => s.selection === 'area' && namesSource(place, shard, s, lookup))
   const results = await Promise.allSettled(
     sources.map(async (source) => {
       const index = await siteJson<AreasIndexFile>(url.origin, `/data/${source.id}/omraden.json`, opts.fetchFn, opts.timeoutMs)

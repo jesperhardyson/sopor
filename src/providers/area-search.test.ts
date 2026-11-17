@@ -6,6 +6,7 @@ import { buildMunicipality, parseAreasFile, parseSchedulesFile } from '@/data/st
 import { buildStreetIndex, type OsmKommun } from '@/data/street-index'
 import { ALL_SOURCES, getSource } from '@/sources'
 import { searchAddresses } from '@/domain/search'
+import { buildPlaceLookup, type SwedenPlacesFile } from '@/data/sweden-places'
 import { searchAll, type SearchOptions } from './registry'
 
 const root = path.resolve(import.meta.dirname, '../..')
@@ -31,6 +32,7 @@ beforeAll(() => {
     vi.fn(async (url: string) => {
       if (url === '/data/avesta/addresses.json') return Response.json(index)
       if (url === '/data/orter.json') return Response.json({})
+      if (url === '/data/sverige.json') return Response.json(buildPlaceLookup(read('data/sverige/orter.json') as SwedenPlacesFile))
       const shard = url.match(/^\/data\/gator\/(.+)\.json$/)
       if (shard) {
         const found = shards[decodeURIComponent(shard[1])]

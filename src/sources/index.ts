@@ -89,6 +89,32 @@ const VOM_EMPTY_NOTE = {
   text: 'Adressen har ingen vanlig tömning varje eller varannan vecka hos källan. Kontakta Vatten och miljöresurs för att få veta när ditt kärl töms.',
 }
 
+/** Dala Vatten och Avfall publicerar ett schema per trakt och kommun, men inte vilka adresser som hör till vilken trakt. */
+const DVAA_CONTACT: SourceContact = {
+  phone: { number: '+4624744100', display: '0247-44 100' },
+  email: 'info@dvaab.se',
+  page: 'https://www.dalavattenavfall.se/avfall-och-atervinning/sophamtningsschema.html',
+  checked: { url: 'https://www.dalavattenavfall.se/avfall-och-atervinning/sophamtningsschema.html', date: '2026-11-17' },
+}
+const dvaaSource = (id: string, kommun: { code: string; name: string }): Source => ({
+  id,
+  name: 'Dala Vatten och Avfall',
+  url: 'https://www.dalavattenavfall.se',
+  contact: DVAA_CONTACT,
+  kommuner: [kommun],
+  config: { system: 'static' },
+  selection: 'area',
+  publishing: 'Dala Vatten och Avfall publicerar schemat för ett år i taget.',
+  areaNotice: {
+    title: 'Kontrollera att området stämmer',
+    text: 'Du har valt området själv, eftersom Dala Vatten och Avfall inte visar öppet vilka adresser som hör till vilket område. Väljer du fel område kan du missa din tömning. Schemat gäller helårskunder, inte fritidshus.',
+  },
+  emptyScheduleNote: {
+    title: 'Nästa års schema är inte publicerat än',
+    text: 'Dala Vatten och Avfall publicerar schemat för ett år i taget. Datumen visas här när nästa år finns. Fram till dess finns de i appen Mitt DVA.',
+  },
+})
+
 const ROSLAGSVATTEN_CONTACT: SourceContact = {
   phone: { number: '+46854083500', display: '08-540 835 00' },
   email: 'info@roslagsvatten.se',
@@ -153,6 +179,11 @@ export const ALL_SOURCES: Source[] = [
       text: 'Säters kommun har bara publicerat hämtveckorna en bit framåt. Datumen visas här när nästa period finns.',
     },
   },
+  // Statiska scheman per trakt från dalavattenavfall.se, med områdesval. Se docs/specs/2026-11-17-dala-vatten-och-avfall.md.
+  dvaaSource('dvaa-gagnef', { code: '2026', name: 'Gagnefs kommun' }),
+  dvaaSource('dvaa-leksand', { code: '2029', name: 'Leksands kommun' }),
+  dvaaSource('dvaa-rattvik', { code: '2031', name: 'Rättviks kommun' }),
+  dvaaSource('dvaa-vansbro', { code: '2021', name: 'Vansbro kommun' }),
   {
     id: 'uppsala',
     name: 'Uppsala Vatten',
