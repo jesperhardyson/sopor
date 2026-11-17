@@ -36,6 +36,16 @@ describe.each(Object.entries(KOMMUNER))('Dala Vatten och Avfall i %s', (kommun, 
   })
 })
 
+describe('Dala Vatten och Avfalls sökord', () => {
+  const terms = (kommun: string, id: string) => read(`data/dvaa-${kommun}/2026/omraden.json`).areas.find((a: { id: string }) => a.id === id).searchTerms
+
+  it('låter en exakt ort inte dölja ett område där den är en del av namnet', () => {
+    expect(terms('leksand', 'jamn-mandag')).toEqual(expect.arrayContaining(['Heden', 'Tällberg']))
+    expect(terms('rattvik', 'jamn-onsdag')).toContain('Boda')
+    expect(terms('gagnef', 'udda-mandag')).toContain('Tjärna')
+  })
+})
+
 describe('Dala Vatten och Avfalls rättningar', () => {
   const dates = (kommun: string, id: string, fraction: string) =>
     (read(`data/dvaa-${kommun}/2026/schedules.json`).schedules[id].events as Events).filter((e) => e.fractions.includes(fraction)).map((e) => e.date)

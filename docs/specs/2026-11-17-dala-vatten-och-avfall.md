@@ -18,6 +18,7 @@ Dala Vatten och Avfall (DVAA) sköter sophämtningen i Gagnef, Leksand, Rättvik
 - **Statiska källor med områdesval**, som Säter: `dvaa-gagnef`, `dvaa-leksand`, `dvaa-rattvik` och `dvaa-vansbro`, en per kommun, med `selection: 'area'`. Id:na får aldrig ändras.
 - **Områdenas id** följer dag och vecka (`jamn-tisdag`, `udda-fredag`), som i Säter, inte traktens nummer. Dag och vecka är unika i varje kommun. Numret står i `label` ("Område 1") och i `searchTerms` ("trakt 1").
 - **Platserna** räknas upp som källan gör det. Gator (slutar på -vägen, -väg eller -gatan) läggs i `streets`. Utskrivna förkortningar: "Vansbro C" blir "Vansbro centrum", "RV 70" blir "riksväg 70", och "Norr och Söder | Bergsäng" blir "Norr och Söder Bergsäng". "Hedslund/Nyheden" blir två platser.
+- **Delade namn:** är en plats i ett område slutet på en plats i ett annat ("Tjärna" och "Nedre Tjärna", "Heden" och "Övre Heden"), får det andra området det korta namnet i `searchTerms`. Annars döljer den exakta träffen det. Gäller Heden och Tällberg i Leksand, Boda i Rättvik och Tjärna i Gagnef.
 - **Datumen** skrivs in som källan anger dem, utan framräkning. Ett datum i januari efter ett senare datum hör till nästa år ("1 januari" sist i listan är 2027-01-01).
 - **Källans skrivfel rättas,** när datumet strider mot både traktens veckodag och fraktionens steg, och rätt datum är entydigt:
 
