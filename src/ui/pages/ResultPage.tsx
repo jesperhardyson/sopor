@@ -28,7 +28,7 @@ import { NotFound } from '../search/NotFound'
 import { usePageTitle } from '../hooks/usePageTitle'
 import { SourceMessages } from '../result/SourceMessages'
 
-const dot = "inline-flex items-center before:inline-block before:w-5 before:text-center before:content-['·']"
+const dot = "inline-flex items-center before:inline-block before:w-5 before:shrink-0 before:text-center before:content-['·']"
 const page = 'mx-auto flex w-full max-w-[920px] flex-col gap-5 px-5 pt-1 pb-8 md:px-8 md:pt-4 lg:gap-7 lg:px-0 lg:pb-20'
 
 function BackLink({ area, sourceId, addressId }: { area?: boolean; sourceId?: string; addressId?: string }) {

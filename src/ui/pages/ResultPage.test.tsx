@@ -328,6 +328,14 @@ describe('ResultPage', () => {
     expect(screen.queryByRole('heading', { name: 'Hämtrutterna läggs om' })).toBeNull()
   })
 
+  it('låter inte punkten före en del i underrubriken krympa, så att texten inte klipps när den bryts', async () => {
+    // Raden är förskjuten lika långt som punkten är bred. Krymper punkten hamnar texten utanför kanten.
+    fake = makeProvider({ getAddress: async (id) => ({ ...villa, id, sourceId: 'avesta', locality: '', detail: 'Onsdag, jämn vecka · Område 8' }), getSchedule: async () => schedule })
+    renderAt('/avesta/trakt-8')
+    const detail = await screen.findByText('Onsdag, jämn vecka · Område 8')
+    expect(detail.className).toContain('before:shrink-0')
+  })
+
   it('visar Avestas besked när alla tömningar har passerat', async () => {
     renderAt('/avesta/krylbo-storgatan-12b', '2027-03-01')
     await vi.waitFor(() => resolveSchedule!())
