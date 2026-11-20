@@ -19,7 +19,7 @@
     "smoke": "tsx scripts/smoke.mts"
   },
   "devDependencies": {
-    "@tsconfig/node22": "^22.0.6",
+    "@tsconfig/node22": "^22.0.7",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^1.8.3",
     "@types/node": "^22.19.0",
     "homey": "^4.6.3",
