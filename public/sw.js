@@ -24,6 +24,8 @@ self.addEventListener('fetch', (event) => {
   if (request.method !== 'GET') return
   const url = new URL(request.url)
   if (url.origin !== self.location.origin) return
+  // Inbjudan till ett hushåll har en hemlighet efter #. Sidan är statisk, och appens skal får aldrig visas i dess ställe.
+  if (/^\/hushall\/?$/.test(url.pathname)) return
   if (request.mode === 'navigate' && !/^\/(api|ics|data)\//.test(url.pathname)) event.respondWith(page(event))
   else if (url.pathname.startsWith('/assets/')) event.respondWith(asset(request))
 })

@@ -1,0 +1,10 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["4WZU5V58ZG.se.hardyson.sophamtning"],
+        "components": [{ "/": "/hushall" }, { "/": "/hushall/" }]
+      }
+    ]
+  }
+}
