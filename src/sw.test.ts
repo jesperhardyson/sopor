@@ -127,6 +127,15 @@ describe('service workern', () => {
     expect(await (await sw.request('/om', 'navigate'))!.text()).toBe('adress')
   })
 
+  it('rör inte sidan för inbjudan till ett hushåll, så att appens skript aldrig laddas där', async () => {
+    const sw = boot(async () => html('skal'))
+    await (await sw.request('/', 'navigate'))!.text()
+    await Promise.resolve()
+    expect(await sw.request('/hushall', 'navigate')).toBeUndefined()
+    expect(await sw.request('/hushall/', 'navigate')).toBeUndefined()
+    expect(await sw.request('/hushallet/storgatan-2', 'navigate')).toBeDefined()
+  })
+
   it('sparar inte annat än HTML som sidan', async () => {
     const sw = boot(async () => Response.json({}))
     await sw.request('/', 'navigate')
