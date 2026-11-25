@@ -42,7 +42,7 @@ export function PrivacyContent() {
         <p className="text-[17px] leading-[1.45] text-text-2">
           Den här policyn gäller webbplatsen {SITE.host}, Sopors API och appen Sophämtning. Sopor har inga konton, ingen reklam och inga spårningscookies, och vi säljer inga uppgifter.
         </p>
-        <p className="text-[13px] text-text-2">Senast ändrad 10 november 2026</p>
+        <p className="text-[13px] text-text-2">Senast ändrad 25 november 2026</p>
       </div>
 
       <Section title="Vem som ansvarar">
@@ -100,12 +100,12 @@ export function PrivacyContent() {
 
       <Section title="Appen Sophämtning">
         <Points>
-          <li>Appen har inga konton och ingen egen backend.</li>
-          <li>Adresser, inställningar och senast hämtade schema sparas i telefonen. Bara det du delar i ett hushåll sparas också i iCloud.</li>
+          <li>Appen har inga konton. Bara hushåll använder en egen server, och det gäller den som själv väljer att skapa eller gå med i ett.</li>
+          <li>Adresser, inställningar och senast hämtade schema sparas i telefonen. Bara det du delar i ett hushåll sparas också på annat håll, se nedan.</li>
           <li>Söktext och valda adresser skickas till Sopors API för att hämta schemat, och Sopor kan i sin tur fråga kommunens eller bolagets tjänst. Avsnittet om drift, loggar och cache gäller också här.</li>
           <li>Frågan om din kommun finns med besvaras i telefonen. Bara kommunens namn skickas vidare, och först när kommunen täcks.</li>
           <li>Appen samlar inte in analysdata och spårar dig inte.</li>
-          <li>Notiser och Live Activities är lokala och avstängda från början. De fungerar utan push-server.</li>
+          <li>Notiser och Live Activities visas av appen själv och är avstängda från början. I ett hushåll kan telefonen väckas av en tyst push när något har ändrats. Den visar inget och innehåller inget av det ni delar.</li>
           <li>Webblänkar öppnas i appens webbvy, och där gäller varje sidas egen hantering av uppgifter.</li>
         </Points>
         <Part title="Hushåll i appen">
@@ -113,7 +113,39 @@ export function PrivacyContent() {
             Om du väljer att skapa eller gå med i ett hushåll i appen Sophämtning delas följande med dem du bjuder in eller som bjudit in dig: de adresser du väljer att dela, markeringar om att kärlen är utställda (vem och när) och det namn du själv skriver i hushållet. Inget av detta delas med andra än deltagarna i hushållet.
           </P>
           <P>
-            Uppgifterna sparas i iCloud med Apples tjänst CloudKit, i hushållsägarens iCloud. Sopor kan inte läsa dem, och Apples integritetspolicy gäller för lagringen. Lämnar du hushållet slutar dina uppgifter att delas, och de adresser du har sparat finns kvar som dina egna. Avslutar ägaren hushållet tas de delade uppgifterna bort ur iCloud.
+            Innehållet krypteras på telefonen innan det skickas, med en nyckel som bara finns hos deltagarna, och lagras hos Cloudflare inom EU. Varken Sopor eller Cloudflare kan läsa det. Nyckeln sparas i telefonens nyckelring och följer med iCloud-nyckelringen till dina andra Apple-enheter.
+          </P>
+          <P>
+            Inbjudan är en länk som innehåller nyckeln. Den har en del efter # som aldrig skickas till någon webbserver när länken öppnas, men den tjänst du skickar länken med kan se den. Den som har länken kan gå med i hushållet. Den gäller i sju dagar, och ägaren kan göra den ogiltig tidigare.
+          </P>
+        </Part>
+        <Part title="Det som servern för hushåll ser">
+          <P>För att kunna förmedla det krypterade innehållet sparar servern, kopplat till hushållet:</P>
+          <Points>
+            <li>slumpade id för hushållet och deltagarna, och vem som är ägare</li>
+            <li>hur många deltagare, adresser och markeringar hushållet har, vem av de slumpade id:na som skrev dem och när något ändras</li>
+            <li>vilken dag en markering slutar gälla</li>
+            <li>telefonens pushadress. Pushen går via Apple och innehåller bara hushållets id och ett löpnummer.</li>
+          </Points>
+          <P>
+            Cloudflare är vårt personuppgiftsbiträde för hushållen och behöver tekniskt hantera din ip-adress för att kunna svara. Vi sparar ingen logg över anropen. När ett hushåll skapas sparas en hash av ip-adressen i ungefär en timme, för att begränsa hur många hushåll som kan skapas. Cloudflare är ett amerikanskt företag, och tekniska uppgifter som ip-adress och interna id kan behandlas utanför EU. Läs mer i{' '}
+            <a href="https://www.cloudflare.com/privacypolicy/" rel="noopener" className={link}>
+              Cloudflares integritetspolicy
+            </a>
+            .
+          </P>
+        </Part>
+        <Part title="När uppgifterna om hushållet tas bort">
+          <Points>
+            <li>En markering om att kärlen är utställda raderas dagen efter hämtningen.</li>
+            <li>Lämnar du hushållet, eller tas bort ur det, raderas ditt namn och din pushadress. Ditt slumpade id finns kvar tills hushållet är slut. De adresser du har delat finns kvar hos de andra tills någon slutar dela dem, och dina egna finns kvar i din telefon.</li>
+            <li>Avslutar ägaren hushållet raderas innehållet. Då finns bara hushållets id, orsaken och tiden kvar, så att telefonerna kan få veta att det är slut. Ett hushåll som ingen har använt på 400 dagar raderas på samma sätt.</li>
+            <li>Att något har tagits bort kommer servern ihåg i 30 dagar, utan innehållet. Cloudflare kan tekniskt återställa raderade uppgifter i högst 30 dagar, men de är fortfarande krypterade.</li>
+          </Points>
+        </Part>
+        <Part title="Hushåll från äldre versioner av appen">
+          <P>
+            Hushåll som skapades i en äldre version av appen sparas med Apples tjänst CloudKit, i hushållsägarens iCloud. Sopor kan inte läsa dem, och Apples integritetspolicy gäller för lagringen. När ägaren har uppdaterat appen flyttas hushållet till den krypterade lagringen ovan, och deltagarna följer med när de har uppdaterat. För att de ska kunna göra det ligger en länk till det flyttade hushållet i iCloud, där hushållets deltagare och i princip Apple kan läsa den. Delningen i iCloud tas bort 90 dagar efter flytten, eller när hushållet avslutas.
           </P>
         </Part>
         <P>Integrationerna för Homey och Home Assistant hämtar också schemat från Sopors API.</P>

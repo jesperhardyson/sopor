@@ -16,7 +16,7 @@ describe('PrivacyPage', () => {
     setup()
     expect(screen.getByRole('heading', { level: 1, name: 'Integritetspolicy' })).toBeInTheDocument()
     expect(document.title).toBe('Integritetspolicy – Sopor')
-    expect(screen.getByText(/Senast ändrad 10 november 2026/)).toBeInTheDocument()
+    expect(screen.getByText(/Senast ändrad 25 november 2026/)).toBeInTheDocument()
   })
 
   it('tar upp allt som ärendet kräver', () => {
@@ -41,17 +41,42 @@ describe('PrivacyPage', () => {
     expect(screen.getByText(/kastas efter 24 timmar/)).toBeInTheDocument()
   })
 
-  it('säger att appen inte har analys eller push', () => {
+  it('säger att appen inte har analys, och när push används', () => {
     setup()
     expect(screen.getByText(/samlar inte in analysdata och spårar dig inte/)).toBeInTheDocument()
-    expect(screen.getByText(/utan push-server/)).toBeInTheDocument()
+    expect(screen.getByText(/Notiser och Live Activities visas av appen själv/)).toBeInTheDocument()
+    expect(screen.queryByText(/utan push-server/)).toBeNull()
+    expect(screen.queryByText(/ingen egen backend/)).toBeNull()
   })
 
   it('säger vad hushåll i appen delar, med vem och var det lagras', () => {
     setup()
     expect(screen.getByRole('heading', { level: 3, name: 'Hushåll i appen' })).toBeInTheDocument()
     expect(screen.getByText(/delas följande med dem du bjuder in eller som bjudit in dig/)).toBeInTheDocument()
-    expect(screen.getByText(/i hushållsägarens iCloud. Sopor kan inte läsa dem/)).toBeInTheDocument()
-    expect(screen.getByText(/Avslutar ägaren hushållet tas de delade uppgifterna bort ur iCloud/)).toBeInTheDocument()
+    expect(screen.getByText(/krypteras på telefonen innan det skickas/)).toBeInTheDocument()
+    expect(screen.getByText(/lagras hos Cloudflare inom EU/)).toBeInTheDocument()
+    expect(screen.getByText(/Den som har länken kan gå med/)).toBeInTheDocument()
+  })
+
+  it('säger vad servern för hushåll ser', () => {
+    setup()
+    const part = screen.getByRole('heading', { level: 3, name: 'Det som servern för hushåll ser' }).parentElement!
+    for (const text of [/slumpade id/, /ägare/, /hur många/, /när något ändras/, /ip-adress/]) expect(part).toHaveTextContent(text)
+    expect(part).toHaveTextContent(/pushadress.*bara hushållets id och ett löpnummer/)
+    expect(screen.getByRole('link', { name: 'Cloudflares integritetspolicy' })).toHaveAttribute('href', 'https://www.cloudflare.com/privacypolicy/')
+  })
+
+  it('säger när uppgifterna om ett hushåll tas bort', () => {
+    setup()
+    const part = screen.getByRole('heading', { level: 3, name: 'När uppgifterna om hushållet tas bort' }).parentElement!
+    for (const text of [/dagen efter hämtningen/, /400 dagar/, /30 dagar/, /lämnar du hushållet/i, /bara hushållets id/]) expect(part).toHaveTextContent(text)
+  })
+
+  it('tar upp hushåll som ligger kvar i iCloud', () => {
+    setup()
+    const part = screen.getByRole('heading', { level: 3, name: 'Hushåll från äldre versioner av appen' }).parentElement!
+    expect(part).toHaveTextContent(/i hushållsägarens iCloud/)
+    expect(part).toHaveTextContent(/flyttas/)
+    expect(part).toHaveTextContent(/90 dagar/)
   })
 })

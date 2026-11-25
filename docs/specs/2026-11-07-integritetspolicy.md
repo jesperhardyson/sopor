@@ -28,6 +28,9 @@ iOS-appen Sophämtning ska till App Store, som kräver en integritetspolicy på 
 | Statistiken går att se 31 dagar bakåt | Vercels API för Hobby, 2026-11-07 |
 | Överföring utanför EU | [Vercels integritetsmeddelande](https://vercel.com/legal/privacy-notice) |
 | Appen Sophämtning | Sophämtnings `docs/specs/2026-11-06-ios-app.md`, inte appens kod |
+| Hushåll: vad som krypteras, vad servern sparar och när det raderas (2026-11-25) | Sophämtnings `Server/src/household.ts`, `limiter.ts` och `push.ts`, och `docs/specs/2026-11-23-hushall-mellan-plattformar.md` |
+| Cloudflare lagrar hushållen i EU, och interna id kan loggas utanför | [Cloudflares dokumentation](https://developers.cloudflare.com/durable-objects/reference/data-location/) |
+| Raderade uppgifter kan återställas i högst 30 dagar | [Cloudflares dokumentation](https://developers.cloudflare.com/durable-objects/api/sqlite-storage-api/) |
 
 ## Beslut
 
